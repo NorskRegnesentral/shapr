@@ -50,6 +50,9 @@
 - [`print(`*`<shapr>`*`)`](https://norskregnesentral.github.io/shapr/reference/print.shapr.md)
   : Print Method for Shapr Objects
 
+- [`print(`*`<summary.shapr>`*`)`](https://norskregnesentral.github.io/shapr/reference/print.summary.shapr.md)
+  : Print Method for summary.shapr Objects
+
 - [`summary(`*`<shapr>`*`)`](https://norskregnesentral.github.io/shapr/reference/summary.shapr.md)
   : Summary Method for Shapr Objects
 

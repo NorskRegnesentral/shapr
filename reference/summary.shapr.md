@@ -1,6 +1,8 @@
 # Summary Method for Shapr Objects
 
-Summary Method for Shapr Objects
+Provides a formatted summary of a shapr object and returns an object of
+class `summary.shapr` containing the same information as returned by
+[`get_results()`](https://norskregnesentral.github.io/shapr/reference/get_results.md).
 
 ## Usage
 
@@ -26,7 +28,9 @@ summary(object, digits = 2L, ...)
 
 ## Value
 
-Prints a formatted summary of the shapr object, and invisibly returns a
-named list of summary components. See the details section of
+An object of class `summary.shapr`, which is a named list with the same
+accessible components as returned by
+[`get_results()`](https://norskregnesentral.github.io/shapr/reference/get_results.md).
+See
 [`get_results()`](https://norskregnesentral.github.io/shapr/reference/get_results.md)
 for details about each component.

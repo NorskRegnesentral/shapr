@@ -144,7 +144,7 @@ x_explain <- data[ind_x_explain, ..x_var]
 # Fitting a basic xgboost model to the training data
 set.seed(123) # Set seed for reproducibility
 model <- xgboost::xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 20,
   verbosity = 0
@@ -167,7 +167,7 @@ plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_flip() +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = rel(0.95)))
+    ggplot2::theme(plot.title = ggplot2::element_text(size = ggplot2::rel(0.95)))
   fig <- fig + ggplot2::scale_x_discrete(limits = rev(levels(fig$data$Method)))
   if (!is.null(method_line) && method_line %in% fig$data$Method) {
     fig <- fig + ggplot2::geom_hline(
@@ -215,9 +215,7 @@ explanation_list$MC_empirical <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:18 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:40:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -226,7 +224,7 @@ explanation_list$MC_empirical <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -241,7 +239,7 @@ explanation_list$MC_empirical <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec4696bf0a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db488cb3ff.rds'
 #>
 #>
 #>
@@ -267,9 +265,7 @@ explanation_list$sep_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:24 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:01 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -278,7 +274,7 @@ explanation_list$sep_lm <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -291,7 +287,7 @@ explanation_list$sep_lm <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1270b074.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db677c0f7f.rds'
 #>
 #>
 #>
@@ -310,6 +306,7 @@ concerning the $\operatorname{MSE}_{v}$ evaluation criterion.
 
 ``` r
 plot_MSEv_scores(explanation_list)
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/lm-emp-msev-1.webp)
@@ -360,9 +357,7 @@ explanation_list$sep_pcr <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:25 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:02 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -371,7 +366,7 @@ explanation_list$sep_pcr <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -384,7 +379,7 @@ explanation_list$sep_pcr <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec4b44f0ce.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db692d1aa7.rds'
 #>
 #>
 #>
@@ -412,9 +407,7 @@ explanation_list$sep_splines <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:26 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:03 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -423,7 +416,7 @@ explanation_list$sep_splines <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -436,7 +429,7 @@ explanation_list$sep_splines <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec28b8cc1e.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db20d31c42.rds'
 #>
 #>
 #>
@@ -499,9 +492,7 @@ explanation_list$sep_recipe_example <- explain(
   regression.recipe_func = regression.recipe_func
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:27 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:04 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -510,7 +501,7 @@ explanation_list$sep_recipe_example <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -523,7 +514,7 @@ explanation_list$sep_recipe_example <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec19901c8d.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4ebf3f2c.rds'
 #>
 #>
 #>
@@ -541,6 +532,7 @@ other methods.
 ``` r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/preproc-plot-1.webp)
@@ -550,11 +542,11 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 5.97
-#> sep_lm             745.21 0.64
-#> sep_pcr            784.91 0.84
-#> sep_splines        165.13 0.86
-#> sep_recipe_example 687.45 1.25
+#> MC_empirical       188.54 8.78
+#> sep_lm             715.79 0.74
+#> sep_pcr            761.31 0.97
+#> sep_splines        179.15 0.90
+#> sep_recipe_example 680.72 1.41
 ```
 
 #### Other regression models
@@ -591,9 +583,7 @@ explanation_list$sep_tree_stump <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:28 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:06 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -602,7 +592,7 @@ explanation_list$sep_tree_stump <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -615,7 +605,7 @@ explanation_list$sep_tree_stump <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec10542b06.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7741619a.rds'
 #>
 #>
 #>
@@ -636,21 +626,19 @@ explanation_list$sep_tree_default <- explain(
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:29 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:07 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec160fd5dd.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db56ceba9e.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -670,6 +658,7 @@ trees with depth one.
 ``` r
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/decision-tree-plot-1.webp)
@@ -678,13 +667,13 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
-#> MC_empirical       179.43 5.97
-#> sep_lm             745.21 0.64
-#> sep_pcr            784.91 0.84
-#> sep_splines        165.13 0.86
-#> sep_recipe_example 687.45 1.25
-#> sep_tree_stump     218.05 0.78
-#> sep_tree_default   177.68 0.91
+#> MC_empirical       188.54 8.78
+#> sep_lm             715.79 0.74
+#> sep_pcr            761.31 0.97
+#> sep_splines        179.15 0.90
+#> sep_recipe_example 680.72 1.41
+#> sep_tree_stump     196.95 0.77
+#> sep_tree_default   190.77 0.70
 ```
 
 #### Cross-validation
@@ -770,9 +759,7 @@ explanation_list$sep_tree_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:30 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:08 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -781,7 +768,7 @@ explanation_list$sep_tree_cv <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -794,7 +781,7 @@ explanation_list$sep_tree_cv <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec45df867f.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5ea91e8d.rds'
 #>
 #>
 #>
@@ -823,21 +810,19 @@ explanation_list$sep_tree_cv_2 <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:01:47 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:26 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec54ba45c8.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4147ed30.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -867,9 +852,7 @@ explanation_list$sep_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:02:18 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:56 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -878,7 +861,7 @@ explanation_list$sep_rf <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -891,7 +874,7 @@ explanation_list$sep_rf <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1b5104d2.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db9d4a12f.rds'
 #>
 #>
 #>
@@ -920,21 +903,19 @@ explanation_list$sep_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:02:19 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:41:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec56c9bedd.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db568ab929.rds'
 #>
 #> ── Additional details about the regression model
 #> Random Forest Model Specification (regression)
@@ -950,116 +931,116 @@ explanation_list$sep_rf_cv <- explain(
 #> ── Extra info about the tuning of the regression model ──
 #>
 #> ── Top 6 best configs for  v(1 4) (using 5-fold CV)
-#> #1: mtry = 1 trees = 750 rmse = 28.62 rmse_std_err = 2.58
-#> #2: mtry = 1 trees = 400 rmse = 28.82 rmse_std_err = 2.45
-#> #3: mtry = 1 trees = 50 rmse = 28.91 rmse_std_err = 2.48
-#> #4: mtry = 2 trees = 50 rmse = 29.08 rmse_std_err = 2.22
-#> #5: mtry = 2 trees = 400 rmse = 29.27 rmse_std_err = 2.28
-#> #6: mtry = 2 trees = 750 rmse = 29.43 rmse_std_err = 2.28
+#> #1: mtry = 1 trees = 750 rmse = 28.79 rmse_std_err = 2.62
+#> #2: mtry = 1 trees = 400 rmse = 28.95 rmse_std_err = 2.52
+#> #3: mtry = 2 trees = 50 rmse = 29.00 rmse_std_err = 2.20
+#> #4: mtry = 1 trees = 50 rmse = 29.07 rmse_std_err = 2.67
+#> #5: mtry = 2 trees = 400 rmse = 29.44 rmse_std_err = 2.38
+#> #6: mtry = 2 trees = 750 rmse = 29.47 rmse_std_err = 2.37
 #>
 #> ── Top 6 best configs for  v(2 4) (using 5-fold CV)
-#> #1: mtry = 2 trees = 50 rmse = 21.10 rmse_std_err = 0.89
-#> #2: mtry = 1 trees = 750 rmse = 21.29 rmse_std_err = 0.67
-#> #3: mtry = 2 trees = 400 rmse = 21.31 rmse_std_err = 1.00
-#> #4: mtry = 1 trees = 400 rmse = 21.38 rmse_std_err = 0.73
-#> #5: mtry = 2 trees = 750 rmse = 21.38 rmse_std_err = 1.02
-#> #6: mtry = 1 trees = 50 rmse = 21.47 rmse_std_err = 0.69
+#> #1: mtry = 2 trees = 50 rmse = 21.43 rmse_std_err = 0.93
+#> #2: mtry = 1 trees = 750 rmse = 21.49 rmse_std_err = 0.54
+#> #3: mtry = 2 trees = 400 rmse = 21.55 rmse_std_err = 1.03
+#> #4: mtry = 1 trees = 400 rmse = 21.60 rmse_std_err = 0.57
+#> #5: mtry = 2 trees = 750 rmse = 21.62 rmse_std_err = 1.05
+#> #6: mtry = 1 trees = 50 rmse = 21.70 rmse_std_err = 0.57
 #>
 #> ── Top 6 best configs for  v(1 3) (using 5-fold CV)
-#> #1: mtry = 2 trees = 50 rmse = 21.56 rmse_std_err = 3.01
-#> #2: mtry = 1 trees = 750 rmse = 21.71 rmse_std_err = 3.11
-#> #3: mtry = 1 trees = 400 rmse = 21.73 rmse_std_err = 3.17
-#> #4: mtry = 1 trees = 50 rmse = 21.83 rmse_std_err = 3.12
-#> #5: mtry = 2 trees = 750 rmse = 21.87 rmse_std_err = 2.92
-#> #6: mtry = 2 trees = 400 rmse = 21.92 rmse_std_err = 3.03
+#> #1: mtry = 1 trees = 750 rmse = 22.10 rmse_std_err = 3.09
+#> #2: mtry = 1 trees = 400 rmse = 22.12 rmse_std_err = 3.10
+#> #3: mtry = 2 trees = 50 rmse = 22.20 rmse_std_err = 2.88
+#> #4: mtry = 2 trees = 750 rmse = 22.28 rmse_std_err = 2.86
+#> #5: mtry = 2 trees = 400 rmse = 22.36 rmse_std_err = 2.95
+#> #6: mtry = 1 trees = 50 rmse = 22.40 rmse_std_err = 3.09
 #>
 #> ── Top 6 best configs for  v(3 4) (using 5-fold CV)
-#> #1: mtry = 1 trees = 50 rmse = 22.21 rmse_std_err = 4.17
-#> #2: mtry = 1 trees = 400 rmse = 22.35 rmse_std_err = 4.24
-#> #3: mtry = 1 trees = 750 rmse = 22.37 rmse_std_err = 4.26
-#> #4: mtry = 2 trees = 400 rmse = 23.45 rmse_std_err = 4.10
-#> #5: mtry = 2 trees = 750 rmse = 23.60 rmse_std_err = 4.09
-#> #6: mtry = 2 trees = 50 rmse = 24.35 rmse_std_err = 4.00
+#> #1: mtry = 1 trees = 50 rmse = 22.54 rmse_std_err = 4.16
+#> #2: mtry = 1 trees = 400 rmse = 22.61 rmse_std_err = 4.27
+#> #3: mtry = 1 trees = 750 rmse = 22.63 rmse_std_err = 4.28
+#> #4: mtry = 2 trees = 400 rmse = 23.90 rmse_std_err = 4.12
+#> #5: mtry = 2 trees = 750 rmse = 24.03 rmse_std_err = 4.10
+#> #6: mtry = 2 trees = 50 rmse = 24.74 rmse_std_err = 4.04
 #>
 #> ── Top 6 best configs for  v(2 3) (using 5-fold CV)
-#> #1: mtry = 1 trees = 50 rmse = 17.53 rmse_std_err = 2.14
-#> #2: mtry = 2 trees = 750 rmse = 17.55 rmse_std_err = 2.41
-#> #3: mtry = 1 trees = 400 rmse = 17.64 rmse_std_err = 2.01
-#> #4: mtry = 2 trees = 50 rmse = 17.69 rmse_std_err = 2.46
-#> #5: mtry = 1 trees = 750 rmse = 17.81 rmse_std_err = 2.07
-#> #6: mtry = 2 trees = 400 rmse = 17.94 rmse_std_err = 2.51
+#> #1: mtry = 1 trees = 50 rmse = 17.91 rmse_std_err = 2.19
+#> #2: mtry = 2 trees = 750 rmse = 17.94 rmse_std_err = 2.37
+#> #3: mtry = 1 trees = 400 rmse = 17.98 rmse_std_err = 2.02
+#> #4: mtry = 2 trees = 50 rmse = 18.10 rmse_std_err = 2.46
+#> #5: mtry = 1 trees = 750 rmse = 18.21 rmse_std_err = 2.07
+#> #6: mtry = 2 trees = 400 rmse = 18.25 rmse_std_err = 2.47
 #>
 #> ── Top 3 best configs for  v(3) (using 5-fold CV)
-#> #1: mtry = 1 trees = 50 rmse = 22.44 rmse_std_err = 4.63
-#> #2: mtry = 1 trees = 400 rmse = 22.59 rmse_std_err = 4.63
-#> #3: mtry = 1 trees = 750 rmse = 22.64 rmse_std_err = 4.62
+#> #1: mtry = 1 trees = 50 rmse = 22.88 rmse_std_err = 4.69
+#> #2: mtry = 1 trees = 400 rmse = 22.94 rmse_std_err = 4.72
+#> #3: mtry = 1 trees = 750 rmse = 23.01 rmse_std_err = 4.70
 #>
 #> ── Top 6 best configs for  v(1 2) (using 5-fold CV)
-#> #1: mtry = 1 trees = 400 rmse = 22.10 rmse_std_err = 2.51
-#> #2: mtry = 1 trees = 750 rmse = 22.40 rmse_std_err = 2.65
-#> #3: mtry = 1 trees = 50 rmse = 22.69 rmse_std_err = 2.47
-#> #4: mtry = 2 trees = 50 rmse = 23.01 rmse_std_err = 2.24
-#> #5: mtry = 2 trees = 400 rmse = 23.16 rmse_std_err = 2.48
-#> #6: mtry = 2 trees = 750 rmse = 23.18 rmse_std_err = 2.49
+#> #1: mtry = 1 trees = 400 rmse = 22.40 rmse_std_err = 2.54
+#> #2: mtry = 1 trees = 750 rmse = 22.64 rmse_std_err = 2.65
+#> #3: mtry = 1 trees = 50 rmse = 22.95 rmse_std_err = 2.46
+#> #4: mtry = 2 trees = 50 rmse = 23.38 rmse_std_err = 2.26
+#> #5: mtry = 2 trees = 750 rmse = 23.41 rmse_std_err = 2.53
+#> #6: mtry = 2 trees = 400 rmse = 23.41 rmse_std_err = 2.47
 #>
 #> ── Top 3 best configs for  v(4) (using 5-fold CV)
-#> #1: mtry = 1 trees = 400 rmse = 32.06 rmse_std_err = 4.28
-#> #2: mtry = 1 trees = 750 rmse = 32.13 rmse_std_err = 4.26
-#> #3: mtry = 1 trees = 50 rmse = 32.26 rmse_std_err = 4.35
+#> #1: mtry = 1 trees = 400 rmse = 32.32 rmse_std_err = 4.28
+#> #2: mtry = 1 trees = 750 rmse = 32.39 rmse_std_err = 4.26
+#> #3: mtry = 1 trees = 50 rmse = 32.52 rmse_std_err = 4.35
 #>
 #> ── Top 3 best configs for  v(1) (using 5-fold CV)
-#> #1: mtry = 1 trees = 400 rmse = 30.33 rmse_std_err = 3.37
-#> #2: mtry = 1 trees = 750 rmse = 30.50 rmse_std_err = 3.42
-#> #3: mtry = 1 trees = 50 rmse = 30.61 rmse_std_err = 3.51
+#> #1: mtry = 1 trees = 400 rmse = 30.45 rmse_std_err = 3.36
+#> #2: mtry = 1 trees = 50 rmse = 30.62 rmse_std_err = 3.51
+#> #3: mtry = 1 trees = 750 rmse = 30.64 rmse_std_err = 3.41
 #>
 #> ── Top 3 best configs for  v(2) (using 5-fold CV)
-#> #1: mtry = 1 trees = 750 rmse = 26.64 rmse_std_err = 2.31
-#> #2: mtry = 1 trees = 400 rmse = 26.84 rmse_std_err = 2.27
-#> #3: mtry = 1 trees = 50 rmse = 26.96 rmse_std_err = 2.17
+#> #1: mtry = 1 trees = 750 rmse = 27.04 rmse_std_err = 2.20
+#> #2: mtry = 1 trees = 400 rmse = 27.25 rmse_std_err = 2.17
+#> #3: mtry = 1 trees = 50 rmse = 27.35 rmse_std_err = 2.06
 #>
 #> ── Top 9 best configs for  v(1 2 4) (using 5-fold CV)
-#> #1: mtry = 2 trees = 750 rmse = 20.32 rmse_std_err = 2.47
-#> #2: mtry = 2 trees = 400 rmse = 20.45 rmse_std_err = 2.50
-#> #3: mtry = 1 trees = 750 rmse = 20.45 rmse_std_err = 2.91
-#> #4: mtry = 2 trees = 50 rmse = 20.46 rmse_std_err = 2.54
-#> #5: mtry = 1 trees = 400 rmse = 20.53 rmse_std_err = 2.98
-#> #6: mtry = 3 trees = 50 rmse = 20.72 rmse_std_err = 2.38
-#> #7: mtry = 1 trees = 50 rmse = 20.78 rmse_std_err = 2.70
-#> #8: mtry = 3 trees = 400 rmse = 20.93 rmse_std_err = 2.42
-#> #9: mtry = 3 trees = 750 rmse = 21.08 rmse_std_err = 2.48
+#> #1: mtry = 2 trees = 750 rmse = 20.57 rmse_std_err = 2.48
+#> #2: mtry = 2 trees = 400 rmse = 20.66 rmse_std_err = 2.52
+#> #3: mtry = 1 trees = 750 rmse = 20.68 rmse_std_err = 2.90
+#> #4: mtry = 1 trees = 400 rmse = 20.84 rmse_std_err = 2.98
+#> #5: mtry = 2 trees = 50 rmse = 21.02 rmse_std_err = 2.41
+#> #6: mtry = 1 trees = 50 rmse = 21.09 rmse_std_err = 2.64
+#> #7: mtry = 3 trees = 50 rmse = 21.17 rmse_std_err = 2.46
+#> #8: mtry = 3 trees = 400 rmse = 21.18 rmse_std_err = 2.41
+#> #9: mtry = 3 trees = 750 rmse = 21.37 rmse_std_err = 2.51
 #>
 #> ── Top 9 best configs for  v(1 2 3) (using 5-fold CV)
-#> #1: mtry = 2 trees = 400 rmse = 16.31 rmse_std_err = 2.77
-#> #2: mtry = 2 trees = 750 rmse = 16.36 rmse_std_err = 2.71
-#> #3: mtry = 3 trees = 400 rmse = 16.40 rmse_std_err = 2.83
-#> #4: mtry = 3 trees = 750 rmse = 16.42 rmse_std_err = 2.86
-#> #5: mtry = 1 trees = 400 rmse = 16.80 rmse_std_err = 3.06
-#> #6: mtry = 1 trees = 750 rmse = 16.94 rmse_std_err = 3.10
-#> #7: mtry = 2 trees = 50 rmse = 17.02 rmse_std_err = 2.96
-#> #8: mtry = 1 trees = 50 rmse = 17.04 rmse_std_err = 3.26
-#> #9: mtry = 3 trees = 50 rmse = 17.24 rmse_std_err = 2.96
+#> #1: mtry = 2 trees = 400 rmse = 16.72 rmse_std_err = 2.67
+#> #2: mtry = 2 trees = 750 rmse = 16.75 rmse_std_err = 2.64
+#> #3: mtry = 3 trees = 750 rmse = 16.78 rmse_std_err = 2.76
+#> #4: mtry = 3 trees = 400 rmse = 16.79 rmse_std_err = 2.74
+#> #5: mtry = 1 trees = 400 rmse = 17.17 rmse_std_err = 3.03
+#> #6: mtry = 1 trees = 750 rmse = 17.29 rmse_std_err = 3.08
+#> #7: mtry = 2 trees = 50 rmse = 17.37 rmse_std_err = 2.81
+#> #8: mtry = 3 trees = 50 rmse = 17.56 rmse_std_err = 2.73
+#> #9: mtry = 1 trees = 50 rmse = 17.65 rmse_std_err = 3.20
 #>
 #> ── Top 9 best configs for  v(1 3 4) (using 5-fold CV)
-#> #1: mtry = 1 trees = 50 rmse = 21.49 rmse_std_err = 4.36
-#> #2: mtry = 1 trees = 750 rmse = 21.83 rmse_std_err = 4.39
-#> #3: mtry = 1 trees = 400 rmse = 21.96 rmse_std_err = 4.24
-#> #4: mtry = 2 trees = 400 rmse = 22.63 rmse_std_err = 4.16
-#> #5: mtry = 2 trees = 50 rmse = 22.64 rmse_std_err = 4.55
-#> #6: mtry = 2 trees = 750 rmse = 22.93 rmse_std_err = 4.06
-#> #7: mtry = 3 trees = 400 rmse = 23.37 rmse_std_err = 3.86
-#> #8: mtry = 3 trees = 50 rmse = 23.44 rmse_std_err = 3.94
-#> #9: mtry = 3 trees = 750 rmse = 23.46 rmse_std_err = 3.86
+#> #1: mtry = 1 trees = 50 rmse = 21.96 rmse_std_err = 4.30
+#> #2: mtry = 1 trees = 750 rmse = 22.21 rmse_std_err = 4.43
+#> #3: mtry = 1 trees = 400 rmse = 22.32 rmse_std_err = 4.22
+#> #4: mtry = 2 trees = 50 rmse = 22.83 rmse_std_err = 4.54
+#> #5: mtry = 2 trees = 400 rmse = 22.88 rmse_std_err = 4.20
+#> #6: mtry = 2 trees = 750 rmse = 23.23 rmse_std_err = 4.08
+#> #7: mtry = 3 trees = 750 rmse = 23.71 rmse_std_err = 3.88
+#> #8: mtry = 3 trees = 400 rmse = 23.79 rmse_std_err = 3.87
+#> #9: mtry = 3 trees = 50 rmse = 23.90 rmse_std_err = 3.85
 #>
 #> ── Top 9 best configs for  v(2 3 4) (using 5-fold CV)
-#> #1: mtry = 3 trees = 400 rmse = 17.79 rmse_std_err = 3.45
-#> #2: mtry = 2 trees = 50 rmse = 17.83 rmse_std_err = 3.51
-#> #3: mtry = 3 trees = 750 rmse = 17.87 rmse_std_err = 3.42
-#> #4: mtry = 1 trees = 50 rmse = 17.87 rmse_std_err = 3.49
-#> #5: mtry = 2 trees = 400 rmse = 17.87 rmse_std_err = 3.54
-#> #6: mtry = 3 trees = 50 rmse = 17.89 rmse_std_err = 3.28
-#> #7: mtry = 2 trees = 750 rmse = 17.93 rmse_std_err = 3.54
-#> #8: mtry = 1 trees = 400 rmse = 18.04 rmse_std_err = 3.62
-#> #9: mtry = 1 trees = 750 rmse = 18.09 rmse_std_err = 3.61
+#> #1: mtry = 1 trees = 50 rmse = 18.14 rmse_std_err = 3.39
+#> #2: mtry = 3 trees = 400 rmse = 18.24 rmse_std_err = 3.47
+#> #3: mtry = 3 trees = 750 rmse = 18.28 rmse_std_err = 3.44
+#> #4: mtry = 2 trees = 400 rmse = 18.32 rmse_std_err = 3.53
+#> #5: mtry = 2 trees = 750 rmse = 18.34 rmse_std_err = 3.55
+#> #6: mtry = 2 trees = 50 rmse = 18.36 rmse_std_err = 3.44
+#> #7: mtry = 3 trees = 50 rmse = 18.38 rmse_std_err = 3.33
+#> #8: mtry = 1 trees = 400 rmse = 18.46 rmse_std_err = 3.61
+#> #9: mtry = 1 trees = 750 rmse = 18.47 rmse_std_err = 3.61
 ```
 
 We can look at the $\operatorname{MSE}_{v}$ evaluation criterion, and we
@@ -1075,6 +1056,7 @@ comparison.
 
 ``` r
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/dt-cv-plot-1.webp)
@@ -1090,17 +1072,17 @@ do hyperparameter tuning, we still overfit the data.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
-#> MC_empirical       179.43  5.97
-#> sep_lm             745.21  0.64
-#> sep_pcr            784.91  0.84
-#> sep_splines        165.13  0.86
-#> sep_recipe_example 687.45  1.25
-#> sep_tree_stump     218.05  0.78
-#> sep_tree_default   177.68  0.91
-#> sep_tree_cv        222.71 17.30
-#> sep_tree_cv_2      219.45 30.21
-#> sep_rf             218.13  1.32
-#> sep_rf_cv          217.21 34.29
+#> MC_empirical       188.54  8.78
+#> sep_lm             715.79  0.74
+#> sep_pcr            761.31  0.97
+#> sep_splines        179.15  0.90
+#> sep_recipe_example 680.72  1.41
+#> sep_tree_stump     196.95  0.77
+#> sep_tree_default   190.77  0.70
+#> sep_tree_cv        232.46 17.89
+#> sep_tree_cv_2      241.85 30.12
+#> sep_rf             218.68  1.21
+#> sep_rf_cv          222.80 32.83
 ```
 
 #### Parallelization
@@ -1138,9 +1120,7 @@ explanation_list$sep_xgboost <- explain(
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:02:53 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:42:30 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -1149,7 +1129,7 @@ explanation_list$sep_xgboost <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -1162,7 +1142,7 @@ explanation_list$sep_xgboost <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec77c57e88.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db70c1ad39.rds'
 #>
 #>
 #>
@@ -1186,25 +1166,898 @@ explanation_list$sep_xgboost_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:02:55 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:42:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1ec7ccc0.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781dbfc0e769.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:33] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:34] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x1   C: x1 [K
+
+There were issues with some computations   A: x1   B: x1   C: x2 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:35] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1   C: x2
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x2 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x2   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2   B: x2
+
+There were issues with some computations   A: x2   B: x2   C: x1 [K
+
+There were issues with some computations   A: x2   B: x2   C: x1 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x2 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x1   C: x1 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+There were issues with some computations   A: x1   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x2   C: x1 [K
+
+There were issues with some computations   A: x1   B: x2   C: x2 [K
+
+There were issues with some computations   A: x1   B: x2   C: x2 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+There were issues with some computations   A: x1   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x2   C: x1 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2   C: x1
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:50] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x1   C: x1 [K
+
+There were issues with some computations   A: x1   B: x1   C: x2 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:51] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1   C: x2
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:51] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:52] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:53] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x1   C: x1 [K
+
+There were issues with some computations   A: x1   B: x1   C: x2 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:54] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1   C: x2
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:54] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:55] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:56] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x1   C: x1 [K
+
+There were issues with some computations   A: x1   B: x1   C: x2 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:57] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x1   C: x2
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+
+There were issues with some computations   A: x1   B: x1   C: x2   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:58] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x2 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:42:59] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:00] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x1   C: x1 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:01] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:02] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+There were issues with some computations   A: x1   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:03] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x2   C: x1 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:04] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2   C: x1
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:04] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:05] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+There were issues with some computations   A: x1   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:06] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x2   C: x1 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:07] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2   C: x1
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+
+There were issues with some computations   A: x1   B: x2   C: x1   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:08] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x2 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:09] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x2   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:10] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2   B: x2
+
+There were issues with some computations   A: x2   B: x2   C: x1 [K
+
+There were issues with some computations   A: x2   B: x2   C: x1 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:11] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x2 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:12] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:13] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x1   C: x1 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+
+There were issues with some computations   A: x2   B: x1   C: x2 [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:14] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:15] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1 [K
+
+There were issues with some computations   A: x1   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:16] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fd
+#> There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x2   C: x1 [K
+
+There were issues with some computations   A: x1   B: x2   C: x2 [K
+
+There were issues with some computations   A: x1   B: x2   C: x2 [K
 
 # Cross validate the number of trees in parallel on two threads
 future::plan(future::multisession, workers = 2)
@@ -1221,25 +2074,677 @@ explanation_list$sep_xgboost_cv_par <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:03:39 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:43:17 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec42ad7330.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db269c3c8a.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:20] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x2
+
+There were issues with some computations   A: x2   B: x3
+
+There were issues with some computations   A: x2   B: x3
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:22] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x3   B: x1
+
+There were issues with some computations   A: x3   B: x2
+
+There were issues with some computations   A: x3   B: x2
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x3   C: x1
+
+There were issues with some computations   A: x1   B: x3   C: x1
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:26] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x2
+
+There were issues with some computations   A: x2   B: x3
+
+There were issues with some computations   A: x2   B: x3
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:27] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x3   B: x1
+
+There were issues with some computations   A: x3   B: x2
+
+There were issues with some computations   A: x3   B: x2
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:29] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x4
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x4
+
+There were issues with some computations   A: x4   B: x1
+
+There were issues with some computations   A: x4   B: x1
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:31] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fcce19b155f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fcce1b2110c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fcce1b132b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fcce1d94bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fcce1e9650c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fcce19ae7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fcce7a2469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fcce7a6940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fcce7
+#> There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x3   C: x1
+
+There were issues with some computations   A: x1   B: x3   C: x1
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:20] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x3   B: x1
+
+There were issues with some computations   A: x3   B: x2
+
+There were issues with some computations   A: x3   B: x2
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:22] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x3   C: x1
+
+There were issues with some computations   A: x1   B: x3   C: x1
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x4
+
+There were issues with some computations   A: x1   B: x4
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:26] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x2
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x2   B: x2
+
+There were issues with some computations   A: x2   B: x3
+
+There were issues with some computations   A: x2   B: x3
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:27] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x3   B: x1
+
+There were issues with some computations   A: x3   B: x2
+
+There were issues with some computations   A: x3   B: x2
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:29] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x3   C: x1
+
+There were issues with some computations   A: x1   B: x3   C: x1
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:31] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x1   B: x1
+
+There were issues with some computations   A: x1   B: x2
+
+There were issues with some computations   A: x1   B: x3
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (501 vs. 500) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f2fbc05c55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f2fbc1cc10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f2fbc1be2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f2fbc43fbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f2fbc54150c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f2fbc0597d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f2fc20cf69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f2fc211440c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f2fc2
+#> There were issues with some computations   A: x1   B: x3
+
+There were issues with some computations   A: x1   B: x3   C: x1
+
+There were issues with some computations   A: x1   B: x3   C: x1
 
 # Use a finer grid of low values for `trees` and also tune `tree_depth`
 future::plan(future::multisession, workers = 4) # Change to 4 threads due to more complex CV
@@ -1260,25 +2765,1293 @@ explanation_list$sep_xgboost_cv_2_par <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:03:55 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:43:33 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec29d17f31.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7b5c972a.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+There were issues with some computations   A: x7
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x7
+
+There were issues with some computations   A: x8   B: x1
+
+There were issues with some computations   A: x9   B: x3
+
+There were issues with some computations   A: x9   B: x4
+
+There were issues with some computations   A: x9   B: x6
+
+There were issues with some computations   A: x9   B: x9
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x9   B: x9
+
+There were issues with some computations   A: x9   B: x9   C: x1
+
+There were issues with some computations   A: x9   B: x9   C: x3
+
+There were issues with some computations   A: x9   B: x9   C: x6
+
+There were issues with some computations   A: x9   B: x9   C: x7
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x9   B: x9   C: x7
+
+There were issues with some computations   A: x9   B: x9   C: x8   …
+
+There were issues with some computations   A: x9   B: x9   C: x9   …
+
+There were issues with some computations   A: x9   B: x9   C: x9   …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x5   B: x1
+
+There were issues with some computations   A: x5   B: x2
+
+There were issues with some computations   A: x5   B: x4
+
+There were issues with some computations   A: x5   B: x7
+
+There were issues with some computations   A: x5   B: x8
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x5   B: x8
+
+There were issues with some computations   A: x5   B: x10   C: x3
+
+There were issues with some computations   A: x5   B: x10   C: x4
+
+There were issues with some computations   A: x5   B: x10   C: x6
+
+There were issues with some computations   A: x5   B: x10   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x5   B: x10   C: x9
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x3   B: x3
+
+There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x6
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x3   B: x6
+
+There were issues with some computations   A: x3   B: x8   C: x1
+
+There were issues with some computations   A: x3   B: x8   C: x2
+
+There were issues with some computations   A: x3   B: x8   C: x4
+
+There were issues with some computations   A: x3   B: x8   C: x7
+
+There were issues with some computations   A: x3   B: x8   C: x8
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x3   B: x8   C: x8
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+There were issues with some computations   A: x7
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x7
+
+There were issues with some computations   A: x8   B: x1
+
+There were issues with some computations   A: x9   B: x3
+
+There were issues with some computations   A: x9   B: x4
+
+There were issues with some computations   A: x9   B: x6
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x9   B: x6
+
+There were issues with some computations   A: x9   B: x8   C: x1
+
+There were issues with some computations   A: x9   B: x8   C: x2
+
+There were issues with some computations   A: x9   B: x8   C: x4
+
+There were issues with some computations   A: x9   B: x8   C: x7
+
+There were issues with some computations   A: x9   B: x8   C: x8
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7fbccb2d355f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7fbccb44310c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7fbccb4352b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7fbccb6b6bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7fbccb7b850c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7fbccb2d07d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7fbcd134669e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7fbcd138b40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7fbcd139
+#> There were issues with some computations   A: x9   B: x8   C: x8
+
+There were issues with some computations   A: x9   B: x8   C: x9   …
+
+There were issues with some computations   A: x9   B: x8   C: x10  …
+
+There were issues with some computations   A: x9   B: x8   C: x10  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x6
+
+There were issues with some computations   A: x6   B: x1
+
+There were issues with some computations   A: x6   B: x3
+
+There were issues with some computations   A: x6   B: x6
+
+There were issues with some computations   A: x6   B: x7
+
+There were issues with some computations   A: x6   B: x9
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x6   B: x9
+
+There were issues with some computations   A: x6   B: x11   C: x1
+
+There were issues with some computations   A: x6   B: x11   C: x2
+
+There were issues with some computations   A: x6   B: x11   C: x4
+
+There were issues with some computations   A: x6   B: x11   C: x7
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x6   B: x11   C: x7
+
+There were issues with some computations   A: x6   B: x11   C: x7  …
+
+There were issues with some computations   A: x6   B: x11   C: x7  …
+
+There were issues with some computations   A: x6   B: x11   C: x7  …
+
+There were issues with some computations   A: x6   B: x11   C: x7  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x5   B: x1
+
+There were issues with some computations   A: x5   B: x2
+
+There were issues with some computations   A: x5   B: x7
+
+There were issues with some computations   A: x5   B: x8
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x5   B: x8
+
+There were issues with some computations   A: x5   B: x9   C: x1
+
+There were issues with some computations   A: x5   B: x10   C: x4
+
+There were issues with some computations   A: x5   B: x10   C: x6
+
+There were issues with some computations   A: x5   B: x10   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x5   B: x10   C: x9
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x6
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x3   B: x6
+
+There were issues with some computations   A: x3   B: x8   C: x1
+
+There were issues with some computations   A: x3   B: x8   C: x2
+
+There were issues with some computations   A: x3   B: x8   C: x4
+
+There were issues with some computations   A: x3   B: x8   C: x7
+
+There were issues with some computations   A: x3   B: x8   C: x8
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f524595655f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f5245ac610c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f5245ab82b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f5245d39bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f5245e3b50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f52459537d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f524b9c969e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f524ba0e40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f524ba2
+#> There were issues with some computations   A: x3   B: x8   C: x8
+
+There were issues with some computations   A: x3   B: x8   C: x9   …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+
+There were issues with some computations   A: x3   B: x8   C: x10  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+There were issues with some computations   A: x7
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x7
+
+There were issues with some computations   A: x8   B: x1
+
+There were issues with some computations   A: x9   B: x3
+
+There were issues with some computations   A: x9   B: x4
+
+There were issues with some computations   A: x9   B: x6
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x9   B: x6
+
+There were issues with some computations   A: x9   B: x8   C: x1
+
+There were issues with some computations   A: x9   B: x8   C: x2
+
+There were issues with some computations   A: x9   B: x8   C: x4
+
+There were issues with some computations   A: x9   B: x8   C: x7
+
+There were issues with some computations   A: x9   B: x8   C: x8
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x9   B: x8   C: x8
+
+There were issues with some computations   A: x9   B: x8   C: x9   …
+
+There were issues with some computations   A: x9   B: x8   C: x10  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x5   B: x1
+
+There were issues with some computations   A: x5   B: x2
+
+There were issues with some computations   A: x5   B: x7
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x5   B: x7
+
+There were issues with some computations   A: x5   B: x7   C: x1
+
+There were issues with some computations   A: x5   B: x7   C: x3
+
+There were issues with some computations   A: x5   B: x7   C: x7
+
+There were issues with some computations   A: x5   B: x7   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f689a79255f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f689a90210c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f689a8f42b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f689ab75bec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f689ac7750c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f689a78f7d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f68a080569e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f68a084a40c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f68a085
+#> There were issues with some computations   A: x5   B: x7   C: x9
+
+There were issues with some computations   A: x5   B: x7   C: x12  …
+
+There were issues with some computations   A: x5   B: x7   C: x12  …
+
+There were issues with some computations   A: x5   B: x7   C: x12  …
+
+There were issues with some computations   A: x5   B: x7   C: x12  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6
+
+There were issues with some computations   A: x6   B: x1
+
+There were issues with some computations   A: x6   B: x3
+
+There were issues with some computations   A: x6   B: x6
+
+There were issues with some computations   A: x6   B: x7
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6   B: x7
+
+There were issues with some computations   A: x6   B: x8   C: x1
+
+There were issues with some computations   A: x6   B: x9   C: x3
+
+There were issues with some computations   A: x6   B: x9   C: x4
+
+There were issues with some computations   A: x6   B: x9   C: x6
+
+There were issues with some computations   A: x6   B: x9   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6   B: x9   C: x9
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#>
+There were issues with some computations   A: x1
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1
+
+There were issues with some computations   A: x3   B: x3
+
+There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x6
+
+There were issues with some computations   A: x3   B: x9
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x3   B: x9
+
+There were issues with some computations   A: x3   B: x9   C: x1
+
+There were issues with some computations   A: x3   B: x9   C: x3
+
+There were issues with some computations   A: x3   B: x9   C: x6
+
+There were issues with some computations   A: x3   B: x9   C: x7
+
+There were issues with some computations   A: x3   B: x9   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x3   B: x9   C: x9
+
+There were issues with some computations   A: x3   B: x9   C: x11  …
+
+There were issues with some computations   A: x3   B: x9   C: x11  …
+
+There were issues with some computations   A: x3   B: x9   C: x11  …
+
+There were issues with some computations   A: x3   B: x9   C: x11  …
+
+There were issues with some computations   A: x3   B: x9   C: x11  …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+There were issues with some computations   A: x7
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x7
+
+There were issues with some computations   A: x8   B: x1
+
+There were issues with some computations   A: x9   B: x3
+
+There were issues with some computations   A: x9   B: x4
+
+There were issues with some computations   A: x9   B: x6
+
+There were issues with some computations   A: x9   B: x9
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x9   B: x9
+
+There were issues with some computations   A: x9   B: x9   C: x1
+
+There were issues with some computations   A: x9   B: x9   C: x3
+
+There were issues with some computations   A: x9   B: x9   C: x6
+
+There were issues with some computations   A: x9   B: x9   C: x7
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x9   B: x9   C: x7
+
+There were issues with some computations   A: x9   B: x9   C: x9   …
+
+There were issues with some computations   A: x9   B: x9   C: x9   …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+There were issues with some computations   A: x6
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6
+
+There were issues with some computations   A: x6   B: x1
+
+There were issues with some computations   A: x6   B: x3
+
+There were issues with some computations   A: x6   B: x6
+
+There were issues with some computations   A: x6   B: x7
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6   B: x7
+
+There were issues with some computations   A: x6   B: x8   C: x1
+
+There were issues with some computations   A: x6   B: x9   C: x3
+
+There were issues with some computations   A: x6   B: x9   C: x4
+
+There were issues with some computations   A: x6   B: x9   C: x6
+
+There were issues with some computations   A: x6   B: x9   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x6   B: x9   C: x9
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+
+There were issues with some computations   A: x6   B: x9   C: x9   …
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#>
+There were issues with some computations   A: x1
+
+There were issues with some computations   A: x3
+
+
+→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:50] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x5   B: x1
+
+There were issues with some computations   A: x5   B: x2
+
+There were issues with some computations   A: x5   B: x4
+
+There were issues with some computations   A: x5   B: x7
+
+There were issues with some computations   A: x5   B: x8
+
+
+→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:51] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x5   B: x8
+
+There were issues with some computations   A: x5   B: x9   C: x1
+
+There were issues with some computations   A: x5   B: x10   C: x4
+
+There were issues with some computations   A: x5   B: x10   C: x9
+
+
+→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:52] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (16 vs. 15) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f6b6fa7a55f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f6b6fbea10c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f6b6fbdc2b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f6b6fe5dbec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f6b6ff5f50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f6b6fa777d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f6b75aed69e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f6b75b3240c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f6b75b4
+#> There were issues with some computations   A: x5   B: x10   C: x9
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
+
+There were issues with some computations   A: x5   B: x10   C: x9  …
 future::plan(future::sequential) # To return to non-parallel computation
 ```
 
@@ -1300,21 +4073,21 @@ whether we run the cross-validation in parallel or sequentially.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  5.97
-#> sep_lm               745.21  0.64
-#> sep_pcr              784.91  0.84
-#> sep_splines          165.13  0.86
-#> sep_recipe_example   687.45  1.25
-#> sep_tree_stump       218.05  0.78
-#> sep_tree_default     177.68  0.91
-#> sep_tree_cv          222.71 17.30
-#> sep_tree_cv_2        219.45 30.21
-#> sep_rf               218.13  1.32
-#> sep_rf_cv            217.21 34.29
-#> sep_xgboost          197.72  1.91
-#> sep_xgboost_cv       168.45 42.96
-#> sep_xgboost_cv_par   168.45 15.29
-#> sep_xgboost_cv_2_par 155.02 19.07
+#> MC_empirical         188.54  8.78
+#> sep_lm               715.79  0.74
+#> sep_pcr              761.31  0.97
+#> sep_splines          179.15  0.90
+#> sep_recipe_example   680.72  1.41
+#> sep_tree_stump       196.95  0.77
+#> sep_tree_default     190.77  0.70
+#> sep_tree_cv          232.46 17.89
+#> sep_tree_cv_2        241.85 30.12
+#> sep_rf               218.68  1.21
+#> sep_rf_cv            222.80 32.83
+#> sep_xgboost          256.64  1.86
+#> sep_xgboost_cv       228.70 45.12
+#> sep_xgboost_cv_par   228.70 14.93
+#> sep_xgboost_cv_2_par 222.04 19.26
 ```
 
 ## The surrogate regression method class
@@ -1356,9 +4129,7 @@ explanation_list$sur_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:14 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:43:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -1367,7 +4138,7 @@ explanation_list$sur_lm <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -1380,7 +4151,7 @@ explanation_list$sur_lm <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec36dde5e1.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5cc41cea.rds'
 #>
 #>
 #>
@@ -1401,21 +4172,19 @@ explanation_list$sur_xgboost <- explain(
   regression.model = parsnip::boost_tree(engine = "xgboost", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:15 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:43:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec6b6029d4.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db30a0036c.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1439,25 +4208,143 @@ explanation_list$sur_xgboost_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:16 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:43:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec3d89647a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7acdce77.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:55] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x3 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:56] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x5   B: x1 [K
+
+There were issues with some computations   A: x5   B: x2 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:57] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x2
+
+There were issues with some computations   A: x5   B: x3   C: x1 [K
+
+There were issues with some computations   A: x5   B: x4   C: x3 [K
+
+There were issues with some computations   A: x5   B: x4   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:58] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x4   C: x4
+
+There were issues with some computations   A: x5   B: x4   C: x5   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:43:59] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x4   C: x6   …
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:44:00] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x4   C: x6   …
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x4   C: x6   … [K
 
 # Using random forest with default parameters as the surrogate model
 explanation_list$sur_rf <- explain(
@@ -1470,21 +4357,19 @@ explanation_list$sur_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:22 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:01 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec692615d1.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5f91fdba.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1509,21 +4394,19 @@ explanation_list$sur_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:23 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:02 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec4d5a0ff4.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db1c4f0b47.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1566,9 +4449,7 @@ explanation_list$sur_rf_cv_par <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:04:48 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:26 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -1577,7 +4458,7 @@ explanation_list$sur_rf_cv_par <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -1590,7 +4471,7 @@ explanation_list$sur_rf_cv_par <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec48b26f59.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db56c85521.rds'
 #>
 #>
 #>
@@ -1622,31 +4503,32 @@ sequentially or in parallel.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  5.97
-#> sep_lm               745.21  0.64
-#> sep_pcr              784.91  0.84
-#> sep_splines          165.13  0.86
-#> sep_recipe_example   687.45  1.25
-#> sep_tree_stump       218.05  0.78
-#> sep_tree_default     177.68  0.91
-#> sep_tree_cv          222.71 17.30
-#> sep_tree_cv_2        219.45 30.21
-#> sep_rf               218.13  1.32
-#> sep_rf_cv            217.21 34.29
-#> sep_xgboost          197.72  1.91
-#> sep_xgboost_cv       168.45 42.96
-#> sep_xgboost_cv_par   168.45 15.29
-#> sep_xgboost_cv_2_par 155.02 19.07
-#> sur_lm               649.61  0.71
-#> sur_xgboost          169.92  0.98
-#> sur_xgboost_cv       169.87  6.36
-#> sur_rf               192.12  0.86
-#> sur_rf_cv            177.48 23.74
-#> sur_rf_cv_par        177.48 13.62
+#> MC_empirical         188.54  8.78
+#> sep_lm               715.79  0.74
+#> sep_pcr              761.31  0.97
+#> sep_splines          179.15  0.90
+#> sep_recipe_example   680.72  1.41
+#> sep_tree_stump       196.95  0.77
+#> sep_tree_default     190.77  0.70
+#> sep_tree_cv          232.46 17.89
+#> sep_tree_cv_2        241.85 30.12
+#> sep_rf               218.68  1.21
+#> sep_rf_cv            222.80 32.83
+#> sep_xgboost          256.64  1.86
+#> sep_xgboost_cv       228.70 45.12
+#> sep_xgboost_cv_par   228.70 14.93
+#> sep_xgboost_cv_2_par 222.04 19.26
+#> sur_lm               615.22  0.66
+#> sur_xgboost          282.86  0.76
+#> sur_xgboost_cv       237.30  6.22
+#> sur_rf               176.26  0.81
+#> sur_rf_cv            177.16 23.44
+#> sur_rf_cv_par        177.16 11.96
 
 # Compare the MSEv criterion of the different explanation methods.
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/surrogate-plot-1.webp)
@@ -1796,9 +4678,7 @@ explanation_list$sep_ppr <- explain(
   regression.model = ppr_reg(num_terms = 2)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:02 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:40 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -1807,7 +4687,7 @@ explanation_list$sep_ppr <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -1820,7 +4700,7 @@ explanation_list$sep_ppr <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec35489095.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db71a648f6.rds'
 #>
 #>
 #>
@@ -1843,21 +4723,19 @@ explanation_list$sep_ppr_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:03 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:40 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec29fa860d.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db6b5b96aa.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1874,21 +4752,19 @@ explanation_list$sur_ppr <- explain(
   regression.model = ppr_reg(num_terms = 3)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:17 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eecd76c641.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db60b35e67.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1907,21 +4783,19 @@ explanation_list$sur_ppr_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:18 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec77f603c5.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db18428580.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1936,34 +4810,35 @@ evaluation criterion, but also increase the running time.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
-#> MC_empirical         179.43  5.97
-#> sep_lm               745.21  0.64
-#> sep_pcr              784.91  0.84
-#> sep_splines          165.13  0.86
-#> sep_recipe_example   687.45  1.25
-#> sep_tree_stump       218.05  0.78
-#> sep_tree_default     177.68  0.91
-#> sep_tree_cv          222.71 17.30
-#> sep_tree_cv_2        219.45 30.21
-#> sep_rf               218.13  1.32
-#> sep_rf_cv            217.21 34.29
-#> sep_xgboost          197.72  1.91
-#> sep_xgboost_cv       168.45 42.96
-#> sep_xgboost_cv_par   168.45 15.29
-#> sep_xgboost_cv_2_par 155.02 19.07
-#> sur_lm               649.61  0.71
-#> sur_xgboost          169.92  0.98
-#> sur_xgboost_cv       169.87  6.36
-#> sur_rf               192.12  0.86
-#> sur_rf_cv            177.48 23.74
-#> sur_rf_cv_par        177.48 13.62
-#> sep_ppr              327.23  1.00
-#> sep_ppr_cv           246.28 13.99
-#> sur_ppr              395.42  0.71
-#> sur_ppr_cv           415.62  2.06
+#> MC_empirical         188.54  8.78
+#> sep_lm               715.79  0.74
+#> sep_pcr              761.31  0.97
+#> sep_splines          179.15  0.90
+#> sep_recipe_example   680.72  1.41
+#> sep_tree_stump       196.95  0.77
+#> sep_tree_default     190.77  0.70
+#> sep_tree_cv          232.46 17.89
+#> sep_tree_cv_2        241.85 30.12
+#> sep_rf               218.68  1.21
+#> sep_rf_cv            222.80 32.83
+#> sep_xgboost          256.64  1.86
+#> sep_xgboost_cv       228.70 45.12
+#> sep_xgboost_cv_par   228.70 14.93
+#> sep_xgboost_cv_2_par 222.04 19.26
+#> sur_lm               615.22  0.66
+#> sur_xgboost          282.86  0.76
+#> sur_xgboost_cv       237.30  6.22
+#> sur_rf               176.26  0.81
+#> sur_rf_cv            177.16 23.44
+#> sur_rf_cv_par        177.16 11.96
+#> sep_ppr              316.08  0.82
+#> sep_ppr_cv           274.26 12.47
+#> sur_ppr              307.53  0.60
+#> sur_ppr_cv           329.20  1.77
 
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/ppr-plot-1.webp)
@@ -1992,9 +4867,7 @@ explanation_list_MC$MC_independence <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:21 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:56 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -2003,7 +4876,7 @@ explanation_list_MC$MC_independence <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -2018,7 +4891,7 @@ explanation_list_MC$MC_independence <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec7156aca6.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db3c63fe38.rds'
 #>
 #>
 #>
@@ -2041,14 +4914,12 @@ explanation_list_MC$MC_gaussian <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:22 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
 #> • Procedure: Non-iterative
@@ -2056,7 +4927,7 @@ explanation_list_MC$MC_gaussian <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec38ec6c8f.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db3289b8a0.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2072,14 +4943,12 @@ explanation_list_MC$MC_copula <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:23 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:58 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: copula
 #> • Procedure: Non-iterative
@@ -2087,7 +4956,7 @@ explanation_list_MC$MC_copula <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec569642c4.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db9d18596.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2103,14 +4972,12 @@ explanation_list_MC$MC_ctree <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:24 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:44:58 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
 #> • Procedure: Non-iterative
@@ -2118,7 +4985,7 @@ explanation_list_MC$MC_ctree <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec313801b5.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781dbe8f5000.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2135,14 +5002,12 @@ explanation_list_MC$MC_vaeac <- explain(
   vaeac.epochs = 10
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:05:26 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:45:00 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: vaeac
 #> • Procedure: Non-iterative
@@ -2150,7 +5015,7 @@ explanation_list_MC$MC_vaeac <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec62cd5688.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db13011f85.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2169,41 +5034,42 @@ the `MC_empirical` method to make the comparison easier.
 ``` r
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
-#>                        MSEv  Time
-#> MC_independence      206.92  1.14
-#> MC_empirical         179.43  5.97
-#> MC_gaussian          235.15  0.80
-#> MC_copula            237.35  1.02
-#> MC_ctree             190.82  1.72
-#> MC_vaeac             145.06 97.53
-#> sep_lm               745.21  0.64
-#> sep_pcr              784.91  0.84
-#> sep_splines          165.13  0.86
-#> sep_recipe_example   687.45  1.25
-#> sep_tree_stump       218.05  0.78
-#> sep_tree_default     177.68  0.91
-#> sep_tree_cv          222.71 17.30
-#> sep_tree_cv_2        219.45 30.21
-#> sep_rf               218.13  1.32
-#> sep_rf_cv            217.21 34.29
-#> sep_xgboost          197.72  1.91
-#> sep_xgboost_cv       168.45 42.96
-#> sep_xgboost_cv_par   168.45 15.29
-#> sep_xgboost_cv_2_par 155.02 19.07
-#> sur_lm               649.61  0.71
-#> sur_xgboost          169.92  0.98
-#> sur_xgboost_cv       169.87  6.36
-#> sur_rf               192.12  0.86
-#> sur_rf_cv            177.48 23.74
-#> sur_rf_cv_par        177.48 13.62
-#> sep_ppr              327.23  1.00
-#> sep_ppr_cv           246.28 13.99
-#> sur_ppr              395.42  0.71
-#> sur_ppr_cv           415.62  2.06
+#>                        MSEv   Time
+#> MC_independence      233.48   0.96
+#> MC_empirical         188.54   8.78
+#> MC_gaussian          214.11   0.63
+#> MC_copula            214.78   0.68
+#> MC_ctree             200.08   1.70
+#> MC_vaeac             192.98 106.50
+#> sep_lm               715.79   0.74
+#> sep_pcr              761.31   0.97
+#> sep_splines          179.15   0.90
+#> sep_recipe_example   680.72   1.41
+#> sep_tree_stump       196.95   0.77
+#> sep_tree_default     190.77   0.70
+#> sep_tree_cv          232.46  17.89
+#> sep_tree_cv_2        241.85  30.12
+#> sep_rf               218.68   1.21
+#> sep_rf_cv            222.80  32.83
+#> sep_xgboost          256.64   1.86
+#> sep_xgboost_cv       228.70  45.12
+#> sep_xgboost_cv_par   228.70  14.93
+#> sep_xgboost_cv_2_par 222.04  19.26
+#> sur_lm               615.22   0.66
+#> sur_xgboost          282.86   0.76
+#> sur_xgboost_cv       237.30   6.22
+#> sur_rf               176.26   0.81
+#> sur_rf_cv            177.16  23.44
+#> sur_rf_cv_par        177.16  11.96
+#> sep_ppr              316.08   0.82
+#> sep_ppr_cv           274.26  12.47
+#> sur_ppr              307.53   0.60
+#> sur_ppr_cv           329.20   1.77
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the MC_empirical method
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/MSEv-sum-1.webp)
@@ -2221,6 +5087,7 @@ methods according to the $\operatorname{MSE}_{v}$ criterion.
 ``` r
 order <- get_k_best_methods(explanation_list, k = length(explanation_list))
 plot_MSEv_scores(explanation_list[order], method_line = "MC_empirical")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/MSEv-sum-2-1.webp)
@@ -2320,7 +5187,7 @@ explanation_list_mixed$MC_independence <- explain(
   approach = "independence"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:07:06 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:46:50 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -2344,7 +5211,7 @@ explanation_list_mixed$MC_independence <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec149f102f.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db2daf5408.rds'
 #>
 #>
 #>
@@ -2363,7 +5230,7 @@ explanation_list_mixed$MC_ctree <- explain(
   approach = "ctree"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:07:07 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:46:51 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2376,7 +5243,7 @@ explanation_list_mixed$MC_ctree <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec147efcd4.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7364a33f.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2391,7 +5258,7 @@ explanation_list_mixed$MC_vaeac <- explain(
   approach = "vaeac"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:07:08 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:46:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2404,7 +5271,7 @@ explanation_list_mixed$MC_vaeac <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec5cf8ebad.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db60af4fce.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2429,7 +5296,7 @@ explanation_list_mixed$sep_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:09:51 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:49:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -2451,7 +5318,7 @@ explanation_list_mixed$sep_lm <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec49f16748.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db2fcde4ba.rds'
 #>
 #>
 #>
@@ -2475,7 +5342,7 @@ explanation_list_mixed$sep_splines <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:09:52 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:49:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2487,7 +5354,7 @@ explanation_list_mixed$sep_splines <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec60686498.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db13afe8b.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2504,7 +5371,7 @@ explanation_list_mixed$sep_tree <- explain(
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:09:53 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:49:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2516,7 +5383,7 @@ explanation_list_mixed$sep_tree <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec6db793db.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7ad1fffd.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2541,7 +5408,7 @@ explanation_list_mixed$sep_tree_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:09:54 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:49:57 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2553,7 +5420,7 @@ explanation_list_mixed$sep_tree_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec57682d8a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db10814321.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2570,7 +5437,7 @@ explanation_list_mixed$sep_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:10:26 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:50:28 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2582,7 +5449,7 @@ explanation_list_mixed$sep_rf <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec585e685e.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db197d840b.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2606,7 +5473,7 @@ explanation_list_mixed$sep_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:10:27 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:50:29 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2618,7 +5485,7 @@ explanation_list_mixed$sep_rf_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec460bd7f0.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4b88257c.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2638,7 +5505,7 @@ explanation_list_mixed$sep_xgboost <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:11:09 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:51:13 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2650,7 +5517,7 @@ explanation_list_mixed$sep_xgboost <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1eed5aff.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5188aa30.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2677,7 +5544,7 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:11:11 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:51:14 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2689,11 +5556,1661 @@ explanation_list_mixed$sep_xgboost_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1c65ea78.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5c147b18.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:14] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:15] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:16] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+There were issues with some computations   A: x3   B: x6   C: x6 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:17] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:18] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x8   …
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:19] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x8   …
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x8   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:19] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:20] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:22] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:26] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:27] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:28] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:29] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:29] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:30] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:31] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:32] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:33] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:34] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:34] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:35] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:36] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:37] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:38] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:39] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:40] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:41] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:42] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:43] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:50] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:51] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:52] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:53] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:54] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:54] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:55] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:56] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:57] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:58] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:59] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:51:59] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:00] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:01] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:02] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:03] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:04] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:05] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x3 [K
+
+There were issues with some computations   A: x6 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:06] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6
+
+There were issues with some computations   A: x6   B: x1 [K
+
+There were issues with some computations   A: x6   B: x3 [K
+
+There were issues with some computations   A: x6   B: x6 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:07] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6
+
+There were issues with some computations   A: x6   B: x6   C: x1 [K
+
+There were issues with some computations   A: x6   B: x6   C: x3 [K
+
+There were issues with some computations   A: x6   B: x6   C: x6 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:08] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6   C: x6
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:09] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6   C: x6   …
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:10] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x3 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:11] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3
+
+There were issues with some computations   A: x5   B: x1 [K
+
+There were issues with some computations   A: x5   B: x2 [K
+
+There were issues with some computations   A: x5   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:12] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x4
+
+There were issues with some computations   A: x5   B: x6   C: x1 [K
+
+There were issues with some computations   A: x5   B: x6   C: x2 [K
+
+There were issues with some computations   A: x5   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:13] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x6   C: x4
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:14] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x6   C: x6   …
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:15] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x5   B: x6   C: x6   …
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x5   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:15] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:16] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:17] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:18] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:19] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:20] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:21] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+There were issues with some computations   A: x3 [K
+
+There were issues with some computations   A: x6 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:22] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6
+
+There were issues with some computations   A: x6   B: x1 [K
+
+There were issues with some computations   A: x6   B: x3 [K
+
+There were issues with some computations   A: x6   B: x6 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:23] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6
+
+There were issues with some computations   A: x6   B: x6   C: x1 [K
+
+There were issues with some computations   A: x6   B: x6   C: x3 [K
+
+There were issues with some computations   A: x6   B: x6   C: x6 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:24] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6   C: x6
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:25] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x6   B: x6   C: x6   …
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x6   B: x6   C: x6   … [K
 ```
 
 ### Mixed data: surrogate regression methods
@@ -2714,7 +7231,7 @@ explanation_list_mixed$sur_lm <- explain(
   regression.model = parsnip::linear_reg()
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:20 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:27 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -2736,7 +7253,7 @@ explanation_list_mixed$sur_lm <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec55525707.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781dbe9e33b8.rds'
 #>
 #>
 #>
@@ -2761,7 +7278,7 @@ explanation_list_mixed$sur_splines <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:21 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:27 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2773,7 +7290,7 @@ explanation_list_mixed$sur_splines <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec6bed489e.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db46fccfd1.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2790,7 +7307,7 @@ explanation_list_mixed$sur_tree <- explain(
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:21 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:28 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2802,7 +7319,7 @@ explanation_list_mixed$sur_tree <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec417c095a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db1c7bf869.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2827,7 +7344,7 @@ explanation_list_mixed$sur_tree_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:22 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:29 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2839,7 +7356,7 @@ explanation_list_mixed$sur_tree_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec381fad90.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db219f533d.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2856,7 +7373,7 @@ explanation_list_mixed$sur_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:25 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2868,7 +7385,7 @@ explanation_list_mixed$sur_rf <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec79617143.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db2d927251.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2889,7 +7406,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:25 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:32 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2901,7 +7418,7 @@ explanation_list_mixed$sur_rf_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec5e1434e3.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5bab4bd6.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2921,7 +7438,7 @@ explanation_list_mixed$sur_xgboost <- explain(
   }
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:37 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:43 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2933,7 +7450,7 @@ explanation_list_mixed$sur_xgboost <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec58766892.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db2f6e413a.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -2960,7 +7477,7 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:38 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:44 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
@@ -2972,11 +7489,131 @@ explanation_list_mixed$sur_xgboost_cv <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec6ffbafba.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db73ba128c.rds'
 #>
 #> ── Main computation started ──
 #>
 #> ℹ Using 16 of 16 coalitions.
+#> → A | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:44] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#>
+There were issues with some computations   A: x1 [K
+
+ [K→ B | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:45] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x1
+
+There were issues with some computations   A: x2   B: x1 [K
+
+There were issues with some computations   A: x3   B: x3 [K
+
+There were issues with some computations   A: x3   B: x4 [K
+
+ [K→ C | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:46] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x4
+
+There were issues with some computations   A: x3   B: x5   C: x1 [K
+
+There were issues with some computations   A: x3   B: x6   C: x3 [K
+
+There were issues with some computations   A: x3   B: x6   C: x4 [K
+
+ [K→ D | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:47] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x4
+
+There were issues with some computations   A: x3   B: x6   C: x5   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ E | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:48] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+ [K→ F | error:   ℹ In index: 1.
+#>                Caused by error in `predict.xgb.Booster()`:
+#>                ! [11:52:49] src/gbm/gbtree.h:124: Check failed: end <= model.BoostedRounds() (26 vs. 25) : Out of range for tree layers.
+#>                Stack trace:
+#>                  [bt] (0) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7d55f) [0x7f23f313755f]
+#>                  [bt] (1) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1ed10c) [0x7f23f32a710c]
+#>                  [bt] (2) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x1df2b2) [0x7f23f32992b2]
+#>                  [bt] (3) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x460bec) [0x7f23f351abec]
+#>                  [bt] (4) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(XGBoosterPredictFromDMatrix+0x3bc) [0x7f23f361c50c]
+#>                  [bt] (5) /home/jullum/R/x86_64-pc-linux-gnu-library/4.3/xgboost/libs/xgboost.so(+0x7a7d1) [0x7f23f31347d1]
+#>                  [bt] (6) /usr/lib/R/lib/libR.so(+0x10269e) [0x7f23fdaa469e]
+#>                  [bt] (7) /usr/lib/R/lib/libR.so(+0x14740c) [0x7f23fdae940c]
+#>                  [bt] (8) /usr/lib/R/lib/libR.so(Rf_eval+0x180) [0x7f23fdaf
+#> There were issues with some computations   A: x3   B: x6   C: x6   …
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
+
+There were issues with some computations   A: x3   B: x6   C: x6   … [K
 ```
 
 ### Mixed data: summary
@@ -2992,29 +7629,30 @@ regression methods.
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 #>                   MSEv   Time
-#> MC_independence 641.82   0.49
-#> MC_ctree        555.58   1.41
-#> MC_vaeac        623.53 162.36
-#> sep_lm          550.06   0.82
-#> sep_splines     541.36   0.99
-#> sep_tree        753.84   0.89
-#> sep_tree_cv     756.27  32.72
-#> sep_rf          523.61   1.08
-#> sep_rf_cv       597.56  41.92
-#> sep_xgboost     792.17   2.08
-#> sep_xgboost_cv  595.64  68.35
-#> sur_lm          610.61   0.41
-#> sur_splines     596.86   0.56
-#> sur_tree        677.04   0.50
-#> sur_tree_cv     789.37   2.85
-#> sur_rf          406.17   0.69
-#> sur_rf_cv       528.15  11.96
-#> sur_xgboost     742.54   0.80
-#> sur_xgboost_cv  541.19   5.65
+#> MC_independence 641.82   0.61
+#> MC_ctree        555.58   1.76
+#> MC_vaeac        623.53 180.06
+#> sep_lm          550.06   0.93
+#> sep_splines     541.36   1.10
+#> sep_tree        753.84   1.64
+#> sep_tree_cv     756.27  31.45
+#> sep_rf          523.61   1.04
+#> sep_rf_cv       597.56  43.28
+#> sep_xgboost     760.08   1.71
+#> sep_xgboost_cv  606.45  72.12
+#> sur_lm          610.61   0.48
+#> sur_splines     596.86   1.08
+#> sur_tree        677.04   0.45
+#> sur_tree_cv     789.37   2.89
+#> sur_rf          406.17   0.71
+#> sur_rf_cv       528.15  10.90
+#> sur_xgboost     809.53   0.88
+#> sur_xgboost_cv  607.06   6.03
 
 # Compare the MSEv criterion of the different explanation methods
 # Include vertical line corresponding to the MSEv of the empirical method.
 plot_MSEv_scores(explanation_list_mixed, method_line = "MC_ctree")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/mixed-plot-1.webp)
@@ -3030,6 +7668,7 @@ methods according to the $\operatorname{MSE}_{v}$ criterion.
 ``` r
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
+#> ℹ Showing 10 of 20 observations.
 ```
 
 ![](figure_regression/mixed-plot-2-1.webp)
@@ -3080,9 +7719,7 @@ explanation_list_str$sep_lm <- explain(
   regression.model = "parsnip::linear_reg()"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:45 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:52 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -3091,7 +7728,7 @@ explanation_list_str$sep_lm <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Regression
 #>
@@ -3104,7 +7741,7 @@ explanation_list_str$sep_lm <- explain(
 #> • Number of observations to explain: 20
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec60086815.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db253fe71f.rds'
 #>
 #>
 #>
@@ -3127,21 +7764,19 @@ explanation_list_str$sep_pcr <- explain(
   }"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:46 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:53 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec71e1287a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db29afbe8f.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -3160,21 +7795,19 @@ explanation_list_str$sep_splines <- explain(
   }"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:47 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:54 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1230d702.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db7c10c9d4.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -3194,21 +7827,19 @@ explanation_list_str$sep_tree_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:12:48 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:52:55 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec29f9cf5d.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db550dcbd9.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -3232,21 +7863,19 @@ explanation_list_str$sep_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:13:05 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:53:11 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec52498d12.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db2aeabd1a.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -3271,21 +7900,19 @@ explanation_list_str$sur_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:13:40 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:53:44 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_surrogate
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 20
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec7fe86add.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db76e2c9d1.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -3294,20 +7921,20 @@ explanation_list_str$sur_rf_cv <- explain(
 # See that the evaluation scores match the non-string versions.
 print_MSEv_scores_and_time(explanation_list_str)
 #>               MSEv  Time
-#> sep_lm      745.21  0.81
-#> sep_pcr     784.91  0.93
-#> sep_splines 165.13  0.82
-#> sep_tree_cv 222.71 16.66
-#> sep_rf_cv   217.21 35.29
-#> sur_rf_cv   177.48 22.86
+#> sep_lm      715.79  0.72
+#> sep_pcr     761.31  0.88
+#> sep_splines 179.15  0.90
+#> sep_tree_cv 232.46 16.42
+#> sep_rf_cv   222.80 33.25
+#> sur_rf_cv   177.16 22.53
 print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
 #>               MSEv  Time
-#> sep_lm      745.21  0.64
-#> sep_pcr     784.91  0.84
-#> sep_splines 165.13  0.86
-#> sep_tree_cv 222.71 17.30
-#> sep_rf_cv   217.21 34.29
-#> sur_rf_cv   177.48 23.74
+#> sep_lm      715.79  0.74
+#> sep_pcr     761.31  0.97
+#> sep_splines 179.15  0.90
+#> sep_tree_cv 232.46 17.89
+#> sep_rf_cv   222.80 32.83
+#> sur_rf_cv   177.16 23.44
 ```
 
 ## Summary

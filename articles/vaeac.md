@@ -107,7 +107,7 @@ x_explain <- data[ind_x_explain, ..x_var]
 
 # Fitting a basic xgboost model to the training data
 model <- xgboost(
-  x = as.matrix(x_train),
+  x = x_train,
   y = y_train,
   nround = 100,
   verbosity = 0
@@ -139,9 +139,7 @@ explanation <- explain(
   vaeac.n_vaeacs_initialize = vaeac.n_vaeacs_initialize
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:08 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:33:59 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -150,7 +148,7 @@ explanation <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -165,7 +163,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec663a482a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db215f6b86.rds'
 #>
 #>
 #>
@@ -182,14 +180,14 @@ We can look at the Shapley values.
 # Printing and plotting the Shapley values.
 # See ?shapr::explain for interpretation of the values.
 print(explanation$shapley_values_est)
-#>    explain_id   none  Solar.R      Wind     Temp    Month
-#>         <int>  <num>    <num>     <num>    <num>    <num>
-#> 1:          1 43.086  4.35827  -0.49487 -16.7173  0.55352
-#> 2:          2 43.086 -2.06968  -2.76668 -17.3760 -1.84287
-#> 3:          3 43.086  1.24259  -5.05865 -18.7919 -0.68187
-#> 4:          4 43.086  5.20834 -10.03741  -8.4807 -1.28136
-#> 5:          5 43.086  0.22127  -3.05847 -17.9177 -3.62080
-#> 6:          6 43.086  4.25576  -9.58514 -18.7123  2.62017
+#>    explain_id   none Solar.R     Wind    Temp    Month
+#>         <int>  <num>   <num>    <num>   <num>    <num>
+#> 1:          1 43.086 0.21480  -2.6541 -13.408  0.88554
+#> 2:          2 43.086 4.32749 -10.8990 -17.254 -2.49949
+#> 3:          3 43.086 0.27318 -11.1689 -16.801  0.59274
+#> 4:          4 43.086 6.25300 -20.6611  -6.111 -2.30911
+#> 5:          5 43.086 1.03750  -9.5855 -11.375 -1.64989
+#> 6:          6 43.086 1.65562 -15.6976 -16.365  2.72976
 plot(explanation)
 ```
 
@@ -232,9 +230,7 @@ expl_pretrained_vaeac <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:15 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:07 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -243,7 +239,7 @@ expl_pretrained_vaeac <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -258,7 +254,7 @@ expl_pretrained_vaeac <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec27b54837.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db14dcb3e0.rds'
 #>
 #>
 #>
@@ -300,9 +296,7 @@ expl_pretrained_vaeac_path <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:19 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:11 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -311,7 +305,7 @@ expl_pretrained_vaeac_path <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -326,7 +320,7 @@ expl_pretrained_vaeac_path <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec38156fe.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4e2a0915.rds'
 #>
 #>
 #>
@@ -370,37 +364,21 @@ expl_batches_combinations <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:24 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
-#>
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:15 ──────────────
 #>
 #> ── Explanation overview ──
 #>
-#>
-#>
-#> • Model class: <xgb.Booster>
-#>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
-#>
 #> • Approach: vaeac
-#>
 #> • Procedure: Non-iterative
-#>
 #> • Number of Monte Carlo integration samples: 25
-#>
 #> • Number of feature-wise Shapley values: 4
-#>
 #> • Number of observations to explain: 6
-#>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec5e12dd5b.rds'
-#>
-#>
+#> '/tmp/RtmpP6cesG/shapr_obj_781db82be9fc.rds'
 #>
 #> ── Main computation started ──
-#>
-#>
 #>
 #> ℹ Using 10 of 16 coalitions.
 
@@ -474,26 +452,26 @@ expl_batches_combinations_2 <- explain(
   verbose = "vS_details"
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:29 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:20 ──────────────
 #>
 #> ── Extra info about the pretrained vaeac model ──
 #>
-#> Training the `vaeac` model with the provided parameters from scratch
-#> on CPU.
+#> Training the `vaeac` model with the provided parameters from
+#> scratch on CPU.
 #> Using 'specified_masks_mask_generator' with '8' coalitions.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 1.
-#> Best vaeac inititalization was number 1 (of 1) with a training VLB =
-#> -6.49 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 1 (of 1) with a training VLB
+#> = -6.49 after 2 epochs. Continue to train this inititalization.
 #>
 #> Results of the `vaeac` training process:
 #> Best epoch:             3.   VLB = -4.812    IWAE = -3.235   IWAE_running = -3.542
 #> Best running avg epoch: 3.   VLB = -4.812    IWAE = -3.235   IWAE_running = -3.542
 #> Last epoch:             3.   VLB = -4.812    IWAE = -3.235   IWAE_running = -3.542
-#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmptIm6LB' at
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.28.959957_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.28.959957_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.28.959957_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
+#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpP6cesG' at
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.19.728139_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.19.728139_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.19.728139_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
 ```
 
 ### Paired sampling
@@ -529,9 +507,7 @@ expl_paired_sampling_TRUE <- explain(
   vaeac.extra_parameters = list(vaeac.paired_sampling = TRUE)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:35 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:26 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -540,7 +516,7 @@ expl_paired_sampling_TRUE <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -555,7 +531,7 @@ expl_paired_sampling_TRUE <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec50d2dce3.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db1fdc4d68.rds'
 #>
 #>
 #>
@@ -578,14 +554,12 @@ expl_paired_sampling_FALSE <- explain(
   vaeac.extra_parameters = list(vaeac.paired_sampling = FALSE)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:44 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:36 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #> ── Explanation overview ──
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: vaeac
 #> • Procedure: Non-iterative
@@ -593,7 +567,7 @@ expl_paired_sampling_FALSE <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec26793c60.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781dbbac21bb.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -632,8 +606,8 @@ rbind(
   "Regular" = expl_paired_sampling_FALSE$timing$overall_timing_secs
 )
 #>            setup test_prediction main_computation finalize_explanation
-#> Paired  0.090668        0.172150           9.3882            0.0034511
-#> Regular 0.050168        0.063943          10.6223            0.0058734
+#> Paired  0.060202        0.109624           10.022            0.0046105
+#> Regular 0.047513        0.048856           10.865            0.0107546
 ```
 
 ### Progressr
@@ -668,9 +642,7 @@ expl_with_messages <- explain(
   vaeac.n_vaeacs_initialize = 2
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:55:57 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:34:49 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -679,7 +651,7 @@ expl_with_messages <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -694,7 +666,7 @@ expl_with_messages <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec6f224109.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4bdfcaeb.rds'
 #>
 #>
 #>
@@ -710,8 +682,8 @@ expl_with_messages <- explain(
 #>
 #>
 #>
-#> Training the `vaeac` model with the provided parameters from scratch
-#> on CPU.
+#> Training the `vaeac` model with the provided parameters from
+#> scratch on CPU.
 #>
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #>
@@ -721,8 +693,8 @@ expl_with_messages <- explain(
 #>
 #> Initializing vaeac model number 2 of 2.
 #>
-#> Best vaeac inititalization was number 2 (of 2) with a training VLB =
-#> -4.566 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB
+#> = -4.566 after 2 epochs. Continue to train this inititalization.
 #>
 #>
 #> Results of the `vaeac` training process:
@@ -730,10 +702,10 @@ expl_with_messages <- explain(
 #> Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149
 #> Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149
 #>
-#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmptIm6LB' at
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.57.69014_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.57.69014_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.55.57.69014_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
+#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpP6cesG' at
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.49.708534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.49.708534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.34.49.708534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
 ```
 
 For more visual information we can use the `progressr` package. This can
@@ -761,30 +733,30 @@ progressr::with_progress({
   )
 })
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:56:07 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:35:00 ──────────────
 #>
 #> ── Extra info about the pretrained vaeac model ──
 #>
-#> Training the `vaeac` model with the provided parameters from scratch
-#> on CPU.
+#> Training the `vaeac` model with the provided parameters from
+#> scratch on CPU.
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 2.
 #>
  [KInitializing vaeac model number 2 of 2.
-#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of 2…
+#> ■■■■■■■■■■                        29% | Training vaeac (init. 1 of …
 
- [KBest vaeac inititalization was number 2 (of 2) with a training VLB =
-#> -4.566 after 2 epochs. Continue to train this inititalization.
-#> ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of 2…
+ [KBest vaeac inititalization was number 2 (of 2) with a training VLB
+#> = -4.566 after 2 epochs. Continue to train this inititalization.
+#> ■■■■■■■■■■■■■■■■■■                57% | Training vaeac (init. 2 of …
 #> Results of the `vaeac` training process:
 #> Best epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149
 #> Best running avg epoch: 5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149
 #> Last epoch:             5.   VLB = -3.318    IWAE = -3.049   IWAE_running = -3.149
-#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmptIm6LB' at
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.56.07.26802_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.56.07.26802_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.56.07.26802_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
+#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpP6cesG' at
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.35.00.605042_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.35.00.605042_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.35.00.605042_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
 all.equal(expl_with_messages$shapley_values_est, expl_with_progressr$shapley_values_est)
 #> [1] TRUE
 ```
@@ -982,9 +954,7 @@ expl_early_stopping <- explain(
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:57:43 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:36:50 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -993,7 +963,7 @@ expl_early_stopping <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -1008,7 +978,7 @@ expl_early_stopping <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec9ae4fd9.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db4d59a335.rds'
 #>
 #>
 #>
@@ -1024,8 +994,8 @@ expl_early_stopping <- explain(
 #>
 #>
 #>
-#> Training the `vaeac` model with the provided parameters from scratch
-#> on CPU.
+#> Training the `vaeac` model with the provided parameters from
+#> scratch on CPU.
 #>
 #> Using 'mcar_mask_generator' with 'masking_ratio = 0.5'.
 #>
@@ -1035,8 +1005,8 @@ expl_early_stopping <- explain(
 #>
 #> Initializing vaeac model number 2 of 2.
 #>
-#> Best vaeac inititalization was number 2 (of 2) with a training VLB =
-#> -4.566 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB
+#> = -4.566 after 2 epochs. Continue to train this inititalization.
 #>
 #> No IWAE improvment in 2 epochs. Apply early stopping at epoch 14.
 #>
@@ -1046,10 +1016,10 @@ expl_early_stopping <- explain(
 #> Best running avg epoch: 12.  VLB = -2.958    IWAE = -2.930   IWAE_running = -2.991
 #> Last epoch:             14.  VLB = -2.971    IWAE = -2.955   IWAE_running = -2.996
 #>
-#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmptIm6LB' at
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.57.43.793019_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.57.43.793019_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.57.43.793019_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
+#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpP6cesG' at
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.36.50.351992_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.36.50.351992_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.36.50.351992_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
 
 # Look at the training and validation errors. We are quite happy with it.
 plot_vaeac_eval_crit(
@@ -1118,9 +1088,7 @@ expl_early_stopping_train_more <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:58:38 ───────────────
-#> ℹ Feature classes extracted from the model contain `NA`.
-#>   Assuming feature classes from the data are correct.
+#> ── Starting `shapr::explain()` at 2025-12-20 11:37:48 ──────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
 #>   and is therefore set to `2^n_features = 16`.
 #>
@@ -1129,7 +1097,7 @@ expl_early_stopping_train_more <- explain(
 #>
 #>
 #>
-#> • Model class: <xgb.Booster>
+#> • Model class: <xgboost>
 #>
 #> • v(S) estimation class: Monte Carlo integration
 #>
@@ -1144,7 +1112,7 @@ expl_early_stopping_train_more <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec4529ed56.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db5f78c113.rds'
 #>
 #>
 #>
@@ -1200,27 +1168,27 @@ expl_group <- explain(
   vaeac.n_vaeacs_initialize = 2
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:59:08 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:38:19 ──────────────
 #>
 #> ── Extra info about the pretrained vaeac model ──
 #>
-#> Training the `vaeac` model with the provided parameters from scratch
-#> on CPU.
+#> Training the `vaeac` model with the provided parameters from
+#> scratch on CPU.
 #> Using 'specified_masks_mask_generator' with '2' coalitions.
 #> The vaeac model contains 17032 trainable parameters.
 #> Initializing vaeac model number 1 of 2.
 #> Initializing vaeac model number 2 of 2.
-#> Best vaeac inititalization was number 2 (of 2) with a training VLB =
-#> -4.814 after 2 epochs. Continue to train this inititalization.
+#> Best vaeac inititalization was number 2 (of 2) with a training VLB
+#> = -4.814 after 2 epochs. Continue to train this inititalization.
 #>
 #> Results of the `vaeac` training process:
 #> Best epoch:             3.   VLB = -3.935    IWAE = -3.124   IWAE_running = -3.267
 #> Best running avg epoch: 4.   VLB = -3.619    IWAE = -3.138   IWAE_running = -3.235
 #> Last epoch:             4.   VLB = -3.619    IWAE = -3.138   IWAE_running = -3.235
-#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmptIm6LB' at
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.59.08.197534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.59.08.197534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
-#> '/tmp/RtmptIm6LB/X2025.11.11.14.59.08.197534_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
+#> ℹ The trained `vaeac` models are saved to folder '/tmp/RtmpP6cesG' at
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.38.19.22861_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.38.19.22861_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_best_running.pt'
+#> '/tmp/RtmpP6cesG/X2025.12.20.11.38.19.22861_n_features_4_n_train_105_depth_3_width_32_latent_8_lr_0.001_epoch_last.pt'
 
 # Plot the resulting explanations
 plot(expl_group)
@@ -1279,7 +1247,7 @@ expl_ctree <- explain(
   n_MC_samples = 250
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:59:14 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:38:28 ──────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
@@ -1305,7 +1273,7 @@ expl_ctree <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec1f6f60fb.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db41e61b01.rds'
 #>
 #>
 #>
@@ -1328,7 +1296,7 @@ expl_vaeac_with <- explain(
   vaeac.n_vaeacs_initialize = 4
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 14:59:15 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:38:30 ──────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
@@ -1343,7 +1311,7 @@ expl_vaeac_with <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec47b6ff3a.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db3baef130.rds'
 #>
 #> ── Main computation started ──
 #>
@@ -1366,7 +1334,7 @@ expl_vaeac_without <- explain(
   )
 )
 #>
-#> ── Starting `shapr::explain()` at 2025-11-11 15:00:15 ───────────────
+#> ── Starting `shapr::explain()` at 2025-12-20 11:39:40 ──────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`,
@@ -1381,7 +1349,7 @@ expl_vaeac_without <- explain(
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmptIm6LB/shapr_obj_60eec264cbddf.rds'
+#> '/tmp/RtmpP6cesG/shapr_obj_781db3bc62c1b.rds'
 #>
 #> ── Main computation started ──
 #>
