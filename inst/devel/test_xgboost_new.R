@@ -194,8 +194,7 @@ tryCatch({
     data = X_train_cat,
     label = y_train_cat,
     nrounds = 10,
-    verbose = 0,
-    params = list(enable_categorical = TRUE) # Uncomment if needed for specific version
+    verbose = 3
   )
   message("Prediction on head(X_train_cat):")
   print(head(predict(model_cat_dt, X_train_cat)))
@@ -260,10 +259,10 @@ tryCatch({
   dtrain_cat <- xgb.DMatrix(data = X_train_cat, label = y_train_cat, enable_categorical = TRUE)
 
   set.seed(123)
-  model_cat_dmat <- safe_xgb_train(
+  model_cat_dmat <- xgboost::xgb.train(
     data = dtrain_cat,
     nrounds = 10,
-    verbose = 0
+    params = list(verbosity= 3)
   )
   message("Prediction on head(dtrain_cat):")
   print(head(predict(model_cat_dmat, dtrain_cat)))
@@ -284,3 +283,39 @@ tryCatch({
 })
 
 message("\nDone.")
+
+
+
+
+  set.seed(123)
+  model_cat_dt <- safe_xgboost(
+    data = X_train_cat,
+    label = y_train_cat,
+    nrounds = 10,
+    verbose = 0,
+    params = list(enable_categorical = TRUE) # Uncomment if needed for specific version
+  )
+
+
+### v1
+
+  dtrain_cat <- xgb.DMatrix(data = X_train_cat, label = y_train_cat)
+  model_cat_dmat <- xgboost::xgb.train(
+    data = dtrain_cat,
+    nrounds = 10,
+    params = list(verbosity= 3)
+  )
+    print(head(predict(model_cat_dmat, dtrain_cat)))
+
+### v2
+
+  model_cat_dt <- xgboost::xgboost(
+    x = X_train_cat,
+    y = y_train_cat,
+    nrounds = 10,
+    verbosity = 3
+  )
+
+    print(head(predict(model_cat_dt, X_train_cat)))
+
+
