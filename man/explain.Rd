@@ -496,6 +496,7 @@ print(explain3, what = "MSEv")
 
 ## Summary
 summary1 <- summary(explain1)
+summary1 # Provides a nicely formatted summary of the explanation
 
 # Various additional info stored in the summary object
 # Examples
