@@ -69,7 +69,7 @@ documentation and see examples with `?function_name`.
 | `plot_MSEv_eval_crit` | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach. |
 | `print.shapr`      | Prints the Shapley values (default), their standard deviation or estimates of the MSE.    |
 | `get_results`      | Extracts and returns a summary of the Shapley value computation.                          |
-| `summary.shapr`    | Prints a formatted summary of the Shapley value computation, and returns the output of `get_results()` |
+| `summary.shapr`    | Returns a `summary.shapr` object, and prints a formatted summary when called interactively. |
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
@@ -1004,8 +1004,10 @@ This allows users to also display:
 - variants of the [MSEv criterion](#MSEv) introduced above, using
   `what = "MSEv"`, `"MSEv_explicand"`, or `"MSEv_coalition"`.
 
-The `summary(explain_object)` function provides a neatly formatted summary of the object and (invisibly) returns a
-complete list of summary components.
+The `summary(explain_object)` function returns a `summary.shapr` object containing a complete list of summary components.
+When called interactively without assignment (or explicitly printed with `print()`), it displays a nicely formatted
+summary to the console. When assigned to a variable, the formatted output is suppressed, but the returned object can
+be used to extract individual components later.
 Internally, `summary.shapr` calls `get_results()`, which produces this full set of components, including:
 the parameters used, intermediate Shapley value estimates (and their standard deviations), estimates of all \( v(S) \),
 and more.
@@ -1019,7 +1021,11 @@ print(ex)                        # Prints the estimated Shapley values by defaul
 print(ex, what = "shapley_sd")  # Prints the estimated standard deviations of the Shapley values
 print(ex, what = "MSEv")        # Prints the MSEv evaluation criterion
 
-summary_ex <- summary(ex)
+# When called without assignment, summary() prints formatted output to console
+summary(ex)
+
+# When assigned, it returns a summary.shapr object with all components available for extraction
+summary_ex <- summary(ex) # print(summary_ex) also provides the formatted output
 
 summary_ex$shapley_est             # The estimated Shapley values
 summary_ex$shapley_sd              # The estimated standard deviations of the Shapley values
@@ -1029,7 +1035,8 @@ summary_ex$parameters$n_MC_samples  # Number of Monte Carlo samples used
 summary_ex$parameters$gaussian.mu       # Estimated mean vector (Gaussian approach)
 summary_ex$parameters$gaussian.cov_mat  # Estimated covariance matrix (Gaussian approach)
 
-res_ex <- get_results(ex)  # Gives output equivalent to summary(ex), but without the printed summary
+# Alternatively, use get_results() to get the same components without printing the summary
+res_ex <- get_results(ex)
 
 # You may also extract individual summary components directly using get_results()
 get_results(ex, what = "shapley_sd")

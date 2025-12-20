@@ -24,3 +24,47 @@ See \code{\link[=get_results]{get_results()}} for details about each component.
 Provides a formatted summary of a shapr object and returns an object of class
 \code{summary.shapr} containing the same information as returned by \code{\link[=get_results]{get_results()}}.
 }
+\examples{
+\donttest{
+# Load example data
+data("airquality")
+airquality <- airquality[complete.cases(airquality), ]
+x_var <- c("Solar.R", "Wind", "Temp", "Month")
+y_var <- "Ozone"
+
+# Split data into test and training data
+data_train <- head(airquality, -3)
+data_explain <- tail(airquality, 3)
+
+x_train <- data_train[, x_var]
+x_explain <- data_explain[, x_var]
+
+# Fit a linear model
+lm_formula <- as.formula(paste0(y_var, " ~ ", paste0(x_var, collapse = " + ")))
+model <- lm(lm_formula, data = data_train)
+
+# Explain predictions
+p <- mean(data_train[, y_var])
+
+explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p,
+  n_MC_samples = 1e2
+)
+
+# Call summary without assignment - prints formatted output to console
+summary(explanation)
+
+# Assign to variable - returns shapr.summary with summary information for later use
+expl_summary <- summary(explanation) # print(expl_summary) provides the formatted output
+
+# Access components from the summary object
+expl_summary$shapley_est # Estimated Shapley values
+expl_summary$timing_summary$total_time_secs # Total computation time
+expl_summary$approach # Approach used
+}
+
+}
