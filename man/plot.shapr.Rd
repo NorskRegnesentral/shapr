@@ -217,7 +217,7 @@ if (requireNamespace("party", quietly = TRUE)) {
   }
 
   # Example of further modification of the output from plot.shapr
-  plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
+  plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Storing without printing
 
   # Displays the modified ggplot object
   plt +
