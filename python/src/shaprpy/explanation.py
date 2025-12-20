@@ -6,6 +6,29 @@ from typing import Any
 
 from shaprpy._rutils import _importr
 
+class ShaprSummary:
+    """Summary object for Shapr explanations."""
+
+    def __init__(self, summary_str: str, summary_data: dict) -> None:
+        self._summary_str = summary_str
+        self._summary_data = summary_data
+
+    def __str__(self) -> str:
+        return self._summary_str
+
+    def __repr__(self) -> str:
+        return self._summary_str
+
+    def __getitem__(self, key: str) -> Any:
+        return self._summary_data[key]
+
+    def keys(self):
+        """Return available element names."""
+        return self._summary_data.keys()
+
+    def __dir__(self):
+        """Enable tab-completion for dictionary keys."""
+        return list(self._summary_data.keys())
 
 class Shapr:
     """
@@ -197,9 +220,9 @@ class Shapr:
         # Convert R results to Python objects
         return recurse_r_tree(r_results)
 
-    def summary(self, digits: int = 2) -> None:
+    def summary(self, digits: int = 2) -> ShaprSummary:
         """
-        Print a formatted summary of the Shapr explanation object using R's summary.shapr function.
+        Get a formatted summary of the Shapr explanation object using R's summary.shapr function.
 
         Parameters
         ----------
@@ -208,10 +231,24 @@ class Shapr:
 
         Returns
         -------
-        None
-            Prints summary (from R's summary.shapr() but returns nothing
+        ShaprSummary
+            Summary object that displays automatically in interactive sessions or when printed.
+            Elements can be accessed using dictionary-like syntax, e.g., summary['approach'].
         """
-        print(self._get_summary_output(digits=digits))
+        from shaprpy.utils import recurse_r_tree
+
+        base = _importr("base")
+        
+        # Get the R summary object
+        r_summary = base.summary(self._r_object, digits=digits)
+        
+        # Convert to Python dict
+        summary_data = recurse_r_tree(r_summary)
+        
+        # Get display string
+        summary_str = self._get_summary_output(digits=digits)
+        
+        return ShaprSummary(summary_str, summary_data)
 
     def to_shap(self, idx: int | slice | None = None) -> Any:
         """Convert the Shapr explanation to a SHAP Explanation object.
