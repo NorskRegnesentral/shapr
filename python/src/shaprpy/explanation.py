@@ -26,8 +26,8 @@ class ShaprSummary:
         """Return available element names."""
         return self._summary_data.keys()
 
-    def __dir__(self):
-        """Enable tab-completion for dictionary keys."""
+    def _ipython_key_completions_(self):
+        """Enable tab-completion for bracket notation in IPython/Jupyter."""
         return list(self._summary_data.keys())
 
 class Shapr:
@@ -238,16 +238,16 @@ class Shapr:
         from shaprpy.utils import recurse_r_tree
 
         base = _importr("base")
-        
+
         # Get the R summary object
         r_summary = base.summary(self._r_object, digits=digits)
-        
+
         # Convert to Python dict
         summary_data = recurse_r_tree(r_summary)
-        
+
         # Get display string
         summary_str = self._get_summary_output(digits=digits)
-        
+
         return ShaprSummary(summary_str, summary_data)
 
     def to_shap(self, idx: int | slice | None = None) -> Any:
