@@ -4,9 +4,8 @@
 # shapr 1.0.7
 
 ### Improvements
-* Added informative message in `plot.shapr()` and `plot_MSEv_eval_crit()` when `index_x_explain` shows only a subset of observations ([#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
 * Updated `summary.shapr()` to return a `summary.shapr` class object (rather than just printing) for improved reusability and consistency with R conventions ([#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
-* Enhanced `plot.shapr()` with default `index_x_explain = 1:10` for more convenient plotting of first observations ([#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
+* Enhanced `plot.shapr()` with default `index_x_explain = 1:10` for more convenient plotting of first observations (and printing info about this) ([#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
 
 ### Bug fixes
 * Fixed compatibility with `xgboost` after their breaking change class update (version >= 3.1.2.1).
