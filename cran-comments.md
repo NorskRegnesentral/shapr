@@ -20,6 +20,8 @@ The win-builder and R-hub tests are run without snapshots tests (to replicate CR
 Locally, tests are run both with and without suggested packages.
 
 * Locally (Windows 11 x64, build 26100), R-version 4.5.1
+* Locally (Windows 11 x64, build 26100), R-devel (with dev-version of data.table)
+
 * GHA (ubuntu-latest), R-versions: devel, release, oldrel-1, oldrel-2
 * GHA (windows-latest), R-version: release
 * GHA (macOS-latest), R-version: release
@@ -29,20 +31,43 @@ Locally, tests are run both with and without suggested packages.
 * R-hub (mac-latest): R-version: devel
 * R-hub (clang-asan): R-version: devel
 
-Note: devtools-mac-builder is down, and therefore not included in the testing.
+Note: devtools-mac-builder is currently down, and therefore not included in the testing.
 
 ## Current R CMD check results
 
-There were no ERRORs or WARNINGs, and 1 NOTEs:
+There were 1 ERROR flavor, no WARNINGs, and 2 NOTES:
 
-# Note on devtools-win-builder (R-devel, R-release, R-oldrelease)
+* ERROR (on all R-devel instances)
 
+Multiple errors of this flavor:
+Error in ``[.data.table`(dt, , `:=`(N, .N), coalition_size)`: attempt access index 4/4 in VECTOR_ELT
+
+This is a known issue with the CRAN version of data.table (v 1.17.8) after the recent R-devel addition 
+(https://github.com/wch/r-source/commit/4d38d900bca09d2b1bbfd08f2ab28bbbfb1af07e). 
+This is already fixed in the development version of data.table (https://github.com/Rdatatable/data.table/pull/7485),
+and I have confirmed that 
+R CMD CHECK passes with no ERRORS, WARNINGS or NOTES locally with R-devel() and the dev-version of data.table() 
+
+
+* NOTE (multiple devtools-win-builders)
 Possibly misspelled words in DESCRIPTION:
   PyPI (10:69)
   Shapley (3:53, 6:15, 7:84, 9:72)
 
 > These are false positives.Both words are correctly spelled.
 
+
+# Note on devtools-win-builder (R-devel, R-release, R-oldrelease)
+
+* NOTE (on devtools-win-builder-oldrelease)
+Author field differs from that derived from Authors@R
+  Author:    'Martin Jullum [cre, aut] (ORCID: <https://orcid.org/0000-0003-3908-5155>), Lars Henry Berge Olsen [aut] (ORCID: <https://orcid.org/0009-0006-9360-6993>), Annabelle Redelmeier [aut], Jon Lachmann [aut] (ORCID: <https://orcid.org/0000-0001-8396-5673>), Nikolai Sellereite [aut] (ORCID: <https://orcid.org/0000-0002-4671-0337>), Anders Løland [ctb], Jens Christian Wahl [ctb], Camilla Lingjærde [ctb], Norsk Regnesentral [cph, fnd]'
+  Authors@R: 'Martin Jullum [cre, aut] (<https://orcid.org/0000-0003-3908-5155>), Lars Henry Berge Olsen [aut] (<https://orcid.org/0009-0006-9360-6993>), Annabelle Redelmeier [aut], Jon Lachmann [aut] (<https://orcid.org/0000-0001-8396-5673>), Nikolai Sellereite [aut] (<https://orcid.org/0000-0002-4671-0337>), Anders Løland [ctb], Jens Christian Wahl [ctb], Camilla Lingjærde [ctb], Norsk Regnesentral [cph, fnd]'
+
+> We believe this is a false-positive, as no changes was made to this file, and there is no Author field in the DESCRIPTION file (only the Authors@R is present)
+
+
+#
 
 ## Reverse dependencies
 We checked 1 reverse dependencies (0 from CRAN + 1 from Bioconductor),
