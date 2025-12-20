@@ -31,6 +31,7 @@
 #' Which of the test observations to plot. For example, if you have
 #' explained 10 observations using [explain()], you can generate a plot for the first five
 #' observations by setting `index_x_explain = 1:5`.
+#' Defaults to the first 10 observations.
 #' @param top_k_features Integer.
 #' How many features to include in the plot.
 #' E.g. if you have 15 features in your model you can plot the 5 most important features,
@@ -194,7 +195,7 @@ plot.shapr <- function(x,
                        plot_type = "bar",
                        digits = 3,
                        print_ggplot = TRUE,
-                       index_x_explain = NULL,
+                       index_x_explain = 1:10,
                        top_k_features = NULL,
                        col = NULL,
                        bar_plot_phi0 = TRUE,
@@ -221,7 +222,14 @@ plot.shapr <- function(x,
 
   if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
   if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
-  if (length(beeswarm_cex) == 0) beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4) # Update if index_x_explain is
+  if (length(beeswarm_cex) == 0) beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4)
+
+  # Inform user if only a subset of observations is being plotted
+  n_explain <- x$internal$parameters$n_explain
+  if (length(index_x_explain) < n_explain) {
+    msg <- paste0("Showing ", length(index_x_explain), " of ", n_explain, " observations.")
+    cli::cli_inform(c("i" = msg))
+  }
 
   is_groupwise <- x$internal$parameters$is_groupwise
 
@@ -1070,7 +1078,7 @@ make_waterfall_plot <- function(dt_plot,
 #'
 #' @author Lars Henry Berge Olsen
 plot_MSEv_eval_crit <- function(explanation_list,
-                                index_x_explain = NULL,
+                                index_x_explain = 1:10,
                                 id_coalition = NULL,
                                 CI_level = if (length(explanation_list[[1]]$pred_explain) < 20) NULL else 0.95,
                                 geom_col_width = 0.9,
@@ -1109,6 +1117,12 @@ plot_MSEv_eval_crit <- function(explanation_list,
 
   n_explain <- explanation_list[[1]]$internal$parameters$n_explain
   tfrac <- if (is.null(CI_level)) NULL else qt((1 + CI_level) / 2, n_explain - 1)
+
+  # Inform user if only a subset of observations is being plotted
+  if (length(index_x_explain) < n_explain) {
+    msg <- paste0("Showing ", length(index_x_explain), " of ", n_explain, " observations.")
+    cli::cli_inform(c("i" = msg))
+  }
 
   # Create data.tables of the MSEv values
   MSEv_dt_list <- MSEv_extract_MSEv_values(
@@ -1268,7 +1282,7 @@ MSEv_check_explanation_list <- function(explanation_list) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 MSEv_extract_MSEv_values <- function(explanation_list,
-                                     index_x_explain = NULL,
+                                     index_x_explain = 1:10,
                                      id_coalition = NULL) {
   # Function that extract the MSEv values from the different explanations objects in explanation_list,
   # put the values in data.tables, and keep only the desired observations and coalitions.

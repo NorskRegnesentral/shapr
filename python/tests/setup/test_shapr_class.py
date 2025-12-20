@@ -110,19 +110,28 @@ class TestShaprClassMethods:
         assert "shapley_sd" in results
         assert "MSEv" in results
 
-    @pytest.mark.snapshot
-    def test_summary(self, explanation_object, snapshot, capsys):
-        """Test summary() method output."""
+    def test_summary(self, explanation_object):
+        """Test summary() method returns ShaprSummary object."""
+        from shaprpy.explanation import ShaprSummary
+
         result = explanation_object.summary(digits=3)
 
-        # Should return None
-        assert result is None
+        # Should return a ShaprSummary object
+        assert isinstance(result, ShaprSummary)
 
-        # Check printed output
-        captured = capsys.readouterr()
-        assert len(captured.out) > 0
-        # Summary should contain some key information
-        assert "explain" in captured.out.lower() or "shapley" in captured.out.lower()
+        # Check string representation
+        summary_str = str(result)
+        assert len(summary_str) > 0
+        assert "explain" in summary_str.lower() or "shapley" in summary_str.lower()
+
+        # Check keys() method works
+        keys = result.keys()
+        assert len(list(keys)) > 0
+
+        # Check bracket access works
+        assert "approach" in keys
+        approach = result["approach"]
+        assert approach is not None
 
     def test_to_shap_all_observations(self, explanation_object):
         """Test to_shap() conversion for all observations."""

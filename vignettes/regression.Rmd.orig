@@ -185,10 +185,10 @@ x_explain <- data[ind_x_explain, ..x_var]
 # Fitting a basic xgboost model to the training data
 set.seed(123) # Set seed for reproducibility
 model <- xgboost::xgboost(
-  data = x_train,
-  label = y_train,
+  x = x_train,
+  y = y_train,
   nround = 20,
-  verbose = FALSE
+  verbosity = 0
 )
 
 # Specifying the phi_0, i.e. the expected prediction without any features
@@ -208,7 +208,7 @@ plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
     ggplot2::theme(legend.position = "none") +
     ggplot2::coord_flip() +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = rel(0.95)))
+    ggplot2::theme(plot.title = ggplot2::element_text(size = ggplot2::rel(0.95)))
   fig <- fig + ggplot2::scale_x_discrete(limits = rev(levels(fig$data$Method)))
   if (!is.null(method_line) && method_line %in% fig$data$Method) {
     fig <- fig + ggplot2::geom_hline(

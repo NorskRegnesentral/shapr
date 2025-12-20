@@ -16,10 +16,11 @@ Defaults to 2.}
 \item{...}{Currently unused.}
 }
 \value{
-Prints a formatted summary of the shapr object,
-and invisibly returns a named list of summary components.
-See the details section of \code{\link[=get_results]{get_results()}} for details about each component.
+An object of class \code{summary.shapr}, which is a named list
+with the same accessible components as returned by \code{\link[=get_results]{get_results()}}.
+See \code{\link[=get_results]{get_results()}} for details about each component.
 }
 \description{
-Summary Method for Shapr Objects
+Provides a formatted summary of a shapr object and returns an object of class
+\code{summary.shapr} containing the same information as returned by \code{\link[=get_results]{get_results()}}.
 }
