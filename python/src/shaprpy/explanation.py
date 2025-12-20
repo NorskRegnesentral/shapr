@@ -63,6 +63,18 @@ class Shapr:
         captured_output = f.getvalue().rstrip()
         return captured_output
 
+    def _get_summary_output(self, digits: int = 2) -> str:
+        import io
+        from contextlib import redirect_stdout
+
+        base = _importr("base")
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            base.print(base.summary(self._r_object, digits=digits))
+        captured_output = f.getvalue().rstrip()
+        return captured_output
+
     def print(self, what: str = "shapley_est", digits: int = 3) -> None:
         """
         Print specific components using R's print.shapr function.
@@ -199,13 +211,7 @@ class Shapr:
         None
             Prints summary (from R's summary.shapr() but returns nothing
         """
-        base = _importr("base")
-
-        # Call R summary function just for the printing
-        base.summary(self._r_object, digits=digits)
-
-        # Return None explicitly
-        return None
+        print(self._get_summary_output(digits=digits))
 
     def to_shap(self, idx: int | slice | None = None) -> Any:
         """Convert the Shapr explanation to a SHAP Explanation object.
