@@ -85,6 +85,100 @@ with the same accessible components as returned by <code><a href="get_results.ht
 See <code><a href="get_results.html">get_results()</a></code> for details about each component.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Load example data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">airquality</span> <span class="op">&lt;-</span> <span class="va">airquality</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html" class="external-link">complete.cases</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">x_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Solar.R"</span>, <span class="st">"Wind"</span>, <span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y_var</span> <span class="op">&lt;-</span> <span class="st">"Ozone"</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Split data into test and training data</span></span></span>
+<span class="r-in"><span><span class="va">data_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">airquality</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data_explain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">airquality</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">x_train</span> <span class="op">&lt;-</span> <span class="va">data_train</span><span class="op">[</span>, <span class="va">x_var</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">x_explain</span> <span class="op">&lt;-</span> <span class="va">data_explain</span><span class="op">[</span>, <span class="va">x_var</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit a linear model</span></span></span>
+<span class="r-in"><span><span class="va">lm_formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">" ~ "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">" + "</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">lm_formula</span>, data <span class="op">=</span> <span class="va">data_train</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Explain predictions</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">data_train</span><span class="op">[</span>, <span class="va">y_var</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="explain.html">explain</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  model <span class="op">=</span> <span class="va">model</span>,</span></span>
+<span class="r-in"><span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span></span>
+<span class="r-in"><span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span></span>
+<span class="r-in"><span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span></span>
+<span class="r-in"><span>  phi0 <span class="op">=</span> <span class="va">p</span>,</span></span>
+<span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2025-12-20 21:48:35</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">gaussian</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpHcVATM/shapr_obj_1b7b58f7ab37.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Call summary without assignment - prints formatted output to console</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Summary of Shapley value explanation</span> <span style="color: #00BBBB;">────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computed with `shapr::explain()` in <span style="color: #00BB00;">0.3 seconds</span>, started <span style="color: #0000BB;">2025-12-20 21:48:35</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">gaussian</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of coalitions used: <span style="color: #0000BB;">16</span> (of total <span style="color: #0000BB;">16</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpHcVATM/shapr_obj_1b7b58f7ab37.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Estimated Shapley values </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>    explain_id   none Solar.R   Wind   Temp  Month</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>         &lt;int&gt; &lt;char&gt;  &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1:          1  42.79    2.91 -20.40  -6.53  -1.02</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2:          2  42.79   -2.64   7.68  -9.18  -0.89</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 3:          3  42.79    6.14  -5.84 -25.46  -1.95</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── Estimated MSEv </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Estimated MSE of v(S) = <span style="color: #0000BB;">266</span> (with sd = <span style="color: #0000BB;">101</span>)</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Assign to variable - returns shapr.summary with summary information for later use</span></span></span>
+<span class="r-in"><span><span class="va">expl_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span> <span class="co"># print(expl_summary) provides the formatted output</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Access components from the summary object</span></span></span>
+<span class="r-in"><span><span class="va">expl_summary</span><span class="op">$</span><span class="va">shapley_est</span> <span class="co"># Estimated Shapley values</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    explain_id     none   Solar.R       Wind       Temp      Month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          1 42.78704  2.913256 -20.400725  -6.529927 -1.0172312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          2 42.78704 -2.644773   7.679277  -9.177544 -0.8875121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          3 42.78704  6.139846  -5.839190 -25.463133 -1.9518989</span>
+<span class="r-in"><span><span class="va">expl_summary</span><span class="op">$</span><span class="va">timing_summary</span><span class="op">$</span><span class="va">total_time_secs</span> <span class="co"># Total computation time</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3496902</span>
+<span class="r-in"><span><span class="va">expl_summary</span><span class="op">$</span><span class="va">approach</span> <span class="co"># Approach used</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "gaussian"</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
