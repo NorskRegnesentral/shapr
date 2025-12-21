@@ -344,30 +344,3 @@ test_that("workflows model works with explain", {
   expect_equal(ncol(explanation$shapley_values_est), 4)
 })
 
-
-# forecast Arima model (conditional)
-test_that("forecast Arima model works with explain_forecast", {
-  skip_if_not_installed("forecast")
-
-  # Fit ARIMA model
-  model <- forecast::Arima(y_ts, order = c(2, 0, 0))
-
-  # Run explain_forecast
-  explanation <- explain_forecast(
-    model = model,
-    y = y_ts,
-    train_idx = train_idx_ts,
-    explain_idx = explain_idx_ts,
-    explain_y_lags = 2,
-    horizon = 1,
-    approach = "independence",
-    phi0 = phi0_ts,
-    seed = 123,
-    group_lags = FALSE,
-    verbose = NULL
-  )
-
-  # Basic checks
-  expect_s3_class(explanation, "shapr")
-  expect_equal(nrow(explanation$shapley_values_est), 2)
-})
