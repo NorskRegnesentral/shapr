@@ -93,11 +93,18 @@ explanation = explain(
 
 explanation.print() # Print the Shapley values
 
-explanation.summary() # Gives a nicely formatted summary of the computation of the explanations
+# Get a summary object with computation details
+summary = explanation.summary()
+print(summary)  # Display formatted summary information
 
-# Extract results as a dictionary
-results = explanation.get_results()
-shapley_values = results["shapley_est"]
+# Access specific summary attributes (available with tab-completion in Jupyter)
+summary['approach']     # Approach used
+summary['timing_summary']['total_time_secs']  # Total computation time
+
+# Extract one or more specific result objects directly
+explanation.get_results("proglang") # Programming language used (Python/R)
+explanation.get_results("approach") # Approach used
+explanation.get_results().keys()  # All available result objects
 
 # Plotting (requires the 'shap' library)
 # Convert to a SHAP Explanation object
