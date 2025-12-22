@@ -135,7 +135,7 @@ to `shaprpy.explain`.
 
 ## Examples
 
-See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master/python/examples) folder on GitHub for runnable examples, including:
+See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master/python/examples) on GitHub for runnable examples, including:
 
 - Basic usage with `scikit-learn` models
 - Usage with `xgboost` models
