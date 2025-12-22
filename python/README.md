@@ -95,7 +95,7 @@ explanation.print() # Print the Shapley values
 
 # Get a summary object with computation details
 summary = explanation.summary()
-print(summary)  # Display formatted summary information
+print(summary)  # Displays a formatted summary (also available directly via explanation.summary())
 
 # Access specific summary attributes (available with tab-completion in Jupyter)
 summary['approach']     # Approach used
