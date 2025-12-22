@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for tab-completion in IPython/Jupyter environments
 - Adjusted the unit tests to cover the new `ShaprSummary` class functionality
 
+### Changed
+- Update `class_exploration.py` example to demonstrate the new `ShaprSummary` class
 
 ## [0.4.0] - 2025-11-28
 
