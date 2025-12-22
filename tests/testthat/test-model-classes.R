@@ -343,4 +343,3 @@ test_that("workflows model works with explain", {
   expect_equal(nrow(explanation$shapley_values_est), 2)
   expect_equal(ncol(explanation$shapley_values_est), 4)
 })
-
