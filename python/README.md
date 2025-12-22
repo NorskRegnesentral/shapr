@@ -135,13 +135,14 @@ to `shaprpy.explain`.
 
 ## Examples
 
-See the `/examples` folder for runnable examples, including:
+See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master/python/examples) folder on GitHub for runnable examples, including:
 
 - Basic usage with `scikit-learn` models
 - Usage with `xgboost` models
 - Usage with `keras` models
 - A custom PyTorch model
-- Usage of the `Shapr` class for exploration of explanation results and plotting through the `shap` package
+- Usage of the `Shapr` class and associated `ShaprSummary` class for exploration and extraction of explanation results.
+- Plotting functionality for the Shapley values through the `shap` package
 - The **regression paradigm** described in [Olsen et al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z),
   which shows:
   - How to specify the regression model
