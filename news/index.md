@@ -1,5 +1,41 @@
 # Changelog
 
+## shapr 1.0.7
+
+CRAN release: 2025-12-22
+
+#### Improvements
+
+- Updated
+  [`summary.shapr()`](https://norskregnesentral.github.io/shapr/reference/summary.shapr.md)
+  to return a `summary.shapr` class object (rather than just printing)
+  for improved reusability and consistency with R conventions
+  ([\#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
+- Enhanced
+  [`plot.shapr()`](https://norskregnesentral.github.io/shapr/reference/plot.shapr.md)
+  with default `index_x_explain = 1:10` for more convenient plotting of
+  first observations (and printing info about this)
+  ([\#482](https://github.com/NorskRegnesentral/shapr/pull/482)).
+
+#### Bug fixes
+
+- Fixed compatibility with `xgboost` after their breaking change class
+  update (version \>= 3.1.2.1). We now support both the previous and the
+  new xgboost versions
+  ([\#481](https://github.com/NorskRegnesentral/shapr/pull/481)).
+
+#### Robustness and documentation
+
+- Added tests for
+  [`summary.shapr()`](https://norskregnesentral.github.io/shapr/reference/summary.shapr.md)
+  method ([\#482](https://github.com/NorskRegnesentral/shapr/pull/482))
+- Added non-snapshot tests for all natively supported model classes
+  ([\#481](https://github.com/NorskRegnesentral/shapr/pull/481)).
+- Minor updates to examples and vignettes the updates in
+  [`summary.shapr()`](https://norskregnesentral.github.io/shapr/reference/summary.shapr.md)
+  and the `xgboost` class
+  ([\#483](https://github.com/NorskRegnesentral/shapr/pull/483)).
+
 ## shapr 1.0.6
 
 CRAN release: 2025-11-17

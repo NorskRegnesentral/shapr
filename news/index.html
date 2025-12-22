@@ -43,9 +43,27 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.7/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.7" id="shapr-107">shapr 1.0.7<a class="anchor" aria-label="anchor" href="#shapr-107"></a></h2><p class="text-muted">CRAN release: 2025-12-22</p>
+<div class="section level4">
+<h4 id="improvements-1-0-7">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-7"></a></h4>
+<ul><li>Updated <code><a href="../reference/summary.shapr.html">summary.shapr()</a></code> to return a <code>summary.shapr</code> class object (rather than just printing) for improved reusability and consistency with R conventions (<a href="https://github.com/NorskRegnesentral/shapr/pull/482" class="external-link">#482</a>).</li>
+<li>Enhanced <code><a href="../reference/plot.shapr.html">plot.shapr()</a></code> with default <code>index_x_explain = 1:10</code> for more convenient plotting of first observations (and printing info about this) (<a href="https://github.com/NorskRegnesentral/shapr/pull/482" class="external-link">#482</a>).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="bug-fixes-1-0-7">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-7"></a></h4>
+<ul><li>Fixed compatibility with <code>xgboost</code> after their breaking change class update (version &gt;= 3.1.2.1). We now support both the previous and the new xgboost versions (<a href="https://github.com/NorskRegnesentral/shapr/pull/481" class="external-link">#481</a>).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="robustness-and-documentation-1-0-7">Robustness and documentation<a class="anchor" aria-label="anchor" href="#robustness-and-documentation-1-0-7"></a></h4>
+<ul><li>Added tests for <code><a href="../reference/summary.shapr.html">summary.shapr()</a></code> method (<a href="https://github.com/NorskRegnesentral/shapr/pull/482" class="external-link">#482</a>)</li>
+<li>Added non-snapshot tests for all natively supported model classes (<a href="https://github.com/NorskRegnesentral/shapr/pull/481" class="external-link">#481</a>).</li>
+<li>Minor updates to examples and vignettes the updates in <code><a href="../reference/summary.shapr.html">summary.shapr()</a></code> and the <code>xgboost</code> class (<a href="https://github.com/NorskRegnesentral/shapr/pull/483" class="external-link">#483</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.6" id="shapr-106">shapr 1.0.6<a class="anchor" aria-label="anchor" href="#shapr-106"></a></h2><p class="text-muted">CRAN release: 2025-11-17</p>
 <div class="section level4">

@@ -262,7 +262,7 @@ if (requireNamespace("party", quietly = TRUE)) {
   }
 
   # Example of further modification of the output from plot.shapr
-  plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Stores ggplot object without printing
+  plt <- plot(x, index_x_explain = 1:4, print_ggplot = FALSE) # Storing without printing
 
   # Displays the modified ggplot object
   plt +
@@ -271,7 +271,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-20 21:47:28 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-12-22 17:30:55 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -284,7 +284,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpHcVATM/shapr_obj_1b7b19a8d741.rds
+#> • Computations (temporary) saved at: /tmp/RtmpcgR2vK/shapr_obj_2345134a196f.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -306,7 +306,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> ℹ Showing 10 of 50 observations.
 
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-20 21:47:38 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2025-12-22 17:31:05 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -319,7 +319,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpHcVATM/shapr_obj_1b7b17828f7b.rds
+#> • Computations (temporary) saved at: /tmp/RtmpcgR2vK/shapr_obj_234537b52561.rds
 #> 
 #> ── Main computation started ──
 #> 
