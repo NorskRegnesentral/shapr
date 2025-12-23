@@ -93,11 +93,18 @@ explanation = explain(
 
 explanation.print() # Print the Shapley values
 
-explanation.summary() # Gives a nicely formatted summary of the computation of the explanations
+# Get a summary object with computation details
+summary = explanation.summary()
+print(summary)  # Displays a formatted summary (also available directly via explanation.summary())
 
-# Extract results as a dictionary
-results = explanation.get_results()
-shapley_values = results["shapley_est"]
+# Access specific summary attributes (available with tab-completion in Jupyter)
+summary['approach']     # Approach used
+summary['timing_summary']['total_time_secs']  # Total computation time
+
+# Extract one or more specific result objects directly
+explanation.get_results("proglang") # Programming language used (Python/R)
+explanation.get_results("approach") # Approach used
+explanation.get_results().keys()  # All available result objects
 
 # Plotting (requires the 'shap' library)
 # Convert to a SHAP Explanation object
@@ -128,13 +135,14 @@ to `shaprpy.explain`.
 
 ## Examples
 
-See the `/examples` folder for runnable examples, including:
+See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master/python/examples) on GitHub for runnable examples, including:
 
 - Basic usage with `scikit-learn` models
 - Usage with `xgboost` models
 - Usage with `keras` models
 - A custom PyTorch model
-- Usage of the `Shapr` class for exploration of explanation results and plotting through the `shap` package
+- Usage of the `Shapr` class and associated `ShaprSummary` class for exploration and extraction of explanation results.
+- Plotting functionality for the Shapley values through the `shap` package
 - The **regression paradigm** described in [Olsen et al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z),
   which shows:
   - How to specify the regression model

@@ -8,7 +8,7 @@ from shaprpy.datasets import load_california_housing
 
 dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
 
-## Fit model
+## Fit model (not seed controlled here)
 class MyNeuralNet(nn.Module):
 
     def __init__(self, in_dim, hidden_dim):
@@ -47,7 +47,7 @@ explanation = explain(
 )
 explanation.print()
 
-
+# Note: The output will vary due to non-deterministic training
 """
    explain_id  none   MedInc HouseAge AveRooms AveBedrms Population AveOccup
         <int> <num>    <num>    <num>    <num>     <num>      <num>    <num>

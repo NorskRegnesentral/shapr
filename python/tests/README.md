@@ -8,11 +8,15 @@ This directory contains the test suite for shaprpy, organized as follows:
 tests/
 ├── conftest.py                    # Shared pytest fixtures
 ├── setup/                         # Unit tests for setup and validation
-│   └── test_input_validation.py   # Input validation and error handling tests
-├── output/                        # Output tests for explanation results
-│   ├── test_regression_outputs.py    # Output tests for regression models
-│   ├── test_classification_outputs.py # Output tests for classification models
+│   ├── test_input_validation.py   # Input validation and error handling tests
+│   ├── test_shapr_class.py        # SHAPR class functionality tests
 │   └── __snapshots__/             # Syrupy snapshot files (auto-generated)
+├── output/                        # Output tests for explanation results
+│   ├── test_asymmetric_causal_outputs.py # Output tests for asymmetric causal models
+│   ├── test_categorical_outputs.py       # Output tests for categorical features
+│   ├── test_classification_outputs.py    # Output tests for classification models
+│   ├── test_regression_outputs.py        # Output tests for regression models
+│   └── __snapshots__/                    # Syrupy snapshot files (auto-generated)
 └── README.md                      # This file
 ```
 
