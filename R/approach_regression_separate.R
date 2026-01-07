@@ -94,6 +94,7 @@ prepare_data.regression_separate <- function(internal, index_features = NULL, ..
 
 
     # Fit the current separate regression model to the current training data
+    print(current_comb)
     regression.current_fit <- regression.train_model(
       x = current_x_train,
       seed = internal$parameters$seed,
