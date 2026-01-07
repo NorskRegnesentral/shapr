@@ -97,7 +97,8 @@ library(ggplot2)
 #+ fig-scatter_ctree, fig.width=7, fig.height=3
 plot(exp_iter_ctree,
      plot_type = "scatter",
-     scatter_features = c("atemp", "windspeed"))
+     scatter_features = c("atemp", "windspeed"),
+     index_x_explain = NULL)
 
 #+ echo=FALSE
 # Produce the pdf used in Figure 3 in the paper
@@ -191,7 +192,10 @@ for (i in seq_along(exp_names)) {
                      seed = 1,
                      verbose = NULL)
 
-  plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm", print_ggplot = FALSE) +
+  plot_list[[i]] <- plot(exp_tmp,
+                         plot_type = "beeswarm",
+                         index_x_explain = NULL,
+                         print_ggplot = FALSE) +
     ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
 

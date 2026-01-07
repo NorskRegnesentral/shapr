@@ -46,7 +46,7 @@ print(exp_40_indep, what = "MSEv")
 ```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
-## 1: 1730485  113303
+## 1: 1520051  100972
 ```
 
 ``` r
@@ -56,7 +56,7 @@ print(exp_40_ctree, what = "MSEv")
 ```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
-## 1: 1308239   93916
+## 1: 1169051   70910
 ```
 
 ``` r
@@ -64,19 +64,19 @@ print(exp_40_ctree)
 ```
 
 ```
-##      explain_id  none trend cosyear sinyear  temp atemp windspeed      hum
-##           <int> <num> <num>   <num>   <num> <num> <num>     <num>    <num>
-##   1:          1  4537 -2529    -617    6.03  -274  -242     159.2 -293.094
-##   2:          2  4537 -1284    -457  -40.97  -511 -1008     170.6   67.519
-##   3:          3  4537 -1128    -496 -163.80  -576  -945      43.5    0.485
-##   4:          4  4537 -1472    -323 -126.43  -566  -947     417.5 -540.775
-##   5:          5  4537 -1363    -325 -207.16  -912 -1268     439.0  128.800
-##  ---                                                                      
-## 142:        142  4537   619    -260  249.48  -429  -495     208.9  287.379
-## 143:        143  4537   998    -456  108.38  -144  -234     443.9   85.584
-## 144:        144  4537  1263    -428   62.70   370   306     458.3 -164.642
-## 145:        145  4537   335    -367   90.14 -1327  -812     239.8  125.416
-## 146:        146  4537 -1048    -715   97.56  -763  -958     807.2 -709.912
+##      explain_id  none trend cosyear sinyear  temp atemp windspeed     hum
+##           <int> <num> <num>   <num>   <num> <num> <num>     <num>   <num>
+##   1:          1  4537 -2049   -1018    86.9  -244  -226     211.2 -435.45
+##   2:          2  4537 -1245    -584    16.3  -585  -996      98.2  101.29
+##   3:          3  4537 -1088    -600  -119.7  -550  -995      83.8   13.38
+##   4:          4  4537 -1325    -279  -177.5  -615  -969     362.4 -482.80
+##   5:          5  4537 -1311    -251  -240.8  -845 -1168     473.3  254.54
+##  ---                                                                     
+## 142:        142  4537   621    -192   311.6  -245  -384     130.0  319.46
+## 143:        143  4537   465    -520  -304.0  -264  -262     401.1    6.81
+## 144:        144  4537  1241    -320    67.3   366   286     559.7 -327.90
+## 145:        145  4537   611    -111    67.0 -1173  -777     262.0  257.07
+## 146:        146  4537  -612    -960   165.2  -856  -995     820.6 -555.63
 ```
 
 ``` r
@@ -88,15 +88,15 @@ summary(exp_40_ctree)
 ```
 
 ```
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
-## • Computed with `shapr::explain()` in 8.4 seconds, started 2025-11-28 21:05:18
+## • Computed with `shapr::explain()` in 9.3 seconds, started 2026-01-07 14:09:47
 ```
 
 ```
-## • Model class: <xgb.Booster>
+## • Model class: <xgboost>
 ```
 
 ```
@@ -128,7 +128,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpZikfnc/shapr_obj_2c8a975a8f5ec4.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp2BWK4M/shapr_obj_22e164a40738.rds'
 ```
 
 ```
@@ -155,35 +155,35 @@ summary(exp_40_ctree)
 ```
 ##      explain_id       none             trend           cosyear          sinyear
 ##           <int>     <char>            <char>            <char>           <char>
-##   1:          1 4536.6 (0) -2529.41 ( 79.70)  -616.74 ( 98.93)    6.03 (106.75)
-##   2:          2 4536.6 (0) -1284.26 (118.35)  -457.32 (148.46)  -40.97 (158.01)
-##   3:          3 4536.6 (0) -1127.96 (137.32)  -495.85 (161.36) -163.80 (176.38)
-##   4:          4 4536.6 (0) -1472.44 (101.77)  -322.88 (134.74) -126.43 (136.08)
-##   5:          5 4536.6 (0) -1363.28 (105.86)  -325.38 (137.72) -207.16 (128.66)
+##   1:          1 4536.6 (0) -2049.45 ( 79.55) -1017.54 ( 82.19)   86.86 ( 92.42)
+##   2:          2 4536.6 (0) -1244.63 (126.81)  -584.23 (147.67)   16.31 (167.48)
+##   3:          3 4536.6 (0) -1087.50 (145.30)  -599.85 (167.09) -119.74 (184.72)
+##   4:          4 4536.6 (0) -1324.95 (100.12)  -278.68 (134.50) -177.49 (131.18)
+##   5:          5 4536.6 (0) -1310.88 (110.47)  -251.40 (138.11) -240.80 (126.15)
 ##  ---                                                                           
-## 142:        142 4536.6 (0)   618.85 ( 49.01)  -259.76 ( 55.34)  249.48 ( 54.32)
-## 143:        143 4536.6 (0)   997.69 ( 59.67)  -456.20 ( 92.07)  108.38 ( 85.90)
-## 144:        144 4536.6 (0)  1263.50 ( 66.91)  -428.00 ( 95.02)   62.70 (107.13)
-## 145:        145 4536.6 (0)   335.20 ( 52.46)  -366.65 ( 88.32)   90.14 ( 77.38)
-## 146:        146 4536.6 (0) -1047.57 (126.52)  -715.36 (112.29)   97.56 (148.37)
+## 142:        142 4536.6 (0)   621.36 ( 53.08)  -191.79 ( 55.55)  311.65 ( 57.22)
+## 143:        143 4536.6 (0)   464.69 ( 63.60)  -519.80 ( 94.52) -304.00 ( 91.47)
+## 144:        144 4536.6 (0)  1241.35 ( 67.95)  -319.97 ( 98.28)   67.26 (106.14)
+## 145:        145 4536.6 (0)   610.55 ( 56.62)  -110.85 ( 99.26)   66.98 ( 86.34)
+## 146:        146 4536.6 (0)  -612.30 (111.69)  -960.30 (117.39)  165.17 (134.05)
 ##                   temp             atemp         windspeed               hum
 ##                 <char>            <char>            <char>            <char>
-##   1:  -274.38 (128.88)  -242.30 (117.60)   159.24 ( 95.45)  -293.09 ( 77.63)
-##   2:  -511.18 (431.30) -1008.01 (290.03)   170.62 (272.14)    67.52 (149.47)
-##   3:  -576.46 (493.87)  -945.36 (339.62)    43.53 (326.09)     0.49 (186.44)
-##   4:  -566.33 (396.04)  -947.30 (246.10)   417.46 (222.04)  -540.77 (147.21)
-##   5:  -911.89 (406.55) -1267.58 (263.39)   439.00 (214.80)   128.80 (147.61)
+##   1:  -243.93 (116.70)  -226.01 (103.09)   211.21 (108.49)  -435.45 ( 78.75)
+##   2:  -585.34 (419.00)  -996.33 (289.22)    98.16 (287.72)   101.29 (152.54)
+##   3:  -549.86 (492.66)  -994.66 (340.46)    83.81 (338.71)    13.38 (195.19)
+##   4:  -615.29 (373.68)  -968.56 (222.33)   362.45 (213.00)  -482.80 (149.23)
+##   5:  -844.81 (400.90) -1167.71 (253.41)   473.28 (215.89)   254.54 (159.17)
 ##  ---                                                                        
-## 142:  -428.74 ( 59.19)  -494.87 ( 70.30)   208.94 ( 67.09)   287.38 ( 59.33)
-## 143:  -144.17 (208.53)  -234.48 (132.51)   443.87 (121.71)    85.58 ( 71.95)
-## 144:   369.88 (232.50)   305.90 (160.55)   458.32 (155.32)  -164.64 (111.92)
-## 145: -1326.52 (111.07)  -812.39 (105.68)   239.78 ( 73.36)   125.42 ( 65.05)
-## 146:  -762.61 (221.63)  -957.60 (153.70)   807.22 (223.91)  -709.91 (161.48)
+## 142:  -245.32 ( 59.75)  -384.09 ( 76.18)   130.03 ( 70.67)   319.46 ( 69.40)
+## 143:  -264.03 (202.57)  -261.63 (125.13)   401.12 (121.85)     6.81 ( 87.23)
+## 144:   365.73 (218.15)   286.46 (153.12)   559.68 (147.93)  -327.90 (102.87)
+## 145: -1173.21 (179.02)  -777.21 (127.05)   262.03 ( 97.27)   257.07 ( 67.83)
+## 146:  -855.83 (244.94)  -995.38 (160.22)   820.56 (205.24)  -555.63 (142.21)
 ## 
 ## 
 ## ── Estimated MSEv 
 ## 
-## Estimated MSE of v(S) = 1308239 (with sd = 93916)
+## Estimated MSE of v(S) = 1169051 (with sd = 70910)
 ```
 
 ``` r
@@ -201,33 +201,31 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2025-11-28 21:05:27 ──────────────────────────────────────
-## ℹ Feature classes extracted from the model contain `NA`.
-##   Assuming feature classes from the data are correct.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to
-##   `2^n_features = 128`.
+## ── Starting `shapr::explain()` at 2026-01-07 14:09:57 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
-## • Model class: <xgb.Booster>
+## • Model class: <xgboost>
 ## • v(S) estimation class: Monte Carlo integration
 ## • Approach: ctree
 ## • Procedure: Iterative
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpZikfnc/shapr_obj_2c8a977af49413.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp2BWK4M/shapr_obj_22e175b7824e.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## 
 ## ── Convergence info 
 ## ℹ Not converged after 66 coalitions:
-## Current convergence measure: 0.045 [needs 0.02]
+## Current convergence measure: 0.043 [needs 0.02]
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## 
 ## ── Convergence info 
@@ -244,7 +242,8 @@ library(ggplot2)
 ``` r
 plot(exp_iter_ctree,
      plot_type = "scatter",
-     scatter_features = c("atemp", "windspeed"))
+     scatter_features = c("atemp", "windspeed"),
+     index_x_explain = NULL)
 ```
 
 ![plot of chunk fig-scatter_ctree](html_figures/fig-scatter_ctree-1.png)
@@ -295,7 +294,7 @@ print(exp_g_reg, what = "MSEv")
 ```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
-## 1: 1547240  142123
+## 1: 1392003   93288
 ```
 
 ``` r
@@ -305,7 +304,7 @@ print(exp_g_reg_tuned, what = "MSEv")
 ```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
-## 1: 1534033  142277
+## 1: 1367885   92316
 ```
 
 ``` r
@@ -315,7 +314,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-11-28 21:05:33 2025-11-28 21:05:35            2.17    2.2 seconds
+## 1: 2026-01-07 14:10:06 2026-01-07 14:10:08            2.05      2 seconds
 ```
 
 ``` r
@@ -325,7 +324,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2025-11-28 21:05:35 2025-11-28 21:05:42            6.81    6.8 seconds
+## 1: 2026-01-07 14:10:08 2026-01-07 14:10:15             6.6    6.6 seconds
 ```
 
 ``` r
@@ -333,6 +332,10 @@ print(exp_g_reg_tuned, what = "timing_summary")
 plot(exp_g_reg_tuned,
      index_x_explain = 6,
      plot_type = "waterfall")
+```
+
+```
+## ℹ Showing 1 of 146 observations.
 ```
 
 ![plot of chunk fig-waterfall_group](html_figures/fig-waterfall_group-1.png)
@@ -370,7 +373,10 @@ for (i in seq_along(exp_names)) {
                      seed = 1,
                      verbose = NULL)
 
-  plot_list[[i]] <- plot(exp_tmp, plot_type = "beeswarm", print_ggplot = FALSE) +
+  plot_list[[i]] <- plot(exp_tmp,
+                         plot_type = "beeswarm",
+                         index_x_explain = NULL,
+                         print_ggplot = FALSE) +
     ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
 ```
@@ -413,14 +419,13 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2025-11-28 21:06:11 ─────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-01-07 14:10:46 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to
-##   `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -441,7 +446,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpZikfnc/shapr_obj_2c8a972a0516b5.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp2BWK4M/shapr_obj_22e1cb3b8cc.rds'
 ## 
 ## 
 ## 
@@ -491,10 +496,9 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2025-11-28 21:06:12 ─────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-01-07 14:10:46 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to
-##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -507,7 +511,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpZikfnc/shapr_obj_2c8a97c6855e3.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmp2BWK4M/shapr_obj_22e1ecdb753.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -570,7 +574,7 @@ sessionInfo()
 ## 
 ## other attached packages:
 ## [1] patchwork_1.3.2   ggplot2_4.0.1     progressr_0.18.0  future_1.68.0    
-## [5] shapr_1.0.6       data.table_1.17.8 xgboost_1.7.11.1 
+## [5] shapr_1.0.7       data.table_1.17.8 xgboost_3.1.2.1  
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] tidyselect_1.2.1    timeDate_4051.111   dplyr_1.1.4        
@@ -580,25 +584,26 @@ sessionInfo()
 ## [13] magrittr_2.0.4      compiler_4.3.3      rlang_1.1.6        
 ## [16] tools_4.3.3         knitr_1.50          labeling_0.4.3     
 ## [19] curl_7.0.0          TTR_0.24.4          DiceDesign_1.10    
-## [22] RColorBrewer_1.1-3  parsnip_1.3.3       withr_3.0.2        
+## [22] RColorBrewer_1.1-3  parsnip_1.4.0.9000  withr_3.0.2        
 ## [25] purrr_1.2.0         workflows_1.3.0     nnet_7.3-19        
 ## [28] grid_4.3.3          tune_2.0.1          xts_0.14.1         
 ## [31] colorspace_2.1-2    globals_0.18.0      scales_1.4.0       
-## [34] MASS_7.3-60.0.1     cli_3.6.5           generics_0.1.4     
-## [37] future.apply_1.20.0 ggbeeswarm_0.7.2    splines_4.3.3      
-## [40] dials_1.4.2         forecast_8.24.0     parallel_4.3.3     
-## [43] urca_1.3-4          vctrs_0.6.5         hardhat_1.4.2      
-## [46] Matrix_1.6-5        jsonlite_2.0.0      tseries_0.10-58    
-## [49] beeswarm_0.4.0      listenv_0.10.0      gower_1.0.2        
-## [52] tidyr_1.3.1         recipes_1.3.1       quantmod_0.4.28    
-## [55] glue_1.8.0          parallelly_1.45.1   codetools_0.2-19   
-## [58] rsample_1.3.1       lubridate_1.9.4     gtable_0.3.6       
-## [61] quadprog_1.5-8      lmtest_0.9-40       GPfit_1.0-9        
-## [64] tibble_3.3.0        furrr_0.3.1         pillar_1.11.1      
-## [67] ipred_0.9-15        lava_1.8.2          R6_2.6.1           
-## [70] lhs_1.2.0           evaluate_1.0.5      lattice_0.22-5     
-## [73] fracdiff_1.5-3      class_7.3-22        Rcpp_1.1.0         
-## [76] nlme_3.1-164        prodlim_2025.04.28  xfun_0.54          
-## [79] zoo_1.8-14          pkgconfig_2.0.3
+## [34] MASS_7.3-60.0.1     cli_3.6.5           ragg_1.5.0         
+## [37] generics_0.1.4      future.apply_1.20.1 ggbeeswarm_0.7.3   
+## [40] splines_4.3.3       dials_1.4.2         forecast_8.24.0    
+## [43] parallel_4.3.3      urca_1.3-4          vctrs_0.6.5        
+## [46] hardhat_1.4.2       Matrix_1.6-5        jsonlite_2.0.0     
+## [49] tseries_0.10-58     beeswarm_0.4.0      listenv_0.10.0     
+## [52] systemfonts_1.3.1   gower_1.0.2         tidyr_1.3.1        
+## [55] recipes_1.3.1       quantmod_0.4.28     glue_1.8.0         
+## [58] parallelly_1.46.0   codetools_0.2-19    rsample_1.3.1      
+## [61] lubridate_1.9.4     gtable_0.3.6        quadprog_1.5-8     
+## [64] lmtest_0.9-40       GPfit_1.0-9         tibble_3.3.0       
+## [67] furrr_0.3.1         pillar_1.11.1       ipred_0.9-15       
+## [70] lava_1.8.2          R6_2.6.1            textshaping_1.0.4  
+## [73] lhs_1.2.0           evaluate_1.0.5      lattice_0.22-5     
+## [76] fracdiff_1.5-3      class_7.3-22        Rcpp_1.1.0         
+## [79] nlme_3.1-164        prodlim_2025.04.28  xfun_0.55          
+## [82] zoo_1.8-14          pkgconfig_2.0.3
 ```
 
