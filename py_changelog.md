@@ -9,6 +9,22 @@ The format is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[0.4.1\] - 2025-12-22
+
+### Added
+
+- **NEW**: `ShaprSummary` class for enhanced summary functionality
+  - Dedicated class for handling summary results with improved display
+    and access methods
+  - Support for tab-completion in IPython/Jupyter environments
+- Adjusted the unit tests to cover the new `ShaprSummary` class
+  functionality
+
+### Changed
+
+- Update `class_exploration.py` example to demonstrate the new
+  `ShaprSummary` class
+
 ## \[0.4.0\] - 2025-11-28
 
 ### Added

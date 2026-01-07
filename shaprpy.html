@@ -118,18 +118,25 @@
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
 <span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
 <span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>explanation.summary() <span class="co"># Gives a nicely formatted summary of the computation of the explanations</span></span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a></span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co"># Extract results as a dictionary</span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>results <span class="op">=</span> explanation.get_results()</span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>shapley_values <span class="op">=</span> results[<span class="st">"shapley_est"</span>]</span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a></span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co"># Convert to a SHAP Explanation object</span></span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="im">import</span> shap</span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co"># Get a summary object with computation details</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>summary <span class="op">=</span> explanation.summary()</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="bu">print</span>(summary)  <span class="co"># Displays a formatted summary (also available directly via explanation.summary())</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co"># Access specific summary attributes (available with tab-completion in Jupyter)</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>summary[<span class="st">'approach'</span>]     <span class="co"># Approach used</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>summary[<span class="st">'timing_summary'</span>][<span class="st">'total_time_secs'</span>]  <span class="co"># Total computation time</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co"># Extract one or more specific result objects directly</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>explanation.get_results(<span class="st">"proglang"</span>) <span class="co"># Programming language used (Python/R)</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>explanation.get_results(<span class="st">"approach"</span>) <span class="co"># Approach used</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>explanation.get_results().keys()  <span class="co"># All available result objects</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co"># Convert to a SHAP Explanation object</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
@@ -144,12 +151,13 @@
 </ul><hr></div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
-<p>See the <code>/examples</code> folder for runnable examples, including:</p>
+<p>See the <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python/examples" class="external-link">examples folder</a> on GitHub for runnable examples, including:</p>
 <ul><li>Basic usage with <code>scikit-learn</code> models</li>
 <li>Usage with <code>xgboost</code> models</li>
 <li>Usage with <code>keras</code> models</li>
 <li>A custom PyTorch model</li>
-<li>Usage of the <code>Shapr</code> class for exploration of explanation results and plotting through the <code>shap</code> package</li>
+<li>Usage of the <code>Shapr</code> class and associated <code>ShaprSummary</code> class for exploration and extraction of explanation results.</li>
+<li>Plotting functionality for the Shapley values through the <code>shap</code> package</li>
 <li>The <strong>regression paradigm</strong> described in <a href="https://link.springer.com/article/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>, which shows:
 <ul><li>How to specify the regression model</li>
 <li>How to enable automatic cross-validation of hyperparameters</li>
