@@ -31,7 +31,8 @@
 #' Which of the test observations to plot. For example, if you have
 #' explained 10 observations using [explain()], you can generate a plot for the first five
 #' observations by setting `index_x_explain = 1:5`.
-#' Defaults to the first 10 observations.
+#' Defaults to the first 10 observations for `plot_type = "bar"` and `"waterfall"`,
+#' and to all observations for `plot_type = "scatter"` and `"beeswarm"`.
 #' @param top_k_features Integer.
 #' How many features to include in the plot.
 #' E.g. if you have 15 features in your model you can plot the 5 most important features,
@@ -195,7 +196,7 @@ plot.shapr <- function(x,
                        plot_type = "bar",
                        digits = 3,
                        print_ggplot = TRUE,
-                       index_x_explain = 1:10,
+                       index_x_explain = NULL,
                        top_k_features = NULL,
                        col = NULL,
                        bar_plot_phi0 = TRUE,
@@ -220,15 +221,32 @@ plot.shapr <- function(x,
   # Remove the explain_id column
   x$shapley_values_est <- x$shapley_values_est[, -"explain_id"]
 
-  if (is.null(index_x_explain)) index_x_explain <- seq(x$internal$parameters$n_explain)
-  if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
-  if (length(beeswarm_cex) == 0) beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4)
+  # Set default index_x_explain based on plot type
+  if (is.null(index_x_explain)) {
+    n_explain <- x$internal$parameters$n_explain
+    if (plot_type %in% c("bar", "waterfall")) {
+      # For bar and waterfall, default to first 10 observations
+      n_to_plot <- min(10, n_explain)
+      index_x_explain <- seq_len(n_to_plot)
 
-  # Inform user if only a subset of observations is being plotted
-  n_explain <- x$internal$parameters$n_explain
-  if (length(index_x_explain) < n_explain) {
-    msg <- paste0("Showing ", length(index_x_explain), " of ", n_explain, " observations.")
-    cli::cli_inform(c("i" = msg))
+      # Inform user if there are more observations available
+      if (n_explain > 10) {
+        msg1 <- paste0(
+          "There are ", n_explain, " observations to explain, but only the first 10 are plotted by default."
+          )
+        msg2 <- paste0(
+          "Adjust this via the 'index_x_explain' argument if you want to plot different observations."
+         )
+        cli::cli_inform(c("i" = msg1, " " = msg2))
+      }
+    } else {
+      # For scatter and beeswarm, plot all observations
+      index_x_explain <- seq_len(n_explain)
+    }
+  }
+  if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
+  if (length(beeswarm_cex) == 0 || is.infinite(beeswarm_cex)) {
+    beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4)
   }
 
   is_groupwise <- x$internal$parameters$is_groupwise
@@ -334,18 +352,18 @@ plot.shapr <- function(x,
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
+    n_explain <- length(dt_plot[, unique(id)])
 
-    if (length(dt_plot[, unique(id)]) > 10) {
+    if (n_explain > 10) {
       cli::cli_abort(
         c(
-          "Too many observations to plot together!",
-          "Try for instance setting index_x_explain = 1:10 so that the max.is not exceeded."
+          paste0("Too many observations (", n_explain, ") to plot together!"),
+          "Please adjust this to no more than 10 observations via the 'index_x_explain' argument."
         )
       )
     }
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
-
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
