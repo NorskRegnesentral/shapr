@@ -363,6 +363,11 @@ plot.shapr <- function(x,
       )
     }
 
+    # Preserve the order of index_x_explain by converting header to a factor with ordered levels
+    header_order <- paste0("id: ", index_x_explain, ", pred = ",
+                          format(x$pred_explain[index_x_explain], digits = digits + 1))
+    dt_plot[, header := factor(header, levels = header_order)]
+
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
 
     # compute start and end values for waterfall rectangles
