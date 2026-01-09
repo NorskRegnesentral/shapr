@@ -271,7 +271,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:39 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:12:02 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -284,21 +284,29 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e22272c895.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d40be3e7d.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
+#> ℹ Showing 4 of 50 observations.
 
+#> ℹ Showing 4 of 50 observations.
 
+#> ℹ Showing 4 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:49 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:12:12 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -311,13 +319,16 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e21623df1a.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d20b99d43.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 10 of 50 observations.
 
+#> ℹ Showing 4 of 50 observations.
 
 # }
 ```

@@ -743,7 +743,7 @@ explain1 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:35:59 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:23 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -756,7 +756,7 @@ explain1 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e2322d99e4.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2db424ccc.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -772,7 +772,7 @@ explain2 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:03 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:26 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -785,7 +785,7 @@ explain2 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e268c3e407.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d1b926f86.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -801,7 +801,7 @@ explain3 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:04 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:27 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -814,7 +814,7 @@ explain3 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e26b1064c1.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d64e5c048.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -832,7 +832,7 @@ if (requireNamespace("party", quietly = TRUE)) {
   )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:05 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:29 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -845,7 +845,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e2660b195.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d1bbf3d4d.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -862,7 +862,7 @@ explain5 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:08 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:32 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -875,7 +875,7 @@ explain5 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e220c0e367.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d3fc30cdd.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -903,18 +903,18 @@ print(explain1, what = "MSEv")
 print(explain2, what = "MSEv")
 #>     MSEv MSEv_sd
 #>    <num>   <num>
-#> 1:   276     102
+#> 1:   270    97.2
 print(explain3, what = "MSEv")
 #>     MSEv MSEv_sd
 #>    <num>   <num>
-#> 1:   239    80.9
+#> 1:   237    81.4
 
 ## Summary
 summary1 <- summary(explain1)
 summary1 # Provides a nicely formatted summary of the explanation
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 3.1 seconds, started 2026-01-09 11:35:59
+#> • Computed with `shapr::explain()` in 3.1 seconds, started 2026-01-09 12:11:23
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -923,7 +923,7 @@ summary1 # Provides a nicely formatted summary of the explanation
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e2322d99e4.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2db424ccc.rds
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -971,7 +971,7 @@ explain_groups <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:12 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:35 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
 #>   therefore set to `2^n_groups = 4`.
 #> 
@@ -985,7 +985,7 @@ explain_groups <- explain(
 #> • Number of group-wise Shapley values: 2
 #> • Feature groups: A: {"Temp", "Month"}; B: {"Wind", "Solar.R"}
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e229ca40d5.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d9c7a357.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -1020,7 +1020,7 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
   )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:15 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:38 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -1032,13 +1032,13 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e24837af97.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d6fbe377a.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:18 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:41 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -1050,7 +1050,7 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e21ac43cdc.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d53c2ec69.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -1071,7 +1071,7 @@ explain_iterative <- explain(
   max_n_coalitions = 12
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 11:36:20 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-09 12:11:43 ──────────────────────────
 #> 
 #> ── Explanation overview ──
 #> 
@@ -1082,7 +1082,7 @@ explain_iterative <- explain(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpqGSl8d/shapr_obj_23e21ac6d78f.rds
+#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d14cdaec3.rds
 #> 
 #> ── Iterative computation started ──
 #> 
@@ -1100,9 +1100,9 @@ explain_iterative <- explain(
 print(explain_iterative, what = "shapley_sd")
 #>    explain_id  none Solar.R  Wind  Temp Month
 #>         <int> <num>   <num> <num> <num> <num>
-#> 1:          1     0   0.303  1.59  1.74 0.544
-#> 2:          2     0   0.342  2.54  2.48 0.669
-#> 3:          3     0   0.323  2.93  2.85 0.726
+#> 1:          1     0   0.304  1.65  1.85 0.628
+#> 2:          2     0   0.353  2.56  2.50 0.766
+#> 3:          3     0   0.356  2.96  2.88 0.844
 
 ## Summary
 # For iterative estimation, convergence info is also provided
