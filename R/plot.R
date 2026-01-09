@@ -940,14 +940,14 @@ make_waterfall_plot <- function(dt_plot,
 #' sqrt(N_explicands), thus, the CI are MSEv \/- t*MSEv_sd, where the values MSEv and MSEv_sd are extracted from the
 #' MSEv data.tables in the objects in the `explanation_list`.
 #' @param geom_col_width Numeric. Bar width. By default, set to 90% of the [ggplot2::resolution()] of the data.
-#' @param plot_type Character vector. The possible options are "overall" (default), "comb", and "explicand".
+#' @param plot_type Character vector. The possible options are "overall" (default), "coalition", and "explicand".
 #' If `plot_type = "overall"`, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
 #' for each method is created, i.e., when averaging over both the coalitions and observations/explicands.
-#' If `plot_type = "comb"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+#' If `plot_type = "coalition"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 #' criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 #' If `plot_type = "explicand"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 #' criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
-#' If `plot_type` is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
+#' If `plot_type` is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots are
 #' created.
 #'
 #' @details Note that in contrast to [plot.shapr()], [plot_MSEv_eval_crit()] always just returns the ggplot objects,
@@ -1053,7 +1053,7 @@ make_waterfall_plot <- function(dt_plot,
 #'   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
 #'   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
 #'     CI_level = 0.95,
-#'     plot_type = c("overall", "comb", "explicand")
+#'     plot_type = c("overall", "coalition", "explicand")
 #'   )
 #'   MSEv_figures$MSEv_bar
 #'   MSEv_figures$MSEv_coalition_bar
@@ -1070,7 +1070,7 @@ make_waterfall_plot <- function(dt_plot,
 #'     CI_level = 0.95
 #'   )$MSEv_explicand_bar
 #'   plot_MSEv_eval_crit(explanation_list_named,
-#'     plot_type = "comb",
+#'     plot_type = "coalition",
 #'     id_coalition = c(3, 4, 9, 13:15),
 #'     CI_level = 0.95
 #'   )$MSEv_coalition_bar
@@ -1114,10 +1114,10 @@ plot_MSEv_eval_crit <- function(explanation_list,
   }
 
   # Check for valid plot type argument
-  unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "comb", "explicand"))]
+  unknown_plot_type <- plot_type[!(plot_type %in% c("overall", "coalition", "explicand"))]
   if (length(unknown_plot_type) > 0) {
     cli::cli_abort(paste0(
-      "The `plot_type` must be one (or several) of 'overall', 'comb', 'explicand'. ",
+      "The `plot_type` must be one (or several) of 'overall', 'coalition', 'explicand'. ",
       "Do not recognise: '", paste(unknown_plot_type, collapse = "', '"), "'."
     ))
   }
@@ -1200,7 +1200,7 @@ plot_MSEv_eval_crit <- function(explanation_list,
     )
   }
 
-  if ("comb" %in% plot_type) {
+  if ("coalition" %in% plot_type) {
     # MSEv averaged over only the observations for each coalitions
     return_object <- c(
       return_object,
