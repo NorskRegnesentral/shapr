@@ -853,28 +853,28 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 names(MSEv_plots)
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
-we have only averaged over the observations or the combinations (both as bar and line plots).
+we have only averaged over the observations or the coalitions (both as bar and line plots).
 
 ```{r MSEv-plot-2, warning=FALSE, cache = TRUE}
-# The main plot of the overall MSEv averaged over both the combinations and observations
+# The main plot of the overall MSEv averaged over both the coalitions and observations
 MSEv_plots$MSEv_bar
 
-# The MSEv averaged over only the explicands for each combinations
-MSEv_plots$MSEv_combination_bar
+# The MSEv averaged over only the explicands for each coalition
+MSEv_plots$MSEv_coalition_bar
 
-# The MSEv averaged over only the combinations for each observation/explicand
+# The MSEv averaged over only the coalitions for each observation/explicand
 MSEv_plots$MSEv_explicand_bar
 
-# To see which coalition S each of the `id_combination` corresponds to,
+# To see which coalition S each of the `id_coalition` corresponds to,
 # i.e., which features that are conditions on.
-explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
+explanation_list_named[[1]]$MSEv$MSEv_coalition[, c("id_coalition", "features")]
 ```
 
-We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
-certain test observations and combinations, respectively.
+We can specify the `index_x_explain` and `id_coalition` parameters in `plot_MSEv_eval_crit()` to only plot
+certain test observations and coalitions, respectively.
 
 ```{r MSEv-plot-3, warning=FALSE, cache = TRUE}
-# We can specify which test observations or combinations to plot
+# We can specify which test observations or coalitions to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
   index_x_explain = c(1, 3:4, 6),
