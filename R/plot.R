@@ -233,10 +233,10 @@ plot.shapr <- function(x,
       if (n_explain > 10) {
         msg1 <- paste0(
           "There are ", n_explain, " observations to explain, but only the first 10 are plotted by default."
-          )
+        )
         msg2 <- paste0(
           "Adjust this via the 'index_x_explain' argument if you want to plot different observations."
-         )
+        )
         cli::cli_inform(c("i" = msg1, " " = msg2))
       }
     } else {
@@ -364,8 +364,10 @@ plot.shapr <- function(x,
     }
 
     # Preserve the order of index_x_explain by converting header to a factor with ordered levels
-    header_order <- paste0("id: ", index_x_explain, ", pred = ",
-                          format(x$pred_explain[index_x_explain], digits = digits + 1))
+    header_order <- paste0(
+      "id: ", index_x_explain, ", pred = ",
+      format(x$pred_explain[index_x_explain], digits = digits + 1)
+    )
     dt_plot[, header := factor(header, levels = header_order)]
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
