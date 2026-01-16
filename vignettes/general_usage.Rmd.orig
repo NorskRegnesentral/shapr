@@ -867,7 +867,7 @@ MSEv_plots$MSEv_explicand_bar
 
 # To see which coalition S each of the `id_coalition` corresponds to,
 # i.e., which features that are conditions on.
-explanation_list_named[[1]]$MSEv$MSEv_coalition[, c("id_coalition", "features")]
+explanation_list_named[[1]]$MSEv$MSEv_coalition[, c("id_coalition", "coalitions")]
 ```
 
 We can specify the `index_x_explain` and `id_coalition` parameters in `plot_MSEv_eval_crit()` to only plot
