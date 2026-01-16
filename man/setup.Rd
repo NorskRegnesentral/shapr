@@ -162,7 +162,7 @@ Specifics for the iterative process and convergence criterion are set via \code{
 
 \item{iterative_args}{Named list.
 Specifies the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{is_python}{Logical.
 Indicates whether the function is called from the Python wrapper.
@@ -226,11 +226,11 @@ regression-based approaches are not applicable to the causal Shapley methodology
 
 \item{output_args}{Named list.
 Specifies certain arguments related to the output of the function.
-See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{model_class}{Character string.
 The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}

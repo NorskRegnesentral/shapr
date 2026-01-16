@@ -110,13 +110,13 @@
 #'
 #' @param iterative_args Named list.
 #' Specifies the arguments for the iterative procedure.
-#' See [get_iterative_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
 #' Specifies certain arguments related to the output of the function.
-#' See [get_output_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
 #' Specifies extra arguments related to the computation of the Shapley values.
-#' See [get_extra_comp_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
 #' @param prev_shapr_object `shapr` object or string.
 #' If an object of class `shapr` is provided, or a string with a path to where intermediate results are stored,
