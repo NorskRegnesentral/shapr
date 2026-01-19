@@ -31,8 +31,7 @@
 #' Which of the test observations to plot. For example, if you have
 #' explained 10 observations using [explain()], you can generate a plot for the first five
 #' observations by setting `index_x_explain = 1:5`.
-#' Defaults to the first 10 observations for `plot_type = "bar"` and `"waterfall"`,
-#' and to all observations for `plot_type = "scatter"` and `"beeswarm"`.
+#' Defaults to the first 10 observations.
 #' @param top_k_features Integer.
 #' How many features to include in the plot.
 #' E.g. if you have 15 features in your model you can plot the 5 most important features,
@@ -196,7 +195,7 @@ plot.shapr <- function(x,
                        plot_type = "bar",
                        digits = 3,
                        print_ggplot = TRUE,
-                       index_x_explain = NULL,
+                       index_x_explain = 1:10,
                        top_k_features = NULL,
                        col = NULL,
                        bar_plot_phi0 = TRUE,
@@ -352,13 +351,12 @@ plot.shapr <- function(x,
   } else { # if bar or waterfall plot
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
-    n_explain <- length(dt_plot[, unique(id)])
 
-    if (n_explain > 10) {
+    if (length(dt_plot[, unique(id)]) > 10) {
       cli::cli_abort(
         c(
-          paste0("Too many observations (", n_explain, ") to plot together!"),
-          "Please adjust this to no more than 10 observations via the 'index_x_explain' argument."
+          "Too many observations to plot together!",
+          "Try for instance setting index_x_explain = 1:10 so that the max.is not exceeded."
         )
       )
     }
@@ -369,6 +367,7 @@ plot.shapr <- function(x,
     dt_plot[, header := factor(header, levels = unique(header))]
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
+
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
