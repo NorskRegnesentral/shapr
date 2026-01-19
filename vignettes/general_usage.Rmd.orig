@@ -119,6 +119,9 @@ When using the `iterative` argument, the estimation for an observation is stoppe
 standard deviations are below `t` times the range of the Shapley values.
 The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
 
+As opposed to Kernel SHAP estimation as originally proposed in (@lundberg2017unified), `shapr`, by reweights the samples according to
+the "Paired c-kernel" strategy described in @olsen2025improving to reduce the estimation variance and thereby improve the convergence speed.
+
 Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
 This can be controlled through the `max_n_coalitions` argument.
@@ -615,13 +618,13 @@ explanation_cat_method <- explain(
 ```
 
 Shapley values can be used to explain any predictive model. For
-predictive models taking time series as input, `approach='timeseries'`
+predictive models taking time series as input, `approach="timeseries"`
 can be used. In such models, joint behavior of consecutive time points
 is often more important for the outcome than the single time points.
 Therefore, it makes sense to derive Shapley value segments of the time
 series instead of for each single time point. In `shapr` this can be
 achieved through the `group` attribute. Other optional parameters of
-`approach='timeseries'` are `timeseries.fixed_sigma` and
+`approach="timeseries"` are `timeseries.fixed_sigma` and
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 

@@ -14,7 +14,7 @@
 #' for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 #' Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 #' vignette for several examples.
-#' Note, to make it easier to call `explain()` from Python, the `regression.tune_values` can also be a string
+#' Note, to make it easier to call [explain()] from Python, the `regression.tune_values` can also be a string
 #' containing an R function. For example,
 #' `"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"` is also a valid input.
 #' It is essential to include the package prefix if the package is not loaded.
@@ -24,7 +24,7 @@
 #' @param regression.recipe_func Either `NULL` (default) or a function that that takes in a [recipes::recipe()]
 #' object and returns a modified [recipes::recipe()] with potentially additional recipe steps. See the regression
 #' vignette for several examples.
-#' Note, to make it easier to call `explain()` from Python, the `regression.recipe_func` can also be a string
+#' Note, to make it easier to call [explain()] from Python, the `regression.recipe_func` can also be a string
 #' containing an R function. For example,
 #' `"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"` is also
 #' a valid input. It is essential to include the package prefix if the package is not loaded.

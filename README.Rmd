@@ -187,7 +187,8 @@ package (as of v1.0.4).
 See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further 
 basic usage examples and brief introductions to the methodology. 
 For more thorough information about the underlying methodology, see methodological papers
-@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative.
+@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative and 
+@olsen2025improving.
 See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package
 (with a different structure, syntax, and significantly less functionality).
 

@@ -1,10 +1,10 @@
 #' @rdname setup_approach
 #'
-#' @param gaussian.mu Numeric vector. (Optional)
+#' @param gaussian.mu Numeric vector.
 #' Containing the mean of the data generating distribution.
 #' `NULL` means it is estimated from the `x_train`.
 #'
-#' @param gaussian.cov_mat Numeric matrix. (Optional)
+#' @param gaussian.cov_mat Numeric matrix.
 #' Containing the covariance matrix of the data generating distribution.
 #' `NULL` means it is estimated from the `x_train`.
 #'
