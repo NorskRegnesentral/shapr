@@ -67,14 +67,15 @@ probabilities.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 \code{'on_all_cond'} is preferred as it performs the best in simulation studies, see
-\href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+\href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.}
 
 \item{semi_deterministic_sampling}{Logical.
 If \code{FALSE} (default), then we sample from all coalitions.
 If \code{TRUE}, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
 coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-and corresponds to the PySHAP* strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+and corresponds to the PySHAP* strategy in the paper
+\href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.}
 
 \item{dt_coal_samp_info}{data.table. The data.table contains information about which coalitions should be
 deterministically included and which can be sampled, in addition to the sampling probabilities of each available

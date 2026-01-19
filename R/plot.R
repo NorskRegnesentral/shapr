@@ -945,8 +945,8 @@ make_waterfall_plot <- function(dt_plot,
 #' criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 #' If `plot_type = "explicand"`, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 #' criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
-#' If `plot_type` is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots are
-#' created.
+#' If `plot_type` is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots
+#' are created.
 #'
 #' @details Note that in contrast to [plot.shapr()], [plot_MSEv_eval_crit()] always just returns the ggplot objects,
 #' i.e. no force displaying through [ggplot2::print.ggplot()].

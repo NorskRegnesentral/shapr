@@ -11,8 +11,8 @@
 #' Needs to be `0 < empirical.eta <= 1`.
 #' The default value is 0.95.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
-#' For example, if `empirical.eta = .8`, we choose the `K` samples with the largest weights so that the sum of the weights
-#' accounts for 80% of the total weight.
+#' For example, if `empirical.eta = .8`, we choose the `K` samples with the largest weights so that the sum of the
+#' weights accounts for 80% of the total weight.
 #' `empirical.eta` is the \eqn{\eta} parameter in equation (15) of
 # nolint start
 #' \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.

@@ -1157,7 +1157,8 @@ check_and_set_sampling_info <- function(internal) {
 #' If `TRUE`, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
 #' coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 #' that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-#' and corresponds to the PySHAP* strategy in the paper \href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.
+#' and corresponds to the PySHAP* strategy in the paper
+#' \href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.
 #' @param kernelSHAP_reweighting String.
 #' How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
 #' The aim of this is to reduce the randomness and thereby the variance of the Shapley value estimates.

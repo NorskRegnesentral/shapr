@@ -48,8 +48,8 @@ If \code{plot_type = "coalition"}, then the plots (one line plot and one bar plo
 criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 If \code{plot_type = "explicand"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
-If \code{plot_type} is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots are
-created.}
+If \code{plot_type} is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots
+are created.}
 }
 \value{
 Either a single \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object of the MSEv criterion when \code{plot_type = "overall"}, or a list
