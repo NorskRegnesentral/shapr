@@ -1,6 +1,10 @@
 **Note:** For changes to the Python wrapper `shaprpy`, see the
 [shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
+# shapr 1.0.8
+
+
+
 # shapr 1.0.7
 
 ### Improvements

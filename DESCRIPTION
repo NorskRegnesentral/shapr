@@ -1,5 +1,5 @@
 Package: shapr
-Version: 1.0.7
+Version: 1.0.8
 Title: Prediction Explanation with Dependence-Aware Shapley Values
 Description: Complex machine learning models are often hard to interpret. However, in
   many situations it is crucial to understand and explain why a model made a specific
