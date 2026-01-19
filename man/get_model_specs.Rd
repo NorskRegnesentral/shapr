@@ -7,7 +7,7 @@
 \alias{get_model_specs.default}
 \alias{get_model_specs.ar}
 \alias{get_model_specs.Arima}
-\alias{get_model_specs.forecast_ARIMA}
+\alias{get_model_specs.fc_model}
 \alias{get_model_specs.glm}
 \alias{get_model_specs.lm}
 \alias{get_model_specs.gam}
@@ -25,7 +25,7 @@ get_model_specs(x)
 
 \method{get_model_specs}{Arima}(x)
 
-\method{get_model_specs}{forecast_ARIMA}(x)
+\method{get_model_specs}{fc_model}(x)
 
 \method{get_model_specs}{glm}(x)
 

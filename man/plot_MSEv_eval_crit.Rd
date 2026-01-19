@@ -22,8 +22,7 @@ the approach names (with integer suffix for duplicates) for the explanation obje
 Which of the test observations to plot. For example, if you have
 explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first five
 observations by setting \code{index_x_explain = 1:5}.
-Defaults to the first 10 observations for \code{plot_type = "bar"} and \code{"waterfall"},
-and to all observations for \code{plot_type = "scatter"} and \code{"beeswarm"}.}
+Defaults to the first 10 observations.}
 
 \item{id_coalition}{Integer vector. Which of the coalitions to plot.
 E.g. if you used \code{n_coalitions = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
