@@ -181,13 +181,13 @@ test_that("beeswarm_plot_new_arguments", {
 test_that("MSEv evaluation criterion plots", {
   MSEv_plots <- plot_MSEv_eval_crit(
     explanation_list_named,
-    plot_type = c("overall", "comb", "explicand"),
+    plot_type = c("overall", "coalition", "explicand"),
     CI_level = 0.95
   )
 
   MSEv_plots_specified_width <- plot_MSEv_eval_crit(
     explanation_list_named,
-    plot_type = c("overall", "comb", "explicand"),
+    plot_type = c("overall", "coalition", "explicand"),
     geom_col_width = 0.5
   )
 
@@ -262,7 +262,7 @@ test_that("MSEv evaluation criterion plots", {
     title = "MSEv_coalitions for specified coalitions",
     fig = plot_MSEv_eval_crit(
       explanation_list_named,
-      plot_type = "comb",
+      plot_type = "coalition",
       id_coalition = c(3, 4, 9, 13:15),
       CI_level = 0.95
     )$MSEv_coalition_bar
