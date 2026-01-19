@@ -103,6 +103,7 @@ The following models are currently supported:
 \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
 \item \code{\link[xgboost:xgboost]{xgboost::xgboost()}}
 \item \code{\link[stats:ar]{stats::ar()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
+\item \code{\link[stats:arima]{stats::arima()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
 \item \code{\link[forecast:Arima]{forecast::Arima()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
 }
 

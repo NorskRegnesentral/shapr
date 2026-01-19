@@ -26,6 +26,7 @@
 #' \item [xgboost::xgb.train()]
 #' \item [xgboost::xgboost()]
 #' \item [stats::ar()] (for [explain_forecast()])
+#' \item [stats::arima()] (for [explain_forecast()])
 #' \item [forecast::Arima()] (for [explain_forecast()])
 #' }
 #'
