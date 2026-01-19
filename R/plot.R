@@ -363,12 +363,10 @@ plot.shapr <- function(x,
       )
     }
 
-    # Preserve the order of index_x_explain by converting header to a factor with ordered levels
-    header_order <- paste0(
-      "id: ", index_x_explain, ", pred = ",
-      format(x$pred_explain[index_x_explain], digits = digits + 1)
-    )
-    dt_plot[, header := factor(header, levels = header_order)]
+    # Preserve the order of index_x_explain by adding order column and sorting
+    dt_plot[, order_explain := match(id, index_x_explain)]
+    data.table::setorder(dt_plot, order_explain)
+    dt_plot[, header := factor(header, levels = unique(header))]
 
     dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
 

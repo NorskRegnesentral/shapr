@@ -164,7 +164,8 @@
       "n_coal_max",
       "vS_batching_method",
       "none",
-      "total_time_str"
+      "total_time_str",
+      "order_explain"
     )
   )
 
