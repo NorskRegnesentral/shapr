@@ -73,9 +73,9 @@ test_that("glm model works with explain (binomial)", {
 })
 
 
-# ar model (stats - always available)
+# ar model (stats)
 test_that("ar model works with explain_forecast", {
-  skip_if_not_installed("forecast")
+  skip_if_not_installed("forecast") # For prediction
 
   # Fit AR model
   model <- ar(y_ts, order.max = 2, method = "ols")
@@ -101,6 +101,61 @@ test_that("ar model works with explain_forecast", {
   expect_equal(nrow(explanation$shapley_values_est), 2)
 })
 
+# Arima model (stats)
+test_that("Arima (stats) model works with explain_forecast", {
+  skip_if_not_installed("forecast") # For prediction
+
+  # Fit AR model
+  model <- arima(y_ts, order = c(2, 1, 0))
+  model$n_ahead <- 1
+
+  # Run explain_forecast
+  explanation <- explain_forecast(
+    model = model,
+    y = y_ts,
+    train_idx = train_idx_ts,
+    explain_idx = explain_idx_ts,
+    explain_y_lags = 2,
+    horizon = 1,
+    approach = "independence",
+    phi0 = phi0_ts,
+    seed = 123,
+    group_lags = FALSE,
+    verbose = NULL
+  )
+
+  # Basic checks
+  expect_s3_class(explanation, "shapr")
+  expect_equal(nrow(explanation$shapley_values_est), 2)
+})
+
+# Arima model (forecast)
+test_that("Arima (forecast) model works with explain_forecast", {
+  skip_if_not_installed("forecast")
+
+  # Fit AR model
+  model <- forecast::Arima(y_ts, order = c(2, 1, 0))
+  model$n_ahead <- 1
+
+  # Run explain_forecast
+  explanation <- explain_forecast(
+    model = model,
+    y = y_ts,
+    train_idx = train_idx_ts,
+    explain_idx = explain_idx_ts,
+    explain_y_lags = 2,
+    horizon = 1,
+    approach = "independence",
+    phi0 = phi0_ts,
+    seed = 123,
+    group_lags = FALSE,
+    verbose = NULL
+  )
+
+  # Basic checks
+  expect_s3_class(explanation, "shapr")
+  expect_equal(nrow(explanation$shapley_values_est), 2)
+})
 
 # ranger model - regression (conditional)
 test_that("ranger model works with explain (regression)", {
