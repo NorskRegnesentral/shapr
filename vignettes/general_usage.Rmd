@@ -496,7 +496,7 @@ print(explanation)
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/setup-2-1.png)
+![](figure_general_usage/setup-2-1.webp)
 
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
@@ -510,7 +510,7 @@ The `waterfall` option shows the changes in the prediction score due to each fea
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/plot-waterfall-1.png)
+![](figure_general_usage/plot-waterfall-1.webp)
 
 The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
@@ -570,7 +570,7 @@ explanation_plot <- explain(
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
-![](figure_general_usage/plot-beeswarm-1.png)
+![](figure_general_usage/plot-beeswarm-1.webp)
 
 The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
@@ -581,7 +581,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-![](figure_general_usage/plot-scatter-1.png)
+![](figure_general_usage/plot-scatter-1.webp)
 
 We can use mixed (i.e., continuous, categorical, ordinal) data with `ctree` or `vaeac`.
 Use `ctree` with mixed data in the following manner:
@@ -655,7 +655,7 @@ explanation_lm_cat <- explain(
 plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/factor-1.png)
+![](figure_general_usage/factor-1.webp)
 
 We can specify parameters used to build the conditional inference trees
 in the following manner. The default values are based on
@@ -1200,7 +1200,7 @@ we have only averaged over the observations or the coalitions (both as bar and l
 MSEv_plots$MSEv_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-1.png)
+![](figure_general_usage/MSEv-plot-2-1.webp)
 
 ``` r
 
@@ -1208,7 +1208,7 @@ MSEv_plots$MSEv_bar
 MSEv_plots$MSEv_coalition_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-2.png)
+![](figure_general_usage/MSEv-plot-2-2.webp)
 
 ``` r
 
@@ -1216,7 +1216,7 @@ MSEv_plots$MSEv_coalition_bar
 MSEv_plots$MSEv_explicand_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-3.png)
+![](figure_general_usage/MSEv-plot-2-3.webp)
 
 ``` r
 
@@ -1255,7 +1255,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 #> ℹ Showing 4 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-3-1.png)
+![](figure_general_usage/MSEv-plot-3-1.webp)
 
 ``` r
 plot_MSEv_eval_crit(explanation_list_named,
@@ -1266,7 +1266,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 #> ℹ Showing 10 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-3-2.png)
+![](figure_general_usage/MSEv-plot-3-2.webp)
 
 
 We can also alter the plots design-wise as we do in the code below.
@@ -1297,7 +1297,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 #> ℹ Showing 10 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-4-1.png)
+![](figure_general_usage/MSEv-plot-4-1.webp)
 
 # Iterative estimation {#iterative}
 
@@ -1867,7 +1867,7 @@ explanation_combined <- explain(
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/combined-1-1.png)
+![](figure_general_usage/combined-1-1.webp)
 
 As a second example using `"ctree"` to condition on 1 and 2 features, and
 `"empirical"` when conditioning on 3 features:
@@ -1998,7 +1998,7 @@ explanation_group
 plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/group-1.png)
+![](figure_general_usage/group-1.webp)
 
 ## Explain custom models
 
@@ -2144,7 +2144,7 @@ explanation_custom <- explain(
 plot(explanation_custom, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/custom-1.png)
+![](figure_general_usage/custom-1.webp)
 
 ``` r
 
@@ -2197,7 +2197,7 @@ explanation_custom_minimal <- explain(
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/custom-2.png)
+![](figure_general_usage/custom-2.webp)
 
 ## Tidymodels and workflows {#workflow_example}
 In this section, we demonstrate how to use `shapr` to explain `tidymodels` models fitted using `workflows`.
@@ -2365,7 +2365,7 @@ is likely too few epochs, as it still seems like the `vaeac` model is learning.
 plot_vaeac_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
 
-![](figure_general_usage/vaeac-plot-1-1.png)
+![](figure_general_usage/vaeac-plot-1-1.webp)
 
 ### Early stopping
 If we are uncertain about the choice of `vaeac.epochs`, we can rather use `vaeac` with early stopping.
@@ -2441,7 +2441,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_general_usage/vaeac-plot-2-1.png)
+![](figure_general_usage/vaeac-plot-2-1.webp)
 
 Can also compare the $MSE_{v}$ evaluation scores.
 
@@ -2450,7 +2450,7 @@ Can also compare the $MSE_{v}$ evaluation scores.
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
-![](figure_general_usage/vaeac-plot-3-1.png)
+![](figure_general_usage/vaeac-plot-3-1.webp)
 
 ## Continued computation {#cont_computation}
 In this section, we demonstrate how to continue to improve estimation accuracy with additional coalition samples,
