@@ -1,6 +1,11 @@
+>Resubmission after deleting a top level file which accidentally was included in the submission 1 hours ago.
+
 # shapr 1.0.8
 
-This release (v1.0.8) includes some enhancements to plotting defaults, compatibility fixes for the `forecast` package's ARIMA class name changes, improved documentation terminology, and some minor documentation improvements.
+This is a minor release with enhancements to odd plotting defaults,
+compatibility fixes for the `forecast` package's ARIMA class name changes,
+and fixes of issues related to the `parsnip` package's `xgboost` package handling in a vignette ++
+(see NEWS.md for more details).
 
 ## Test environments
 
