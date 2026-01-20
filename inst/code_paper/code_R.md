@@ -9,6 +9,25 @@
 ```
 
 
+``` r
+#### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
+
+library(xgboost)
+library(data.table)
+library(shapr)
+
+x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
+x_train <- fread(file.path("data_and_models", "x_train.csv"))
+y_train <- unlist(fread(file.path("data_and_models", "y_train.csv")))
+model <- readRDS(file.path("data_and_models", "model.rds"))
+
+
+# Load packages and sets up parallel processing
+library(future)
+library(progressr)
+future::plan(multisession, workers = 4)
+```
+
 
 ``` r
 progressr::handlers(global = TRUE)
@@ -71,7 +90,7 @@ print(exp_40_ctree)
 ##   3:          3  4537 -1088    -600  -119.7  -550  -995      83.8   13.38
 ##   4:          4  4537 -1325    -279  -177.5  -615  -969     362.4 -482.80
 ##   5:          5  4537 -1311    -251  -240.8  -845 -1168     473.3  254.54
-##  ---
+##  ---                                                                     
 ## 142:        142  4537   621    -192   311.6  -245  -384     130.0  319.46
 ## 143:        143  4537   465    -520  -304.0  -264  -262     401.1    6.81
 ## 144:        144  4537  1241    -320    67.3   366   286     559.7 -327.90
@@ -84,15 +103,15 @@ summary(exp_40_ctree)
 ```
 
 ```
-##
+## 
 ```
 
 ```
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
-## • Computed with `shapr::explain()` in 8.6 seconds, started 2026-01-20 10:17:21
+## • Computed with `shapr::explain()` in 8.9 seconds, started 2026-01-20 15:45:34
 ```
 
 ```
@@ -128,11 +147,11 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpLt0OHI/shapr_obj_39beb6f45ef4f.rds'
+## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf51bbdf309.rds'
 ```
 
 ```
-##
+## 
 ```
 
 ```
@@ -145,7 +164,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-##
+## 
 ```
 
 ```
@@ -160,7 +179,7 @@ summary(exp_40_ctree)
 ##   3:          3 4536.6 (0) -1087.50 (145.30)  -599.85 (167.09) -119.74 (184.72)
 ##   4:          4 4536.6 (0) -1324.95 (100.12)  -278.68 (134.50) -177.49 (131.18)
 ##   5:          5 4536.6 (0) -1310.88 (110.47)  -251.40 (138.11) -240.80 (126.15)
-##  ---
+##  ---                                                                           
 ## 142:        142 4536.6 (0)   621.36 ( 53.08)  -191.79 ( 55.55)  311.65 ( 57.22)
 ## 143:        143 4536.6 (0)   464.69 ( 63.60)  -519.80 ( 94.52) -304.00 ( 91.47)
 ## 144:        144 4536.6 (0)  1241.35 ( 67.95)  -319.97 ( 98.28)   67.26 (106.14)
@@ -173,16 +192,16 @@ summary(exp_40_ctree)
 ##   3:  -549.86 (492.66)  -994.66 (340.46)    83.81 (338.71)    13.38 (195.19)
 ##   4:  -615.29 (373.68)  -968.56 (222.33)   362.45 (213.00)  -482.80 (149.23)
 ##   5:  -844.81 (400.90) -1167.71 (253.41)   473.28 (215.89)   254.54 (159.17)
-##  ---
+##  ---                                                                        
 ## 142:  -245.32 ( 59.75)  -384.09 ( 76.18)   130.03 ( 70.67)   319.46 ( 69.40)
 ## 143:  -264.03 (202.57)  -261.63 (125.13)   401.12 (121.85)     6.81 ( 87.23)
 ## 144:   365.73 (218.15)   286.46 (153.12)   559.68 (147.93)  -327.90 (102.87)
 ## 145: -1173.21 (179.02)  -777.21 (127.05)   262.03 ( 97.27)   257.07 ( 67.83)
 ## 146:  -855.83 (244.94)  -995.38 (160.22)   820.56 (205.24)  -555.63 (142.21)
-##
-##
-## ── Estimated MSEv
-##
+## 
+## 
+## ── Estimated MSEv 
+## 
 ## Estimated MSE of v(S) = 1169051 (with sd = 70910)
 ```
 
@@ -200,11 +219,11 @@ exp_iter_ctree <- explain(model = model,
 ```
 
 ```
-##
-## ── Starting `shapr::explain()` at 2026-01-20 10:17:30 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ── Starting `shapr::explain()` at 2026-01-20 15:45:43 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
 ## ── Explanation overview ──
-##
+## 
 ## • Model class: <xgboost>
 ## • v(S) estimation class: Monte Carlo integration
 ## • Approach: ctree
@@ -212,23 +231,23 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpLt0OHI/shapr_obj_39beb503d056.rds'
-##
+## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf5347cc8ef.rds'
+## 
 ## ── Iterative computation started ──
-##
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ Using 66 of 128 coalitions, 26 new.
-##
-## ── Convergence info
+## 
+## ── Iteration 4 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ℹ Using 66 of 128 coalitions, 26 new. 
+## 
+## ── Convergence info 
 ## ℹ Not converged after 66 coalitions:
 ## Current convergence measure: 0.043 [needs 0.02]
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
-##
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ Using 90 of 128 coalitions, 24 new.
-##
-## ── Convergence info
+## 
+## ── Iteration 5 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ℹ Using 90 of 128 coalitions, 24 new. 
+## 
+## ── Convergence info 
 ## ✔ Iterative Shapley value estimation stopped at 90 coalitions after 5 iterations, due to:
 ## Standard deviation convergence threshold (0.02) reached: 0.019!
 ```
@@ -313,7 +332,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-01-20 10:17:39 2026-01-20 10:17:41            2.01      2 seconds
+## 1: 2026-01-20 15:45:53 2026-01-20 15:45:55            1.88     1.9 second
 ```
 
 ``` r
@@ -323,7 +342,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-01-20 10:17:41 2026-01-20 10:17:49            7.78    7.8 seconds
+## 1: 2026-01-20 15:45:55 2026-01-20 15:46:01            6.14    6.1 seconds
 ```
 
 ``` r
@@ -409,45 +428,45 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-##
+## 
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2026-01-20 10:18:21 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-01-20 15:46:28 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
-##
-##
+## 
+## 
 ## ── Explanation overview ──
-##
-##
-##
+## 
+## 
+## 
 ## • Model class: <ar>
-##
+## 
 ## • v(S) estimation class: Monte Carlo integration
-##
+## 
 ## • Approach: empirical
-##
+## 
 ## • Procedure: Non-iterative
-##
+## 
 ## • Number of Monte Carlo integration samples: 1000
-##
+## 
 ## • Number of feature-wise Shapley values: 2
-##
+## 
 ## • Number of observations to explain: 2
-##
-## • Computations (temporary) saved at: '/tmp/RtmpLt0OHI/shapr_obj_39bebe16b51a.rds'
-##
-##
-##
+## 
+## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf566c9b94d.rds'
+## 
+## 
+## 
 ## ── Main computation started ──
-##
-##
-##
+## 
+## 
+## 
 ## ℹ Using 4 of 4 coalitions.
 ```
 
@@ -489,16 +508,15 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ```
 
 ```
-##
-## ── Starting `shapr::explain_forecast()` at 2026-01-20 10:18:21 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## 
+## ── Starting `shapr::explain_forecast()` at 2026-01-20 15:46:29 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
-##   as.zoo.data.frame zoo
-##
+##   as.zoo.data.frame zoo 
+## 
 ## ── Explanation overview ──
-##
+## 
 ## • Model class: <Arima>
 ## • v(S) estimation class: Monte Carlo integration
 ## • Approach: empirical
@@ -506,20 +524,20 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpLt0OHI/shapr_obj_39beb7692f97.rds'
-##
+## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf56162a9b6.rds'
+## 
 ## ── Main computation started ──
-##
-## ℹ Using 4 of 4 coalitions.
+## 
+## ℹ Using 4 of 4 coalitions. 
 ## Registered S3 method overwritten by 'quantmod':
 ##   method            from
-##   as.zoo.data.frame zoo
+##   as.zoo.data.frame zoo 
 ## Registered S3 method overwritten by 'quantmod':
 ##   method            from
-##   as.zoo.data.frame zoo
+##   as.zoo.data.frame zoo 
 ## Registered S3 method overwritten by 'quantmod':
 ##   method            from
-##   as.zoo.data.frame zoo
+##   as.zoo.data.frame zoo 
 ## Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo
@@ -550,55 +568,55 @@ sessionInfo()
 ## R version 4.3.3 (2024-02-29)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 24.04.3 LTS
-##
+## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0
+## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 
 ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.12.0
-##
+## 
 ## locale:
-##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8
-##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8
-##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C
-## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C
-##
+##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+## 
 ## time zone: Europe/Oslo
 ## tzcode source: system (glibc)
-##
+## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base
-##
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
 ## other attached packages:
-## [1] patchwork_1.3.2   ggplot2_4.0.1     progressr_0.18.0  future_1.69.0
-## [5] shapr_1.0.8       data.table_1.18.0 xgboost_3.1.3.1
-##
+## [1] patchwork_1.3.2   ggplot2_4.0.1     progressr_0.18.0  future_1.69.0    
+## [5] shapr_1.0.8       data.table_1.18.0 xgboost_3.1.3.1  
+## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.2.1    timeDate_4051.111   dplyr_1.1.4
-##  [4] vipor_0.4.7         farver_2.1.2        S7_0.2.1
-##  [7] digest_0.6.39       rpart_4.1.24        timechange_0.3.0
-## [10] lifecycle_1.0.5     yardstick_1.3.2     survival_3.8-6
-## [13] magrittr_2.0.4      compiler_4.3.3      rlang_1.1.7
-## [16] tools_4.3.3         knitr_1.51          labeling_0.4.3
-## [19] curl_7.0.0          TTR_0.24.4          DiceDesign_1.10
-## [22] RColorBrewer_1.1-3  parsnip_1.4.1       withr_3.0.2
-## [25] purrr_1.2.1         workflows_1.3.0     nnet_7.3-20
-## [28] grid_4.3.3          tune_2.0.1          xts_0.14.1
-## [31] colorspace_2.1-2    globals_0.18.0      scales_1.4.0
-## [34] MASS_7.3-60.0.1     cli_3.6.5           ragg_1.5.0
+##  [1] tidyselect_1.2.1    timeDate_4051.111   dplyr_1.1.4        
+##  [4] vipor_0.4.7         farver_2.1.2        S7_0.2.1           
+##  [7] digest_0.6.39       rpart_4.1.24        timechange_0.3.0   
+## [10] lifecycle_1.0.5     yardstick_1.3.2     survival_3.8-6     
+## [13] magrittr_2.0.4      compiler_4.3.3      rlang_1.1.7        
+## [16] tools_4.3.3         knitr_1.51          labeling_0.4.3     
+## [19] curl_7.0.0          TTR_0.24.4          DiceDesign_1.10    
+## [22] RColorBrewer_1.1-3  parsnip_1.4.1       withr_3.0.2        
+## [25] purrr_1.2.1         workflows_1.3.0     nnet_7.3-20        
+## [28] grid_4.3.3          tune_2.0.1          xts_0.14.1         
+## [31] colorspace_2.1-2    globals_0.18.0      scales_1.4.0       
+## [34] MASS_7.3-60.0.1     cli_3.6.5           ragg_1.5.0         
 ## [37] generics_0.1.4      otel_0.2.0          future.apply_1.20.1
-## [40] ggbeeswarm_0.7.3    splines_4.3.3       dials_1.4.2
-## [43] forecast_9.0.0      parallel_4.3.3      urca_1.3-4
-## [46] vctrs_0.7.0         hardhat_1.4.2       Matrix_1.6-5
-## [49] jsonlite_2.0.0      tseries_0.10-59     beeswarm_0.4.0
-## [52] listenv_0.10.0      systemfonts_1.3.1   gower_1.0.2
-## [55] tidyr_1.3.2         recipes_1.3.1       quantmod_0.4.28
-## [58] glue_1.8.0          parallelly_1.46.1   codetools_0.2-20
-## [61] rsample_1.3.1       lubridate_1.9.4     gtable_0.3.6
-## [64] quadprog_1.5-8      lmtest_0.9-40       GPfit_1.0-9
-## [67] tibble_3.3.1        furrr_0.3.1         pillar_1.11.1
-## [70] ipred_0.9-15        lava_1.8.2          R6_2.6.1
-## [73] textshaping_1.0.4   lhs_1.2.0           evaluate_1.0.5
-## [76] lattice_0.22-7      fracdiff_1.5-3      class_7.3-23
-## [79] Rcpp_1.1.1          nlme_3.1-168        prodlim_2025.04.28
+## [40] ggbeeswarm_0.7.3    splines_4.3.3       dials_1.4.2        
+## [43] forecast_9.0.0      parallel_4.3.3      urca_1.3-4         
+## [46] vctrs_0.7.0         hardhat_1.4.2       Matrix_1.6-5       
+## [49] jsonlite_2.0.0      tseries_0.10-59     beeswarm_0.4.0     
+## [52] listenv_0.10.0      systemfonts_1.3.1   gower_1.0.2        
+## [55] tidyr_1.3.2         recipes_1.3.1       quantmod_0.4.28    
+## [58] glue_1.8.0          parallelly_1.46.1   codetools_0.2-20   
+## [61] rsample_1.3.1       lubridate_1.9.4     gtable_0.3.6       
+## [64] quadprog_1.5-8      lmtest_0.9-40       GPfit_1.0-9        
+## [67] tibble_3.3.1        furrr_0.3.1         pillar_1.11.1      
+## [70] ipred_0.9-15        lava_1.8.2          R6_2.6.1           
+## [73] textshaping_1.0.4   lhs_1.2.0           evaluate_1.0.5     
+## [76] lattice_0.22-7      fracdiff_1.5-3      class_7.3-23       
+## [79] Rcpp_1.1.1          nlme_3.1-168        prodlim_2025.04.28 
 ## [82] xfun_0.56           zoo_1.8-15          pkgconfig_2.0.3
 ```
 
