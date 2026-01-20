@@ -22,7 +22,8 @@ the approach names (with integer suffix for duplicates) for the explanation obje
 Which of the test observations to plot. For example, if you have
 explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first five
 observations by setting \code{index_x_explain = 1:5}.
-Defaults to the first 10 observations.}
+Defaults to the first 10 observations for \code{plot_type = "bar"} and \code{"waterfall"},
+and to all observations for \code{plot_type = "scatter"} and \code{"beeswarm"}.}
 
 \item{id_coalition}{Integer vector. Which of the coalitions to plot.
 E.g. if you used \code{n_coalitions = 16} in \code{\link[=explain]{explain()}}, you can generate a plot for the
@@ -40,15 +41,15 @@ MSEv data.tables in the objects in the \code{explanation_list}.}
 
 \item{geom_col_width}{Numeric. Bar width. By default, set to 90\% of the \code{\link[ggplot2:resolution]{ggplot2::resolution()}} of the data.}
 
-\item{plot_type}{Character vector. The possible options are "overall" (default), "comb", and "explicand".
+\item{plot_type}{Character vector. The possible options are "overall" (default), "coalition", and "explicand".
 If \code{plot_type = "overall"}, then the plot (one bar plot) associated with the overall MSEv evaluation criterion
 for each method is created, i.e., when averaging over both the coalitions and observations/explicands.
-If \code{plot_type = "comb"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
+If \code{plot_type = "coalition"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 criterion for each coalition are created, i.e., when we only average over the observations/explicands.
 If \code{plot_type = "explicand"}, then the plots (one line plot and one bar plot) associated with the MSEv evaluation
 criterion for each observations/explicands are created, i.e., when we only average over the coalitions.
-If \code{plot_type} is a vector of one or several of "overall", "comb", and "explicand", then the associated plots are
-created.}
+If \code{plot_type} is a vector of one or several of "overall", "coalition", and "explicand", then the associated plots
+are created.}
 }
 \value{
 Either a single \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object of the MSEv criterion when \code{plot_type = "overall"}, or a list
@@ -160,7 +161,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
     CI_level = 0.95,
-    plot_type = c("overall", "comb", "explicand")
+    plot_type = c("overall", "coalition", "explicand")
   )
   MSEv_figures$MSEv_bar
   MSEv_figures$MSEv_coalition_bar
@@ -177,7 +178,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     CI_level = 0.95
   )$MSEv_explicand_bar
   plot_MSEv_eval_crit(explanation_list_named,
-    plot_type = "comb",
+    plot_type = "coalition",
     id_coalition = c(3, 4, 9, 13:15),
     CI_level = 0.95
   )$MSEv_coalition_bar

@@ -32,7 +32,8 @@ If \code{FALSE} (default), then we sample from all coalitions.
 If \code{TRUE}, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
 coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-and corresponds to the PySHAP* strategy in the paper \href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+and corresponds to the PySHAP* strategy in the paper
+\href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.}
 
 \item{kernelSHAP_reweighting}{String.
 How to reweight the sampling frequency weights in the kernelSHAP solution after sampling.
@@ -45,7 +46,7 @@ probabilities.
 \code{'on_all_cond'} means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 \code{'on_all_cond'} is preferred as it performs the best in simulation studies, see
-\href{https://arxiv.org/pdf/2410.04883}{Olsen & Jullum (2024)}.}
+\href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{Olsen & Jullum (2025)}.}
 
 \item{compute_sd}{Logical. Whether to estimate the standard deviations of the Shapley value estimates. This is TRUE
 whenever sampling based kernelSHAP is applied (either iteratively or with a fixed number of coalitions).}
@@ -74,9 +75,9 @@ Get the Default Values for the Extra Computation Arguments
 }
 \references{
 \itemize{
-\item \href{https://arxiv.org/pdf/2410.04883}{
-Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP.
-arXiv preprint arXiv:2410.04883.}
+\item \href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{
+Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting Strategy in KernelSHAP.
+In World Conference on Explainable Artificial Intelligence (pp. 194-218). Springer.}
 }
 }
 \author{

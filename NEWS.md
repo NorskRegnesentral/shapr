@@ -1,6 +1,18 @@
 **Note:** For changes to the Python wrapper `shaprpy`, see the
 [shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
+
+# shapr 1.0.8
+
+### Improvements
+* Enhanced `plot.shapr()` with smarter defaults for `index_x_explain`: now defaults to `1:10` for bar and waterfall plots, and all observations for scatter and beeswarm plots. Informative messages are shown if more than 10 observations are available for bar/waterfall plots ([#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+* Renamed ARIMA model methods from `forecast_ARIMA` to `fc_model` in S3 method registrations and implementations after class name change in the `forecast` package (to align with `fable` package conventions). This affects both `get_model_specs` and `predict_model` methods. CRAN tests added to catch such up front in the future ([#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+* Updated `plot_MSEv_eval_crit()` and related documentation to use "coalition" instead of "comb" for plot types, improving clarity and consistency ([#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+
+### Documentation
+* Various minor documentation clarifications and improvements ([#487](https://github.com/NorskRegnesentral/shapr/pull/487))
+
+
 # shapr 1.0.7
 
 ### Improvements
@@ -15,6 +27,7 @@ We now support both the previous and the new xgboost versions ([#481](https://gi
 * Added tests for `summary.shapr()` method ([#482](https://github.com/NorskRegnesentral/shapr/pull/482))
 * Added non-snapshot tests for all natively supported model classes ([#481](https://github.com/NorskRegnesentral/shapr/pull/481)).
 * Minor updates to examples and vignettes the updates in `summary.shapr()` and the `xgboost` class ([#483](https://github.com/NorskRegnesentral/shapr/pull/483)).
+
 
 # shapr 1.0.6
 

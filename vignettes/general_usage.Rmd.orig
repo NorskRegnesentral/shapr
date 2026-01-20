@@ -119,6 +119,9 @@ When using the `iterative` argument, the estimation for an observation is stoppe
 standard deviations are below `t` times the range of the Shapley values.
 The `t` value controls the convergence tolerance, defaults to 0.02, and can be set through the `iterative_args$convergence_tol` argument, see [iterative estimation](#iterative) for more details.
 
+As opposed to Kernel SHAP estimation as originally proposed in (@lundberg2017unified), `shapr`, by reweights the samples according to
+the "Paired c-kernel" strategy described in @olsen2025improving to reduce the estimation variance and thereby improve the convergence speed.
+
 Since the iterativeness default changes based on the number of features (or feature groups), the default is also to have
 no upper bound on the number of coalitions considered.
 This can be controlled through the `max_n_coalitions` argument.
@@ -615,13 +618,13 @@ explanation_cat_method <- explain(
 ```
 
 Shapley values can be used to explain any predictive model. For
-predictive models taking time series as input, `approach='timeseries'`
+predictive models taking time series as input, `approach="timeseries"`
 can be used. In such models, joint behavior of consecutive time points
 is often more important for the outcome than the single time points.
 Therefore, it makes sense to derive Shapley value segments of the time
 series instead of for each single time point. In `shapr` this can be
 achieved through the `group` attribute. Other optional parameters of
-`approach='timeseries'` are `timeseries.fixed_sigma` and
+`approach="timeseries"` are `timeseries.fixed_sigma` and
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 
@@ -715,9 +718,9 @@ is closer to the true counterpart $v_{\texttt{true}}$ than a high value.
 
 In `shapr`, we allow for weighting the combinations in the $\operatorname{MSE}_{v}$ evaluation criterion either
 uniformly or by using the corresponding Shapley kernel weights (or the sampling frequencies when sampling of
-combinations is used).
-This is determined by the logical parameter `MSEv_uniform_comb_weights` in the `explain()` function, and the
-default is to do uniform weighting, that is, `MSEv_uniform_comb_weights = TRUE`.
+coalitions is used).
+The default is to use uniform weighting, but this can be changed by passing `list(MSEv_uniform_comb_weights = FALSE)`
+to the `output_args` argument of the `explain()` function.
 
 ### Advantage:
 An advantage of the $\operatorname{MSE}_{v}$ criterion is that $v_\texttt{true}$ is not involved.
@@ -782,8 +785,7 @@ explanation_independence <- explain(
   approach = "independence",
   phi0 = p0,
   seed = 1,
-  n_MC_samples = 1e2,
-  MSEv_uniform_comb_weights = TRUE
+  n_MC_samples = 1e2
 )
 
 # Empirical approach
@@ -794,8 +796,7 @@ explanation_empirical <- explain(
   approach = "empirical",
   phi0 = p0,
   seed = 1,
-  n_MC_samples = 1e2,
-  MSEv_uniform_comb_weights = TRUE
+  n_MC_samples = 1e2
 )
 
 # Gaussian 1e1 approach
@@ -806,8 +807,7 @@ explanation_gaussian_1e1 <- explain(
   approach = "gaussian",
   phi0 = p0,
   seed = 1,
-  n_MC_samples = 1e1,
-  MSEv_uniform_comb_weights = TRUE
+  n_MC_samples = 1e1
 )
 
 # Gaussian 1e2 approach
@@ -818,8 +818,7 @@ explanation_gaussian_1e2 <- explain(
   approach = "gaussian",
   phi0 = p0,
   seed = 1,
-  n_MC_samples = 1e2,
-  MSEv_uniform_comb_weights = TRUE
+  n_MC_samples = 1e2
 )
 
 # Combined approach
@@ -830,8 +829,7 @@ explanation_combined <- explain(
   approach = c("gaussian", "empirical", "independence"),
   phi0 = p0,
   seed = 1,
-  n_MC_samples = 1e2,
-  MSEv_uniform_comb_weights = TRUE
+  n_MC_samples = 1e2
 )
 
 # Create a list of explanations with names
@@ -850,7 +848,7 @@ We can then compare the different approaches by creating plots of the $\operator
 ```{r MSEv-plot, warning=FALSE, cache = TRUE}
 # Create the MSEv plots with approximate 95% confidence intervals
 MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
-  plot_type = c("overall", "comb", "explicand"),
+  plot_type = c("overall", "coalition", "explicand"),
   CI_level = 0.95
 )
 
@@ -858,38 +856,38 @@ MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
 names(MSEv_plots)
 ```
 The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{MSE}_{v}$ evaluation criterion for each method averaged over both the combinations/coalitions and test observations/explicands. However, we can also look at the other plots where
-we have only averaged over the observations or the combinations (both as bar and line plots).
+we have only averaged over the observations or the coalitions (both as bar and line plots).
 
 ```{r MSEv-plot-2, warning=FALSE, cache = TRUE}
-# The main plot of the overall MSEv averaged over both the combinations and observations
+# The main plot of the overall MSEv averaged over both the coalitions and observations
 MSEv_plots$MSEv_bar
 
-# The MSEv averaged over only the explicands for each combinations
-MSEv_plots$MSEv_combination_bar
+# The MSEv averaged over only the explicands for each coalition
+MSEv_plots$MSEv_coalition_bar
 
-# The MSEv averaged over only the combinations for each observation/explicand
+# The MSEv averaged over only the coalitions for each observation/explicand
 MSEv_plots$MSEv_explicand_bar
 
-# To see which coalition S each of the `id_combination` corresponds to,
+# To see which coalition S each of the `id_coalition` corresponds to,
 # i.e., which features that are conditions on.
-explanation_list_named[[1]]$MSEv$MSEv_combination[, c("id_combination", "features")]
+explanation_list_named[[1]]$MSEv$MSEv_coalition[, c("id_coalition", "coalitions")]
 ```
 
-We can specify the `index_x_explain` and `id_combination` parameters in `plot_MSEv_eval_crit()` to only plot
-certain test observations and combinations, respectively.
+We can specify the `index_x_explain` and `id_coalition` parameters in `plot_MSEv_eval_crit()` to only plot
+certain test observations and coalitions, respectively.
 
 ```{r MSEv-plot-3, warning=FALSE, cache = TRUE}
-# We can specify which test observations or combinations to plot
+# We can specify which test observations or coalitions to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
   index_x_explain = c(1, 3:4, 6),
   CI_level = 0.95
 )$MSEv_explicand_bar
 plot_MSEv_eval_crit(explanation_list_named,
-  plot_type = "comb",
+  plot_type = "coalition",
   id_coalition = c(3, 4, 9, 13:15),
   CI_level = 0.95
-)$MSEv_combination_bar
+)$MSEv_coalition_bar
 ```
 
 

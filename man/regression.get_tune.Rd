@@ -21,7 +21,7 @@ If \code{regression.tune_values} is a function, then it should take one argument
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
-Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+Note, to make it easier to call \code{\link[=explain]{explain()}} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,
 \code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
 It is essential to include the package prefix if the package is not loaded.}

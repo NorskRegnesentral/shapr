@@ -9,7 +9,7 @@
   plot_type = "bar",
   digits = 3,
   print_ggplot = TRUE,
-  index_x_explain = 1:10,
+  index_x_explain = NULL,
   top_k_features = NULL,
   col = NULL,
   bar_plot_phi0 = TRUE,
@@ -53,7 +53,8 @@ See the examples for a practical use case.}
 Which of the test observations to plot. For example, if you have
 explained 10 observations using \code{\link[=explain]{explain()}}, you can generate a plot for the first five
 observations by setting \code{index_x_explain = 1:5}.
-Defaults to the first 10 observations.}
+Defaults to the first 10 observations for \code{plot_type = "bar"} and \code{"waterfall"},
+and to all observations for \code{plot_type = "scatter"} and \code{"beeswarm"}.}
 
 \item{top_k_features}{Integer.
 How many features to include in the plot.

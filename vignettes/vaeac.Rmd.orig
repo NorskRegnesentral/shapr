@@ -231,7 +231,7 @@ way around.
 
 ```{r check-n_coalitions, cache = TRUE}
 # Send the pre-trained vaeac path
-expl_batches_combinations <- explain(
+expl_batches_coalitions <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,
@@ -246,7 +246,7 @@ expl_batches_combinations <- explain(
 )
 
 # Gives different Shapley values as the latter are based only on a subset of coalitions
-plot_SV_several_approaches(list("Original" = explanation, "Other combi." = expl_batches_combinations))
+plot_SV_several_approaches(list("Original" = explanation, "Other coals." = expl_batches_coalitions))
 
 # Can compare that to the situation where we have exact computations (i.e., include all coalitions)
 explanation$internal$objects$X
@@ -257,7 +257,7 @@ an MCAR (missing completely at random) mask generator, but rather a mask generat
 model is only trained on the specified set of coalitions. In this case, it will be the set of the sampled coalitions.
 
 ```{r check-n_coalitions-2, cache = TRUE}
-expl_batches_combinations_2 <- explain(
+expl_batches_coalitions_2 <- explain(
   model = model,
   x_explain = x_explain,
   x_train = x_train,

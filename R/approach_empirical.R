@@ -1,19 +1,19 @@
 #' @rdname setup_approach
 #'
-#' @param empirical.type Character. (default = `"fixed_sigma"`)
-#' Must be one of `"independence"`, `"fixed_sigma"`, `"AICc_each_k"`, or `"AICc_full"`.
+#' @param empirical.type Character.
+#' Must be one of `"fixed_sigma"` (default), `"AICc_each_k"`, `"AICc_full"` or `"independence"`.
 #' Note: `"empirical.type = independence"` is deprecated; use `approach = "independence"` instead.
 #' `"fixed_sigma"` uses a fixed bandwidth (set through `empirical.fixed_sigma`) in the kernel density estimation.
 #' `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the AICc criterion, with respectively
 #' one bandwidth per coalition size and one bandwidth for all coalition sizes.
 #'
 #' @param empirical.eta Numeric scalar.
-#' Needs to be `0 < eta <= 1`.
+#' Needs to be `0 < empirical.eta <= 1`.
 #' The default value is 0.95.
 #' Represents the minimum proportion of the total empirical weight that data samples should use.
-#' For example, if `eta = .8`, we choose the `K` samples with the largest weights so that the sum of the weights
-#' accounts for 80\% of the total weight.
-#' `eta` is the \eqn{\eta} parameter in equation (15) of
+#' For example, if `empirical.eta = .8`, we choose the `K` samples with the largest weights so that the sum of the
+#' weights accounts for 80% of the total weight.
+#' `empirical.eta` is the \eqn{\eta} parameter in equation (15) of
 # nolint start
 #' \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.
 # nolint end
@@ -38,7 +38,7 @@
 #' The default value is 0.1.
 #' Only used when `empirical.type` is either `"AICc_each_k"` or `"AICc_full"`.
 #'
-#' @param empirical.cov_mat Numeric matrix. (Optional)
+#' @param empirical.cov_mat Numeric matrix.
 #' The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 #' `NULL` means it is estimated from `x_train`.
 #'

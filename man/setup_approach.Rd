@@ -140,20 +140,20 @@ the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample = FALSE} \emph{and} the number of obs in the node is less than \code{n_MC_samples}.}
 
-\item{empirical.type}{Character. (default = \code{"fixed_sigma"})
-Must be one of \code{"independence"}, \code{"fixed_sigma"}, \code{"AICc_each_k"}, or \code{"AICc_full"}.
+\item{empirical.type}{Character.
+Must be one of \code{"fixed_sigma"} (default), \code{"AICc_each_k"}, \code{"AICc_full"} or \code{"independence"}.
 Note: \code{"empirical.type = independence"} is deprecated; use \code{approach = "independence"} instead.
 \code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
 \code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
 one bandwidth per coalition size and one bandwidth for all coalition sizes.}
 
 \item{empirical.eta}{Numeric scalar.
-Needs to be \verb{0 < eta <= 1}.
+Needs to be \verb{0 < empirical.eta <= 1}.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-For example, if \code{eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the weights
-accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of
+For example, if \code{empirical.eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the
+weights accounts for 80\% of the total weight.
+\code{empirical.eta} is the \eqn{\eta} parameter in equation (15) of
 \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
 
 \item{empirical.fixed_sigma}{Positive numeric scalar.
@@ -176,7 +176,7 @@ Start value of the \code{sigma} parameter when optimizing the AICc.
 The default value is 0.1.
 Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
 
-\item{empirical.cov_mat}{Numeric matrix. (Optional)
+\item{empirical.cov_mat}{Numeric matrix.
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
 
@@ -188,11 +188,11 @@ See the documentation of \code{\link[=explain]{explain()}} for details.}
 The prediction function used when \code{model} is not natively supported.
 See the documentation of \code{\link[=explain]{explain()}} for details.}
 
-\item{gaussian.mu}{Numeric vector. (Optional)
+\item{gaussian.mu}{Numeric vector.
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
-\item{gaussian.cov_mat}{Numeric matrix. (Optional)
+\item{gaussian.cov_mat}{Numeric matrix.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
 
@@ -210,7 +210,7 @@ If \code{regression.tune_values} is a function, then it should take one argument
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
-Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+Note, to make it easier to call \code{\link[=explain]{explain()}} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,
 \code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
 It is essential to include the package prefix if the package is not loaded.}
@@ -222,7 +222,7 @@ several examples.}
 \item{regression.recipe_func}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
 object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
 vignette for several examples.
-Note, to make it easier to call \code{explain()} from Python, the \code{regression.recipe_func} can also be a string
+Note, to make it easier to call \code{\link[=explain]{explain()}} from Python, the \code{regression.recipe_func} can also be a string
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}

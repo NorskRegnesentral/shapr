@@ -7,7 +7,7 @@
 \alias{predict_model.default}
 \alias{predict_model.ar}
 \alias{predict_model.Arima}
-\alias{predict_model.forecast_ARIMA}
+\alias{predict_model.fc_model}
 \alias{predict_model.glm}
 \alias{predict_model.lm}
 \alias{predict_model.gam}
@@ -35,7 +35,7 @@ predict_model(x, newdata, ...)
   ...
 )
 
-\method{predict_model}{forecast_ARIMA}(x, newdata, newreg, horizon, ...)
+\method{predict_model}{fc_model}(x, newdata, newreg, horizon, ...)
 
 \method{predict_model}{glm}(x, newdata, ...)
 
@@ -103,6 +103,7 @@ The following models are currently supported:
 \item \code{\link[xgboost:xgb.train]{xgboost::xgb.train()}}
 \item \code{\link[xgboost:xgboost]{xgboost::xgboost()}}
 \item \code{\link[stats:ar]{stats::ar()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
+\item \code{\link[stats:arima]{stats::arima()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
 \item \code{\link[forecast:Arima]{forecast::Arima()}} (for \code{\link[=explain_forecast]{explain_forecast()}})
 }
 

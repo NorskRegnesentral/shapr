@@ -51,7 +51,7 @@ predict_model.Arima <- function(x, newdata, newreg, horizon, explain_idx, explai
 
 #' @rdname predict_model
 #' @export
-predict_model.forecast_ARIMA <- function(x, newdata, newreg, horizon, ...) {
+predict_model.fc_model <- function(x, newdata, newreg, horizon, ...) {
   predict_model.Arima(x, newdata, newreg, horizon, ...)
 }
 
@@ -76,7 +76,7 @@ get_model_specs.Arima <- function(x) {
 
 #' @rdname get_model_specs
 #' @export
-get_model_specs.forecast_ARIMA <- function(x) {
+get_model_specs.fc_model <- function(x) {
   get_model_specs.Arima(x)
 }
 

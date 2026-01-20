@@ -225,7 +225,7 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA>
+      * Model class: <fc_model>
       * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
@@ -297,7 +297,7 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA>
+      * Model class: <fc_model>
       * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative
@@ -333,7 +333,7 @@
       
       -- Explanation overview --
       
-      * Model class: <forecast_ARIMA>
+      * Model class: <fc_model>
       * v(S) estimation class: Monte Carlo integration
       * Approach: empirical
       * Procedure: Non-iterative

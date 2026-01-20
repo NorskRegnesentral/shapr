@@ -57,7 +57,8 @@
 #' For `approach="ctree"`, `n_MC_samples` corresponds to the number of samples
 #' from the leaf node (see an exception related to the `ctree.sample` argument in [setup_approach.ctree()]).
 #' For `approach="empirical"`, `n_MC_samples` is the \eqn{K} parameter in equations (14-15) of
-#' Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+#' \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)},
+#' i.e. the maximum number of observations (with largest weights) that is used, see also the
 #' `empirical.eta` argument [setup_approach.empirical()].
 #'
 #' @param seed Positive integer.
@@ -110,13 +111,13 @@
 #'
 #' @param iterative_args Named list.
 #' Specifies the arguments for the iterative procedure.
-#' See [get_iterative_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_iterative_args_default()] for description of the arguments and their default values.
 #' @param output_args Named list.
 #' Specifies certain arguments related to the output of the function.
-#' See [get_output_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_output_args_default()] for description of the arguments and their default values.
 #' @param extra_computation_args Named list.
 #' Specifies extra arguments related to the computation of the Shapley values.
-#' See [get_extra_comp_args_default()] for description of the arguments and their default values.
+#' See the help file of [get_extra_comp_args_default()] for description of the arguments and their default values.
 #'
 #' @param prev_shapr_object `shapr` object or string.
 #' If an object of class `shapr` is provided, or a string with a path to where intermediate results are stored,
@@ -238,7 +239,7 @@
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations.}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
 #'   \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
-#'   }{MSEv evaluation section in the general usage vignette for details}.}
+#'   }{MSEv evaluation section in the general usage vignette} for details.}
 #'   \item{`timing`}{List containing timing information for the different parts of the computation.
 #'   `summary` contains the time stamps for the start and end time in addition to the total execution time.
 #'   `overall_timing_secs` gives the time spent on different parts of the explanation computation.
@@ -462,8 +463,9 @@
 #'   - \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
 #'   Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 #'   model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
-#'  -  \href{https://arxiv.org/pdf/2410.04883}{
-#'  Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410}
+#'  -  \href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{
+#'  Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting Strategy in KernelSHAP.
+#'  In World Conference on Explainable Artificial Intelligence (pp. 194-218). Springer.}
 # nolint end
 explain <- function(model,
                     x_explain,

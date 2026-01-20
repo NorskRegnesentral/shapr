@@ -86,7 +86,8 @@ of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument in \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)},
+i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
@@ -162,7 +163,7 @@ Specifics for the iterative process and convergence criterion are set via \code{
 
 \item{iterative_args}{Named list.
 Specifies the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{is_python}{Logical.
 Indicates whether the function is called from the Python wrapper.
@@ -226,11 +227,11 @@ regression-based approaches are not applicable to the causal Shapley methodology
 
 \item{output_args}{Named list.
 Specifies certain arguments related to the output of the function.
-See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{model_class}{Character string.
 The class of the model object, e.g., "lm", "glm", "xgboost", etc. obtained by \code{class(model)[1]}.}

@@ -86,7 +86,8 @@ of every conditional expectation.
 For \code{approach="ctree"}, \code{n_MC_samples} corresponds to the number of samples
 from the leaf node (see an exception related to the \code{ctree.sample} argument in \code{\link[=setup_approach.ctree]{setup_approach.ctree()}}).
 For \code{approach="empirical"}, \code{n_MC_samples} is the \eqn{K} parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+\href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)},
+i.e. the maximum number of observations (with largest weights) that is used, see also the
 \code{empirical.eta} argument \code{\link[=setup_approach.empirical]{setup_approach.empirical()}}.}
 
 \item{seed}{Positive integer.
@@ -177,15 +178,15 @@ regression-based approaches are not applicable to the causal Shapley methodology
 
 \item{extra_computation_args}{Named list.
 Specifies extra arguments related to the computation of the Shapley values.
-See \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_extra_comp_args_default]{get_extra_comp_args_default()}} for description of the arguments and their default values.}
 
 \item{iterative_args}{Named list.
 Specifies the arguments for the iterative procedure.
-See \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_iterative_args_default]{get_iterative_args_default()}} for description of the arguments and their default values.}
 
 \item{output_args}{Named list.
 Specifies certain arguments related to the output of the function.
-See \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
+See the help file of \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
   Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
@@ -221,19 +222,19 @@ If \code{FALSE} and the number of observations in the leaf node is more than \co
 the method will sample \code{n_MC_samples} observations (with replacement).
 This means that there will always be sampling in the leaf unless
 \code{sample = FALSE} \emph{and} the number of obs in the node is less than \code{n_MC_samples}.}
-    \item{\code{empirical.type}}{Character. (default = \code{"fixed_sigma"})
-Must be one of \code{"independence"}, \code{"fixed_sigma"}, \code{"AICc_each_k"}, or \code{"AICc_full"}.
+    \item{\code{empirical.type}}{Character.
+Must be one of \code{"fixed_sigma"} (default), \code{"AICc_each_k"}, \code{"AICc_full"} or \code{"independence"}.
 Note: \code{"empirical.type = independence"} is deprecated; use \code{approach = "independence"} instead.
 \code{"fixed_sigma"} uses a fixed bandwidth (set through \code{empirical.fixed_sigma}) in the kernel density estimation.
 \code{"AICc_each_k"} and \code{"AICc_full"} optimize the bandwidth using the AICc criterion, with respectively
 one bandwidth per coalition size and one bandwidth for all coalition sizes.}
     \item{\code{empirical.eta}}{Numeric scalar.
-Needs to be \verb{0 < eta <= 1}.
+Needs to be \verb{0 < empirical.eta <= 1}.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-For example, if \code{eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the weights
-accounts for 80\\% of the total weight.
-\code{eta} is the \eqn{\eta} parameter in equation (15) of
+For example, if \code{empirical.eta = .8}, we choose the \code{K} samples with the largest weights so that the sum of the
+weights accounts for 80\% of the total weight.
+\code{empirical.eta} is the \eqn{\eta} parameter in equation (15) of
 \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{Aas et al. (2021)}.}
     \item{\code{empirical.fixed_sigma}}{Positive numeric scalar.
 The default value is 0.1.
@@ -251,13 +252,13 @@ Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AI
 Start value of the \code{sigma} parameter when optimizing the AICc.
 The default value is 0.1.
 Only used when \code{empirical.type} is either \code{"AICc_each_k"} or \code{"AICc_full"}.}
-    \item{\code{empirical.cov_mat}}{Numeric matrix. (Optional)
+    \item{\code{empirical.cov_mat}}{Numeric matrix.
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 \code{NULL} means it is estimated from \code{x_train}.}
-    \item{\code{gaussian.mu}}{Numeric vector. (Optional)
+    \item{\code{gaussian.mu}}{Numeric vector.
 Containing the mean of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
-    \item{\code{gaussian.cov_mat}}{Numeric matrix. (Optional)
+    \item{\code{gaussian.cov_mat}}{Numeric matrix.
 Containing the covariance matrix of the data generating distribution.
 \code{NULL} means it is estimated from the \code{x_train}.}
     \item{\code{regression.model}}{A \code{tidymodels} object of class \code{model_specs}. Default is a linear regression model, i.e.,
@@ -273,7 +274,7 @@ If \code{regression.tune_values} is a function, then it should take one argument
 for the current coalition and returns a data.frame/data.table/tibble with the properties described above.
 Using a function allows the hyperparameter values to change based on the size of the coalition See the regression
 vignette for several examples.
-Note, to make it easier to call \code{explain()} from Python, the \code{regression.tune_values} can also be a string
+Note, to make it easier to call \code{\link[=explain]{explain()}} from Python, the \code{regression.tune_values} can also be a string
 containing an R function. For example,
 \code{"function(x) return(dials::grid_regular(dials::mtry(c(1, ncol(x)))), levels = 3))"} is also a valid input.
 It is essential to include the package prefix if the package is not loaded.}
@@ -283,7 +284,7 @@ several examples.}
     \item{\code{regression.recipe_func}}{Either \code{NULL} (default) or a function that that takes in a \code{\link[recipes:recipe]{recipes::recipe()}}
 object and returns a modified \code{\link[recipes:recipe]{recipes::recipe()}} with potentially additional recipe steps. See the regression
 vignette for several examples.
-Note, to make it easier to call \code{explain()} from Python, the \code{regression.recipe_func} can also be a string
+Note, to make it easier to call \code{\link[=explain]{explain()}} from Python, the \code{regression.recipe_func} can also be a string
 containing an R function. For example,
 \code{"function(recipe) return(recipes::step_ns(recipe, recipes::all_numeric_predictors(), deg_free = 2))"} is also
 a valid input. It is essential to include the package prefix if the package is not loaded.}
@@ -334,7 +335,7 @@ Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the de
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion
-}{MSEv evaluation section in the general usage vignette for details}.}
+}{MSEv evaluation section in the general usage vignette} for details.}
 \item{\code{timing}}{List containing timing information for the different parts of the computation.
 \code{summary} contains the time stamps for the start and end time in addition to the total execution time.
 \code{overall_timing_secs} gives the time spent on different parts of the explanation computation.
@@ -612,8 +613,9 @@ explain predictive models with dependent mixed features. Journal of machine lear
 \item \href{https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf}{
 Olsen, L. H. B., Glad, I. K., Jullum, M., & Aas, K. (2024). A comparative study of methods for estimating
 model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48}
-\item \href{https://arxiv.org/pdf/2410.04883}{
-Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410}
+\item \href{https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf}{
+Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting Strategy in KernelSHAP.
+In World Conference on Explainable Artificial Intelligence (pp. 194-218). Springer.}
 }
 }
 \author{
