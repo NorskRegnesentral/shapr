@@ -25,9 +25,10 @@ check_categorical_valid_MCsamp(dt, n_explain, n_MC_samples, joint_prob_dt)
   `ctree.sample` argument in
   [`setup_approach.ctree()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)).
   For `approach="empirical"`, `n_MC_samples` is the \\K\\ parameter in
-  equations (14-15) of Aas et al. (2021), i.e. the maximum number of
-  observations (with largest weights) that is used, see also the
-  `empirical.eta` argument
+  equations (14-15) of [Aas et al.
+  (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf),
+  i.e. the maximum number of observations (with largest weights) that is
+  used, see also the `empirical.eta` argument
   [`setup_approach.empirical()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md).
 
 ## Details

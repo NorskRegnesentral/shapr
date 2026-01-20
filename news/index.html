@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,6 +46,19 @@
       <small>Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.8" id="shapr-108">shapr 1.0.8<a class="anchor" aria-label="anchor" href="#shapr-108"></a></h2>
+<div class="section level4">
+<h4 id="improvements-1-0-8">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-8"></a></h4>
+<ul><li>Enhanced <code><a href="../reference/plot.shapr.html">plot.shapr()</a></code> with smarter defaults for <code>index_x_explain</code>: now defaults to <code>1:10</code> for bar and waterfall plots, and all observations for scatter and beeswarm plots. Informative messages are shown if more than 10 observations are available for bar/waterfall plots (<a href="https://github.com/NorskRegnesentral/shapr/pull/487" class="external-link">#487</a>).</li>
+<li>Renamed ARIMA model methods from <code>forecast_ARIMA</code> to <code>fc_model</code> in S3 method registrations and implementations after class name change in the <code>forecast</code> package (to align with <code>fable</code> package conventions). This affects both <code>get_model_specs</code> and <code>predict_model</code> methods. CRAN tests added to catch such up front in the future (<a href="https://github.com/NorskRegnesentral/shapr/pull/487" class="external-link">#487</a>).</li>
+<li>Updated <code><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit()</a></code> and related documentation to use “coalition” instead of “comb” for plot types, improving clarity and consistency (<a href="https://github.com/NorskRegnesentral/shapr/pull/487" class="external-link">#487</a>).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="documentation-1-0-8">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-8"></a></h4>
+<ul><li>Various minor documentation clarifications and improvements (<a href="https://github.com/NorskRegnesentral/shapr/pull/487" class="external-link">#487</a>)</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.7" id="shapr-107">shapr 1.0.7<a class="anchor" aria-label="anchor" href="#shapr-107"></a></h2><p class="text-muted">CRAN release: 2025-12-22</p>
 <div class="section level4">

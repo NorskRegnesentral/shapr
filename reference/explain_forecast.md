@@ -157,9 +157,10 @@ explain_forecast(
   `ctree.sample` argument in
   [`setup_approach.ctree()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)).
   For `approach="empirical"`, `n_MC_samples` is the \\K\\ parameter in
-  equations (14-15) of Aas et al. (2021), i.e. the maximum number of
-  observations (with largest weights) that is used, see also the
-  `empirical.eta` argument
+  equations (14-15) of [Aas et al.
+  (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf),
+  i.e. the maximum number of observations (with largest weights) that is
+  used, see also the `empirical.eta` argument
   [`setup_approach.empirical()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md).
 
 - seed:
@@ -225,20 +226,21 @@ explain_forecast(
 - extra_computation_args:
 
   Named list. Specifies extra arguments related to the computation of
-  the Shapley values. See
+  the Shapley values. See the help file of
   [`get_extra_comp_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_extra_comp_args_default.md)
   for description of the arguments and their default values.
 
 - iterative_args:
 
   Named list. Specifies the arguments for the iterative procedure. See
+  the help file of
   [`get_iterative_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_iterative_args_default.md)
   for description of the arguments and their default values.
 
 - output_args:
 
   Named list. Specifies certain arguments related to the output of the
-  function. See
+  function. See the help file of
   [`get_output_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_output_args_default.md)
   for description of the arguments and their default values.
 
@@ -310,24 +312,25 @@ explain_forecast(
 
   `empirical.type`
 
-  :   Character. (default = `"fixed_sigma"`) Must be one of
-      `"independence"`, `"fixed_sigma"`, `"AICc_each_k"`, or
-      `"AICc_full"`. Note: `"empirical.type = independence"` is
-      deprecated; use `approach = "independence"` instead.
-      `"fixed_sigma"` uses a fixed bandwidth (set through
-      `empirical.fixed_sigma`) in the kernel density estimation.
-      `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the
-      AICc criterion, with respectively one bandwidth per coalition size
-      and one bandwidth for all coalition sizes.
+  :   Character. Must be one of `"fixed_sigma"` (default),
+      `"AICc_each_k"`, `"AICc_full"` or `"independence"`. Note:
+      `"empirical.type = independence"` is deprecated; use
+      `approach = "independence"` instead. `"fixed_sigma"` uses a fixed
+      bandwidth (set through `empirical.fixed_sigma`) in the kernel
+      density estimation. `"AICc_each_k"` and `"AICc_full"` optimize the
+      bandwidth using the AICc criterion, with respectively one
+      bandwidth per coalition size and one bandwidth for all coalition
+      sizes.
 
   `empirical.eta`
 
-  :   Numeric scalar. Needs to be `0 < eta <= 1`. The default value is
-      0.95. Represents the minimum proportion of the total empirical
-      weight that data samples should use. For example, if `eta = .8`,
-      we choose the `K` samples with the largest weights so that the sum
-      of the weights accounts for 80\\ `eta` is the \\\eta\\ parameter
-      in equation (15) of [Aas et al.
+  :   Numeric scalar. Needs to be `0 < empirical.eta <= 1`. The default
+      value is 0.95. Represents the minimum proportion of the total
+      empirical weight that data samples should use. For example, if
+      `empirical.eta = .8`, we choose the `K` samples with the largest
+      weights so that the sum of the weights accounts for 80% of the
+      total weight. `empirical.eta` is the \\\eta\\ parameter in
+      equation (15) of [Aas et al.
       (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf).
 
   `empirical.fixed_sigma`
@@ -357,21 +360,20 @@ explain_forecast(
 
   `empirical.cov_mat`
 
-  :   Numeric matrix. (Optional) The covariance matrix of the data
-      generating distribution used to define the Mahalanobis distance.
-      `NULL` means it is estimated from `x_train`.
+  :   Numeric matrix. The covariance matrix of the data generating
+      distribution used to define the Mahalanobis distance. `NULL` means
+      it is estimated from `x_train`.
 
   `gaussian.mu`
 
-  :   Numeric vector. (Optional) Containing the mean of the data
-      generating distribution. `NULL` means it is estimated from the
-      `x_train`.
+  :   Numeric vector. Containing the mean of the data generating
+      distribution. `NULL` means it is estimated from the `x_train`.
 
   `gaussian.cov_mat`
 
-  :   Numeric matrix. (Optional) Containing the covariance matrix of the
-      data generating distribution. `NULL` means it is estimated from
-      the `x_train`.
+  :   Numeric matrix. Containing the covariance matrix of the data
+      generating distribution. `NULL` means it is estimated from the
+      `x_train`.
 
   `timeseries.fixed_sigma`
 
@@ -476,8 +478,8 @@ Object of class `c("shapr", "list")`. Contains the following items:
 
   List with the values of the MSEv evaluation criterion for the
   approach. See the [MSEv evaluation section in the general usage
-  vignette for
-  details](https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A).
+  vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A)
+  for details.
 
 - `timing`:
 
@@ -563,9 +565,10 @@ introduction to the methodology, and additional examples.
   value explanations. Data Mining and Knowledge Discovery,
   1-48](https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf)
 
-- [Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy
-  in KernelSHAP. arXiv e-prints,
-  arXiv-2410](https://arxiv.org/pdf/2410.04883)
+- [Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting
+  Strategy in KernelSHAP. In World Conference on Explainable Artificial
+  Intelligence (pp. 194-218).
+  Springer.](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf)
 
 ## Author
 
@@ -598,7 +601,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-01-09 12:11:54 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-01-20 10:39:05 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -613,7 +616,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d488263c7.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb4dc05d99.rds
 #> 
 #> ── Main computation started ──
 #> 

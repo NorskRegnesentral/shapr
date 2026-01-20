@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,7 +154,8 @@ of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
 For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+<a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>,
+i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
@@ -263,7 +264,7 @@ Specifics for the iterative process and convergence criterion are set via <code>
 <dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
 <dd><p>Named list.
 Specifies the arguments for the iterative procedure.
-See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-is-python">is_python<a class="anchor" aria-label="anchor" href="#arg-is-python"></a></dt>
@@ -343,13 +344,13 @@ regression-based approaches are not applicable to the causal Shapley methodology
 <dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
 <dd><p>Named list.
 Specifies certain arguments related to the output of the function.
-See <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
 <dd><p>Named list.
 Specifies extra arguments related to the computation of the Shapley values.
-See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-model-class">model_class<a class="anchor" aria-label="anchor" href="#arg-model-class"></a></dt>

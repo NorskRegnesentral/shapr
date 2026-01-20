@@ -106,9 +106,10 @@ setup(
   `ctree.sample` argument in
   [`setup_approach.ctree()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)).
   For `approach="empirical"`, `n_MC_samples` is the \\K\\ parameter in
-  equations (14-15) of Aas et al. (2021), i.e. the maximum number of
-  observations (with largest weights) that is used, see also the
-  `empirical.eta` argument
+  equations (14-15) of [Aas et al.
+  (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf),
+  i.e. the maximum number of observations (with largest weights) that is
+  used, see also the `empirical.eta` argument
   [`setup_approach.empirical()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md).
 
 - seed:
@@ -223,6 +224,7 @@ setup(
 - iterative_args:
 
   Named list. Specifies the arguments for the iterative procedure. See
+  the help file of
   [`get_iterative_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_iterative_args_default.md)
   for description of the arguments and their default values.
 
@@ -318,14 +320,14 @@ setup(
 - output_args:
 
   Named list. Specifies certain arguments related to the output of the
-  function. See
+  function. See the help file of
   [`get_output_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_output_args_default.md)
   for description of the arguments and their default values.
 
 - extra_computation_args:
 
   Named list. Specifies extra arguments related to the computation of
-  the Shapley values. See
+  the Shapley values. See the help file of
   [`get_extra_comp_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_extra_comp_args_default.md)
   for description of the arguments and their default values.
 

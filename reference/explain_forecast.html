@@ -21,7 +21,7 @@ norskregnesentral.github.io/shapr/."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -217,7 +217,8 @@ of every conditional expectation.
 For <code>approach="ctree"</code>, <code>n_MC_samples</code> corresponds to the number of samples
 from the leaf node (see an exception related to the <code>ctree.sample</code> argument in <code><a href="setup_approach.html">setup_approach.ctree()</a></code>).
 For <code>approach="empirical"</code>, <code>n_MC_samples</code> is the \(K\) parameter in equations (14-15) of
-Aas et al. (2021), i.e. the maximum number of observations (with largest weights) that is used, see also the
+<a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>,
+i.e. the maximum number of observations (with largest weights) that is used, see also the
 <code>empirical.eta</code> argument <code><a href="setup_approach.html">setup_approach.empirical()</a></code>.</p></dd>
 
 
@@ -276,19 +277,19 @@ Any combination can be used, e.g., <code>verbose = c("basic", "vS_details")</cod
 <dt id="arg-extra-computation-args">extra_computation_args<a class="anchor" aria-label="anchor" href="#arg-extra-computation-args"></a></dt>
 <dd><p>Named list.
 Specifies extra arguments related to the computation of the Shapley values.
-See <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-iterative-args">iterative_args<a class="anchor" aria-label="anchor" href="#arg-iterative-args"></a></dt>
 <dd><p>Named list.
 Specifies the arguments for the iterative procedure.
-See <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_iterative_args_default.html">get_iterative_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg-output-args">output_args<a class="anchor" aria-label="anchor" href="#arg-output-args"></a></dt>
 <dd><p>Named list.
 Specifies certain arguments related to the output of the function.
-See <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+See the help file of <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -338,8 +339,8 @@ This means that there will always be sampling in the leaf unless
 <code>sample = FALSE</code> <em>and</em> the number of obs in the node is less than <code>n_MC_samples</code>.</p></dd>
 
     <dt><code>empirical.type</code></dt>
-<dd><p>Character. (default = <code>"fixed_sigma"</code>)
-Must be one of <code>"independence"</code>, <code>"fixed_sigma"</code>, <code>"AICc_each_k"</code>, or <code>"AICc_full"</code>.
+<dd><p>Character.
+Must be one of <code>"fixed_sigma"</code> (default), <code>"AICc_each_k"</code>, <code>"AICc_full"</code> or <code>"independence"</code>.
 Note: <code>"empirical.type = independence"</code> is deprecated; use <code>approach = "independence"</code> instead.
 <code>"fixed_sigma"</code> uses a fixed bandwidth (set through <code>empirical.fixed_sigma</code>) in the kernel density estimation.
 <code>"AICc_each_k"</code> and <code>"AICc_full"</code> optimize the bandwidth using the AICc criterion, with respectively
@@ -347,12 +348,12 @@ one bandwidth per coalition size and one bandwidth for all coalition sizes.</p><
 
     <dt><code>empirical.eta</code></dt>
 <dd><p>Numeric scalar.
-Needs to be <code>0 &lt; eta &lt;= 1</code>.
+Needs to be <code>0 &lt; empirical.eta &lt;= 1</code>.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-For example, if <code>eta = .8</code>, we choose the <code>K</code> samples with the largest weights so that the sum of the weights
-accounts for 80\<!-- % of the total weight. -->
-<code>eta</code> is the \(\eta\) parameter in equation (15) of
+For example, if <code>empirical.eta = .8</code>, we choose the <code>K</code> samples with the largest weights so that the sum of the
+weights accounts for 80% of the total weight.
+<code>empirical.eta</code> is the \(\eta\) parameter in equation (15) of
 <a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
 
     <dt><code>empirical.fixed_sigma</code></dt>
@@ -380,17 +381,17 @@ The default value is 0.1.
 Only used when <code>empirical.type</code> is either <code>"AICc_each_k"</code> or <code>"AICc_full"</code>.</p></dd>
 
     <dt><code>empirical.cov_mat</code></dt>
-<dd><p>Numeric matrix. (Optional)
+<dd><p>Numeric matrix.
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 <code>NULL</code> means it is estimated from <code>x_train</code>.</p></dd>
 
     <dt><code>gaussian.mu</code></dt>
-<dd><p>Numeric vector. (Optional)
+<dd><p>Numeric vector.
 Containing the mean of the data generating distribution.
 <code>NULL</code> means it is estimated from the <code>x_train</code>.</p></dd>
 
     <dt><code>gaussian.cov_mat</code></dt>
-<dd><p>Numeric matrix. (Optional)
+<dd><p>Numeric matrix.
 Containing the covariance matrix of the data generating distribution.
 <code>NULL</code> means it is estimated from the <code>x_train</code>.</p></dd>
 
@@ -462,7 +463,7 @@ Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is 
 
 <dt><code>MSEv</code></dt>
 <dd><p>List with the values of the MSEv evaluation criterion for the approach. See the
-<a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A">MSEv evaluation section in the general usage vignette for details</a>.</p></dd>
+<a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A">MSEv evaluation section in the general usage vignette</a> for details.</p></dd>
 
 <dt><code>timing</code></dt>
 <dd><p>List containing timing information for the different parts of the computation.
@@ -522,8 +523,9 @@ explain predictive models with dependent mixed features. Journal of machine lear
 <li><p><a href="https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf" class="external-link">
 Olsen, L. H. B., Glad, I. K., Jullum, M., &amp; Aas, K. (2024). A comparative study of methods for estimating
 model-agnostic Shapley value explanations. Data Mining and Knowledge Discovery, 1-48</a></p></li>
-<li><p><a href="https://arxiv.org/pdf/2410.04883" class="external-link">
-Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP. arXiv e-prints, arXiv-2410</a></p></li>
+<li><p><a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">
+Olsen, L. H. B., &amp; Jullum, M. (2025). Improving the Weighting Strategy in KernelSHAP.
+In World Conference on Explainable Artificial Intelligence (pp. 194-218). Springer.</a></p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -556,7 +558,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2026-01-09 12:11:54</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2026-01-20 10:39:05</span> <span style="color: #00BBBB;">─────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contain `NA`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data are therefore disabled.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is</span>
@@ -571,7 +573,7 @@ Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in Ker
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpHLtjzY/shapr_obj_1b2d488263c7.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpnNdRpd/shapr_obj_26cb4dc05d99.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

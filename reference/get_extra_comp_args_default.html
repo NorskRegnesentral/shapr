@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,8 @@ If <code>FALSE</code> (default), then we sample from all coalitions.
 If <code>TRUE</code>, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
 coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-and corresponds to the PySHAP* strategy in the paper <a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+and corresponds to the PySHAP* strategy in the paper
+<a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">Olsen &amp; Jullum (2025)</a>.</p></dd>
 
 
 <dt id="arg-kernelshap-reweighting">kernelSHAP_reweighting<a class="anchor" aria-label="anchor" href="#arg-kernelshap-reweighting"></a></dt>
@@ -105,7 +106,7 @@ probabilities.
 <code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 <code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see
-<a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+<a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">Olsen &amp; Jullum (2025)</a>.</p></dd>
 
 
 <dt id="arg-compute-sd">compute_sd<a class="anchor" aria-label="anchor" href="#arg-compute-sd"></a></dt>
@@ -144,9 +145,9 @@ than the number of parallel workers.</p></dd>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
 
-<ul><li><p><a href="https://arxiv.org/pdf/2410.04883" class="external-link">
-Olsen, L. H. B., &amp; Jullum, M. (2024). Improving the Sampling Strategy in KernelSHAP.
-arXiv preprint arXiv:2410.04883.</a></p></li>
+<ul><li><p><a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">
+Olsen, L. H. B., &amp; Jullum, M. (2025). Improving the Weighting Strategy in KernelSHAP.
+In World Conference on Explainable Artificial Intelligence (pp. 194-218). Springer.</a></p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

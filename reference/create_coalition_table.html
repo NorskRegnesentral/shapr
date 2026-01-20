@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -141,7 +141,7 @@ probabilities.
 <code>'on_all_cond'</code> means the original sampling probabilities are used for all coalitions, while adjusting for the
 probability that they are sampled at least once.
 <code>'on_all_cond'</code> is preferred as it performs the best in simulation studies, see
-<a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+<a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">Olsen &amp; Jullum (2025)</a>.</p></dd>
 
 
 <dt id="arg-semi-deterministic-sampling">semi_deterministic_sampling<a class="anchor" aria-label="anchor" href="#arg-semi-deterministic-sampling"></a></dt>
@@ -150,7 +150,8 @@ If <code>FALSE</code> (default), then we sample from all coalitions.
 If <code>TRUE</code>, the sampling of coalitions is semi-deterministic, i.e. the sampling is done in a way that ensures that
 coalitions that are expected to be sampled based on the number of coalitions are deterministically included such
 that we sample among fewer coalitions. This is done to reduce the variance of the Shapley value estimates,
-and corresponds to the PySHAP* strategy in the paper <a href="https://arxiv.org/pdf/2410.04883" class="external-link">Olsen &amp; Jullum (2024)</a>.</p></dd>
+and corresponds to the PySHAP* strategy in the paper
+<a href="https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf" class="external-link">Olsen &amp; Jullum (2025)</a>.</p></dd>
 
 
 <dt id="arg-dt-coal-samp-info">dt_coal_samp_info<a class="anchor" aria-label="anchor" href="#arg-dt-coal-samp-info"></a></dt>

@@ -13,7 +13,7 @@ for more information about the different approaches."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -215,8 +215,8 @@ This means that there will always be sampling in the leaf unless
 
 
 <dt id="arg-empirical-type">empirical.type<a class="anchor" aria-label="anchor" href="#arg-empirical-type"></a></dt>
-<dd><p>Character. (default = <code>"fixed_sigma"</code>)
-Must be one of <code>"independence"</code>, <code>"fixed_sigma"</code>, <code>"AICc_each_k"</code>, or <code>"AICc_full"</code>.
+<dd><p>Character.
+Must be one of <code>"fixed_sigma"</code> (default), <code>"AICc_each_k"</code>, <code>"AICc_full"</code> or <code>"independence"</code>.
 Note: <code>"empirical.type = independence"</code> is deprecated; use <code>approach = "independence"</code> instead.
 <code>"fixed_sigma"</code> uses a fixed bandwidth (set through <code>empirical.fixed_sigma</code>) in the kernel density estimation.
 <code>"AICc_each_k"</code> and <code>"AICc_full"</code> optimize the bandwidth using the AICc criterion, with respectively
@@ -225,12 +225,12 @@ one bandwidth per coalition size and one bandwidth for all coalition sizes.</p><
 
 <dt id="arg-empirical-eta">empirical.eta<a class="anchor" aria-label="anchor" href="#arg-empirical-eta"></a></dt>
 <dd><p>Numeric scalar.
-Needs to be <code>0 &lt; eta &lt;= 1</code>.
+Needs to be <code>0 &lt; empirical.eta &lt;= 1</code>.
 The default value is 0.95.
 Represents the minimum proportion of the total empirical weight that data samples should use.
-For example, if <code>eta = .8</code>, we choose the <code>K</code> samples with the largest weights so that the sum of the weights
-accounts for 80\<!-- % of the total weight. -->
-<code>eta</code> is the \(\eta\) parameter in equation (15) of
+For example, if <code>empirical.eta = .8</code>, we choose the <code>K</code> samples with the largest weights so that the sum of the
+weights accounts for 80% of the total weight.
+<code>empirical.eta</code> is the \(\eta\) parameter in equation (15) of
 <a href="https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf" class="external-link">Aas et al. (2021)</a>.</p></dd>
 
 
@@ -263,7 +263,7 @@ Only used when <code>empirical.type</code> is either <code>"AICc_each_k"</code> 
 
 
 <dt id="arg-empirical-cov-mat">empirical.cov_mat<a class="anchor" aria-label="anchor" href="#arg-empirical-cov-mat"></a></dt>
-<dd><p>Numeric matrix. (Optional)
+<dd><p>Numeric matrix.
 The covariance matrix of the data generating distribution used to define the Mahalanobis distance.
 <code>NULL</code> means it is estimated from <code>x_train</code>.</p></dd>
 
@@ -281,13 +281,13 @@ See the documentation of <code><a href="explain.html">explain()</a></code> for d
 
 
 <dt id="arg-gaussian-mu">gaussian.mu<a class="anchor" aria-label="anchor" href="#arg-gaussian-mu"></a></dt>
-<dd><p>Numeric vector. (Optional)
+<dd><p>Numeric vector.
 Containing the mean of the data generating distribution.
 <code>NULL</code> means it is estimated from the <code>x_train</code>.</p></dd>
 
 
 <dt id="arg-gaussian-cov-mat">gaussian.cov_mat<a class="anchor" aria-label="anchor" href="#arg-gaussian-cov-mat"></a></dt>
-<dd><p>Numeric matrix. (Optional)
+<dd><p>Numeric matrix.
 Containing the covariance matrix of the data generating distribution.
 <code>NULL</code> means it is estimated from the <code>x_train</code>.</p></dd>
 

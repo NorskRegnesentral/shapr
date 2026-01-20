@@ -22,7 +22,7 @@ get_model_specs(x)
 # S3 method for class 'Arima'
 get_model_specs(x)
 
-# S3 method for class 'forecast_ARIMA'
+# S3 method for class 'fc_model'
 get_model_specs(x)
 
 # S3 method for class 'glm'

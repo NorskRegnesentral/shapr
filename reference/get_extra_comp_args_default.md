@@ -44,7 +44,7 @@ get_extra_comp_args_default(
   deterministically included such that we sample among fewer coalitions.
   This is done to reduce the variance of the Shapley value estimates,
   and corresponds to the PySHAP\* strategy in the paper [Olsen & Jullum
-  (2024)](https://arxiv.org/pdf/2410.04883).
+  (2025)](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf).
 
 - kernelSHAP_reweighting:
 
@@ -61,7 +61,7 @@ get_extra_comp_args_default(
   for the probability that they are sampled at least once.
   `'on_all_cond'` is preferred as it performs the best in simulation
   studies, see [Olsen & Jullum
-  (2024)](https://arxiv.org/pdf/2410.04883).
+  (2025)](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf).
 
 - compute_sd:
 
@@ -107,9 +107,10 @@ A list with the default values for the extra computation arguments.
 
 ## References
 
-- [Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy
-  in KernelSHAP. arXiv preprint
-  arXiv:2410.04883.](https://arxiv.org/pdf/2410.04883)
+- [Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting
+  Strategy in KernelSHAP. In World Conference on Explainable Artificial
+  Intelligence (pp. 194-218).
+  Springer.](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf)
 
 ## Author
 

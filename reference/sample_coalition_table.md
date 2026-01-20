@@ -68,7 +68,7 @@ sample_coalition_table(
   for the probability that they are sampled at least once.
   `'on_all_cond'` is preferred as it performs the best in simulation
   studies, see [Olsen & Jullum
-  (2024)](https://arxiv.org/pdf/2410.04883).
+  (2025)](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf).
 
 - semi_deterministic_sampling:
 
@@ -79,7 +79,7 @@ sample_coalition_table(
   deterministically included such that we sample among fewer coalitions.
   This is done to reduce the variance of the Shapley value estimates,
   and corresponds to the PySHAP\* strategy in the paper [Olsen & Jullum
-  (2024)](https://arxiv.org/pdf/2410.04883).
+  (2025)](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf).
 
 - dt_coal_samp_info:
 

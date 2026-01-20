@@ -39,7 +39,9 @@ plot_MSEv_eval_crit(
   if you have explained 10 observations using
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md),
   you can generate a plot for the first five observations by setting
-  `index_x_explain = 1:5`. Defaults to the first 10 observations.
+  `index_x_explain = 1:5`. Defaults to the first 10 observations for
+  `plot_type = "bar"` and `"waterfall"`, and to all observations for
+  `plot_type = "scatter"` and `"beeswarm"`.
 
 - id_coalition:
 
@@ -77,19 +79,19 @@ plot_MSEv_eval_crit(
 - plot_type:
 
   Character vector. The possible options are "overall" (default),
-  "comb", and "explicand". If `plot_type = "overall"`, then the plot
-  (one bar plot) associated with the overall MSEv evaluation criterion
-  for each method is created, i.e., when averaging over both the
-  coalitions and observations/explicands. If `plot_type = "comb"`, then
-  the plots (one line plot and one bar plot) associated with the MSEv
-  evaluation criterion for each coalition are created, i.e., when we
-  only average over the observations/explicands. If
-  `plot_type = "explicand"`, then the plots (one line plot and one bar
-  plot) associated with the MSEv evaluation criterion for each
-  observations/explicands are created, i.e., when we only average over
-  the coalitions. If `plot_type` is a vector of one or several of
-  "overall", "comb", and "explicand", then the associated plots are
-  created.
+  "coalition", and "explicand". If `plot_type = "overall"`, then the
+  plot (one bar plot) associated with the overall MSEv evaluation
+  criterion for each method is created, i.e., when averaging over both
+  the coalitions and observations/explicands. If
+  `plot_type = "coalition"`, then the plots (one line plot and one bar
+  plot) associated with the MSEv evaluation criterion for each coalition
+  are created, i.e., when we only average over the
+  observations/explicands. If `plot_type = "explicand"`, then the plots
+  (one line plot and one bar plot) associated with the MSEv evaluation
+  criterion for each observations/explicands are created, i.e., when we
+  only average over the coalitions. If `plot_type` is a vector of one or
+  several of "overall", "coalition", and "explicand", then the
+  associated plots are created.
 
 ## Value
 
@@ -208,7 +210,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
   # Can also create plots of the MSEv criterion averaged only over the coalitions or observations.
   MSEv_figures <- plot_MSEv_eval_crit(explanation_list_named,
     CI_level = 0.95,
-    plot_type = c("overall", "comb", "explicand")
+    plot_type = c("overall", "coalition", "explicand")
   )
   MSEv_figures$MSEv_bar
   MSEv_figures$MSEv_coalition_bar
@@ -225,7 +227,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     CI_level = 0.95
   )$MSEv_explicand_bar
   plot_MSEv_eval_crit(explanation_list_named,
-    plot_type = "comb",
+    plot_type = "coalition",
     id_coalition = c(3, 4, 9, 13:15),
     CI_level = 0.95
   )$MSEv_coalition_bar
@@ -255,7 +257,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:19 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:31 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -268,13 +270,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d6e457b1d.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb25e17ae0.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:20 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:32 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -287,13 +289,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 10
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d4ab6c41f.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb4e242177.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:20 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:32 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -306,13 +308,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d65f4216f.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb48d554ac.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:21 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:32 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -325,13 +327,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d6399e089.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb57dce811.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:22 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:34 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -344,7 +346,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d2a4dc474.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb64a8672f.rds
 #> 
 #> ── Main computation started ──
 #> 

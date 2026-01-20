@@ -1,5 +1,33 @@
 # Changelog
 
+## shapr 1.0.8
+
+#### Improvements
+
+- Enhanced
+  [`plot.shapr()`](https://norskregnesentral.github.io/shapr/reference/plot.shapr.md)
+  with smarter defaults for `index_x_explain`: now defaults to `1:10`
+  for bar and waterfall plots, and all observations for scatter and
+  beeswarm plots. Informative messages are shown if more than 10
+  observations are available for bar/waterfall plots
+  ([\#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+- Renamed ARIMA model methods from `forecast_ARIMA` to `fc_model` in S3
+  method registrations and implementations after class name change in
+  the `forecast` package (to align with `fable` package conventions).
+  This affects both `get_model_specs` and `predict_model` methods. CRAN
+  tests added to catch such up front in the future
+  ([\#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+- Updated
+  [`plot_MSEv_eval_crit()`](https://norskregnesentral.github.io/shapr/reference/plot_MSEv_eval_crit.md)
+  and related documentation to use “coalition” instead of “comb” for
+  plot types, improving clarity and consistency
+  ([\#487](https://github.com/NorskRegnesentral/shapr/pull/487)).
+
+#### Documentation
+
+- Various minor documentation clarifications and improvements
+  ([\#487](https://github.com/NorskRegnesentral/shapr/pull/487))
+
 ## shapr 1.0.7
 
 CRAN release: 2025-12-22

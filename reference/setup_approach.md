@@ -162,9 +162,9 @@ setup_approach(
 
 - empirical.type:
 
-  Character. (default = `"fixed_sigma"`) Must be one of
-  `"independence"`, `"fixed_sigma"`, `"AICc_each_k"`, or `"AICc_full"`.
-  Note: `"empirical.type = independence"` is deprecated; use
+  Character. Must be one of `"fixed_sigma"` (default), `"AICc_each_k"`,
+  `"AICc_full"` or `"independence"`. Note:
+  `"empirical.type = independence"` is deprecated; use
   `approach = "independence"` instead. `"fixed_sigma"` uses a fixed
   bandwidth (set through `empirical.fixed_sigma`) in the kernel density
   estimation. `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth
@@ -173,11 +173,12 @@ setup_approach(
 
 - empirical.eta:
 
-  Numeric scalar. Needs to be `0 < eta <= 1`. The default value is 0.95.
-  Represents the minimum proportion of the total empirical weight that
-  data samples should use. For example, if `eta = .8`, we choose the `K`
-  samples with the largest weights so that the sum of the weights
-  accounts for 80\\ `eta` is the \\\eta\\ parameter in equation (15) of
+  Numeric scalar. Needs to be `0 < empirical.eta <= 1`. The default
+  value is 0.95. Represents the minimum proportion of the total
+  empirical weight that data samples should use. For example, if
+  `empirical.eta = .8`, we choose the `K` samples with the largest
+  weights so that the sum of the weights accounts for 80% of the total
+  weight. `empirical.eta` is the \\\eta\\ parameter in equation (15) of
   [Aas et al.
   (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf).
 
@@ -208,9 +209,9 @@ setup_approach(
 
 - empirical.cov_mat:
 
-  Numeric matrix. (Optional) The covariance matrix of the data
-  generating distribution used to define the Mahalanobis distance.
-  `NULL` means it is estimated from `x_train`.
+  Numeric matrix. The covariance matrix of the data generating
+  distribution used to define the Mahalanobis distance. `NULL` means it
+  is estimated from `x_train`.
 
 - model:
 
@@ -228,13 +229,13 @@ setup_approach(
 
 - gaussian.mu:
 
-  Numeric vector. (Optional) Containing the mean of the data generating
+  Numeric vector. Containing the mean of the data generating
   distribution. `NULL` means it is estimated from the `x_train`.
 
 - gaussian.cov_mat:
 
-  Numeric matrix. (Optional) Containing the covariance matrix of the
-  data generating distribution. `NULL` means it is estimated from the
+  Numeric matrix. Containing the covariance matrix of the data
+  generating distribution. `NULL` means it is estimated from the
   `x_train`.
 
 - regression.model:

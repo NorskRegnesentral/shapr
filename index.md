@@ -177,7 +177,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2025-12-19 20:36:39 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-19 11:27:35 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -201,7 +201,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpuA53nH\shapr_obj_1087c39ae28a1.rds'
 #> 
 #> 
 #> 
@@ -226,7 +226,7 @@ print(explanation)
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 3.3 seconds, started 2025-12-19 20:36:39
+#> • Computed with `shapr::explain()` in 3.6 seconds, started 2026-01-19 11:27:35
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -236,7 +236,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\Rtmp4Wl2F1\shapr_obj_c8e47af5392e.rds'
+#> 'C:\Users\jullum\AppData\Local\Temp\RtmpuA53nH\shapr_obj_1087c39ae28a1.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -268,7 +268,8 @@ methodology, see methodological papers Aas, Jullum, and Løland
 ([2020](#ref-redelmeier2020explaining)), Jullum, Redelmeier, and Aas
 ([2021](#ref-jullum2021efficient)), Olsen et al.
 ([2022](#ref-olsen2022using)), Olsen et al.
-([2024](#ref-olsen2024comparative)). See also Sellereite and Jullum
+([2024](#ref-olsen2024comparative)) and Olsen and Jullum
+([2025](#ref-olsen2025improving)). See also Sellereite and Jullum
 ([2019](#ref-sellereite2019shapr)) for a very brief paper about a
 previous version (v0.1.1) of the package (with a different structure,
 syntax, and significantly less functionality).
@@ -311,6 +312,10 @@ Machine Learning Research* 23 (213): 1–51.
 ———. 2024. “A Comparative Study of Methods for Estimating Model-Agnostic
 Shapley Value Explanations.” *Data Mining and Knowledge Discovery*,
 1–48.
+
+Olsen, Lars Henry Berge, and Martin Jullum. 2025. “Improving the
+Weighting Strategy in KernelSHAP.” In *World Conference on Explainable
+Artificial Intelligence*, 194–218. Springer.
 
 Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining
 Predictive Models with Mixed Features Using Shapley Values and

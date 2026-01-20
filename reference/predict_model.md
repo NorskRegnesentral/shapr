@@ -38,7 +38,7 @@ predict_model(
   ...
 )
 
-# S3 method for class 'forecast_ARIMA'
+# S3 method for class 'fc_model'
 predict_model(x, newdata, newreg, horizon, ...)
 
 # S3 method for class 'glm'
@@ -127,6 +127,9 @@ The following models are currently supported:
 - [`xgboost::xgboost()`](https://rdrr.io/pkg/xgboost/man/xgboost.html)
 
 - [`stats::ar()`](https://rdrr.io/r/stats/ar.html) (for
+  [`explain_forecast()`](https://norskregnesentral.github.io/shapr/reference/explain_forecast.md))
+
+- [`stats::arima()`](https://rdrr.io/r/stats/arima.html) (for
   [`explain_forecast()`](https://norskregnesentral.github.io/shapr/reference/explain_forecast.md))
 
 - [`forecast::Arima()`](https://pkg.robjhyndman.com/forecast/reference/Arima.html)

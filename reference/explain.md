@@ -117,9 +117,10 @@ explain(
   `ctree.sample` argument in
   [`setup_approach.ctree()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)).
   For `approach="empirical"`, `n_MC_samples` is the \\K\\ parameter in
-  equations (14-15) of Aas et al. (2021), i.e. the maximum number of
-  observations (with largest weights) that is used, see also the
-  `empirical.eta` argument
+  equations (14-15) of [Aas et al.
+  (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf),
+  i.e. the maximum number of observations (with largest weights) that is
+  used, see also the `empirical.eta` argument
   [`setup_approach.empirical()`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md).
 
 - seed:
@@ -249,20 +250,21 @@ explain(
 - extra_computation_args:
 
   Named list. Specifies extra arguments related to the computation of
-  the Shapley values. See
+  the Shapley values. See the help file of
   [`get_extra_comp_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_extra_comp_args_default.md)
   for description of the arguments and their default values.
 
 - iterative_args:
 
   Named list. Specifies the arguments for the iterative procedure. See
+  the help file of
   [`get_iterative_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_iterative_args_default.md)
   for description of the arguments and their default values.
 
 - output_args:
 
   Named list. Specifies certain arguments related to the output of the
-  function. See
+  function. See the help file of
   [`get_output_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_output_args_default.md)
   for description of the arguments and their default values.
 
@@ -335,24 +337,25 @@ explain(
 
   `empirical.type`
 
-  :   Character. (default = `"fixed_sigma"`) Must be one of
-      `"independence"`, `"fixed_sigma"`, `"AICc_each_k"`, or
-      `"AICc_full"`. Note: `"empirical.type = independence"` is
-      deprecated; use `approach = "independence"` instead.
-      `"fixed_sigma"` uses a fixed bandwidth (set through
-      `empirical.fixed_sigma`) in the kernel density estimation.
-      `"AICc_each_k"` and `"AICc_full"` optimize the bandwidth using the
-      AICc criterion, with respectively one bandwidth per coalition size
-      and one bandwidth for all coalition sizes.
+  :   Character. Must be one of `"fixed_sigma"` (default),
+      `"AICc_each_k"`, `"AICc_full"` or `"independence"`. Note:
+      `"empirical.type = independence"` is deprecated; use
+      `approach = "independence"` instead. `"fixed_sigma"` uses a fixed
+      bandwidth (set through `empirical.fixed_sigma`) in the kernel
+      density estimation. `"AICc_each_k"` and `"AICc_full"` optimize the
+      bandwidth using the AICc criterion, with respectively one
+      bandwidth per coalition size and one bandwidth for all coalition
+      sizes.
 
   `empirical.eta`
 
-  :   Numeric scalar. Needs to be `0 < eta <= 1`. The default value is
-      0.95. Represents the minimum proportion of the total empirical
-      weight that data samples should use. For example, if `eta = .8`,
-      we choose the `K` samples with the largest weights so that the sum
-      of the weights accounts for 80\\ `eta` is the \\\eta\\ parameter
-      in equation (15) of [Aas et al.
+  :   Numeric scalar. Needs to be `0 < empirical.eta <= 1`. The default
+      value is 0.95. Represents the minimum proportion of the total
+      empirical weight that data samples should use. For example, if
+      `empirical.eta = .8`, we choose the `K` samples with the largest
+      weights so that the sum of the weights accounts for 80% of the
+      total weight. `empirical.eta` is the \\\eta\\ parameter in
+      equation (15) of [Aas et al.
       (2021)](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf).
 
   `empirical.fixed_sigma`
@@ -382,21 +385,20 @@ explain(
 
   `empirical.cov_mat`
 
-  :   Numeric matrix. (Optional) The covariance matrix of the data
-      generating distribution used to define the Mahalanobis distance.
-      `NULL` means it is estimated from `x_train`.
+  :   Numeric matrix. The covariance matrix of the data generating
+      distribution used to define the Mahalanobis distance. `NULL` means
+      it is estimated from `x_train`.
 
   `gaussian.mu`
 
-  :   Numeric vector. (Optional) Containing the mean of the data
-      generating distribution. `NULL` means it is estimated from the
-      `x_train`.
+  :   Numeric vector. Containing the mean of the data generating
+      distribution. `NULL` means it is estimated from the `x_train`.
 
   `gaussian.cov_mat`
 
-  :   Numeric matrix. (Optional) Containing the covariance matrix of the
-      data generating distribution. `NULL` means it is estimated from
-      the `x_train`.
+  :   Numeric matrix. Containing the covariance matrix of the data
+      generating distribution. `NULL` means it is estimated from the
+      `x_train`.
 
   `regression.model`
 
@@ -565,8 +567,8 @@ Object of class `c("shapr", "list")`. Contains the following items:
 
   List with the values of the MSEv evaluation criterion for the
   approach. See the [MSEv evaluation section in the general usage
-  vignette for
-  details](https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A).
+  vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html#msev-evaluation-criterion%0A)
+  for details.
 
 - `timing`:
 
@@ -689,9 +691,10 @@ memory-friendly manner.
   value explanations. Data Mining and Knowledge Discovery,
   1-48](https://link.springer.com/content/pdf/10.1007/s10618-024-01016-z.pdf)
 
-- [Olsen, L. H. B., & Jullum, M. (2024). Improving the Sampling Strategy
-  in KernelSHAP. arXiv e-prints,
-  arXiv-2410](https://arxiv.org/pdf/2410.04883)
+- [Olsen, L. H. B., & Jullum, M. (2025). Improving the Weighting
+  Strategy in KernelSHAP. In World Conference on Explainable Artificial
+  Intelligence (pp. 194-218).
+  Springer.](https://link.springer.com/content/pdf/10.1007/978-3-032-08324-1_9.pdf)
 
 ## Author
 
@@ -743,7 +746,7 @@ explain1 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:23 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:42 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -756,7 +759,7 @@ explain1 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2db424ccc.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb1028bc44.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -772,7 +775,7 @@ explain2 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:26 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:45 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -785,7 +788,7 @@ explain2 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d1b926f86.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb317da1f1.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -801,7 +804,7 @@ explain3 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:27 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:45 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -814,7 +817,7 @@ explain3 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d64e5c048.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb554caded.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -832,7 +835,7 @@ if (requireNamespace("party", quietly = TRUE)) {
   )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:29 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:46 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -845,7 +848,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d1bbf3d4d.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb4fed6db2.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -862,7 +865,7 @@ explain5 <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:32 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:48 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -875,7 +878,7 @@ explain5 <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d3fc30cdd.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb1a1c7970.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -903,18 +906,18 @@ print(explain1, what = "MSEv")
 print(explain2, what = "MSEv")
 #>     MSEv MSEv_sd
 #>    <num>   <num>
-#> 1:   270    97.2
+#> 1:   261    99.2
 print(explain3, what = "MSEv")
 #>     MSEv MSEv_sd
 #>    <num>   <num>
-#> 1:   237    81.4
+#> 1:   257    91.2
 
 ## Summary
 summary1 <- summary(explain1)
 summary1 # Provides a nicely formatted summary of the explanation
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 3.1 seconds, started 2026-01-09 12:11:23
+#> • Computed with `shapr::explain()` in 2.4 seconds, started 2026-01-20 10:38:42
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -923,7 +926,7 @@ summary1 # Provides a nicely formatted summary of the explanation
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2db424ccc.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb1028bc44.rds
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -971,7 +974,7 @@ explain_groups <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:35 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:52 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
 #>   therefore set to `2^n_groups = 4`.
 #> 
@@ -985,7 +988,7 @@ explain_groups <- explain(
 #> • Number of group-wise Shapley values: 2
 #> • Feature groups: A: {"Temp", "Month"}; B: {"Wind", "Solar.R"}
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d9c7a357.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb1959be9c.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -1020,7 +1023,7 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
   )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:38 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:53 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -1032,13 +1035,13 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d6fbe377a.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb339ee514.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:41 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:55 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -1050,7 +1053,7 @@ if (requireNamespace(req_pkgs, quietly = TRUE)) {
 #> • Procedure: Non-iterative
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d53c2ec69.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb69f6fa52.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -1071,7 +1074,7 @@ explain_iterative <- explain(
   max_n_coalitions = 12
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:11:43 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:38:57 ──────────────────────────
 #> 
 #> ── Explanation overview ──
 #> 
@@ -1082,7 +1085,7 @@ explain_iterative <- explain(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d14cdaec3.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb166eb7ca.rds
 #> 
 #> ── Iterative computation started ──
 #> 
@@ -1100,9 +1103,9 @@ explain_iterative <- explain(
 print(explain_iterative, what = "shapley_sd")
 #>    explain_id  none Solar.R  Wind  Temp Month
 #>         <int> <num>   <num> <num> <num> <num>
-#> 1:          1     0   0.304  1.65  1.85 0.628
-#> 2:          2     0   0.353  2.56  2.50 0.766
-#> 3:          3     0   0.356  2.96  2.88 0.844
+#> 1:          1     0   0.314  1.52  1.65 0.535
+#> 2:          2     0   0.349  2.60  2.54 0.655
+#> 3:          3     0   0.322  2.98  2.91 0.703
 
 ## Summary
 # For iterative estimation, convergence info is also provided

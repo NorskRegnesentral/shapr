@@ -11,7 +11,7 @@ plot(
   plot_type = "bar",
   digits = 3,
   print_ggplot = TRUE,
-  index_x_explain = 1:10,
+  index_x_explain = NULL,
   top_k_features = NULL,
   col = NULL,
   bar_plot_phi0 = TRUE,
@@ -68,7 +68,9 @@ plot(
   if you have explained 10 observations using
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md),
   you can generate a plot for the first five observations by setting
-  `index_x_explain = 1:5`. Defaults to the first 10 observations.
+  `index_x_explain = 1:5`. Defaults to the first 10 observations for
+  `plot_type = "bar"` and `"waterfall"`, and to all observations for
+  `plot_type = "scatter"` and `"beeswarm"`.
 
 - top_k_features:
 
@@ -271,7 +273,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:02 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:14 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -284,29 +286,21 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d40be3e7d.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb38368d7b.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
-#> ℹ Showing 4 of 50 observations.
 
-#> ℹ Showing 4 of 50 observations.
 
-#> ℹ Showing 4 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-09 12:12:12 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 10:39:24 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -319,16 +313,13 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmpHLtjzY/shapr_obj_1b2d20b99d43.rds
+#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb4c6eaa6c.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 10 of 50 observations.
 
-#> ℹ Showing 4 of 50 observations.
 
 # }
 ```
