@@ -16,9 +16,9 @@
 
 #+ echo=FALSE
 knitr::opts_chunk$set(fig.path = "html_figures/")
-#
+#+
 
-#### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
+#### Loads packages, reads data and models created by R_prep_data_and_model.R ####
 
 library(xgboost)
 library(data.table)

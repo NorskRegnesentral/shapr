@@ -25,13 +25,13 @@ knitr::opts_chunk$set(
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![JOSS (v0.2.3)](https://img.shields.io/badge/JOSS (v0.2.3)-10.21105/joss.02027-brightgreen.svg)](https://doi.org/10.21105/joss.02027)
-[![arXiv (v1.0.4)](https://img.shields.io/badge/arXiv (v1.0.4)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
+[![arXiv (v1.0.8)](https://img.shields.io/badge/arXiv (v1.0.8)-2504.01842-b31b1b.svg)](https://arxiv.org/abs/2504.01842)
 <!-- badges: end -->
 
 See the pkgdown site at [norskregnesentral.github.io/shapr/](https://norskregnesentral.github.io/shapr/)
 for a complete introduction with examples and documentation of the package.
 
-For an overview of the methodology and capabilities of the package (per `shapr` v1.0.4),
+For an overview of the methodology and capabilities of the package (per `shapr` v1.0.8),
 see the software paper @jullum2025shapr, available as a preprint [here](https://arxiv.org/abs/2504.01842).
 
 
@@ -77,10 +77,10 @@ See [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for installat
 
 The `shapr` R package implements an enhanced version of the Kernel SHAP method for approximating Shapley values,
 with a strong focus on conditional Shapley values.
-The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution 
-functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, 
-and distributions. 
-The package also includes evaluation metrics to compare various approaches. 
+The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution
+functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies,
+and distributions.
+The package also includes evaluation metrics to compare various approaches.
 With features like parallelized computations, convergence detection, progress updates, and extensive plotting options,
 shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values,
 which are critical for understanding how features truly contribute to predictions.
@@ -113,7 +113,7 @@ remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ## Example
 `shapr` supports computation of Shapley values with any predictive model that takes a set of numeric features and produces a numeric outcome.
 
-The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions. 
+The following example shows how a simple `xgboost` model is trained using the *airquality* dataset, and how `shapr` explains the individual predictions.
 
 We first enable parallel computation and progress updates with the following code chunk.
 These are optional, but recommended for improved performance and user-friendliness,
@@ -183,24 +183,24 @@ plot(explanation)
 ```
 
 See @jullum2025shapr (preprint available [here](https://arxiv.org/abs/2504.01842)) for a software paper with an overview of the methodology and capabilities of the
-package (as of v1.0.4).
-See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further 
-basic usage examples and brief introductions to the methodology. 
+package (as of v1.0.8).
+See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further
+basic usage examples and brief introductions to the methodology.
 For more thorough information about the underlying methodology, see methodological papers
-@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative and 
+@aas2019explaining, @redelmeier2020explaining, @jullum2021efficient, @olsen2022using, @olsen2024comparative and
 @olsen2025improving.
 See also @sellereite2019shapr for a very brief paper about a previous version (v0.1.1) of the package
 (with a different structure, syntax, and significantly less functionality).
 
 ## Contribution
 
-All feedback and suggestions are very welcome. Details on how to contribute can be found 
+All feedback and suggestions are very welcome. Details on how to contribute can be found
 [here](https://norskregnesentral.github.io/shapr/CONTRIBUTING.html). If you have any questions or comments, feel
-free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues). 
+free to open an issue [here](https://github.com/NorskRegnesentral/shapr/issues).
 
 Please note that the `shapr` project is released with a
 [Contributor Code of Conduct](https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms. 
+By contributing to this project, you agree to abide by its terms.
 
 ## References
 

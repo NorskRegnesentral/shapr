@@ -24,6 +24,7 @@ docs
 /Meta/
 .idea
 .DS_Store
+/revdep
 
 vignettes/cache_general_usage/
 vignettes/cache_vaeac/
