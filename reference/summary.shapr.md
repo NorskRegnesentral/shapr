@@ -68,7 +68,7 @@ explanation <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-21 09:09:09 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-21 09:27:21 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -81,7 +81,7 @@ explanation <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpTOyEbq/shapr_obj_1b4473640d4b.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp3qBi8q/shapr_obj_1b4c72a1dee9.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -91,7 +91,7 @@ explanation <- explain(
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-01-21 09:09:09
+#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-01-21 09:27:21
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -100,7 +100,7 @@ summary(explanation)
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: /tmp/RtmpTOyEbq/shapr_obj_1b4473640d4b.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp3qBi8q/shapr_obj_1b4c72a1dee9.rds
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -123,7 +123,7 @@ expl_summary$shapley_est # Estimated Shapley values
 #> 2:          2 42.78704 -4.6755745   7.898933  -8.157233 -0.09667692
 #> 3:          3 42.78704  4.1090449  -5.619535 -24.442822 -1.16106366
 expl_summary$timing_summary$total_time_secs # Total computation time
-#> [1] 0.4466596
+#> [1] 0.3739882
 expl_summary$approach # Approach used
 #> [1] "gaussian"
 # }
