@@ -103,6 +103,12 @@ convergence tolerance, defaults to 0.02, and can be set through the
 `iterative_args$convergence_tol` argument, see [iterative
 estimation](#iterative) for more details.
 
+As opposed to Kernel SHAP estimation as originally proposed in (Lundberg
+and Lee (2017)), `shapr`, by reweights the samples according to the
+“Paired c-kernel” strategy described in Olsen and Jullum (2025) to
+reduce the estimation variance and thereby improve the convergence
+speed.
+
 Since the iterativeness default changes based on the number of features
 (or feature groups), the default is also to have no upper bound on the
 number of coalitions considered. This can be controlled through the
@@ -457,13 +463,13 @@ explanation <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:36:48 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:36:48
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -473,9 +479,9 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164856ce9500.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Printing the Shapley values for the test data.
@@ -494,7 +500,7 @@ print(explanation)
 plot(explanation, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/setup-2-1.png)
+![](figure_general_usage/setup-2-1.webp)
 
 There are multiple plot options specified by the `plot_type` argument in
 `plot`. The `waterfall` option shows the changes in the prediction score
@@ -508,7 +514,7 @@ due to each feature’s contribution (their Shapley values):
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/plot-waterfall-1.png)
+![](figure_general_usage/plot-waterfall-1.webp)
 
 The other two plot options, `"beeswarm"` and `"scatter"`, can be useful
 when you have many observations that you want to explain. For the
@@ -529,45 +535,45 @@ explanation_plot <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:36:53
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 111
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16481bb4fea1.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 plot(explanation_plot, plot_type = "beeswarm")
 ```
 
-![](figure_general_usage/plot-beeswarm-1.png)
+![](figure_general_usage/plot-beeswarm-1.webp)
 
 The `plot_type = "scatter"` plots the feature values on the x-axis and
 Shapley values on the y-axis, as well as (optionally) a background
@@ -577,7 +583,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-![](figure_general_usage/plot-scatter-1.png)
+![](figure_general_usage/plot-scatter-1.webp)
 
 We can use mixed (i.e., continuous, categorical, ordinal) data with
 `ctree` or `vaeac`. Use `ctree` with mixed data in the following manner:
@@ -609,40 +615,40 @@ explanation_lm_cat <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:02
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: ctree
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164875508e39.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Plot the resulting explanations for observations 1 and 6, excluding
@@ -650,7 +656,7 @@ explanation_lm_cat <- explain(
 plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/factor-1.png)
+![](figure_general_usage/factor-1.webp)
 
 We can specify parameters used to build the conditional inference trees
 in the following manner. The default values are based on Hothorn,
@@ -671,40 +677,40 @@ explanation_ctree <- explain(
   ctree.minsplit = 20,
   ctree.minbucket = 20
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:04
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: ctree
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648774d65a4.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 # Default parameters (based on (Hothorn, 2006)) are:
 # mincriterion = 0.95
@@ -744,51 +750,51 @@ explanation_cat_method <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:05
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: categorical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16484bf4972f.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
 Shapley values can be used to explain any predictive model. For
-predictive models taking time series as input, `approach='timeseries'`
+predictive models taking time series as input, `approach="timeseries"`
 can be used. In such models, joint behavior of consecutive time points
 is often more important for the outcome than the single time points.
 Therefore, it makes sense to derive Shapley value segments of the time
 series instead of for each single time point. In `shapr` this can be
 achieved through the `group` attribute. Other optional parameters of
-`approach='timeseries'` are `timeseries.fixed_sigma` and
+`approach="timeseries"` are `timeseries.fixed_sigma` and
 `timeseries.bounds` (a vector indicating upper and lower bounds of the
 time series if necessary).
 
@@ -841,29 +847,29 @@ explanation_timeseries <- explain(
   seed = 1,
   group = group_ts
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:05
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_groups = 16`, and is therefore set to
 #>   `2^n_groups = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <lm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: timeseries
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of group-wise Shapley values: 4
-#> 
+#>
 #> • Feature groups: S1: {"X1", "X2", "X3", "X4", "X5",
 #> "X6", "X7", "X8", "X9", "X10"}; S2: {"X11", "X12",
 #> "X13", "X14", "X15", "X16", "X17", "X18", "X19",
@@ -871,18 +877,18 @@ explanation_timeseries <- explain(
 #> "X26", "X27", "X28", "X29", "X30"}; S4: {"X31",
 #> "X32", "X33", "X34", "X35", "X36", "X37", "X38",
 #> "X39", "X40"}
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648803cb6c.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -1015,40 +1021,40 @@ explanation_independence <- explain(
   seed = 1,
   n_MC_samples = 1e2
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:12
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: independence
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 100
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 25
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164869d3553c.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Empirical approach
@@ -1061,13 +1067,13 @@ explanation_empirical <- explain(
   seed = 1,
   n_MC_samples = 1e2
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:37:14 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:37:14
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -1077,9 +1083,9 @@ explanation_empirical <- explain(
 #> • Number of observations to explain: 25
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16481e815fdb.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Gaussian 1e1 approach
@@ -1092,13 +1098,13 @@ explanation_gaussian_1e1 <- explain(
   seed = 1,
   n_MC_samples = 1e1
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:37:19 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:37:19
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -1108,9 +1114,9 @@ explanation_gaussian_1e1 <- explain(
 #> • Number of observations to explain: 25
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164844b08ed7.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Gaussian 1e2 approach
@@ -1123,13 +1129,13 @@ explanation_gaussian_1e2 <- explain(
   seed = 1,
   n_MC_samples = 1e2
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:37:20 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:37:20
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -1139,9 +1145,9 @@ explanation_gaussian_1e2 <- explain(
 #> • Number of observations to explain: 25
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16486a5f94d0.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Combined approach
@@ -1154,13 +1160,13 @@ explanation_combined <- explain(
   seed = 1,
   n_MC_samples = 1e2
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:37:20 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:37:20
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian, empirical, and independence
@@ -1170,9 +1176,9 @@ explanation_combined <- explain(
 #> • Number of observations to explain: 25
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648ac12bcb.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Create a list of explanations with names
@@ -1214,7 +1220,7 @@ over the observations or the coalitions (both as bar and line plots).
 MSEv_plots$MSEv_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-1.png)
+![](figure_general_usage/MSEv-plot-2-1.webp)
 
 ``` r
 
@@ -1222,7 +1228,7 @@ MSEv_plots$MSEv_bar
 MSEv_plots$MSEv_coalition_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-2.png)
+![](figure_general_usage/MSEv-plot-2-2.webp)
 
 ``` r
 
@@ -1230,7 +1236,7 @@ MSEv_plots$MSEv_coalition_bar
 MSEv_plots$MSEv_explicand_bar
 ```
 
-![](figure_general_usage/MSEv-plot-2-3.png)
+![](figure_general_usage/MSEv-plot-2-3.webp)
 
 ``` r
 
@@ -1269,7 +1275,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 #> ℹ Showing 4 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-3-1.png)
+![](figure_general_usage/MSEv-plot-3-1.webp)
 
 ``` r
 plot_MSEv_eval_crit(explanation_list_named,
@@ -1280,7 +1286,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 #> ℹ Showing 10 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-3-2.png)
+![](figure_general_usage/MSEv-plot-3-2.webp)
 
 We can also alter the plots design-wise as we do in the code below.
 
@@ -1309,7 +1315,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 #> ℹ Showing 10 of 25 observations.
 ```
 
-![](figure_general_usage/MSEv-plot-4-1.png)
+![](figure_general_usage/MSEv-plot-4-1.webp)
 
 ## Iterative estimation
 
@@ -1380,60 +1386,60 @@ ex <- explain(
   iterative = TRUE,
   iterative_args = list(convergence_tol = 0.1)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:27
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 32`, and is therefore set to
 #>   `2^n_features = 32`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 5
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164841296634.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ───────────────────────────────────────
-#> 
-#> ℹ Using 6 of 32 coalitions, 6 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 6 of 32 coalitions, 6 new.
+#>
+#>
+#>
 #> ── Iteration 2 ───────────────────────────────────────
-#> 
-#> ℹ Using 8 of 32 coalitions, 2 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 8 of 32 coalitions, 2 new.
+#>
+#>
+#>
 #> ── Iteration 3 ───────────────────────────────────────
-#> 
-#> ℹ Using 12 of 32 coalitions, 4 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 12 of 32 coalitions, 4 new.
+#>
+#>
+#>
 #> ── Iteration 4 ───────────────────────────────────────
-#> 
+#>
 #> ℹ Using 14 of 32 coalitions, 2 new.
 ```
 
@@ -1496,7 +1502,7 @@ print(ex, what = "MSEv") # Prints the MSEv evaluation criterion
 
 # When called without assignment, summary() prints formatted output to console
 summary(ex)
-#> 
+#>
 #> ── Summary of Shapley value explanation ──────────────
 #> • Computed with `shapr::explain()` in 3.5 seconds,
 #> started 2026-01-16 12:37:27
@@ -1510,11 +1516,11 @@ summary(ex)
 #> • Number of coalitions used: 14 (of total 32)
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164841296634.rds'
-#> 
+#>
 #> ── Convergence info
 #> ✔ Iterative Shapley value estimation stopped at 14 coalitions after 4 iterations, due to:
 #> Standard deviation convergence threshold (0.1) reached: 0.087!
-#> 
+#>
 #> ── Estimated Shapley values (sd in parentheses)
 #>    explain_id      none      Solar.R         Wind          Temp        Month
 #>         <int>    <char>       <char>       <char>        <char>       <char>
@@ -1532,10 +1538,10 @@ summary(ex)
 #> 4: 0.25 (1.35)
 #> 5: 0.99 (0.72)
 #> 6: 0.81 (0.61)
-#> 
-#> 
-#> ── Estimated MSEv 
-#> 
+#>
+#>
+#> ── Estimated MSEv
+#>
 #> Estimated MSE of v(S) = 176 (with sd = 13)
 
 # When assigned, it returns a summary.shapr object with all components available for extraction
@@ -1665,40 +1671,40 @@ explanation_par <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:32
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 32`, and is therefore set to
 #>   `2^n_features = 32`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 5
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16485b97d4aa.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 32 of 32 coalitions.
 
 future::plan(sequential) # To return to non-parallel computation
@@ -1852,47 +1858,47 @@ explanation_combined <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:39
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical, copula, and gaussian
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648480f066b.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 # Plot the resulting explanations for observations 1 and 6, excluding
 # the no-covariate effect
 plot(explanation_combined, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/combined-1-1.png)
+![](figure_general_usage/combined-1-1.webp)
 
 As a second example using `"ctree"` to condition on 1 and 2 features,
 and `"empirical"` when conditioning on 3 features:
@@ -1907,40 +1913,40 @@ explanation_combined <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:41
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: ctree, ctree, and empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16481434ab19.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -1969,43 +1975,43 @@ explanation_group <- explain(
   seed = 1,
   group = group_list
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:44
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_groups = 4`, and is therefore set to
 #>   `2^n_groups = 4`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of group-wise Shapley values: 2
-#> 
+#>
 #> • Feature groups: A: {"Temp", "Month"}; B: {"Wind",
 #> "Solar.R"}
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164832b60af4.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 4 of 4 coalitions.
 # Prints the group-wise explanations
 explanation_group
@@ -2021,7 +2027,7 @@ explanation_group
 plot(explanation_group, bar_plot_phi0 = TRUE, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/group-1.png)
+![](figure_general_usage/group-1.webp)
 
 ### Explain custom models
 
@@ -2128,47 +2134,47 @@ explanation_custom <- explain(
   predict_model = MY_predict_model,
   get_model_specs = MY_get_model_specs
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:46
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <gbm>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16483d7736c0.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Plot results
 plot(explanation_custom, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/custom-1.png)
+![](figure_general_usage/custom-1.webp)
 
 ``` r
 
@@ -2192,17 +2198,18 @@ explanation_custom_minimal <- explain(
   seed = 1,
   predict_model = MY_MINIMAL_predict_model
 )
-#> 
-#> ── Starting `shapr::explain()` at 2026-01-16 12:37:50 
+#>
+#> ── Starting `shapr::explain()` at 2026-01-16 12:37:50
 #> ℹ You passed a model to `shapr::explain()` which is
 #>   not natively supported, and did not supply a
 #>   `get_model_specs` function to `shapr::explain()`.
 #>   Consistency checks between model and data are
-#>   therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than
+#>   therefore disabled.
+#> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <gbm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -2212,16 +2219,16 @@ explanation_custom_minimal <- explain(
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648a806475.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Plot results
 plot(explanation_custom_minimal, index_x_explain = c(1, 6))
 ```
 
-![](figure_general_usage/custom-2.png)
+![](figure_general_usage/custom-2.webp)
 
 ### Tidymodels and workflows
 
@@ -2274,40 +2281,40 @@ explanation_tidymodels <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:55
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <workflow>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164832b4b12f.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # See that the Shapley value explanations are identical too
@@ -2358,40 +2365,40 @@ explanation_vaeac <- explain(
   vaeac.epochs = 3,
   vaeac.n_vaeacs_initialize = 2
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:37:58
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: vaeac
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 100
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16481433a18c.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -2404,7 +2411,7 @@ as it still seems like the `vaeac` model is learning.
 plot_vaeac_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
 
-![](figure_general_usage/vaeac-plot-1-1.png)
+![](figure_general_usage/vaeac-plot-1-1.webp)
 
 #### Early stopping
 
@@ -2438,40 +2445,40 @@ explanation_vaeac_early_stop <- explain(
   vaeac.n_vaeacs_initialize = 2,
   vaeac.extra_parameters = list(vaeac.epochs_early_stopping = 2)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:38:14
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 16`, and is therefore set to
 #>   `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: vaeac
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 100
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16486390b378.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 ```
 
@@ -2486,7 +2493,7 @@ plot_vaeac_eval_crit(
 )
 ```
 
-![](figure_general_usage/vaeac-plot-2-1.png)
+![](figure_general_usage/vaeac-plot-2-1.webp)
 
 Can also compare the $MSE_{v}$ evaluation scores.
 
@@ -2494,7 +2501,7 @@ Can also compare the $MSE_{v}$ evaluation scores.
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
-![](figure_general_usage/vaeac-plot-3-1.png)
+![](figure_general_usage/vaeac-plot-3-1.webp)
 
 ### Continued computation
 
@@ -2551,11 +2558,11 @@ ex_init <- explain(
   max_n_coalitions = 20,
   iterative = TRUE
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:38:39
-#> 
+#>
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2565,21 +2572,21 @@ ex_init <- explain(
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16482bbd289e.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ───────────────────────────────────────
 #> ℹ Using 6 of 32 coalitions, 6 new.
-#> 
+#>
 #> ── Iteration 2 ───────────────────────────────────────
 #> ℹ Using 8 of 32 coalitions, 2 new.
-#> 
+#>
 #> ── Iteration 3 ───────────────────────────────────────
 #> ℹ Using 12 of 32 coalitions, 4 new.
-#> 
+#>
 #> ── Iteration 4 ───────────────────────────────────────
 #> ℹ Using 18 of 32 coalitions, 6 new.
-#> 
+#>
 #> ── Iteration 5 ───────────────────────────────────────
 #> ℹ Using 20 of 32 coalitions, 2 new.
 
@@ -2595,11 +2602,11 @@ ex_further <- explain(
   iterative_args = list(convergence_tol = 0.005), # Decrease the convergence threshold
   prev_shapr_object = ex_init
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:38:46
-#> 
+#>
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2609,9 +2616,9 @@ ex_further <- explain(
 #> • Number of observations to explain: 6
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16482466e6e8.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 24 of 32 coalitions.
 
 ex_further_path <- get_results(ex_further, what = "saving_path") # Gets path to the saved intermediate estimation object
@@ -2628,40 +2635,40 @@ ex_even_further <- explain(
   max_n_coalitions = NULL,
   prev_shapr_object = ex_further_path
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-01-16 12:38:47
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 32`, and is therefore set to
 #>   `2^n_features = 32`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 5
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648664da377.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 26 of 32 coalitions.
 ```
 
@@ -2736,7 +2743,7 @@ explanation_forecast <- explain_forecast(
   phi0 = p0_ar,
   group_lags = FALSE
 )
-#> 
+#>
 #> ── Starting `shapr::explain_forecast()` at 2026-01-16
 #> ℹ Feature names extracted from the model contain
 #>   `NA`.
@@ -2747,37 +2754,37 @@ explanation_forecast <- explain_forecast(
 #>   `2^n_features = 4`.
 #> Registered S3 method overwritten by 'quantmod':
 #>   method            from
-#>   as.zoo.data.frame zoo 
-#> 
-#> 
-#> 
+#>   as.zoo.data.frame zoo
+#>
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <Arima>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 2
-#> 
+#>
 #> • Number of observations to explain: 2
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_16487a824e91.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 4 of 4 coalitions.
 explanation_forecast
 #>    explain_idx horizon   none    Y.1     Y.2
@@ -2817,9 +2824,9 @@ model_ar_temp <- ar(data_ts2$Temp, order = 2)
 
 predict(model_ar_temp, n.ahead = 2)$pred
 #> Time Series:
-#> Start = 154 
-#> End = 155 
-#> Frequency = 1 
+#> Start = 154
+#> End = 155
+#> Frequency = 1
 #> [1] 71.081 71.524
 ```
 
@@ -2859,7 +2866,7 @@ explanation_forecast <- explain_forecast(
   phi0 = rep(mean(data$Temp), 2),
   group_lags = FALSE
 )
-#> 
+#>
 #> ── Starting `shapr::explain_forecast()` at 2026-01-16
 #> ℹ Feature names extracted from the model contain
 #>   `NA`.
@@ -2868,35 +2875,35 @@ explanation_forecast <- explain_forecast(
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 4`, and is therefore set to
 #>   `2^n_features = 4`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <ar>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 2
-#> 
+#>
 #> • Number of observations to explain: 1
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_1648711dcc01.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 4 of 4 coalitions.
 
 print(explanation_forecast)
@@ -2931,9 +2938,9 @@ newxreg <- data_ts3[-seq_len(151), "Wind", drop = FALSE]
 
 predict(model_arimax_temp, n.ahead = 2, newxreg = newxreg)$pred
 #> Time Series:
-#> Start = 152 
-#> End = 153 
-#> Frequency = 1 
+#> Start = 152
+#> End = 153
+#> Frequency = 1
 #> [1] 77.500 76.381
 ```
 
@@ -2960,7 +2967,7 @@ explanation_forecast <- explain_forecast(
   phi0 = rep(mean(data_fit$Temp), 2),
   group_lags = FALSE
 )
-#> 
+#>
 #> ── Starting `shapr::explain_forecast()` at 2026-01-16
 #> ℹ Feature names extracted from the model contain
 #>   `NA`.
@@ -2969,35 +2976,35 @@ explanation_forecast <- explain_forecast(
 #> ℹ `max_n_coalitions` is `NULL` or larger than
 #>   `2^n_features = 32`, and is therefore set to
 #>   `2^n_features = 32`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <ar>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 5
-#> 
+#>
 #> • Number of observations to explain: 1
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164826d854d2.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 32 of 32 coalitions.
 
 print(explanation_forecast)
@@ -3007,7 +3014,7 @@ print(explanation_forecast)
 #> 2:         151       2    78  0.400 -0.501  -1.47  0.0659  -0.474
 
 summary(explanation_forecast)
-#> 
+#>
 #> ── Summary of Shapley value explanation ──────────────
 #> • Computed with `shapr::explain_forecast()` in 2.9
 #> seconds, started 2026-01-16 12:38:54
@@ -3021,8 +3028,8 @@ summary(explanation_forecast)
 #> • Number of coalitions used: 32 (of total 32)
 #> • Computations (temporary) saved at:
 #> '/tmp/Rtmpravdkd/shapr_obj_164826d854d2.rds'
-#> 
-#> ── Estimated Shapley values 
+#>
+#> ── Estimated Shapley values
 #>    explain_idx horizon   none Temp.1 Temp.2 Wind.1 Wind.F1 Wind.F2
 #>          <int>   <int> <char> <char> <char> <char>  <char>  <char>
 #> 1:         151       1  77.96  -0.68  -0.67  -1.27    0.49      NA
@@ -3082,6 +3089,10 @@ Machine Learning Research* 23 (213): 1–51.
 ———. 2024. “A Comparative Study of Methods for Estimating Model-Agnostic
 Shapley Value Explanations.” *Data Mining and Knowledge Discovery*,
 1–48.
+
+Olsen, Lars Henry Berge, and Martin Jullum. 2025. “Improving the
+Weighting Strategy in KernelSHAP.” In *World Conference on Explainable
+Artificial Intelligence*, 194–218. Springer.
 
 Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining
 Predictive Models with Mixed Features Using Shapley Values and

@@ -209,7 +209,7 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
     ggplot2::scale_fill_manual(values = c("#E69F00", "#999999"))
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-20 10:39:58 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-21 09:08:45 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -222,7 +222,7 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
 #> • Number of Monte Carlo integration samples: 1
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: /tmp/RtmpnNdRpd/shapr_obj_26cb2e3d40b2.rds
+#> • Computations (temporary) saved at: /tmp/RtmpTOyEbq/shapr_obj_1b4467b11538.rds
 #> 
 #> ── Main computation started ──
 #> 

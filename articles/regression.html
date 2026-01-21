@@ -73,7 +73,7 @@
 Berge Olsen</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/v1.0.8/vignettes/regression.Rmd" class="external-link"><code>vignettes/regression.Rmd</code></a></small>
       <div class="d-none name"><code>regression.Rmd</code></div>
     </div>
 
@@ -795,7 +795,7 @@ and <code><a href="https://dials.tidymodels.org/reference/grid_max_entropy.html"
 <code class="sourceCode R"><span><span class="co"># Possible ways to define the `regression.tune_values` object.</span></span>
 <span><span class="co"># function(x) dials::grid_regular(dials::tree_depth(), levels = 4)</span></span>
 <span><span class="fu">dials</span><span class="fu">::</span><span class="fu"><a href="https://dials.tidymodels.org/reference/grid_regular.html" class="external-link">grid_regular</a></span><span class="op">(</span><span class="fu">dials</span><span class="fu">::</span><span class="fu"><a href="https://dials.tidymodels.org/reference/trees.html" class="external-link">tree_depth</a></span><span class="op">(</span><span class="op">)</span>, levels <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>tree_depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span> <span class="co"># Can also use data.frame or tibble</span></span>
+<span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>tree_depth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">15</span><span class="op">)</span><span class="op">)</span> <span class="co"># Can also use data.frame or tibble</span></span>
 <span></span>
 <span><span class="co"># For several features</span></span>
 <span><span class="co"># function(x) dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)</span></span>

@@ -6,7 +6,7 @@ for a complete introduction with examples and documentation of the
 package.
 
 For an overview of the methodology and capabilities of the package (per
-`shapr` v1.0.4), see the software paper Jullum et al.
+`shapr` v1.0.8), see the software paper Jullum et al.
 ([2025](#ref-jullum2025shapr)), available as a preprint
 [here](https://arxiv.org/abs/2504.01842).
 
@@ -177,7 +177,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-19 11:27:35 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-01-20 14:38:04 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -201,7 +201,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\RtmpuA53nH\shapr_obj_1087c39ae28a1.rds'
+#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
 #> 
 #> 
 #> 
@@ -226,7 +226,7 @@ print(explanation)
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 3.6 seconds, started 2026-01-19 11:27:35
+#> • Computed with `shapr::explain()` in 2.2 seconds, started 2026-01-20 14:38:04
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -236,7 +236,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> 'C:\Users\jullum\AppData\Local\Temp\RtmpuA53nH\shapr_obj_1087c39ae28a1.rds'
+#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -259,7 +259,7 @@ plot(explanation)
 See Jullum et al. ([2025](#ref-jullum2025shapr)) (preprint available
 [here](https://arxiv.org/abs/2504.01842)) for a software paper with an
 overview of the methodology and capabilities of the package (as of
-v1.0.4). See the [general usage
+v1.0.8). See the [general usage
 vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html)
 for further basic usage examples and brief introductions to the
 methodology. For more thorough information about the underlying

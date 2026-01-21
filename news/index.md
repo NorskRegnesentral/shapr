@@ -2,6 +2,8 @@
 
 ## shapr 1.0.8
 
+CRAN release: 2026-01-20
+
 #### Improvements
 
 - Enhanced

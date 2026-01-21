@@ -733,7 +733,7 @@ and
 # Possible ways to define the `regression.tune_values` object.
 # function(x) dials::grid_regular(dials::tree_depth(), levels = 4)
 dials::grid_regular(dials::tree_depth(), levels = 4)
-data.table(tree_depth = c(1, 5, 10, 15)) # Can also use data.frame or tibble
+data.table::data.table(tree_depth = c(1, 5, 10, 15)) # Can also use data.frame or tibble
 
 # For several features
 # function(x) dials::grid_regular(dials::tree_depth(), dials::cost_complexity(), levels = 3)
