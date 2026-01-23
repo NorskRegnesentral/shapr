@@ -9,6 +9,7 @@
 # a string if it is a function, i.e., it can also be, e.g., a pandas data frame.
 
 import xgboost as xgb
+
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 

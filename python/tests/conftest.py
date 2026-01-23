@@ -1,13 +1,15 @@
 """
 Shared pytest fixtures for shaprpy tests.
 """
-import pytest
+import os
+
 import numpy as np
 import pandas as pd
-import os
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+import pytest
 import xgboost as xgb
-from shaprpy.datasets import load_california_housing, load_binary_iris
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+
+from shaprpy.datasets import load_binary_iris, load_california_housing
 
 
 # Set seeds for reproducibility
@@ -133,8 +135,8 @@ def california_housing_categorical_data():
 def trained_rf_regressor_categorical(california_housing_categorical_data):
     """Trained RandomForest regressor on California housing data with categorical features."""
     from sklearn.compose import ColumnTransformer
-    from sklearn.preprocessing import OneHotEncoder
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import OneHotEncoder
 
     dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
 
