@@ -109,12 +109,18 @@ def california_housing_categorical_data():
     # This ensures rpy2 will convert them to R factors properly and both train/test have same levels
     cat_cols = ['IncomeCategory', 'AgeCategory', 'LocationType']
     for col in cat_cols:
-        # Convert to string first
+        # Fill any NaN values with a placeholder before converting to string (pandas 3.0 compatibility)
+        dfx_train[col] = dfx_train[col].cat.add_categories(['Unknown']).fillna('Unknown')
+        dfx_test[col] = dfx_test[col].cat.add_categories(['Unknown']).fillna('Unknown')
+
+        # Convert to string
         dfx_train[col] = dfx_train[col].astype(str)
         dfx_test[col] = dfx_test[col].astype(str)
 
         # Get all unique categories from both train and test
         all_categories = pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values)
+        # Ensure no null/nan values in categories list (pandas 3.0 requirement)
+        all_categories = [cat for cat in all_categories if pd.notna(cat)]
 
         # Create categorical with explicit categories for both
         dfx_train[col] = pd.Categorical(dfx_train[col], categories=all_categories)
