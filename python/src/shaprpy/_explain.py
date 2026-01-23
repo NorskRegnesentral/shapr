@@ -581,7 +581,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
         import xgboost as xgb
 
         if isinstance(model, xgb.core.Booster):
-            return lambda m, x: m.predict(xgb.DMatrix(x))
+            return lambda m, x: m.predict(xgb.DMatrix(x, feature_names=x.columns.tolist()))
     except (ImportError, AttributeError):
         pass
 
