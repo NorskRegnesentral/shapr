@@ -10,7 +10,7 @@
 
 
 ``` r
-#### Loads packages, Reads data and models created by R_prep_data_and_model.R ####
+#### Loads packages, reads data and models created by R_prep_data_and_model.R ####
 
 library(xgboost)
 library(data.table)
@@ -107,11 +107,11 @@ summary(exp_40_ctree)
 ```
 
 ```
-## ── Summary of Shapley value explanation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ────────────────────────────────────────────────────
 ```
 
 ```
-## • Computed with `shapr::explain()` in 8.9 seconds, started 2026-01-20 15:45:34
+## • Computed with `shapr::explain()` in 10.1 seconds, started 2026-01-23 10:34:27
 ```
 
 ```
@@ -147,7 +147,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf51bbdf309.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpw1pFQh/shapr_obj_e10ae6ea2ce66.rds'
 ```
 
 ```
@@ -220,8 +220,9 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2026-01-20 15:45:43 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ── Starting `shapr::explain()` at 2026-01-23 10:34:37 ──────────────────────────────────────
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to
+##   `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: <xgboost>
@@ -231,11 +232,11 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf5347cc8ef.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpw1pFQh/shapr_obj_e10ae5164ed0a.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## 
 ## ── Convergence info 
@@ -244,7 +245,7 @@ exp_iter_ctree <- explain(model = model,
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## 
 ## ── Convergence info 
@@ -332,7 +333,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-01-20 15:45:53 2026-01-20 15:45:55            1.88     1.9 second
+## 1: 2026-01-23 10:34:45 2026-01-23 10:34:47            1.95     1.9 second
 ```
 
 ``` r
@@ -342,7 +343,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-01-20 15:45:55 2026-01-20 15:46:01            6.14    6.1 seconds
+## 1: 2026-01-23 10:34:47 2026-01-23 10:34:55            7.79    7.8 seconds
 ```
 
 ``` r
@@ -418,6 +419,7 @@ phi0_ar <- rep(mean(data_fit$temp), 3)
 
 exp_fc_ar <- explain_forecast(model = model_ar,
                               y = x_full[, "temp"],
+                              train_idx = 2:729,
                               explain_idx = 730:731,
                               explain_y_lags = 2,
                               horizon = 3,
@@ -432,13 +434,14 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2026-01-20 15:46:28 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-01-23 10:35:25 ─────────────────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to
+##   `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -459,7 +462,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf566c9b94d.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpw1pFQh/shapr_obj_e10aeb2e2a94.rds'
 ## 
 ## 
 ## 
@@ -478,12 +481,12 @@ print(exp_fc_ar)
 ```
 ##    explain_idx horizon  none temp.1 temp.2
 ##          <int>   <int> <num>  <num>  <num>
-## 1:         730       1  15.3  -5.96  -4.68
-## 2:         731       1  15.3  -7.80  -4.76
-## 3:         730       2  15.3  -5.61  -4.39
-## 4:         731       2  15.3  -7.34  -4.47
-## 5:         730       3  15.3  -5.26  -4.12
-## 6:         731       3  15.3  -6.89  -4.20
+## 1:         730       1  15.3  -5.98  -4.67
+## 2:         731       1  15.3  -7.82  -4.75
+## 3:         730       2  15.3  -5.62  -4.37
+## 4:         731       2  15.3  -7.35  -4.46
+## 5:         730       3  15.3  -5.28  -4.10
+## 6:         731       3  15.3  -6.90  -4.18
 ```
 
 ``` r
@@ -509,9 +512,10 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-01-20 15:46:29 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-01-23 10:35:26 ─────────────────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to
+##   `2^n_groups = 4`.Registered S3 method overwritten by 'quantmod':
 ##   method            from
 ##   as.zoo.data.frame zoo 
 ## 
@@ -524,7 +528,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpJQWOMK/shapr_obj_4dcf56162a9b6.rds'
+## • Computations (temporary) saved at: '/tmp/Rtmpw1pFQh/shapr_obj_e10ae3a13aef5.rds'
 ## 
 ## ── Main computation started ──
 ## 

@@ -224,6 +224,7 @@ phi0_ar <- rep(mean(data_fit$temp), 3)
 
 exp_fc_ar <- explain_forecast(model = model_ar,
                               y = x_full[, "temp"],
+                              train_idx = 2:729,
                               explain_idx = 730:731,
                               explain_y_lags = 2,
                               horizon = 3,
