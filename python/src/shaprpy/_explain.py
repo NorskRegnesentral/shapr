@@ -535,16 +535,23 @@ def get_predict_model(x_test: pd.DataFrame, predict_model: Callable | None, mode
 
 
 def prebuilt_get_model_specs(model: Any) -> Callable | None:
-    # Look for sklearn
+    # Look for XGBoost sklearn models first (before general sklearn check)
     try:
-        from sklearn.base import BaseEstimator
+        import xgboost as xgb
 
-        if isinstance(model, BaseEstimator):
-            return lambda m: {
-                "labels": m.feature_names_in_,
-                "classes": None,  # Not available from model object
-                "factor_levels": None,  # Not available from model object
-            }
+        if isinstance(model, (xgb.XGBRegressor, xgb.XGBClassifier, xgb.XGBRanker)):
+            def get_xgb_sklearn_specs(m):
+                # Try to get feature names, fall back to None if not available
+                try:
+                    labels = m.feature_names_in_
+                except AttributeError:
+                    labels = None
+                return {
+                    "labels": labels,
+                    "classes": None,
+                    "factor_levels": None,
+                }
+            return get_xgb_sklearn_specs
     except (ImportError, AttributeError):
         pass
 
@@ -554,10 +561,30 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
 
         if isinstance(model, xgb.core.Booster):
             return lambda m: {
-                "labels": np.array(m.feature_names),
+                "labels": np.array(m.feature_names) if m.feature_names else None,
                 "classes": None,  # Not available from model object
                 "factor_levels": None,  # Not available from model object
             }
+    except (ImportError, AttributeError):
+        pass
+
+    # Look for sklearn models (general case)
+    try:
+        from sklearn.base import BaseEstimator
+
+        if isinstance(model, BaseEstimator):
+            def get_sklearn_specs(m):
+                # Try to get feature names, fall back to None if not available
+                try:
+                    labels = m.feature_names_in_
+                except AttributeError:
+                    labels = None
+                return {
+                    "labels": labels,
+                    "classes": None,
+                    "factor_levels": None,
+                }
+            return get_sklearn_specs
     except (ImportError, AttributeError):
         pass
 
@@ -581,7 +608,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
         import xgboost as xgb
 
         if isinstance(model, xgb.core.Booster):
-            return lambda m, x: m.predict(xgb.DMatrix(x))
+            return lambda m, x: m.predict(xgb.DMatrix(x, feature_names=x.columns.tolist()))
     except (ImportError, AttributeError):
         pass
 

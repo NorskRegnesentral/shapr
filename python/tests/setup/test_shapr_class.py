@@ -4,8 +4,9 @@ Tests for the Shapr explanation class methods.
 These tests verify that the Shapr class methods work correctly and
 produce consistent output.
 """
-import pytest
 import pandas as pd
+import pytest
+
 from shaprpy import explain
 
 

@@ -4,9 +4,10 @@ Unit tests for input validation and error handling in shaprpy.
 These tests ensure that the explain function properly validates inputs
 and raises appropriate errors for invalid configurations.
 """
-import pytest
 import numpy as np
 import pandas as pd
+import pytest
+
 from shaprpy import explain
 
 

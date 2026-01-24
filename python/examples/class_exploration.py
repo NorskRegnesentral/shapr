@@ -1,4 +1,5 @@
 from sklearn.ensemble import RandomForestRegressor
+
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
@@ -90,6 +91,7 @@ plots.decision(shapExpl[0].base_values, shapExpl.values, feature_names = shapExp
 
 # Additional force plot for individual prediction (requires Javascript support)
 from shap import initjs
+
 initjs()
 plots.force(shapExpl[3])
 

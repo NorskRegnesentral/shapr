@@ -1,4 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier
+
 from shaprpy import explain
 from shaprpy.datasets import load_binary_iris
 

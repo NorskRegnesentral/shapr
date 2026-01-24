@@ -1,13 +1,15 @@
 """
 Shared pytest fixtures for shaprpy tests.
 """
-import pytest
+import os
+
 import numpy as np
 import pandas as pd
-import os
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+import pytest
 import xgboost as xgb
-from shaprpy.datasets import load_california_housing, load_binary_iris
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+
+from shaprpy.datasets import load_binary_iris, load_california_housing
 
 
 # Set seeds for reproducibility
@@ -109,12 +111,18 @@ def california_housing_categorical_data():
     # This ensures rpy2 will convert them to R factors properly and both train/test have same levels
     cat_cols = ['IncomeCategory', 'AgeCategory', 'LocationType']
     for col in cat_cols:
-        # Convert to string first
+        # Fill any NaN values with a placeholder before converting to string (pandas 3.0 compatibility)
+        dfx_train[col] = dfx_train[col].cat.add_categories(['Unknown']).fillna('Unknown')
+        dfx_test[col] = dfx_test[col].cat.add_categories(['Unknown']).fillna('Unknown')
+
+        # Convert to string
         dfx_train[col] = dfx_train[col].astype(str)
         dfx_test[col] = dfx_test[col].astype(str)
 
         # Get all unique categories from both train and test
         all_categories = pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values)
+        # Ensure no null/nan values in categories list (pandas 3.0 requirement)
+        all_categories = [cat for cat in all_categories if pd.notna(cat)]
 
         # Create categorical with explicit categories for both
         dfx_train[col] = pd.Categorical(dfx_train[col], categories=all_categories)
@@ -127,8 +135,8 @@ def california_housing_categorical_data():
 def trained_rf_regressor_categorical(california_housing_categorical_data):
     """Trained RandomForest regressor on California housing data with categorical features."""
     from sklearn.compose import ColumnTransformer
-    from sklearn.preprocessing import OneHotEncoder
     from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import OneHotEncoder
 
     dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
 

@@ -5,7 +5,7 @@ These tests ensure that the shapley_values_est and shapley_values_sd outputs
 remain consistent across changes to the codebase.
 """
 import pytest
-import pandas as pd
+
 from shaprpy import explain
 
 

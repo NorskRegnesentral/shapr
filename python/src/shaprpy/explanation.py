@@ -6,6 +6,7 @@ from typing import Any
 
 from shaprpy._rutils import _importr
 
+
 class ShaprSummary:
     """Summary object for Shapr explanations."""
 

@@ -6,7 +6,7 @@ produce consistent results across different approaches, with and without
 asymmetric mode and confounding.
 """
 import pytest
-import pandas as pd
+
 from shaprpy import explain
 
 

@@ -5,7 +5,7 @@ These tests ensure that shapley_values_est and shapley_values_sd outputs
 remain consistent for mixed numeric/categorical data.
 """
 import pytest
-import pandas as pd
+
 from shaprpy import explain
 
 
