@@ -51,6 +51,21 @@
 <p>All notable changes to the Python <code>shaprpy</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
+<h2 id="id_043---2026-01-24">[0.4.3] - 2026-01-24<a class="anchor" aria-label="anchor" href="#id_043---2026-01-24"></a></h2>
+<div class="section level3">
+<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<ul><li>Fixed compatibility with pandas 3.0 for categorical data handling in tests.</li>
+<li>Fixed XGBoost model support when <code>feature_names_in_</code> attribute is not available.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_042---2026-01-23">[0.4.2] - 2026-01-23<a class="anchor" aria-label="anchor" href="#id_042---2026-01-23"></a></h2>
+<div class="section level3">
+<h3 id="fixed-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1"></a></h3>
+<ul><li>Adding predictor names to DMatrix when using XGBoost models to avoid issues with missing feature names.</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="id_041---2025-12-22">[0.4.1] - 2025-12-22<a class="anchor" aria-label="anchor" href="#id_041---2025-12-22"></a></h2>
 <div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
@@ -92,7 +107,7 @@
 <li>Cleaned up unused library components</li>
 </ul></div>
 <div class="section level3">
-<h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
+<h3 id="fixed-2">Fixed<a class="anchor" aria-label="anchor" href="#fixed-2"></a></h3>
 <ul><li>Enhanced R package import reliability by removing empty paths from library locations, effectively resolving confusing warnings from R on package load</li>
 <li>Fixed a bug in handling categorical features (R factors) during conversion to Python</li>
 <li>Fixed an issue with passing boolean vectors for the <code>confounding</code> argument</li>
