@@ -1,4 +1,12 @@
 url: https://norskregnesentral.github.io/shapr/
+
+# Redirects vignettes from old locations to new locations
+redirects:
+  - ["general_usage.html", "articles/general_usage.html"]
+  - ["vaeac.html", "articles/vaeac.html"]
+  - ["regression.html", "articles/regression.html"]
+  - ["asymmetric_causal.html", "articles/asymmetric_causal.html"]
+
 template:
   bootstrap: 5
   light-switch: true
