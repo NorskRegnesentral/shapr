@@ -62,29 +62,26 @@ List containing:
 
 - `MSEv`:
 
-  A
-  [`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
+  A [`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html)
   with the overall MSEv evaluation criterion averaged over both the
   coalitions and observations/explicands. The
-  [`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
+  [`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html)
   also contains the standard deviation of the MSEv values for each
   explicand (only averaged over the coalitions) divided by the square
   root of the number of explicands.
 
 - `MSEv_explicand`:
 
-  A
-  [`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
+  A [`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html)
   with the mean squared error for each explicand, i.e., only averaged
   over the coalitions.
 
 - `MSEv_coalition`:
 
-  A
-  [`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
+  A [`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html)
   with the mean squared error for each coalition, i.e., only averaged
   over the explicands/observations. The
-  [`data.table`](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
+  [`data.table`](https://rdrr.io/pkg/data.table/man/data.table.html)
   also contains the standard deviation of the MSEv values for each
   coalition divided by the square root of the number of explicands.
 
