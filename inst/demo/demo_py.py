@@ -22,14 +22,14 @@ model.feature_names = x_train.columns.tolist()
 
 # Predict x_explain using the XGBoost model
 expl_empirical_40 = explain(model = model,
-                       x_train = x_train,
-                       x_explain = x_explain,
-                       approach = "empirical",
-                       phi0 = y_train.mean().item(),
-                       max_n_coalitions=40,
-                       iterative = False,
-                       verbose = ["basic", "progress"],
-                       seed = 123)
+                            x_train = x_train,
+                            x_explain = x_explain,
+                            approach = "empirical",
+                            phi0 = y_train.mean().item(),
+                            max_n_coalitions = 40,
+                            iterative = False,
+                            verbose = ["basic", "progress"],
+                            seed = 123)
 
 
 # Print the Shapley values
@@ -71,16 +71,16 @@ shap_plt.violin(shapExpl)
 #### Regression paradigm examples
 
 expl_sep_xgboost = explain(
-                           model=model,
-                           x_train = x_train,
-                       x_explain = x_explain,
-                    approach='regression_separate',
-                    regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
-                       phi0 = y_train.mean().item(),
-                       max_n_coalitions=40,
-                       iterative = False,
-                       verbose = ["basic", "progress", "convergence"],
-                       seed = 123)
+    model = model,
+    x_train = x_train,
+    x_explain = x_explain,
+    approach = 'regression_separate',
+    regression_model = "parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
+    phi0 = y_train.mean().item(),
+    max_n_coalitions = 40,
+    iterative = False,
+    verbose = ["basic", "progress", "convergence"],
+    seed = 123)
 
 expl_sep_xgboost
 
