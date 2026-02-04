@@ -28,7 +28,6 @@ expl_empirical_40 = explain(model = model,
                             phi0 = y_train.mean().item(),
                             max_n_coalitions = 40,
                             iterative = False,
-                            verbose = ["basic", "progress"],
                             seed = 123)
 
 
@@ -77,9 +76,9 @@ expl_sep_xgboost = explain(
     approach = 'regression_separate',
     regression_model = "parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
     phi0 = y_train.mean().item(),
-    max_n_coalitions = 40,
-    iterative = False,
-    verbose = ["basic", "progress", "convergence"],
+    max_n_coalitions = 70,
+    iterative = True,
+    verbose = ["basic", "convergence"],
     seed = 123)
 
 expl_sep_xgboost

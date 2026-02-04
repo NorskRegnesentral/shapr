@@ -28,7 +28,6 @@ progressr::handlers("cli")
 
 hist(y_train)
 head(x_train)
-head(x_explain)
 
 # Required components in explain()
 # model
@@ -52,7 +51,7 @@ expl_ctree <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  verbose = c("basic", "progress", "convergence", "vS_details"),
+  verbose = c("basic", "convergence", "shapley"), # "vS_details", "progress"
   phi0 = phi0,
   seed = 123)
 
@@ -61,26 +60,28 @@ expl_ctree_higher_tol <- explain(
   x_explain = x_explain,
   x_train = x_train,
   approach = "ctree",
-  verbose = c("basic", "progress", "convergence", "vS_details"),
+  verbose = c("basic", "convergence"),
   phi0 = phi0,
   seed = 123,
   iterative_args = list(
-    convergence_tol = 0.01,
+    initial_n_coalitions = 40,
+    convergence_tol = 0.025,
     n_coal_next_iter_factor_vec = rep(0.8, 10)
   )
 )
 
+# Non-iterative versions with fixed number of coalitions
 
 expl_ctree_40 <- explain(
   model = model,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "ctree",
-  phi0 = phi0,
-  iterative = FALSE,
-  verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
-  max_n_coalitions = 40,
-  seed = 123)
+    x_explain = x_explain,
+    x_train = x_train,
+    approach = "ctree",
+    phi0 = phi0,
+    iterative = FALSE,
+    verbose = c("basic", "shapley"),
+    max_n_coalitions = 40,
+    seed = 123)
 
 expl_ctree_40_MCsamp_100 <- explain(
   model = model,
@@ -89,7 +90,7 @@ expl_ctree_40_MCsamp_100 <- explain(
   approach = "ctree",
   phi0 = phi0,
   iterative = FALSE,
-  verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
+  verbose = c("basic", "shapley"),
   max_n_coalitions = 40,
   n_MC_samples = 100,
   seed = 123)
@@ -107,7 +108,7 @@ expl_copula_40 <- explain(
   phi0 = phi0,
   seed = 123)
 
-### Regression
+### Regression approaches
 
 ## Separate
 exp_reg_sep_40 <- explain(
@@ -122,7 +123,7 @@ exp_reg_sep_40 <- explain(
     engine = "xgboost",
     mode = "regression"
   ),
-  verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
+  verbose = c("basic", "shapley", "vS_details"),
   seed = 123)
 
 # Separate tuned
@@ -172,7 +173,8 @@ plot_MSEv_eval_crit(list(
   reg_sep_40 = exp_reg_sep_40,
   reg_sep_40_tuned = exp_reg_sep_40_tuned,
   reg_surr_40 = exp_reg_surr_40
-))
+), index_x_explain = 1:100)
+
 
 
 
@@ -188,20 +190,6 @@ expl_copula_60 <- explain(
   phi0 = phi0,
   seed = 123,
   prev_shapr_object = expl_copula_40)
-
-### VAEAC approach
-
-expl_vaeac <- explain(
-  model = model,
-  x_explain = head(x_explain),
-  x_train = x_train,
-  approach = "vaeac",
-  phi0 = phi0,
-  iterative = FALSE,
-  verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
-  max_n_coalitions = 20,
-  seed = 123)
-
 
 ### Summary
 
@@ -234,7 +222,9 @@ plot(
   index_x_explain = c(1, 22, 45, 89)
 )
 
-plot(expl_default_gaussian, plot_type = "scatter")
+plot(
+  expl_default_gaussian,
+  plot_type = "scatter")
 
 plot(
   expl_default_gaussian,
@@ -242,7 +232,9 @@ plot(
   scatter_features = c("trend", "temp")
 )
 
-plot(expl_default_gaussian, plot_type = "beeswarm")
+plot(
+  expl_default_gaussian,
+  plot_type = "beeswarm")
 
 plot(
   expl_default_gaussian,
@@ -266,7 +258,6 @@ expl_group_ctree <- explain(
   phi0 = phi0,
   group = group,
   approach = "ctree",
-  verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
   seed = 123)
 
 future::plan(sequential) # Disable parallelization to avoid conflict with tidyverse
@@ -284,6 +275,77 @@ expl_group_vaeac <- explain(
   vaeac.width = 8,
   verbose = c("basic", "progress", "convergence", "shapley", "vS_details"),
   seed = 123)
+
+
+
+### Other models
+
+data_train <- cbind(x_train, cnt = y_train)
+
+
+library(gbm)
+
+# Fitting a gbm model
+model_gbm <- gbm::gbm(
+  cnt~.,
+  data = data_train,
+  distribution = "gaussian"
+)
+
+#### Full feature versions of the three required model functions ####
+MY_predict_model <- function(x, newdata) {
+  gbm::predict.gbm(x, as.data.frame(newdata), n.trees = x$n.trees)
+}
+
+MY_get_model_specs <- function(x) {
+  feature_specs <- list()
+  feature_specs$labels <- labels(x$Terms)
+  m <- length(feature_specs$labels)
+  feature_specs$classes <- attr(x$Terms, "dataClasses")[-1]
+  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
+  feature_specs$factor_levels[feature_specs$classes == "factor"] <- NA # model object doesn't contain factor levels info
+  return(feature_specs)
+}
+
+expl_custom <- explain(
+  model = model_gbm,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  max_n_coalitions = 40,
+  iterative = FALSE,
+  phi0 = phi0,
+  seed = 123,
+  predict_model = MY_predict_model,
+  get_model_specs = MY_get_model_specs
+)
+
+#### Tidymodels/parsnip/workflow
+
+library(parsnip)
+model_tidymodels <- workflows::workflow() %>%
+  workflows::add_model(parsnip::mlp(engine = "nnet", mode = "regression")) %>%
+  #   workflows::add_model(parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")) %>% # alternative
+  workflows::add_recipe(recipes::recipe(cnt ~ ., data = data_train)) %>%
+  parsnip::fit(data = data_train)
+
+# Create the Shapley values for the tidymodels version
+
+future::plan(sequential) # Disable parallelization to avoid conflict with tidyverse
+
+expl_tidymodels <- explain(
+  model = model_tidymodels,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "gaussian",
+  max_n_coalitions = 40,
+  iterative = FALSE,
+  verbose = c("basic", "shapley"),
+  phi0 = phi0,
+  seed = 123
+)
+
+future::plan(multisession, workers = 4)
 
 
 
@@ -365,13 +427,15 @@ patchwork::wrap_plots(plot_list, nrow = 1) +
 ### Forecasting
 
 x_full <- fread(file.path("data_and_models", "x_full.csv"))
-ts <- x_full[seq_len(700), temp]
+ts <- x_full[, temp]
+
+plot(ts, type = "l")
 
 # Basic AR(2) model
-model_ar <- ar(ts, order = 2)
+model_ar <- ar(ts[seq_len(700)], order = 2)
 phi0_ar <- rep(mean(ts), 3)
 
-exp_fc_ar <- explain_forecast(
+expl_fc_ar <- explain_forecast(
   model = model_ar,
   y = ts,
   train_idx = 2:700,
@@ -383,8 +447,8 @@ exp_fc_ar <- explain_forecast(
   group_lags = FALSE,
   seed = 1
 )
-exp_fc_ar
-exp_fc_ar$pred_explain
+expl_fc_ar
+expl_fc_ar$pred_explain
 
 # ARIMAX-model
 
@@ -395,7 +459,7 @@ model_arimax <- arima(
 )
 phi0_arimax <- rep(mean(ts), 2)
 
-exp_fc_arimax <- explain_forecast(
+expl_fc_arimax <- explain_forecast(
   model = model_arimax,
   y = x_full[, "temp"],
   xreg = x_full[, "windspeed"],
@@ -411,86 +475,26 @@ exp_fc_arimax <- explain_forecast(
   seed = 1
 )
 
-exp_fc_arimax
+expl_fc_arimax
 
-
-### Other models
-
-data_train <- cbind(x_train, cnt = y_train)
-data_train[,trend:=as.numeric(trend)]
-
-
-library(gbm)
-
-formula_gbm <- as.formula(paste0(cnt, "~", paste0(x_var, collapse = "+")))
-
-# Fitting a gbm model
-set.seed(825)
-model_gbm <- gbm::gbm(
-  cnt~.,
-  data = data_train,
-  distribution = "gaussian"
+expl_fc_arimax_grouplags <- explain_forecast(
+  model = model_arimax,
+  y = x_full[, "temp"],
+  xreg = x_full[, "windspeed"],
+  train_idx = 2:700,
+  explain_idx = 701:702,
+  explain_y_lags = 2,
+  explain_xreg_lags = 1,
+  horizon = 2,
+  approach = "copula",
+  n_MC_samples = 100,
+  phi0 = phi0_arimax,
+  group_lags = TRUE,
+  seed = 1
 )
 
-#### Full feature versions of the three required model functions ####
-MY_predict_model <- function(x, newdata) {
-  gbm::predict.gbm(x, as.data.frame(newdata), n.trees = x$n.trees)
-}
-
-MY_get_model_specs <- function(x) {
-  feature_specs <- list()
-  feature_specs$labels <- labels(x$Terms)
-  m <- length(feature_specs$labels)
-  feature_specs$classes <- attr(x$Terms, "dataClasses")[-1]
-  feature_specs$factor_levels <- setNames(vector("list", m), feature_specs$labels)
-  feature_specs$factor_levels[feature_specs$classes == "factor"] <- NA # model object doesn't contain factor levels info
-  return(feature_specs)
-}
-
-expl_custom <- explain(
-  model = model_gbm,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  max_n_coalitions = 40,
-  iterative = FALSE,
-  phi0 = phi0,
-  seed = 123,
-  predict_model = MY_predict_model,
-  get_model_specs = MY_get_model_specs
-)
-
-#### Tidymodels/parsnip/workflow
-
-library(parsnip)
-model_tidymodels <- workflows::workflow() %>%
-  workflows::add_model(parsnip::mlp(engine = "nnet", mode = "regression")) %>%
-  workflows::add_recipe(recipes::recipe(cnt ~ ., data = data_train)) %>%
-  parsnip::fit(data = data_train)
-
-model_tidymodels <- workflows::workflow() %>%
-  workflows::add_model(parsnip::boost_tree(trees = 20, engine = "xgboost", mode = "regression")) %>%
-  workflows::add_recipe(recipes::recipe(cnt ~ ., data = data_train)) %>%
-  parsnip::fit(data = data_train)
+expl_fc_arimax_grouplags
 
 
-
-# Create the Shapley values for the tidymodels version
-
-future::plan(sequential) # Disable parallelization to avoid conflict with tidyverse
-
-expl_tidymodels <- explain(
-  model = model_tidymodels,
-  x_explain = x_explain,
-  x_train = x_train,
-  approach = "gaussian",
-  max_n_coalitions = 40,
-  iterative = FALSE,
-  verbose = c("basic", "shapley"),
-  phi0 = phi0,
-  seed = 123
-)
-
-future::plan(multisession, workers = 4)
 
 

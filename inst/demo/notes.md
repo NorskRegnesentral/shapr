@@ -42,4 +42,6 @@ Run `rlang::last_trace()` to see where the error occurred.
 
 - Add a "Computations DONE" in the end of the shapley value computations whenever verbose is not NULL
 - plotting for explain_forecast not working properly (beeswarm works, but not waterfall etc)
-
+- check whether the estimated remaining coalitions is really based on the current convergence tol -- changing it, it seems not to affect the estimated remaining coalitions...
+- the MSEv values are always very large, are they really normalzied?
+- in the MSEv plot function, do we by default include all observations? a message saying top 10 is shown is printed, so i am not sure.
