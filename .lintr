@@ -9,6 +9,7 @@ exclusions: list(
         "inst/devel",
         "inst/scripts",
         "inst/code_paper",
+        "inst/demo",
         "vignettes",
         "R/RcppExports.R",
         "R/zzz.R"
