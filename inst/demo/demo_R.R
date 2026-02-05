@@ -1,8 +1,6 @@
 # Demo script for shapr
-# Requires the following R packages (from CRAN)
-# shapr, xgboost, data.table, future, progressr, knitr, ggplot2, patchwork
 
-#### Loads packages, reads data and models created by R_prep_data_and_model.R ####
+#### Loads packages, reads data and models created by prep_data_and_model.R ####
 
 library(xgboost)
 library(data.table)
@@ -173,7 +171,7 @@ plot_MSEv_eval_crit(list(
   reg_sep_40 = exp_reg_sep_40,
   reg_sep_40_tuned = exp_reg_sep_40_tuned,
   reg_surr_40 = exp_reg_surr_40
-), index_x_explain = 1:100)
+), index_x_explain = 1:10)
 
 
 
