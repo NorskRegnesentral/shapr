@@ -27,3 +27,28 @@ snapshot_review_man <- function(path, tolerance = 10^(-5), max_diffs = 200, ...)
     }
   }
 }
+
+# Bootstrap the VS Code R extension session watcher for radian terminals.
+local({
+  if (!interactive() || Sys.getenv("TERM_PROGRAM") != "vscode" || Sys.getenv("RSTUDIO") != "") {
+    return(invisible())
+  }
+
+  vscode_home <- Sys.getenv(if (.Platform$OS.type == "windows") "USERPROFILE" else "HOME")
+  init_r <- file.path(vscode_home, ".vscode-R", "init.R")
+  if (!file.exists(init_r)) {
+    return(invisible())
+  }
+
+  source(init_r)
+
+  first_sys <- get0(".First.sys", envir = globalenv(), inherits = FALSE, ifnotfound = NULL)
+  if (is.function(first_sys) && !"tools:vscode" %in% search()) {
+    tryCatch(
+      first_sys(),
+      error = function(e) {
+        message("VS Code R session watcher failed to initialize: ", conditionMessage(e))
+      }
+    )
+  }
+})
