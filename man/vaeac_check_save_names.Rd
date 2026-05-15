@@ -7,7 +7,7 @@
 vaeac_check_save_names(folder_to_save_model, model_description)
 }
 \arguments{
-\item{folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+\item{folder_to_save_model}{String (default is \code{\link[base:tempdir]{base::tempdir()}}). String specifying a path to a folder where
 the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
 \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 
