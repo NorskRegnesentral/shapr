@@ -46,7 +46,7 @@
 #' If `FALSE` all lags of each variable are explained individually.
 #'
 #' @inherit explain return author references
-#' @inheritDotParams setup_approach -internal -regression.model -regression.tune_values -regression.vfold_cv_para -regression.recipe_func -regression.surrogate_n_comb
+#' @inheritDotParams setup_approach -internal -(regression.model:regression.surrogate_n_comb)
 #'
 #' @details This function explains a forecast of length `horizon`. The argument `train_idx`
 #' is analogous to x_train in `explain()`, however, it just contains the time indices of where
