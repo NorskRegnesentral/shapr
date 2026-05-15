@@ -4,6 +4,10 @@
 name: Python Tests
 
 on:
+  schedule:
+    # Monthly maintenance check on the default branch, at 04:17 UTC on day 16.
+    - cron: '17 4 16 * *'
+  workflow_dispatch:
   push:
     branches: [main, master, cranversion, devel]
   pull_request:
