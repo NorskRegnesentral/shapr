@@ -1,0 +1,126 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "R: Run all tests",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::test()\"",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run tests for current file",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::test_active_file('${file}')\"",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Review failing snapshots (interactive)",
+      "detail": "Opens a Shiny app in your browser to compare old vs new snapshots and accept/reject each one.",
+      "type": "shell",
+      "command": "Rscript -e \"testthat::snapshot_review('tests/testthat')\"",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Diff failing snapshots (terminal)",
+      "detail": "Prints waldo::compare() diffs for every *.new.rds / *.new.md file in _snaps/ directly in the terminal.",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Accept all new snapshots",
+      "detail": "Replaces every stored snapshot with the new version. Run only after reviewing diffs.",
+      "type": "shell",
+      "command": "Rscript -e \"testthat::snapshot_accept(path = 'tests/testthat')\"",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Load package (devtools::load_all)",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::load_all()\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Build documentation (devtools::document)",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::document()\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Check package (devtools::check)",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::check()\"",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Style package (styler)",
+      "type": "shell",
+      "command": "Rscript -e \"styler::style_pkg()\"",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Lint package (lintr)",
+      "type": "shell",
+      "command": "Rscript -e \"lintr::lint_package()\"",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
