@@ -58,7 +58,7 @@
 <text x='333.29' y='50.00' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>53.03</text>
 <text x='247.62' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='1.78px' lengthAdjust='spacingAndGlyphs'> </text>
 <text x='249.40' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='4.17px' lengthAdjust='spacingAndGlyphs'>φ</text>
-<text x='253.57' y='251.64' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='253.57' y='251.69' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
 <text x='257.99' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
 <text x='265.16' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>42.44</text>
 <rect x='89.30' y='290.15' width='274.26' height='215.77' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
@@ -100,7 +100,7 @@
 <text x='123.37' y='300.71' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>31.84</text>
 <text x='217.72' y='501.03' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='1.78px' lengthAdjust='spacingAndGlyphs'> </text>
 <text x='219.50' y='501.03' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='4.17px' lengthAdjust='spacingAndGlyphs'>φ</text>
-<text x='223.67' y='502.35' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='223.67' y='502.40' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
 <text x='228.09' y='501.03' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
 <text x='235.26' y='501.03' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>42.44</text>
 <rect x='440.26' y='39.43' width='274.26' height='215.77' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
@@ -142,7 +142,7 @@
 <text x='474.33' y='50.00' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>27.06</text>
 <text x='656.43' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='1.78px' lengthAdjust='spacingAndGlyphs'> </text>
 <text x='658.21' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='4.17px' lengthAdjust='spacingAndGlyphs'>φ</text>
-<text x='662.38' y='251.64' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
+<text x='662.38' y='251.69' style='font-size: 4.98px; fill: #4D4D4D; font-family: sans;' textLength='2.77px' lengthAdjust='spacingAndGlyphs'>0</text>
 <text x='666.79' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='5.52px' lengthAdjust='spacingAndGlyphs'>=</text>
 <text x='673.96' y='250.32' style='font-size: 7.11px; fill: #4D4D4D; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>42.44</text>
 </g>
