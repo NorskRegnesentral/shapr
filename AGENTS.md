@@ -1,10 +1,6 @@
----
-name: shapr-code-conventions
-description: "Enforce shapr package code conventions and style. Use when: adding new R functions, editing existing R code, extending the Python wrapper (shaprpy), adding new approaches, writing tests, or writing documentation. Ensures all edits follow the established patterns for naming, data manipulation, error handling, documentation, performance, and R-Python bridging."
-argument-hint: "Describe the change or addition you are making"
----
+# shapr Agent Instructions
 
-# shapr Code Conventions
+These instructions apply to the entire repository.
 
 ## When to Use
 - Adding a new feature, approach, or function to the R package
