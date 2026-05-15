@@ -134,6 +134,15 @@ setup_approach.myapproach <- function(internal,
 setup_approach.myapproach <- function(internal, myapproach.param1 = NULL, ...) {
 ```
 
+### Formatting and Linting
+The project enforces the **tidyverse style guide** via `styler` and checks compliance with `lintr`.
+
+- Run `styler::style_pkg()` before submitting any R code changes. A GitHub Actions workflow also runs this automatically on PRs.
+- Run `lintr::lint_package()` and resolve all reported issues before submitting.
+- The `.lintr` config sets a **120-character line limit** and disables `object_name_linter`, `object_usage_linter`, `commented_code_linter`, `indentation_linter`, and `return_linter`.
+- Only restyle code that is directly related to your change — do not reformat unrelated lines.
+- The following paths are excluded from linting: `inst/devel`, `inst/scripts`, `inst/code_paper`, `inst/demo`, `vignettes`, `R/RcppExports.R`, `R/zzz.R`.
+
 ### Comments
 - Use `#` for inline and block comments; use `####` dividers for major sections within a function.
 - Comments explain *why*, not *what* — the code should be self-explanatory for the *what*.
@@ -189,6 +198,8 @@ setup_approach.myapproach <- function(internal, myapproach.param1 = NULL, ...) {
 ## Checklist Before Submitting Changes
 
 - [ ] All new R functions use `snake_case` naming and `<-` assignment.
+- [ ] `styler::style_pkg()` run on changed files; only changed lines restyled.
+- [ ] `lintr::lint_package()` passes with no new issues.
 - [ ] External calls qualified with `::` (e.g., `cli::cli_abort`, `data.table::setkey`).
 - [ ] Data manipulation uses `data.table` only — no `dplyr`/`tidyr`/pipes.
 - [ ] Errors use `cli::cli_abort()`, warnings use `cli::cli_warn()`.
