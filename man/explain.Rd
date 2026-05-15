@@ -189,7 +189,7 @@ Specifies certain arguments related to the output of the function.
 See the help file of \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=setup_approach.categorical]{setup_approach.categorical}}, \code{\link[=setup_approach.copula]{setup_approach.copula}}, \code{\link[=setup_approach.ctree]{setup_approach.ctree}}, \code{\link[=setup_approach.empirical]{setup_approach.empirical}}, \code{\link[=setup_approach.gaussian]{setup_approach.gaussian}}, \code{\link[=setup_approach.independence]{setup_approach.independence}}, \code{\link[=setup_approach.regression_separate]{setup_approach.regression_separate}}, \code{\link[=setup_approach.regression_surrogate]{setup_approach.regression_surrogate}}, \code{\link[=setup_approach.timeseries]{setup_approach.timeseries}}, \code{\link[=setup_approach.vaeac]{setup_approach.vaeac}}
+  Arguments passed on to \code{\link{setup_approach}}
   \describe{
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
@@ -200,8 +200,6 @@ If \code{categorical.joint_prob_dt} is not supplied, probabilities/frequencies a
 estimated using \code{x_train}. If certain observations occur in \code{x_explain} and NOT in \code{x_train},
 then epsilon is used as the proportion of times that these observations occur in the training data.
 In theory, this proportion should be zero, but this causes an error later in the Shapley computation.}
-    \item{\code{internal}}{List.
-Not used directly, but passed through from \code{\link[=explain]{explain()}}.}
     \item{\code{ctree.mincriterion}}{Numeric scalar or vector.
 Either a scalar or vector of length equal to the number of features in the model.
 The value is equal to 1 - \eqn{\alpha} where \eqn{\alpha} is the nominal level of the conditional independence tests.
