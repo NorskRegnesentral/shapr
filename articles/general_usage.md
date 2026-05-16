@@ -4,8 +4,8 @@
 
 The `shapr` package implements an extended version of the Kernel SHAP
 method for approximating Shapley values (Lundberg and Lee (2017)), in
-which dependence between the features is taken into account (Aas,
-Jullum, and Løland (2021)).
+which dependence between the features is taken into account (Aas et al.
+(2021)).
 
 Estimation of Shapley values is of interest when attempting to explain
 complex machine learning models. Of existing work on interpreting
@@ -13,11 +13,11 @@ individual predictions, Shapley values is regarded to be the only
 model-agnostic explanation method with a solid theoretical foundation
 (Lundberg and Lee (2017)). Kernel SHAP is a computationally efficient
 approximation to Shapley values in higher dimensions, but it assumes
-independent features. Aas, Jullum, and Løland (2021) extends the Kernel
-SHAP method to handle dependent features, resulting in more accurate
-approximations to the true Shapley values. See the
+independent features. Aas et al. (2021) extends the Kernel SHAP method
+to handle dependent features, resulting in more accurate approximations
+to the true Shapley values. See the
 [paper](https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf)
-(Aas, Jullum, and Løland (2021)) for further details.
+(Aas et al. (2021)) for further details.
 
 ## Overview of Package
 
@@ -26,18 +26,18 @@ approximations to the true Shapley values. See the
 Here is an overview of the main functions. You can read their
 documentation and see examples with `?function_name`.
 
-| Function Name                | Description                                                                                 |
-|:-----------------------------|:--------------------------------------------------------------------------------------------|
-| `explain`                    | Computes Shapley values for a model and a set of observations to explain.                   |
-| `explain_forecast`           | Analogous to `explain`, but for explaining forecasts from time series models.               |
-| `plot.shapr`                 | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package.   |
-| `plot_SV_several_approaches` | Compare the individual prediction explanations obtained from different approaches.          |
-| `plot_MSEv_eval_crit`        | Plots the $\operatorname{MSE}_{v}$ criterion to evaluate the performance of the approach.   |
-| `print.shapr`                | Prints the Shapley values (default), their standard deviation or estimates of the MSE.      |
-| `get_results`                | Extracts and returns a summary of the Shapley value computation.                            |
-| `summary.shapr`              | Returns a `summary.shapr` object, and prints a formatted summary when called interactively. |
+| Function Name | Description |
+|:---|:---|
+| `explain` | Computes Shapley values for a model and a set of observations to explain. |
+| `explain_forecast` | Analogous to `explain`, but for explaining forecasts from time series models. |
+| `plot.shapr` | Plots the individual prediction explanations. Uses the `ggplot` and `ggbeeswarm` package. |
+| `plot_SV_several_approaches` | Compare the individual prediction explanations obtained from different approaches. |
+| `plot_MSEv_eval_crit` | Plots the $`\operatorname{MSE}_{v}`$ criterion to evaluate the performance of the approach. |
+| `print.shapr` | Prints the Shapley values (default), their standard deviation or estimates of the MSE. |
+| `get_results` | Extracts and returns a summary of the Shapley value computation. |
+| `summary.shapr` | Returns a `summary.shapr` object, and prints a formatted summary when called interactively. |
 
-Main functions in the `shapr` package.
+Main functions in the `shapr` package. {.table}
 
 The `shapr` package implements Kernel SHAP estimation of
 dependence-aware Shapley values with eight different Monte Carlo-based
@@ -118,88 +118,103 @@ number of coalitions considered. This can be controlled through the
 
 ### The Kernel SHAP Method
 
-Assume a predictive model $f(\mathbf{x})$ for a response value $y$ with
-features $\mathbf{x} \in {\mathbb{R}}^{M}$, trained on a training set,
-and that we want to explain the predictions for new sets of data. This
-may be done using ideas from cooperative game theory, letting a single
-prediction take the place of the game being played and the features the
-place of the players. Letting $N$ denote the set of all $M$ players, and
-$S \subseteq N$ be a subset of $|S|$ players, the “contribution”
-function $v(S)$ describes the total expected sum of payoffs the members
-of $S$ can obtain by cooperation. The Shapley value (Shapley (1953)) is
-one way to distribute the total gains to the players, assuming that they
-all collaborate. The amount that player $i$ gets is then
+Assume a predictive model $`f(\boldsymbol{x})`$ for a response value
+$`y`$ with features $`\boldsymbol{x}\in \mathbb{R}^M`$, trained on a
+training set, and that we want to explain the predictions for new sets
+of data. This may be done using ideas from cooperative game theory,
+letting a single prediction take the place of the game being played and
+the features the place of the players. Letting $`N`$ denote the set of
+all $`M`$ players, and $`S \subseteq N`$ be a subset of $`|S|`$ players,
+the “contribution” function $`v(S)`$ describes the total expected sum of
+payoffs the members of $`S`$ can obtain by cooperation. The Shapley
+value (Shapley (1953)) is one way to distribute the total gains to the
+players, assuming that they all collaborate. The amount that player
+$`i`$ gets is then
 
-$$\phi_{i}(v) = \phi_{i} = \sum\limits_{S \subseteq N\backslash\{ i\}}\frac{|S|!\left( M - |S| - 1 \right)!}{M!}\left( v\left( S \cup \{ i\} \right) - v(S) \right),$$
+``` math
+\phi_i(v) = \phi_i = \sum_{S \subseteq N \setminus\{i\}} \frac{|S| ! (M-| S| - 1)!}{M!}(v(S\cup \{i\})-v(S)),
+```
 
-that is, a weighted mean over all subsets $S$ of players not containing
-player $i$. Lundberg and Lee (2017) define the contribution function for
-a certain subset $S$ of these features $\mathbf{x}_{S}$ as
-$v(S) = \text{E}\left\lbrack f(\mathbf{x})|\mathbf{x}_{S} \right\rbrack$,
-the expected output of the predictive model conditional on the feature
-values of the subset. Lundberg and Lee (2017) names this type of Shapley
-values SHAP (SHapley Additive exPlanation) values. Since the conditional
+that is, a weighted mean over all subsets $`S`$ of players not
+containing player $`i`$. Lundberg and Lee (2017) define the contribution
+function for a certain subset $`S`$ of these features
+$`\boldsymbol{x}_S`$ as
+$`v(S) = \mbox{E}[f(\boldsymbol{x})|\boldsymbol{x}_S]`$, the expected
+output of the predictive model conditional on the feature values of the
+subset. Lundberg and Lee (2017) names this type of Shapley values SHAP
+(SHapley Additive exPlanation) values. Since the conditional
 expectations can be written as
 
-$$E\left\lbrack f(\mathbf{x})|\mathbf{x}_{s} = \mathbf{x}_{S}^{*} \right\rbrack = E\left\lbrack f\left( \mathbf{x}_{\bar{S}},\mathbf{x}_{S} \right)|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack = \int f\left( \mathbf{x}_{\bar{S}},\mathbf{x}_{S}^{*} \right)\, p\left( \mathbf{x}_{\bar{S}}|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right)d\mathbf{x}_{\bar{S}},$$
+``` math
+\begin{equation}
+\label{eq:CondExp}
+E[f(\boldsymbol{x})|\boldsymbol{x}_s=\boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*] =
+\int f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S^*)\,p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)d\boldsymbol{x}_{\bar{S}},
+\end{equation}
+```
 
 the conditional distributions
-$p\left( \mathbf{x}_{\bar{S}}|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right)$
-are needed to compute the contributions. The Kernel SHAP method of
-Lundberg and Lee (2017) assumes feature independence, so that
-$p\left( \mathbf{x}_{\bar{S}}|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right) = p\left( \mathbf{x}_{\bar{S}} \right)$.
-If samples $\mathbf{x}_{\bar{S}}^{k},k = 1,\ldots,K$, from
-$p\left( \mathbf{x}_{\bar{S}}|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right)$
-are available, the conditional expectation above can be approximated by
+$`p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)`$ are
+needed to compute the contributions. The Kernel SHAP method of Lundberg
+and Lee (2017) assumes feature independence, so that
+$`p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)=p(\boldsymbol{x}_{\bar{S}})`$.
+If samples $`\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K`$, from
+$`p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)`$ are
+available, the conditional expectation above can be approximated by
 
-$$v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum\limits_{k = 1}^{K}f\left( \mathbf{x}_{\bar{S}}^{k},\mathbf{x}_{S}^{*} \right).$$
+``` math
+\begin{equation}
+  v_{\text{KerSHAP}}(S) = \frac{1}{K}\sum_{k=1}^K f(\boldsymbol{x}_{\bar{S}}^{k},\boldsymbol{x}_S^*).
+\end{equation}
+```
 
-In Kernel SHAP, $\mathbf{x}_{\bar{S}}^{k},k = 1,\ldots,K$ are sampled
-from the $\bar{S}$-part of the training data, *independently* of
-$\mathbf{x}_{S}$. This is motivated by using the training set as the
-empirical distribution of $\mathbf{x}_{\bar{S}}$, and assuming that
-$\mathbf{x}_{\bar{S}}$ is independent of
-$\mathbf{x}_{S} = \mathbf{x}_{S}^{*}$. Due to the independence
+In Kernel SHAP, $`\boldsymbol{x}_{\bar{S}}^{k}, k=1,\ldots,K`$ are
+sampled from the $`\bar{S}`$-part of the training data, *independently*
+of $`\boldsymbol{x}_{S}`$. This is motivated by using the training set
+as the empirical distribution of $`\boldsymbol{x}_{\bar{S}}`$, and
+assuming that $`\boldsymbol{x}_{\bar{S}}`$ is independent of
+$`\boldsymbol{x}_S=\boldsymbol{x}_S^*`$. Due to the independence
 assumption, if the features in a given model are highly dependent, the
 Kernel SHAP method may give a completely wrong answer. This can be
 avoided by estimating the conditional distribution
-$p\left( \mathbf{x}_{\bar{S}}|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right)$
+$`p(\boldsymbol{x}_{\bar{S}}|\boldsymbol{x}_S=\boldsymbol{x}_S^*)`$
 directly and generating samples from this distribution. With this small
 change, the contributions and Shapley values may then be approximated as
-in the ordinary Kernel SHAP framework. Aas, Jullum, and Løland (2021)
-propose three different approaches for estimating the conditional
-probabilities which are implemented: `empirical`, `gaussian` and
-`copula`. The package also implements the `ctree` method from
-Redelmeier, Jullum, and Aas (2020), the `vaeac` method from Olsen et al.
-(2022) and a `categorical` for categorical data. The original
-`independence` approach of Lundberg and Lee (2017) is also available.
-The methods may also be combined, such that e.g. one method is used when
-conditioning on a small number of features, while another method is used
-otherwise. The `shapr` package also supports directly estimating the
-contribution function using regression. We briefly introduce the
-regression-based methods below, but we refer to the separate regression
-vignette (Shapley value explanations using the regression paradigm) and
-Olsen et al. (2024) for an in-depth explanation of the regression
-paradigm.
+in the ordinary Kernel SHAP framework. Aas et al. (2021) propose three
+different approaches for estimating the conditional probabilities which
+are implemented: `empirical`, `gaussian` and `copula`. The package also
+implements the `ctree` method from Redelmeier et al. (2020), the `vaeac`
+method from Olsen et al. (2022) and a `categorical` for categorical
+data. The original `independence` approach of Lundberg and Lee (2017) is
+also available. The methods may also be combined, such that e.g. one
+method is used when conditioning on a small number of features, while
+another method is used otherwise. The `shapr` package also supports
+directly estimating the contribution function using regression. We
+briefly introduce the regression-based methods below, but we refer to
+the separate regression vignette (Shapley value explanations using the
+regression paradigm) and Olsen et al. (2024) for an in-depth explanation
+of the regression paradigm.
 
 ### Multivariate Gaussian Distribution Approach
 
 The first approach arises from the assumption that the feature vector
-$\mathbf{x}$ stems from a multivariate Gaussian distribution with some
-mean vector $\mathbf{μ}$ and covariance matrix $\mathbf{\Sigma}$. Under
-this assumption, the conditional distribution
-$p\left( \mathbf{x}_{\bar{\mathcal{S}}}|\mathbf{x}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}^{*} \right)$
+$`\boldsymbol{x}`$ stems from a multivariate Gaussian distribution with
+some mean vector $`\boldsymbol{\mu}`$ and covariance matrix
+$`\boldsymbol{\Sigma}`$. Under this assumption, the conditional
+distribution
+$`p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)`$
 is also multivariate Gaussian  
-$\text{N}_{|\bar{\mathcal{S}}|}\left( {\mathbf{μ}}_{\bar{\mathcal{S}}|\mathcal{S}},\mathbf{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}} \right)$,
+$`\text{N}_{|\bar{\mathcal{S}}|}(\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}},\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}})`$,
 with analytical expressions for the conditional mean vector
-${\mathbf{μ}}_{\bar{\mathcal{S}}|\mathcal{S}}$ and covariance matrix
-$\mathbf{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$, see Aas, Jullum, and
-Løland (2021) for details. Hence, instead of sampling from the marginal
-empirical distribution of $\mathbf{x}_{\bar{\mathcal{S}}}$ approximated
-by the training data, we can sample from the Gaussian conditional
-distribution, which is fitted using the training data. Using the
-resulting samples $\mathbf{x}_{\bar{\mathcal{S}}}^{k},k = 1,\ldots,K$,
-the conditional expectations be approximated as in the Kernel SHAP.
+$`\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}`$ and covariance
+matrix $`\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}`$, see Aas
+et al. (2021) for details. Hence, instead of sampling from the marginal
+empirical distribution of $`\boldsymbol{x}_{\bar{\mathcal{S}}}`$
+approximated by the training data, we can sample from the Gaussian
+conditional distribution, which is fitted using the training data. Using
+the resulting samples
+$`\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K`$, the conditional
+expectations be approximated as in the Kernel SHAP.
 
 ### Gaussian Copula Approach
 
@@ -211,16 +226,16 @@ data to Gaussian features using their empirical distributions, and then
 fit a multivariate Gaussian distribution to these.
 
 To produce samples from the conditional distribution
-$p\left( \mathbf{x}_{\bar{\mathcal{S}}}|\mathbf{x}_{\mathcal{S}} = \mathbf{x}_{\mathcal{S}}^{*} \right)$,
-we convert the marginals of $\mathbf{x}_{\mathcal{S}}$ to Gaussians,
-sample from the conditional Gaussian distribution as above, and convert
-the marginals of the samples back to the original distribution. Those
-samples are then used to approximate the sample from the resulting
-multivariate Gaussian conditional distribution. While other copulas may
-be used, the Gaussian copula has the benefit that we may use the
-analytical expressions for the conditionals
-${\mathbf{μ}}_{\bar{\mathcal{S}}|\mathcal{S}}$ and
-$\mathbf{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}$. Finally, we may
+$`p(\boldsymbol{x}_{\bar{\mathcal{S}}} |\boldsymbol{x}_{\mathcal{S}}=\boldsymbol{x}_{\mathcal{S}}^*)`$,
+we convert the marginals of $`\boldsymbol{x}_{\mathcal{S}}`$ to
+Gaussians, sample from the conditional Gaussian distribution as above,
+and convert the marginals of the samples back to the original
+distribution. Those samples are then used to approximate the sample from
+the resulting multivariate Gaussian conditional distribution. While
+other copulas may be used, the Gaussian copula has the benefit that we
+may use the analytical expressions for the conditionals
+$`\boldsymbol{\mu}_{\bar{\mathcal{S}}|\mathcal{S}}`$ and
+$`\boldsymbol{\Sigma}_{\bar{\mathcal{S}}|\mathcal{S}}`$. Finally, we may
 convert the marginals back to their original distribution, and use the
 resulting samples to approximate the conditional expectations as in
 Kernel SHAP.
@@ -228,42 +243,46 @@ Kernel SHAP.
 ### Empirical Conditional Distribution Approach
 
 If both the dependence structure and the marginal distributions of
-$\mathbf{x}$ are very far from the Gaussian, neither of the two
+$`\boldsymbol{x}`$ are very far from the Gaussian, neither of the two
 aforementioned methods will work very well. Few methods exist for the
 non-parametric estimation of conditional densities, and the classic
 kernel estimator (Rosenblatt (1956)) for non-parametric density
 estimation suffers greatly from the curse of dimensionality and does not
 provide a way to generate samples from the estimated distribution. For
-such situations, Aas, Jullum, and Løland (2021) propose an empirical
-conditional approach to sample approximately from
-$p\left( \mathbf{x}_{\bar{\mathcal{S}}}|\mathbf{x}_{\mathcal{S}}^{*} \right)$.
+such situations, Aas et al. (2021) propose an empirical conditional
+approach to sample approximately from
+$`p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)`$.
 The idea is to compute weights
-$w_{\mathcal{S}}\left( \mathbf{x}^{*},\mathbf{x}^{i} \right),\ i = 1,...,n_{\text{train}}$
+$`w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^i),\ i=1,...,n_{\text{train}}`$
 for all training instances based on their Mahalanobis distances (in the
-$S$ subset only) to the instance $\mathbf{x}^{*}$ to be explained.
+$`S`$ subset only) to the instance $`\boldsymbol{x}^*`$ to be explained.
 Instead of sampling from this weighted (conditional) empirical
-distribution, Aas, Jullum, and Løland (2021) suggests a more efficient
-variant, using only the $K$ instances with the largest weights:
+distribution, Aas et al. (2021) suggests a more efficient variant, using
+only the $`K`$ instances with the largest weights:
 
-$$v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum\limits_{k = 1}^{K}w_{\mathcal{S}}\left( \mathbf{x}^{*},\mathbf{x}^{\lbrack k\rbrack} \right)f\left( \mathbf{x}_{\bar{\mathcal{S}}}^{\lbrack k\rbrack},\mathbf{x}_{\mathcal{S}}^{*} \right)}{\sum\limits_{k = 1}^{K}w_{\mathcal{S}}\left( \mathbf{x}^{*},\mathbf{x}^{\lbrack k\rbrack} \right)},$$
+``` math
+v_{\text{condKerSHAP}}(\mathcal{S}) = \frac{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,
+\boldsymbol{x}^{[k]}) f(\boldsymbol{x}_{\bar{\mathcal{S}}}^{[k]},
+\boldsymbol{x}_{\mathcal{S}}^*)}{\sum_{k=1}^K w_{\mathcal{S}}(\boldsymbol{x}^*,\boldsymbol{x}^{[k]})},
+```
 
-The number of samples $K$ to be used in the approximate prediction can
-for instance be chosen such that the $K$ largest weights accounts for a
-fraction $\eta$, for example $0.9$, of the total weight. If $K$ exceeds
-a certain limit, for instance $5,000$, it might be set to that limit. A
-bandwidth parameter $\sigma$ used to scale the weights, must also be
-specified. This choice may be viewed as a bias-variance trade-off. A
-small $\sigma$ puts most of the weight to a few of the closest training
-observations and thereby gives low bias, but high variance. When
-$\left. \sigma\rightarrow\infty \right.$, this method converges to the
-original Kernel SHAP assuming feature independence. Typically, when the
-features are highly dependent, a small $\sigma$ is typically needed such
-that the bias does not dominate. Aas, Jullum, and Løland (2021) show
-that a proper criterion for selecting $\sigma$ is a small-sample-size
+The number of samples $`K`$ to be used in the approximate prediction can
+for instance be chosen such that the $`K`$ largest weights accounts for
+a fraction $`\eta`$, for example $`0.9`$, of the total weight. If $`K`$
+exceeds a certain limit, for instance $`5,000`$, it might be set to that
+limit. A bandwidth parameter $`\sigma`$ used to scale the weights, must
+also be specified. This choice may be viewed as a bias-variance
+trade-off. A small $`\sigma`$ puts most of the weight to a few of the
+closest training observations and thereby gives low bias, but high
+variance. When $`\sigma \rightarrow \infty`$, this method converges to
+the original Kernel SHAP assuming feature independence. Typically, when
+the features are highly dependent, a small $`\sigma`$ is typically
+needed such that the bias does not dominate. Aas et al. (2021) show that
+a proper criterion for selecting $`\sigma`$ is a small-sample-size
 corrected version of the AIC known as AICc. As calculation of it is
 computationally intensive, an approximate version of the selection
-criterion is also suggested. Details on this are found in Aas, Jullum,
-and Løland (2021).
+criterion is also suggested. Details on this are found in Aas et al.
+(2021).
 
 ### Conditional Inference Tree Approach
 
@@ -273,7 +292,7 @@ features first have to be one-hot encoded. When the number of
 levels/features is large, this is not feasible. An approach that handles
 mixed (i.e., numerical, categorical, discrete, ordinal) features and
 both univariate and multivariate responses is conditional inference
-trees (Hothorn, Hornik, and Zeileis (2006)).
+trees (Hothorn et al. (2006)).
 
 Conditional inference trees are a special tree-fitting procedure that
 relies on hypothesis tests to choose both the splitting feature and the
@@ -281,18 +300,19 @@ splitting point. The tree fitting procedure is sequential: first a
 splitting feature is chosen (the feature that is least independent of
 the response), and then a splitting point is chosen for this feature.
 This decreases the chance of being biased towards features with many
-splits (Hothorn, Hornik, and Zeileis (2006)).
+splits (Hothorn et al. (2006)).
 
 We use conditional inference trees (*ctree*) to model the conditional
 distribution,
-$p\left( \mathbf{x}_{\bar{\mathcal{S}}}|\mathbf{x}_{\mathcal{S}}^{*} \right)$,
+$`p(\boldsymbol{x}_{\bar{\mathcal{S}}}|\boldsymbol{x}_{\mathcal{S}}^*)`$,
 found in the Shapley methodology. First, we fit a different conditional
 inference tree to each conditional distribution. Once a tree is fit for
-given dependent features, the end node of $\mathbf{x}_{\mathcal{S}}^{*}$
-is found. Then, we sample from this end node and use the resulting
-samples, $\mathbf{x}_{\bar{\mathcal{S}}}^{k},k = 1,\ldots,K$, when
+given dependent features, the end node of
+$`\boldsymbol{x}_{\mathcal{S}}^*`$ is found. Then, we sample from this
+end node and use the resulting samples,
+$`\boldsymbol{x}_{\bar{\mathcal{S}}}^k, k=1,\ldots,K`$, when
 approximating the conditional expectations as in Kernel SHAP. See
-Redelmeier, Jullum, and Aas (2020) for more details.
+Redelmeier et al. (2020) for more details.
 
 The conditional inference trees are fit using the *party* or *partykit*
 packages (Hothorn and Zeileis (2015)).
@@ -304,32 +324,32 @@ AutoEncoder with Arbitrary Conditioning (Olsen et al. (2022)),
 abbreviated to `vaeac`. The `vaeac` is an extension of the regular
 variational autoencoder (Kingma and Welling (2014)), but instead of
 giving a probabilistic representation of the distribution
-$p(\mathbf{x})$ it gives a probabilistic representation of the
+$`p(\boldsymbol{x})`$ it gives a probabilistic representation of the
 conditional distribution
-$p\left( \mathbf{x}_{\bar{\mathcal{S}}} \mid \mathbf{x}_{\mathcal{S}} \right)$,
-for all possible feature subsets $\mathcal{S} \subseteq \mathcal{M}$
-simultaneously, where $\mathcal{M}$ is the set of all features. That is,
-only a single `vaeac` model is needed to model all conditional
+$`p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}})`$,
+for all possible feature subsets $`\mathcal{S}\subseteq\mathcal{M}`$
+simultaneously, where $`\mathcal{M}`$ is the set of all features. That
+is, only a single `vaeac` model is needed to model all conditional
 distributions.
 
 The `vaeac` consists of three neural networks: a *full encoder*, a
 *masked encoder*, and a *decoder*. The encoders map the full and
-masked/conditional input representations, i.e., $\mathbf{x}$ and
-$\mathbf{x}_{\mathcal{S}}$, respectively, to latent probabilistic
+masked/conditional input representations, i.e., $`\boldsymbol{x}`$ and
+$`\boldsymbol{x}_{\mathcal{S}}`$, respectively, to latent probabilistic
 representations. Sampled instances from this latent probabilistic
 representations are sent to the decoder, which maps them back to the
 feature space and provides a samplable probabilistic representation for
-the unconditioned features $\mathbf{x}_{\bar{\mathcal{S}}}$. The full
-encoder is only used during the training phase of the `vaeac` model to
-guide the training process of the masked encoder, as the former relies
-on the full input sample $\mathbf{x}$, which is not accessible in the
-deployment phase (when we generate the Monte Carlo samples), as we only
-have access to $\mathbf{x}_{\mathcal{S}}$. The networks are trained by
-minimizing a variational lower bound. See Section 3 in Olsen et al.
-(2022) for an in-depth introduction to the `vaeac` methodology. We use
-the `vaeac` model at the epoch which obtains the lowest validation IWAE
-score to generate the Monte Carlo samples used in the Shapley value
-computations.
+the unconditioned features $`\boldsymbol{x}_{\bar{\mathcal{S}}}`$. The
+full encoder is only used during the training phase of the `vaeac` model
+to guide the training process of the masked encoder, as the former
+relies on the full input sample $`\boldsymbol{x}`$, which is not
+accessible in the deployment phase (when we generate the Monte Carlo
+samples), as we only have access to $`\boldsymbol{x}_{\mathcal{S}}`$.
+The networks are trained by minimizing a variational lower bound. See
+Section 3 in Olsen et al. (2022) for an in-depth introduction to the
+`vaeac` methodology. We use the `vaeac` model at the epoch which obtains
+the lowest validation IWAE score to generate the Monte Carlo samples
+used in the Shapley value computations.
 
 We fit the `vaeac` model using the R package *torch* (Falbel and
 Luraschi (2023)). The main parameters are the number of layers in the
@@ -363,23 +383,25 @@ called `vaeac.extra_parameters`.
 
 When the features are all categorical, we can estimate the conditional
 expectations using basic statistical formulas. For example, if we have
-three features, $x_{1},x_{2},x_{3}$ with three levels each (indicated as
+three features, $`x_1, x_2, x_3`$ with three levels each (indicated as
 1, 2, 3), and we are provided with a table of counts indicating how many
 times each combination of feature values occurs, we can estimate the
 marginal and conditional probabilities as follows. Marginal
 probabilities are estimated by dividing the number of times a given
 feature (or features) takes on a certain value in the data set with the
 total number of observations in the data set. Conditional probabilities
-(for example, $P\left( X_{1} = 1|X_{2} = 1 \right)$) are estimated by
-first subsetting the data set to reflect the conditioning (i.e.,
-extracting all rows where $X_{2} = 1$), and then dividing the number of
-times the feature on the left hand side of $|$ takes the given value in
-this subset by the total number of observations in this subset. Once the
+(for example, $`P(X_1 = 1 | X_2 = 1)`$) are estimated by first
+subsetting the data set to reflect the conditioning (i.e., extracting
+all rows where $`X_2 = 1`$), and then dividing the number of times the
+feature on the left hand side of $`|`$ takes the given value in this
+subset by the total number of observations in this subset. Once the
 marginal and conditional probabilities are estimated for all
 combinations of feature values, each conditional expectation can be
-calculated. For example, the expected value of $X_{1}$ given $X_{2} = 1$
-and $X_{3} = 2$ is
-$$E\left( X_{1}|X_{2},X_{3} \right) = \sum\limits_{x}xP\left( X_{1} = x|X_{2} = 1,X_{3} = 2 \right) = \sum\limits_{x}x\frac{P\left( X_{1} = x,X_{2} = 1,X_{3} = 2 \right)}{P\left( X_{2} = 1,X_{3} = 2 \right)}.$$
+calculated. For example, the expected value of $`X_1`$ given $`X_2 = 1`$
+and $`X_3 = 2`$ is
+``` math
+E(X_1|X_2, X_3) = \sum_{x}x P(X_1 = x | X_2=1, X_3=2) = \sum_{x} x \frac{P(X_1 = x, X_2 = 1, X_3 = 2)}{P(X_2=1, X_3=2)}.
+```
 
 ### Separate and Surrogate Regression Approaches
 
@@ -387,13 +409,13 @@ Another paradigm for estimating the contribution function is the
 regression paradigm. In contrast to the methods above, which belong to
 the Monte Carlo paradigm, the regression-based methods use regression
 models to estimate the contribution function
-$v(S) = E\left\lbrack f(\mathbf{x})|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack$
+$`v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]`$
 directly. The separate regression method class fits a separate
-regression model for each coalition $S$, while the surrogate regression
-method class fits a single regression model to simultaneously predict
-the contribution function for all coalitions. We refer to Olsen et al.
-(2024) for when one should use the different paradigms, method classes,
-and methods.
+regression model for each coalition $`S`$, while the surrogate
+regression method class fits a single regression model to simultaneously
+predict the contribution function for all coalitions. We refer to Olsen
+et al. (2024) for when one should use the different paradigms, method
+classes, and methods.
 
 In a separate vignette (Shapley value explanations using the regression
 paradigm), we elaborate and demonstrate the regression paradigm. We
@@ -419,10 +441,12 @@ the `approach` argument. Allowed values are `"gaussian"`, `"copula"`,
 First we load the shapr package
 
 ``` r
+
 library(shapr)
 ```
 
 ``` r
+
 library(xgboost)
 library(data.table)
 #> data.table 1.18.0 using 11 threads (see ?getDTthreads).  Latest news: r-datatable.com
@@ -511,6 +535,7 @@ There are multiple plot options specified by the `plot_type` argument in
 due to each feature’s contribution (their Shapley values):
 
 ``` r
+
 plot(explanation, plot_type = "waterfall", index_x_explain = c(1, 6))
 ```
 
@@ -526,6 +551,7 @@ Shapley value of a given instance, where the points are colored by the
 feature value of that instance:
 
 ``` r
+
 x_explain_many <- data[, ..x_var]
 explanation_plot <- explain(
   model = model,
@@ -580,6 +606,7 @@ Shapley values on the y-axis, as well as (optionally) a background
 scatter_hist showing the distribution of the feature data:
 
 ``` r
+
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
@@ -589,6 +616,7 @@ We can use mixed (i.e., continuous, categorical, ordinal) data with
 `ctree` or `vaeac`. Use `ctree` with mixed data in the following manner:
 
 ``` r
+
 # convert the month variable to a factor
 data[, Month_factor := as.factor(Month)]
 
@@ -659,10 +687,11 @@ plot(explanation_lm_cat, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ![](figure_general_usage/factor-1.webp)
 
 We can specify parameters used to build the conditional inference trees
-in the following manner. The default values are based on Hothorn,
-Hornik, and Zeileis (2006).
+in the following manner. The default values are based on Hothorn et al.
+(2006).
 
 ``` r
+
 # Use the conditional inference tree approach
 # We can specify parameters used to build trees by specifying mincriterion,
 # minsplit, minbucket
@@ -722,6 +751,7 @@ If **all** features are categorical, one may use the categorical
 approach as follows:
 
 ``` r
+
 # For the sake of illustration, convert ALL features to factors
 data[, Solar.R_factor := as.factor(cut(Solar.R, 10))]
 data[, Wind_factor := as.factor(cut(Wind, 3))]
@@ -799,6 +829,7 @@ achieved through the `group` attribute. Other optional parameters of
 time series if necessary).
 
 ``` r
+
 # Simulate time series data with AR(1)-structure
 set.seed(1)
 data_ts <- data.frame(matrix(NA, ncol = 41, nrow = 4))
@@ -894,45 +925,56 @@ explanation_timeseries <- explain(
 
 ### MSEv evaluation criterion
 
-We can use the $\operatorname{MSE}_{v}$ criterion proposed by Frye et
+We can use the $`\operatorname{MSE}_{v}`$ criterion proposed by Frye et
 al. (2021), and later used by, e.g., Olsen et al. (2022) and Olsen et
 al. (2024), to evaluate and rank the approaches/methods. The
-$\operatorname{MSE}_{v}$ is given by
+$`\operatorname{MSE}_{v}`$ is given by
 
-$$\begin{array}{r}
-{\operatorname{MSE}_{v} = \operatorname{MSE}_{v}\left( {\text{method}\mspace{6mu}}\texttt{𝚚} \right) = \frac{1}{N_{\mathcal{S}}}\sum\limits_{\mathcal{S} \in \mathcal{P}^{*}{(\mathcal{M})}}\frac{1}{N_{\text{explain}}}\sum\limits_{i = 1}^{N_{\text{explain}}}\left( f\left( \mathbf{x}^{\lbrack i\rbrack} \right) - {\widehat{v}}_{\texttt{𝚚}}\left( \mathcal{S},\mathbf{x}^{\lbrack i\rbrack} \right) \right)^{2}\!,}
-\end{array}$$
+``` math
+\begin{align}
+    \label{eq:MSE_v}
+    \operatorname{MSE}_{v} = \operatorname{MSE}_{v}(\text{method } \texttt{q})
+    =
+     \frac{1}{N_\mathcal{S}} \sum_{\mathcal{S} \in \mathcal{P}^*(\mathcal{M})} \frac{1}{N_\text{explain}}
+     \sum_{i=1}^{N_\text{explain}} \left( f(\boldsymbol{x}^{[i]}) - {\hat{v}}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}^{[i]})\right)^2\!,
+\end{align}
+```
 
-where ${\widehat{v}}_{\texttt{𝚚}}$ is the estimated contribution
-function using method $\texttt{𝚚}$ and
-$N_{\mathcal{S}} = \left| \mathcal{P}^{*}(\mathcal{M}) \right| = 2^{M} - 2$,
-i.e., we have removed the empty ($\mathcal{S} = \varnothing$) and the
-grand combinations ($\mathcal{S} = \mathcal{M}$) as they are method
+where $`{\hat{v}}_{\texttt{q}}`$ is the estimated contribution function
+using method $`\texttt{q}`$ and
+$`N_\mathcal{S} = |\mathcal{P}^*(\mathcal{M})| = 2^M-2`$, i.e., we have
+removed the empty ($`\mathcal{S} = \emptyset`$) and the grand
+combinations ($`\mathcal{S} = \mathcal{M}`$) as they are method
 independent. Meaning that these two combinations do not influence the
 ranking of the methods as the methods are not used to compute the
 contribution function for them.
 
-The motivation behind the $\operatorname{MSE}_{v}$ criterion is that
-${\mathbb{E}}_{\mathcal{S}}{\mathbb{E}}_{\mathbf{x}}\left( v_{\texttt{𝚝𝚛𝚞𝚎}}(\mathcal{S},\mathbf{x}) - {\widehat{v}}_{\texttt{𝚚}}(\mathcal{S},\mathbf{x}) \right)^{2}$
+The motivation behind the $`\operatorname{MSE}_{v}`$ criterion is that
+$`\mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S},\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2`$
 can be decomposed as
 
-$$\begin{array}{r}
-\begin{aligned}
-{{\mathbb{E}}_{\mathcal{S}}{\mathbb{E}}_{\mathbf{x}}\left( v_{\texttt{𝚝𝚛𝚞𝚎}}(\mathcal{S},\mathbf{x}) - {\widehat{v}}_{\texttt{𝚚}}(\mathcal{S},\mathbf{x}) \right)^{2}} & {= {\mathbb{E}}_{\mathcal{S}}{\mathbb{E}}_{\mathbf{x}}\left( f(\mathbf{x}) - {\widehat{v}}_{\texttt{𝚚}}(\mathcal{S},\mathbf{x}) \right)^{2}} \\
- & {\phantom{\,\,\,\,\,\,\,} - {\mathbb{E}}_{\mathcal{S}}{\mathbb{E}}_{\mathbf{x}}\left( f(\mathbf{x}) - v_{\texttt{𝚝𝚛𝚞𝚎}}(\mathcal{S},\mathbf{x}) \right)^{2},}
-\end{aligned}
-\end{array}$$
+``` math
+\begin{align}
+    \label{eq:expectation_decomposition}
+    \begin{split}
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x})- \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2
+    &=
+    \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x}) - \hat{v}_{\texttt{q}}(\mathcal{S}, \boldsymbol{x}))^2 \\
+    &\phantom{\,\,\,\,\,\,\,}- \mathbb{E}_\mathcal{S}\mathbb{E}_{\boldsymbol{x}} (f(\boldsymbol{x})-v_{\texttt{true}}(\mathcal{S}, \boldsymbol{x}))^2,
+    \end{split}
+\end{align}
+```
 
-see Appendix A in Covert, Lundberg, and Lee (2020). The first term on
-the right-hand side of the equation above can be estimated by
-$\operatorname{MSE}_{v}$, while the second term is a fixed (unknown)
+see Appendix A in Covert et al. (2020). The first term on the right-hand
+side of the equation above can be estimated by
+$`\operatorname{MSE}_{v}`$, while the second term is a fixed (unknown)
 constant not influenced by the approach . Thus, a low value of
-$\operatorname{MSE}_{v}$ indicates that the estimated contribution
-function ${\widehat{v}}_{\texttt{𝚚}}$ is closer to the true counterpart
-$v_{\texttt{𝚝𝚛𝚞𝚎}}$ than a high value.
+$`\operatorname{MSE}_{v}`$ indicates that the estimated contribution
+function $`\hat{v}_{\texttt{q}}`$ is closer to the true counterpart
+$`v_{\texttt{true}}`$ than a high value.
 
 In `shapr`, we allow for weighting the combinations in the
-$\operatorname{MSE}_{v}$ evaluation criterion either uniformly or by
+$`\operatorname{MSE}_{v}`$ evaluation criterion either uniformly or by
 using the corresponding Shapley kernel weights (or the sampling
 frequencies when sampling of coalitions is used). The default is to use
 uniform weighting, but this can be changed by passing
@@ -943,46 +985,46 @@ function.
 
 #### Advantage:
 
-An advantage of the $\operatorname{MSE}_{v}$ criterion is that
-$v_{\texttt{𝚝𝚛𝚞𝚎}}$ is not involved. Thus, we can apply it as an
+An advantage of the $`\operatorname{MSE}_{v}`$ criterion is that
+$`v_\texttt{true}`$ is not involved. Thus, we can apply it as an
 evaluation criterion to real-world data sets where the true Shapley
 values are unknown.
 
 #### Disadvantages:
 
-First, we can only use the $\operatorname{MSE}_{v}$ criterion to rank
+First, we can only use the $`\operatorname{MSE}_{v}`$ criterion to rank
 the methods and not assess their closeness to the optimum since the
-minimum value of the $\operatorname{MSE}_{v}$ criterion is unknown.
+minimum value of the $`\operatorname{MSE}_{v}`$ criterion is unknown.
 Second, the criterion evaluates the contribution functions and not the
 Shapley values.
 
 Olsen et al. (2024) observed a relatively linear relationship between
-the $\operatorname{MSE}_{v}$ criterion and the mean absolute error
-$\left( \operatorname{MAE} \right)$ between the true and estimated
-Shapley values in extensive simulation studies where the true Shapley
-values were known. That is, a method that achieves a low
-$\operatorname{MSE}_{v}$ score also tends to obtain a low
-$\operatorname{MAE}$ score, and vice versa.
+the $`\operatorname{MSE}_{v}`$ criterion and the mean absolute error
+$`(\operatorname{MAE})`$ between the true and estimated Shapley values
+in extensive simulation studies where the true Shapley values were
+known. That is, a method that achieves a low $`\operatorname{MSE}_{v}`$
+score also tends to obtain a low $`\operatorname{MAE}`$ score, and vice
+versa.
 
 #### Confidence intervals
 
-The $\operatorname{MSE}_{v}$ criterion can be written as
-$\operatorname{MSE}_{v} = \frac{1}{N_{\text{explain}}}\sum_{i = 1}^{N_{\text{explain}}}\operatorname{MSE}_{v,{\text{explain}\mspace{6mu}}i}$.
+The $`\operatorname{MSE}_{v}`$ criterion can be written as
+$`\operatorname{MSE}_{v} = \frac{1}{N_\text{explain}}\sum_{i=1}^{N_\text{explain}} \operatorname{MSE}_{v,\text{explain }i}`$.
 We can therefore use the central limit theorem to compute an approximate
-confidence interval for the $\operatorname{MSE}_{v}$ criterion. We have
-that
-$\operatorname{MSE}_{v} \pm t_{\alpha/2}\frac{\operatorname{SD}\left( \operatorname{MSE}_{v} \right)}{\sqrt{N_{\text{explain}}}}$
-is a $(1 - \alpha/2)\%$ approximate confidence interval for the
-evaluation criterion, where $t_{\alpha/2}$ is the $\alpha/2$ percentile
-of the $T_{N_{\text{explain}} - 1}$ distribution. Note that
-$N_{\text{explain}}$ should be large (rule of thumb is at least $30$)
+confidence interval for the $`\operatorname{MSE}_{v}`$ criterion. We
+have that
+$`\operatorname{MSE}_{v} \pm t_{\alpha/2}\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}`$
+is a $`(1-\alpha/2)\%`$ approximate confidence interval for the
+evaluation criterion, where $`t_{\alpha/2}`$ is the $`\alpha/2`$
+percentile of the $`T_{N_\text{explain}-1}`$ distribution. Note that
+$`N_\text{explain}`$ should be large (rule of thumb is at least $`30`$)
 for the central limit theorem to be valid. The quantities
-$\operatorname{MSE}_{v}$ and
-$\frac{\operatorname{SD}\left( \operatorname{MSE}_{v} \right)}{\sqrt{N_{\text{explain}}}}$
+$`\operatorname{MSE}_{v}`$ and
+$`\frac{\operatorname{SD}(\operatorname{MSE}_{v})}{\sqrt{N_\text{explain}}}`$
 are returned by the
 [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
 function in the `MSEv` list of data tables. We can also compute similar
-approximate confidence interval for $\operatorname{MSE}_{v}$ criterion
+approximate confidence interval for $`\operatorname{MSE}_{v}`$ criterion
 for each combination/coalition when only averaging over the
 observations. However, it does not make sense in the other direction,
 i.e., when only averaging over the combinations for each observation, as
@@ -994,6 +1036,7 @@ Start by explaining the predictions by using different methods and
 combining them into lists.
 
 ``` r
+
 # We use more explicands here for more stable confidence intervals
 ind_x_explain_many <- 1:25
 x_train <- data[-ind_x_explain_many, ..x_var]
@@ -1192,9 +1235,10 @@ explanation_list_named <- list(
 ```
 
 We can then compare the different approaches by creating plots of the
-$\operatorname{MSE}_{v}$ evaluation criterion.
+$`\operatorname{MSE}_{v}`$ evaluation criterion.
 
 ``` r
+
 # Create the MSEv plots with approximate 95% confidence intervals
 MSEv_plots <- plot_MSEv_eval_crit(explanation_list_named,
   plot_type = c("overall", "coalition", "explicand"),
@@ -1210,12 +1254,13 @@ names(MSEv_plots)
 ```
 
 The main plot if interest is the `MSEv_bar`, which displays the
-$\operatorname{MSE}_{v}$ evaluation criterion for each method averaged
+$`\operatorname{MSE}_{v}`$ evaluation criterion for each method averaged
 over both the combinations/coalitions and test observations/explicands.
 However, we can also look at the other plots where we have only averaged
 over the observations or the coalitions (both as bar and line plots).
 
 ``` r
+
 # The main plot of the overall MSEv averaged over both the coalitions and observations
 MSEv_plots$MSEv_bar
 ```
@@ -1223,6 +1268,7 @@ MSEv_plots$MSEv_bar
 ![](figure_general_usage/MSEv-plot-2-1.webp)
 
 ``` r
+
 
 # The MSEv averaged over only the explicands for each coalition
 MSEv_plots$MSEv_coalition_bar
@@ -1232,6 +1278,7 @@ MSEv_plots$MSEv_coalition_bar
 
 ``` r
 
+
 # The MSEv averaged over only the coalitions for each observation/explicand
 MSEv_plots$MSEv_explicand_bar
 ```
@@ -1239,6 +1286,7 @@ MSEv_plots$MSEv_explicand_bar
 ![](figure_general_usage/MSEv-plot-2-3.webp)
 
 ``` r
+
 
 # To see which coalition S each of the `id_coalition` corresponds to,
 # i.e., which features that are conditions on.
@@ -1266,6 +1314,7 @@ We can specify the `index_x_explain` and `id_coalition` parameters in
 to only plot certain test observations and coalitions, respectively.
 
 ``` r
+
 # We can specify which test observations or coalitions to plot
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "explicand",
@@ -1278,6 +1327,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 ![](figure_general_usage/MSEv-plot-3-1.webp)
 
 ``` r
+
 plot_MSEv_eval_crit(explanation_list_named,
   plot_type = "coalition",
   id_coalition = c(3, 4, 9, 13:15),
@@ -1291,6 +1341,7 @@ plot_MSEv_eval_crit(explanation_list_named,
 We can also alter the plots design-wise as we do in the code below.
 
 ``` r
+
 bar_text_n_decimals <- 1
 plot_MSEv_eval_crit(explanation_list_named) +
   ggplot2::scale_x_discrete(limits = rev(levels(MSEv_plots$MSEv_bar$data$Method))) +
@@ -1337,15 +1388,24 @@ set through `iterative_args` argument.
 The convergence criterion we use is adopted from Covert and Lee (2021),
 and slightly modified to work for multiple observations
 
-$$\operatorname{median}_{i}\left( \frac{\max\limits_{j}\widehat{\text{sd}}\left( {\widehat{\phi}}_{ij} \right)}{\max\limits_{j}{\widehat{\phi}}_{ij} - \min\limits_{j}{\widehat{\phi}}_{ij}} \right) < t$$
+``` math
+\operatorname{median}_i \left(
+  \frac{
+    \max_j \hat{\text{sd}}(\hat{\phi}_{ij})
+  }{
+    \max_j \hat{\phi}_{ij} - \min_j \hat{\phi}_{ij}
+  }
+\right) < t
+```
 
-where ${\widehat{\phi}}_{ij}$ is the Shapley value of feature $j$ for
-observation $i$, and $\text{sd}\left( \phi_{ij} \right)$ is the its
-(bootstrap) estimated standard deviation. The default value of $t$ is
-0.02. Below we provide some examples of how to use the iterative
-estimation procedure.
+where $`\hat{\phi}_{ij}`$ is the Shapley value of feature $`j`$ for
+observation $`i`$, and $`\text{sd}(\phi_{ij})`$ is the its (bootstrap)
+estimated standard deviation. The default value of $`t`$ is 0.02. Below
+we provide some examples of how to use the iterative estimation
+procedure.
 
 ``` r
+
 library(xgboost)
 library(data.table)
 
@@ -1468,7 +1528,7 @@ extract individual components later. Internally, `summary.shapr` calls
 [`get_results()`](https://norskregnesentral.github.io/shapr/reference/get_results.md),
 which produces this full set of components, including: the parameters
 used, intermediate Shapley value estimates (and their standard
-deviations), estimates of all $v(S)$, and more. See
+deviations), estimates of all $`v(S)`$, and more. See
 [`?get_results`](https://norskregnesentral.github.io/shapr/reference/get_results.md)
 for a full overview of the returned output.
 
@@ -1476,6 +1536,7 @@ Below, we illustrate these capabilities using the iterative explanation
 object `ex` computed above.
 
 ``` r
+
 # Uses the object ex to illustrate printing and summary functionality
 print(ex) # Prints the estimated Shapley values by default
 #>    explain_id  none Solar.R  Wind  Temp Month   Day
@@ -1632,7 +1693,7 @@ distribution, followed by Monte Carlo integration. These computations
 are not only heavy for the CPU, they also require a lot of memory (RAM),
 which typically is a limited resource. By doing the most resource-hungry
 computations (the computation of v(S)) in sequential batches with
-different feature subsets $S$, the memory usage can be significantly
+different feature subsets $`S`$, the memory usage can be significantly
 reduced. The user can control the number of batches by setting the two
 arguments `extra_computation_args$max_batch_size` (defaults to 10) and
 `extra_computation_args$min_n_batches` (defaults to 10).
@@ -1660,6 +1721,7 @@ you may want to limit the number of workers for that reason too. Below
 is a basic example of a parallelization with two workers.
 
 ``` r
+
 library(future)
 future::plan(multisession, workers = 2)
 
@@ -1764,6 +1826,7 @@ options available with `progressr`, see the `progressr`
 A full code example of using `progressr` with `shapr` is shown below:
 
 ``` r
+
 library(progressr)
 progressr::handlers(global = TRUE)
 handlers("cli")
@@ -1797,8 +1860,8 @@ the package allows the user to combine the given approaches. The
 `'regression_surrogate'` and `'regression_separate` approaches are not
 supported for the combined approach. To simplify the usage, the
 flexibility is restricted such that the same approach is used when
-conditioning on the same number of features. This is also in line Aas,
-Jullum, and Løland (2021, sec. 3.4).
+conditioning on the same number of features. This is also in line Aas et
+al. (2021, sec. 3.4).
 
 This can be done by setting `approach` equal to a character vector,
 where the length of the vector is one less than the number of features
@@ -1819,6 +1882,7 @@ features, using `"empirical", "copula"` and `"gaussian"` when
 conditioning on respectively 1, 2 and 3 features.
 
 ``` r
+
 library(xgboost)
 library(data.table)
 
@@ -1904,6 +1968,7 @@ As a second example using `"ctree"` to condition on 1 and 2 features,
 and `"empirical"` when conditioning on 3 features:
 
 ``` r
+
 # Use the combined approach
 explanation_combined <- explain(
   model = model,
@@ -1954,11 +2019,12 @@ explanation_combined <- explain(
 
 In some cases, especially when the number of features is very large, it
 may be more appropriate to explain predictions in terms of groups of
-features instead of single features, see (Jullum, Redelmeier, and Aas
-(2021)) for intuition and real-world examples. Explaining predictions in
-terms of groups of features is very easy using `shapr`:
+features instead of single features, see (Jullum et al. (2021)) for
+intuition and real-world examples. Explaining predictions in terms of
+groups of features is very easy using `shapr`:
 
 ``` r
+
 # Define the feature groups
 group_list <- list(
   A = c("Temp", "Month"),
@@ -2082,6 +2148,7 @@ this for the `gbm` model class from the `gbm` package, fitted to the
 same airquality data set as used above.
 
 ``` r
+
 library(gbm)
 #> Loaded gbm 2.2.2
 #> This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3
@@ -2179,6 +2246,7 @@ plot(explanation_custom, index_x_explain = c(1, 6))
 ``` r
 
 
+
 #### Minimal version of the custom model setup ####
 # Note: Working only for this exact version of the model class
 # Avoiding to define get_model_specs skips all feature
@@ -2244,6 +2312,7 @@ with any other fitted `tidymodels` model in the `workflows` procedure
 outlined below.
 
 ``` r
+
 # Fitting a basic xgboost model to the training data using tidymodels
 set.seed(123) # Set the same seed as above
 all_var <- c(y_var, x_var)
@@ -2352,6 +2421,7 @@ function, while the extra parameters are included in a named list called
 `vaeac.extra_parameters`.
 
 ``` r
+
 explanation_vaeac <- explain(
   model = model,
   x_explain = x_explain,
@@ -2407,6 +2477,7 @@ We can look at the training and validation errors for the trained
 as it still seems like the `vaeac` model is learning.
 
 ``` r
+
 # Look at the training and validation errors.
 plot_vaeac_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac), plot_type = "method")
 ```
@@ -2431,6 +2502,7 @@ applications, but we set it so low here to make the vignette faster to
 build.
 
 ``` r
+
 explanation_vaeac_early_stop <- explain(
   model = model,
   x_explain = x_explain,
@@ -2486,6 +2558,7 @@ Can compare with the previous version and see that the results are more
 stable now.
 
 ``` r
+
 # Look at the training and validation errors.
 plot_vaeac_eval_crit(
   list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop),
@@ -2495,9 +2568,10 @@ plot_vaeac_eval_crit(
 
 ![](figure_general_usage/vaeac-plot-2-1.webp)
 
-Can also compare the $MSE_{v}$ evaluation scores.
+Can also compare the $`MSE_{v}`$ evaluation scores.
 
 ``` r
+
 plot_MSEv_eval_crit(list("Vaeac 3 epochs" = explanation_vaeac, "Vaeac early stopping" = explanation_vaeac_early_stop))
 ```
 
@@ -2517,6 +2591,7 @@ after each iteration. This can be particularly handy for long-running
 computations.
 
 ``` r
+
 # First we run the computation with the iterative estimation procedure for a limited number of coalition samples
 library(xgboost)
 library(data.table)
@@ -2685,7 +2760,7 @@ for more information.
 
 To demonstrate how to use the function, 500 observations are generated
 which follow an AR(1) structure, i.e.
-$y_{t} = 0.5y_{t - 1} + \varepsilon_{t}$. To this data an arima model of
+$`y_t = 0.5 y_{t-1} + \varepsilon_t`$. To this data an arima model of
 order (2, 0, 0) is fitted, and we therefore would like to explain the
 forecasts in terms of the two previous lags of the time series. This is
 is specified through the argument `explain_y_lags = 2`. Note that some
@@ -2696,7 +2771,7 @@ previous time point to make a forecast.
 In the example, two separate forecasts, each three steps ahead, are
 explained. To set the starting points of the two forecasts,
 `explain_idx` is set to `499:500`. This means that one forecast of
-$t = (500,501,502)$ and another of $t = (501,502,503)$, will be
+$`t = (500, 501, 502)`$ and another of $`t = (501, 502, 503)`$, will be
 explained. In other words, `explain_idx` tells `shapr` at which points
 in time data was available up until, when making the forecast to
 explain.
@@ -2705,11 +2780,11 @@ In the same way, `train_idx` denotes the points in time used to estimate
 the conditional expectations used to explain the different forecasts.
 Note that since we want to explain the forecasts in terms of the two
 previous lags (`explain_y_lags = 2`), the smallest value of `train_idx`
-must also be 2, because at time $t = 1$ there was only a single
+must also be 2, because at time $`t = 1`$ there was only a single
 observation available.
 
 Since the data is stationary, the mean of the data is used as value of
-`phi0` (i.e. $\phi_{0}$). This can however be chosen differently
+`phi0` (i.e. $`\phi_0`$). This can however be chosen differently
 depending on the data and application.
 
 For a multivariate model such as a VAR (Vector AutoRegressive model), it
@@ -2718,6 +2793,7 @@ than each lag of each variable. This can be done by setting
 `group_lags = TRUE`.
 
 ``` r
+
 # Simulate time series data with AR(1)-structure.
 set.seed(1)
 data_ts <- data.frame(Y = arima.sim(list(order = c(1, 0, 0), ar = .5), n = 500))
@@ -2818,6 +2894,7 @@ comes after the last day in the data, this forecast starts from index
 153.
 
 ``` r
+
 data_ts2 <- data.table::as.data.table(airquality)
 
 model_ar_temp <- ar(data_ts2$Temp, order = 2)
@@ -2855,6 +2932,7 @@ multiple variables, as it is then possible to explain each variable
 separately.
 
 ``` r
+
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_ts2[, "Temp"],
@@ -2928,6 +3006,7 @@ just fit on the 151 first observations, leaving two observations of
 `Wind` to be used as exogenous values during the prediction phase.
 
 ``` r
+
 data_ts3 <- data.table::as.data.table(airquality)
 
 data_fit <- data_ts3[seq_len(151), ]
@@ -2954,6 +3033,7 @@ first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.
 
 ``` r
+
 explanation_forecast <- explain_forecast(
   model = model_ar_temp,
   y = data_fit[, "Temp"],
@@ -3044,8 +3124,8 @@ Approximations to Shapley Values.” *Artificial Intelligence* 298.
 <https://doi.org/10.1016/j.artint.2021.103502>.
 
 Covert, Ian, and Su-In Lee. 2021. “Improving Kernelshap: Practical
-Shapley Value Estimation Using Linear Regression.” In *International
-Conference on Artificial Intelligence and Statistics*, 3457–65. PMLR.
+Shapley Value Estimation Using Linear Regression.” *International
+Conference on Artificial Intelligence and Statistics*, 3457–65.
 
 Covert, Ian, Scott M Lundberg, and Su-In Lee. 2020. “Understanding
 Global Feature Contributions with Additive Importance Measures.”
@@ -3057,7 +3137,7 @@ Networks with ’GPU’ Acceleration*.
 
 Frye, Christopher, Damien de Mijolla, Tom Begley, Laurence Cowton, Megan
 Stanley, and Ilya Feige. 2021. “Shapley Explainability on the Data
-Manifold.” In *International Conference on Learning Representations*.
+Manifold.” *International Conference on Learning Representations*.
 
 Hothorn, Torsten, Kurt Hornik, and Achim Zeileis. 2006. “Unbiased
 Recursive Partitioning: A Conditional Inference Framework.” *Journal of
@@ -3069,16 +3149,16 @@ for Recursive Partytioning in R.” *Journal of Machine Learning Research*
 
 Jullum, Martin, Annabelle Redelmeier, and Kjersti Aas. 2021. “Efficient
 and Simple Prediction Explanations with groupShapley: A Practical
-Perspective.” In *Proceedings of the 2nd Italian Workshop on Explainable
-Artificial Intelligence*, 28–43. CEUR Workshop Proceedings.
+Perspective.” *Proceedings of the 2nd Italian Workshop on Explainable
+Artificial Intelligence*, 28–43.
 
 Kingma, Diederik P., and Max Welling. 2014. “Auto-Encoding Variational
-Bayes.” In *2nd International Conference on Learning Representations,
-ICLR 2014, Banff, AB, Canada, April 14-16, 2014, Conference Track
+Bayes.” *2nd International Conference on Learning Representations, ICLR
+2014, Banff, AB, Canada, April 14-16, 2014, Conference Track
 Proceedings*.
 
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
-Interpreting Model Predictions.” In *Advances in Neural Information
+Interpreting Model Predictions.” *Advances in Neural Information
 Processing Systems*, 4765–74.
 
 Olsen, Lars Henry Berge, Ingrid Kristine Glad, Martin Jullum, and
@@ -3086,18 +3166,19 @@ Kjersti Aas. 2022. “Using Shapley Values and Variational Autoencoders to
 Explain Predictive Models with Dependent Mixed Features.” *Journal of
 Machine Learning Research* 23 (213): 1–51.
 
-———. 2024. “A Comparative Study of Methods for Estimating Model-Agnostic
-Shapley Value Explanations.” *Data Mining and Knowledge Discovery*,
-1–48.
+Olsen, Lars Henry Berge, Ingrid Kristine Glad, Martin Jullum, and
+Kjersti Aas. 2024. “A Comparative Study of Methods for Estimating
+Model-Agnostic Shapley Value Explanations.” *Data Mining and Knowledge
+Discovery*, 1–48.
 
 Olsen, Lars Henry Berge, and Martin Jullum. 2025. “Improving the
-Weighting Strategy in KernelSHAP.” In *World Conference on Explainable
-Artificial Intelligence*, 194–218. Springer.
+Weighting Strategy in KernelSHAP.” *World Conference on Explainable
+Artificial Intelligence*, 194–218.
 
 Redelmeier, Annabelle, Martin Jullum, and Kjersti Aas. 2020. “Explaining
 Predictive Models with Mixed Features Using Shapley Values and
-Conditional Inference Trees.” In *International Cross-Domain Conference
-for Machine Learning and Knowledge Extraction*, 117–37. Springer.
+Conditional Inference Trees.” *International Cross-Domain Conference for
+Machine Learning and Knowledge Extraction*, 117–37.
 
 Rosenblatt, Murray. 1956. “Remarks on Some Nonparametric Estimates of a
 Density Function.” *The Annals of Mathematical Statistics* 27: 832–37.

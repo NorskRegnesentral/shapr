@@ -247,14 +247,7 @@ explain_forecast(
 - ...:
 
   Arguments passed on to
-  [`setup_approach.categorical`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.copula`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.ctree`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.empirical`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.gaussian`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.independence`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.timeseries`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md),
-  [`setup_approach.vaeac`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)
+  [`setup_approach`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)
 
   `categorical.joint_prob_dt`
 
@@ -271,11 +264,6 @@ explain_forecast(
       observations occur in the training data. In theory, this
       proportion should be zero, but this causes an error later in the
       Shapley computation.
-
-  `internal`
-
-  :   List. Not used directly, but passed through from
-      [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md).
 
   `ctree.mincriterion`
 
@@ -601,7 +589,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-02-05 16:52:37 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-05-16 21:00:37 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -616,7 +604,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/RtmpWGjJWj/shapr_obj_1b9e15b57e27.rds
+#> • Computations (temporary) saved at: /tmp/RtmpjrucBx/shapr_obj_60a74b3aedad.rds
 #> 
 #> ── Main computation started ──
 #> 

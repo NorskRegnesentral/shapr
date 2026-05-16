@@ -15,11 +15,11 @@ the reader to Sections 3.5 and 3.6 in Olsen et al. (2024).
 
 Briefly stated, the regression paradigm uses regression models to
 directly estimate the contribution function
-$v(S) = E\left\lbrack f(\mathbf{x})|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack$.
+$`v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]`$.
 The separate regression method class fits a separate regression model
-for each coalition $S$, while the surrogate regression method class fits
-a single regression model to simultaneously predict the contribution
-function for all coalitions.
+for each coalition $`S`$, while the surrogate regression method class
+fits a single regression model to simultaneously predict the
+contribution function for all coalitions.
 
 The `shapr` package supports any regression model from the popular
 `tidymodels` package developed by Kuhn and Wickham (2020). The
@@ -68,31 +68,40 @@ used in this vignette to compute the Shapley value explanations.
 ## The separate regression method class
 
 In the `regression_separate` methods, we train a new regression model
-$g_{S}\left( \mathbf{x}_{S} \right)$ to estimate the conditional
-expectation for each coalition of features.
+$`g_S(\boldsymbol{x}_S)`$ to estimate the conditional expectation for
+each coalition of features.
 
 The idea is to estimate
-$v(S) = E\left\lbrack f(\mathbf{x})|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack = E\left\lbrack f\left( \mathbf{x}_{\bar{S}},\mathbf{x}_{S} \right)|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack$
-separately for each coalition $S$ using regression. Let
-$\mathcal{D} = \{\mathbf{x}^{\lbrack i\rbrack},y^{\lbrack i\rbrack}\}_{i = 1}^{N_{\text{train}}}$
-denote the training data, where $\mathbf{x}^{\lbrack i\rbrack}$ is the
-$i$th $M$-dimensional input and $y^{\lbrack i\rbrack}$ is the associated
-response. For each coalition $S \subseteq \{ 1,2,\ldots,M\}$, the
-corresponding training data set is $$\begin{array}{r}
-{\mathcal{D}_{S} = \{\mathbf{x}_{S}^{\lbrack i\rbrack},f\left( \underset{\mathbf{x}^{\lbrack i\rbrack}}{\underbrace{\mathbf{x}_{\bar{S}}^{\lbrack i\rbrack},\mathbf{x}_{S}^{\lbrack i\rbrack}}} \right)\}_{i = 1}^{N_{\text{train}}} = \{\mathbf{x}_{S}^{\lbrack i\rbrack},\underset{z^{\lbrack i\rbrack}}{\underbrace{f\left( \mathbf{x}^{\lbrack i\rbrack} \right)}}\}_{i = 1}^{N_{\text{train}}} = \{\mathbf{x}_{S}^{\lbrack i\rbrack},z^{\lbrack i\rbrack}\}_{i = 1}^{N_{\text{train}}}.}
-\end{array}$$
+$`v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*]`$
+separately for each coalition $`S`$ using regression. Let
+$`\mathcal{D} = \{ \boldsymbol{x}^{[i]}, y^{[i]} \}_{i=1}^{N_{\text{train}}}`$
+denote the training data, where $`\boldsymbol{x}^{[i]}`$ is the $`i`$th
+$`M`$-dimensional input and $`y^{[i]}`$ is the associated response. For
+each coalition $`S \subseteq \{1,2,\dots,M\}`$, the corresponding
+training data set is
+``` math
+\begin{align*}
+            \mathcal{D}_S
+            =
+            \{\boldsymbol{x}_S^{[i]}, f(\underbrace{\boldsymbol{x}_\bar{S}^{[i]}, \boldsymbol{x}_S^{[i]}}_{\boldsymbol{x}^{[i]}})\}_{i=1}^{N_{\text{train}}}
+            =
+            \{\boldsymbol{x}_S^{[i]}, \underbrace{f(\boldsymbol{x}^{[i]})}_{z^{[i]}}\}_{i=1}^{N_{\text{train}}}
+            =
+            \{\boldsymbol{x}_S^{[i]}, z^{[i]}\}_{i=1}^{N_{\text{train}}}.
+\end{align*}
+```
 
-For each data set $\mathcal{D}_{S}$, we train a regression model
-$g_{S}\left( \mathbf{x}_{S} \right)$ with respect to the mean squared
-error loss function. That is, we fit a regression model where the
-prediction $f(\mathbf{x})$ is acting as the response and the feature
-subset of coalition $S$, $\mathbf{x}_{S}$, is acting as the available
+For each data set $`\mathcal{D}_S`$, we train a regression model
+$`g_S(\boldsymbol{x}_S)`$ with respect to the mean squared error loss
+function. That is, we fit a regression model where the prediction
+$`f(\boldsymbol{x})`$ is acting as the response and the feature subset
+of coalition $`S`$, $`\boldsymbol{x}_S`$, is acting as the available
 features. The optimal model, with respect to the loss function, is
-$g_{S}^{*}\left( \mathbf{x}_{S} \right) = E\left\lbrack z|\mathbf{x}_{S} \right\rbrack = E\left\lbrack f\left( \mathbf{x}_{\bar{S}},\mathbf{x}_{S} \right)|\mathbf{x}_{S} \right\rbrack$,
-which corresponds to the contribution function $v(S)$. The regression
-model $g_{S}$ aims for the optimal, hence, it resembles/estimates the
+$`g^*_S(\boldsymbol{x}_S) = E[z|\boldsymbol{x}_S] = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S)|\boldsymbol{x}_S]`$,
+which corresponds to the contribution function $`v(S)`$. The regression
+model $`g_S`$ aims for the optimal, hence, it resembles/estimates the
 contribution function, i.e.,
-$g_{S}\left( \mathbf{x}_{S} \right) = \widehat{v}(S) \approx v(S) = E\left\lbrack f\left( \mathbf{x}_{\bar{S}},\mathbf{x}_{S} \right)|\mathbf{x}_{S} = \mathbf{x}_{S}^{*} \right\rbrack$.
+$`g_S(\boldsymbol{x}_S) = \hat{v}(S) \approx v(S) = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S) | \boldsymbol{x}_S = \boldsymbol{x}_S^*]`$.
 
 ### Code
 
@@ -115,6 +124,7 @@ notation throughout this vignette to indicate which package the
 functions originate from in the `tidymodels` framework.
 
 ``` r
+
 # Either use `library(tidymodels)` or separately specify the libraries indicated above
 library(tidymodels)
 library(shapr)
@@ -125,6 +135,7 @@ conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 ```
 
 ``` r
+
 # Other libraries
 library(xgboost)
 library(data.table)
@@ -162,6 +173,7 @@ functions that plot and summarize the results of the explanation
 methods. This code block is optional to understand and can be skipped.
 
 ``` r
+
 # Plot the MSEv criterion scores as horizontal bars and add dashed line of one method's score
 plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
@@ -205,6 +217,7 @@ Carlo-based methods implemented in `shapr` to make an extensive
 comparison.
 
 ``` r
+
 # Compute the Shapley value explanations using the empirical method
 explanation_list$MC_empirical <- explain(
   model = model,
@@ -257,6 +270,7 @@ Then we compute the Shapley value explanations using a linear regression
 model and the separate regression method class.
 
 ``` r
+
 explanation_list$sep_lm <- explain(
   model = model,
   x_explain = x_explain,
@@ -304,9 +318,10 @@ A linear model is often not flexible enough to properly model the
 contribution function. Thus, it can produce inaccurate Shapley value
 explanations. The figure below shows that the `empirical` approach
 outperforms the linear regression model approach quite significantly
-concerning the $\operatorname{MSE}_{v}$ evaluation criterion.
+concerning the $`\operatorname{MSE}_v`$ evaluation criterion.
 
 ``` r
+
 plot_MSEv_scores(explanation_list)
 #> ℹ Showing 10 of 20 observations.
 ```
@@ -346,6 +361,7 @@ component for the singleton coalitions, i.e., the feature itself. This
 regression model is called principal component regression.
 
 ``` r
+
 explanation_list$sep_pcr <- explain(
   model = model,
   x_explain = x_explain,
@@ -398,6 +414,7 @@ expansions of the features using natural splines with two degrees of
 freedom. This is similar to fitting a generalized additive model.
 
 ``` r
+
 explanation_list$sep_splines <- explain(
   model = model,
   x_explain = x_explain,
@@ -456,6 +473,7 @@ the framework’s flexibility, *not* that the transformations below are
 reasonable.
 
 ``` r
+
 # Example function of how to apply step functions from the recipes package to specific features
 regression.recipe_func <- function(recipe) {
   # Get the names of the present features
@@ -530,11 +548,12 @@ explanation_list$sep_recipe_example <- explain(
 #> ℹ Using 16 of 16 coalitions.
 ```
 
-We can examine the $\operatorname{MSE}_{v}$ evaluation scores, and we
+We can examine the $`\operatorname{MSE}_v`$ evaluation scores, and we
 see that the method using natural splines significantly outperforms the
 other methods.
 
 ``` r
+
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 #> ℹ Showing 10 of 20 observations.
@@ -543,6 +562,7 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ![](figure_regression/preproc-plot-1.webp)
 
 ``` r
+
 
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
@@ -571,6 +591,7 @@ see that the default hyperparameter values for the
 model are `tree_depth = 30`, `min_n = 2`, and `cost_complexity = 0.01`.
 
 ``` r
+
 # Decision tree with specified parameters (stumps)
 explanation_list$sep_tree_stump <- explain(
   model = model,
@@ -658,11 +679,12 @@ if we want to use the pipe function (`%>%`).
 
 We can now compare the two new methods. The decision tree with default
 parameters outperforms the linear model approach concerning the
-$\operatorname{MSE}_{v}$ criterion and is on the same level as the
+$`\operatorname{MSE}_v`$ criterion and is on the same level as the
 empirical approach. We obtained a worse method by using stumps, i.e.,
 trees with depth one.
 
 ``` r
+
 # Compare the MSEv criterion of the different explanation methods
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 #> ℹ Showing 10 of 20 observations.
@@ -671,6 +693,7 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ![](figure_regression/decision-tree-plot-1.webp)
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv Time
@@ -730,6 +753,7 @@ and
 [`dials::grid_latin_hypercube()`](https://dials.tidymodels.org/reference/grid_max_entropy.html).
 
 ``` r
+
 # Possible ways to define the `regression.tune_values` object.
 # function(x) dials::grid_regular(dials::tree_depth(), levels = 4)
 dials::grid_regular(dials::tree_depth(), levels = 4)
@@ -751,6 +775,7 @@ function. In the second example, we tune both the `tree_depth` and
 hyperparameter values this time.
 
 ``` r
+
 # Decision tree with cross-validated depth (default values for other parameters)
 explanation_list$sep_tree_cv <- explain(
   model = model,
@@ -850,6 +875,7 @@ that the tested hyperparameter value combinations change based on the
 coalition size.
 
 ``` r
+
 # Using random forest with default parameters
 explanation_list$sep_rf <- explain(
   model = model,
@@ -1139,7 +1165,7 @@ explanation_list$sep_rf_cv <- explain(
 #> 3.61
 ```
 
-We can look at the $\operatorname{MSE}_{v}$ evaluation criterion, and we
+We can look at the $`\operatorname{MSE}_v`$ evaluation criterion, and we
 see that cross-validation improves both the decision tree and the random
 forest methods. The two cross-validated decision tree methods are
 comparable, but the second version outperforms the first version by a
@@ -1147,10 +1173,11 @@ small margin. This comparison is somewhat unfair for the `empirical`
 approach, which also has hyperparameters we could potentially tune.
 However, `shapr` does not currently provide a function to do this
 automatically. In the figure below, we include a vertical line at the
-$\operatorname{MSE}_{v}$ score of the `empirical` method for easier
+$`\operatorname{MSE}_v`$ score of the `empirical` method for easier
 comparison.
 
 ``` r
+
 plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 #> ℹ Showing 10 of 20 observations.
 ```
@@ -1165,6 +1192,7 @@ simple decision tree method. This result indicates that even though we
 do hyperparameter tuning, we still overfit the data.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                      MSEv  Time
@@ -1185,8 +1213,8 @@ print_MSEv_scores_and_time(explanation_list)
 
 The `future` package can train the separate regression models in
 parallel. More specifically, we parallelize both the training step (when
-we fit the models) and the prediction step (when we compute $v(S)$). In
-the general usage, we also explain how to enable progress bars.
+we fit the models) and the prediction step (when we compute $`v(S)`$).
+In the general usage, we also explain how to enable progress bars.
 
 In the code chunk below, we consider four regression-based methods. The
 first method uses `xgboost` models with default hyperparameter values,
@@ -1205,6 +1233,7 @@ finer grid search among the lower values. We do this in the fourth
 method.
 
 ``` r
+
 # Regular xgboost with default parameters
 explanation_list$sep_xgboost <- explain(
   model = model,
@@ -1366,11 +1395,12 @@ situations. E.g., in settings with (more) training observations with
 more features (i.e., more coalitions to compute) and situations with
 more time-consuming cross-validation (i.e., more folds, hyperparameters
 to tune, or hyperparameter values to consider). Furthermore, we see that
-conducting the cross-validation has lowered the $\operatorname{MSE}_{v}$
+conducting the cross-validation has lowered the $`\operatorname{MSE}_v`$
 criterion drastically. Finally, note that we obtain the same value
 whether we run the cross-validation in parallel or sequentially.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
@@ -1394,18 +1424,18 @@ print_MSEv_scores_and_time(explanation_list)
 ## The surrogate regression method class
 
 Since the `regression_separate` methods train a new regression model
-$g_{S}\left( \mathbf{x}_{S} \right)$ for each coalition
-$S \subseteq \{ 1,2,\ldots,M\}$, a total of $2^{M} - 2$ models have to
-be trained, which can be time-consuming for slowly fitted models. The
-minus two corresponds to the empty and grand coalitions.
+$`g_S(\boldsymbol{x}_S)`$ for each coalition
+$`S \subseteq \{1,2,\dots,M\}`$, a total of $`2^M-2`$ models have to be
+trained, which can be time-consuming for slowly fitted models. The minus
+two corresponds to the empty and grand coalitions.
 
 The `regression_surrogate` method class builds on the ideas from the
 `regression_separate` class, but instead of fitting a new regression
 model for each coalition, we train a single regression model
-$g\left( {\widetilde{\mathbf{x}}}_{S} \right)$ for all coalitions
-$S \subseteq \{ 1,2,\ldots,M\}$ (except the empty and grand coalitions),
-where ${\widetilde{\mathbf{x}}}_{S}$ is an augmented version of
-$\mathbf{x}_{S}$. See Section 3.6.1 in Olsen et al. (2024) for more
+$`g(\tilde{\boldsymbol{x}}_S)`$ for all coalitions
+$`S \subseteq \{1,2,\dots,M\}`$ (except the empty and grand coalitions),
+where $`\tilde{\boldsymbol{x}}_S`$ is an augmented version of
+$`\boldsymbol{x}_S`$. See Section 3.6.1 in Olsen et al. (2024) for more
 details and examples.
 
 We can also apply all the examples above for the separate regression
@@ -1419,6 +1449,7 @@ models below. More specifically, we use linear regression, random forest
 without (some) cross-validation).
 
 ``` r
+
 # Compute the Shapley value explanations using a surrogate linear regression model
 explanation_list$sur_lm <- explain(
   model = model,
@@ -1609,12 +1640,13 @@ regression model can be run in parallel if we tune some of its
 hyperparameters. We parallelize the cross-validation procedure in the
 training step; hence, we apply no parallelization in the training step
 of a surrogate model with specified hyperparameters. Furthermore, we
-parallelize the prediction step (when we compute $v(S)$) in the same way
-as for the separate regression method class. Note that parallelization
-will introduce some overhead, which can cause it to be slower than
-running the code sequentially for smaller problems.
+parallelize the prediction step (when we compute $`v(S)`$) in the same
+way as for the separate regression method class. Note that
+parallelization will introduce some overhead, which can cause it to be
+slower than running the code sequentially for smaller problems.
 
 ``` r
+
 # Cross validate the number of trees in parallel on four threads
 future::plan(future::multisession, workers = 4)
 explanation_list$sur_rf_cv_par <- explain(
@@ -1677,16 +1709,17 @@ all.equal(
 #> [1] TRUE
 ```
 
-By looking at the $\operatorname{MSE}_{v}$ evaluation criterion and the
+By looking at the $`\operatorname{MSE}_v`$ evaluation criterion and the
 elapsed time, we see that the surrogate methods (except the linear
 regression model) outperform `empirical` but are not on the same level
 as the best separate regression methods. Furthermore, parallelization (4
 cores) decreased the elapsed time while obtaining the same
-$\operatorname{MSE}_{v}$ score. The identical scores mean that the
+$`\operatorname{MSE}_v`$ score. The identical scores mean that the
 separate models are identical and independent of whether they were run
 sequentially or in parallel.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
@@ -1738,6 +1771,7 @@ regression models. We refer to that guide for more details and
 explanations of the code below.
 
 ``` r
+
 # Step 1: register the model, modes, and arguments
 parsnip::set_new_model(model = "ppr_reg")
 parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
@@ -1854,6 +1888,7 @@ cross-validation to tune the hyperparameter. We do all four combinations
 below.
 
 ``` r
+
 # PPR separate with specified number of terms
 explanation_list$sep_ppr <- explain(
   model = model,
@@ -1993,11 +2028,12 @@ explanation_list$sur_ppr_cv <- explain(
 #> ℹ Using 16 of 16 coalitions.
 ```
 
-We can then compare the $\operatorname{MSE}_{v}$ and some of the Shapley
+We can then compare the $`\operatorname{MSE}_v`$ and some of the Shapley
 value explanations. We see that conducting cross-validation improves the
 evaluation criterion, but also increase the running time.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
@@ -2046,6 +2082,7 @@ In the code chunk below, we compute the Shapley value explanations using
 the different Monte Carlo-based methods.
 
 ``` r
+
 explanation_list_MC <- list()
 
 # Compute the Shapley value explanations using the independence method
@@ -2223,11 +2260,12 @@ explanation_list <- c(explanation_list_MC, explanation_list)
 ```
 
 We then compare the regression and Monte Carlo-based methods by plotting
-the $\operatorname{MSE}_{v}$ evaluation criterion. We continue with
-include a vertical line corresponding to the $\operatorname{MSE}_{v}$ of
+the $`\operatorname{MSE}_v`$ evaluation criterion. We continue with
+include a vertical line corresponding to the $`\operatorname{MSE}_v`$ of
 the `MC_empirical` method to make the comparison easier.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list)
 #>                        MSEv  Time
@@ -2271,16 +2309,17 @@ plot_MSEv_scores(explanation_list, method_line = "MC_empirical")
 ![](figure_regression/MSEv-sum-1.webp)
 
 The `vaeac` approach is the best-performing method according to the
-$\operatorname{MSE}_{v}$ evaluation criterion, while the
+$`\operatorname{MSE}_v`$ evaluation criterion, while the
 `sep_xgboost_cv_2_par` is the best-performing regression-based method.
 However, we should note that the `vaeac` method is much slower and that
-the difference between the $\operatorname{MSE}_{v}$ values is minuscule
+the difference between the $`\operatorname{MSE}_v`$ values is minuscule
 and inside the confidence intervals.
 
 We can also order the methods to more easily look at the order of the
-methods according to the $\operatorname{MSE}_{v}$ criterion.
+methods according to the $`\operatorname{MSE}_v`$ criterion.
 
 ``` r
+
 order <- get_k_best_methods(explanation_list, k = length(explanation_list))
 plot_MSEv_scores(explanation_list[order], method_line = "MC_empirical")
 #> ℹ Showing 10 of 20 observations.
@@ -2294,21 +2333,24 @@ best to worst. Most methods agree in the general directions, especially
 for the most important features (the features with the largest absolute
 Shapley values), but there are some differences for the less important
 features. These tendencies/discrepancies are often more visible for the
-methods with poor/larger $\operatorname{MSE}_{v}$ values.
+methods with poor/larger $`\operatorname{MSE}_v`$ values.
 
 ``` r
+
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
 ![](figure_regression/SV-sum-1.webp)
 
 ``` r
+
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(3, 4), facet_ncol = 1)
 ```
 
 ![](figure_regression/SV-sum-2.webp)
 
 ``` r
+
 plot_SV_several_approaches(explanation_list[order], index_explicands = c(5, 6), facet_ncol = 1)
 ```
 
@@ -2319,6 +2361,7 @@ easier to analyze the individual Shapley value explanations, and we see
 a quite strong agreement between the different methods.
 
 ``` r
+
 # Extract the 5 best methods (and empirical)
 best_methods <- get_k_best_methods(explanation_list, k = 5)
 if (!"MC_empirical" %in% best_methods) best_methods <- c(best_methods, "MC_empirical")
@@ -2345,6 +2388,7 @@ using, for example, dummy features. We demonstrate this below using the
 First, we copy the setup from the general usage.
 
 ``` r
+
 # Convert the month variable to a factor
 data_cat <- copy(data)[, Month_factor := as.factor(Month)]
 
@@ -2374,6 +2418,7 @@ explanation_list_mixed <- list()
 Second, we compute the explanations using the Monte Carlo-based methods.
 
 ``` r
+
 explanation_list_mixed$MC_independence <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -2484,6 +2529,7 @@ regression methods. We use many of the same regression models as we did
 above for the continuous data examples.
 
 ``` r
+
 # Standard linear regression
 explanation_list_mixed$sep_lm <- explain(
   model = model_cat,
@@ -2777,6 +2823,7 @@ regression methods. We use the same regression models as we did above
 for separate regression method class.
 
 ``` r
+
 # Standard linear regression
 explanation_list_mixed$sur_lm <- explain(
   model = model_cat,
@@ -3071,6 +3118,7 @@ specifically, three separate regression methods and three surrogate
 regression methods.
 
 ``` r
+
 # Print the MSEv scores and the elapsed time (in seconds) for the different methods
 print_MSEv_scores_and_time(explanation_list_mixed)
 #>                   MSEv   Time
@@ -3108,9 +3156,10 @@ worse, with `ctree` being the best, with a seventh-place overall
 ranking.
 
 We can also order the methods to more easily look at the order of the
-methods according to the $\operatorname{MSE}_{v}$ criterion.
+methods according to the $`\operatorname{MSE}_v`$ criterion.
 
 ``` r
+
 order <- get_k_best_methods(explanation_list_mixed, k = length(explanation_list_mixed))
 plot_MSEv_scores(explanation_list_mixed[order], method_line = "MC_ctree")
 #> ℹ Showing 10 of 20 observations.
@@ -3122,17 +3171,19 @@ We also look at some of the Shapley value explanations and see that many
 methods produce similar explanations.
 
 ``` r
+
 plot_SV_several_approaches(explanation_list_mixed[order], index_explicands = c(1, 2), facet_ncol = 1)
 ```
 
 ![](figure_regression/mixed-plot-3-1.webp)
 
 We can also focus on the Shapley value explanations for the best five
-methods according to the $\operatorname{MSE}_{v}$ criterion. We also
+methods according to the $`\operatorname{MSE}_v`$ criterion. We also
 include the `ctree` method, the best-performing Monte Carlo-based
 method.
 
 ``` r
+
 best_methods <- get_k_best_methods(explanation_list_mixed, k = 5)
 if (!"MC_ctree" %in% best_methods) best_methods <- c(best_methods, "MC_ctree")
 plot_SV_several_approaches(explanation_list_mixed[best_methods], index_explicands = 1:4)
@@ -3150,9 +3201,10 @@ function is called from Python through the associated `shaprpy` Python
 library. That is, the user only has to specify strings containing R code
 instead of having to deal with creating the R objects in Python. In the
 code chunk below, we see that we obtain identical
-$\operatorname{MSE}_{v}$ scores for the string and non-string versions.
+$`\operatorname{MSE}_v`$ scores for the string and non-string versions.
 
 ``` r
+
 explanation_list_str <- list()
 explanation_list_str$sep_lm <- explain(
   model = model,
@@ -3393,7 +3445,7 @@ print_MSEv_scores_and_time(explanation_list[names(explanation_list_str)])
 This vignette demonstrates the rich possibilities that the regression
 paradigm and the `tidymodels` framework add to the `shapr` package. We
 have seen that regression-based methods are on par with or outperform
-the Monte Carlo-based methods regarding the $\operatorname{MSE}_{v}$
+the Monte Carlo-based methods regarding the $`\operatorname{MSE}_v`$
 evaluation criterion. Furthermore, we have seen that the
 regression-based methods are relatively computationally fast and that
 parallelization can be used to speed up the computations.

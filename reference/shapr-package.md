@@ -27,6 +27,9 @@ Useful links:
 
 Authors:
 
+- Martin Jullum <Martin.Jullum@nr.no>
+  ([ORCID](https://orcid.org/0000-0003-3908-5155))
+
 - Lars Henry Berge Olsen <lhbolsen@nr.no>
   ([ORCID](https://orcid.org/0009-0006-9360-6993))
 

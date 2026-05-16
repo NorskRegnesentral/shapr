@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Asymmetric and causal Shapley value explanations • shapr</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Asymmetric and causal Shapley value explanations">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,11 +83,11 @@ Berge Olsen</h4>
 <h2 id="Vignette">Overview<a class="anchor" aria-label="anchor" href="#Vignette"></a>
 </h2>
 <p>This vignette elaborates and demonstrates the asymmetric and causal
-Shapley value frameworks introduced by <span class="citation">Frye,
-Rowat, and Feige (2020)</span> and <span class="citation">Heskes et al.
+Shapley value frameworks introduced by <span class="citation">Frye et
+al. (2020)</span> and <span class="citation">Heskes et al.
 (2020)</span>, respectively. We also consider the marginal and
-conditional Shapley value frameworks, see <span class="citation">Lundberg and Lee (2017)</span> and <span class="citation">Aas, Jullum, and Løland (2021)</span>, respectively. We
-demonstrate the frameworks on the <a href="https://archive.ics.uci.edu/dataset/275/" class="external-link">bike sharing</a> dataset
+conditional Shapley value frameworks, see <span class="citation">Lundberg and Lee (2017)</span> and <span class="citation">Aas et al. (2021)</span>, respectively. We demonstrate
+the frameworks on the <a href="https://archive.ics.uci.edu/dataset/275/" class="external-link">bike sharing</a> dataset
 from the UCI Machine Learning Repository. The setup is based on the
 <code>CauSHAPley</code> package, which is the <a href="https://proceedings.neurips.cc/paper/2020/hash/32e54441e6382a7fbacbbbaf3c450059-Abstract.html" class="external-link">code
 supplement</a> to the <span class="citation">Heskes et al. (2020)</span>
@@ -118,13 +118,13 @@ ordering.</p>
 <div class="section level2">
 <h2 id="AsymSV">Asymmetric conditional Shapley values<a class="anchor" aria-label="anchor" href="#AsymSV"></a>
 </h2>
-<p>Asymmetric (conditional) Shapley values were proposed by <span class="citation">Frye, Rowat, and Feige (2020)</span> as a way to
-incorporate causal knowledge in the real world by computing the Shapley
-value explanations using only the feature combinations/coalitions
-consistent with a (partial) causal ordering. See the figure below for a
-schematic overview of the causal ordering we are going to use in the
-examples in this vignette. In the figure, we see that our causal
-ordering consists of three components:
+<p>Asymmetric (conditional) Shapley values were proposed by <span class="citation">Frye et al. (2020)</span> as a way to incorporate
+causal knowledge in the real world by computing the Shapley value
+explanations using only the feature combinations/coalitions consistent
+with a (partial) causal ordering. See the figure below for a schematic
+overview of the causal ordering we are going to use in the examples in
+this vignette. In the figure, we see that our causal ordering consists
+of three components:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>1</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>X</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\tau_1 = \{X_1\}</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>2</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>X</mi><mn>2</mn></msub><mo>,</mo><msub><mi>X</mi><mn>3</mn></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\tau_2 = \{X_2, X_3\}</annotation></semantics></math>,
 and
@@ -147,23 +147,23 @@ as
 is the ancestor of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mn>2</mn></msub><annotation encoding="application/x-tex">X_2</annotation></semantics></math>.
 This will skew the explanations towards distal/root causes, see Section
-3.2 in <span class="citation">Frye, Rowat, and Feige (2020)</span>.</p>
+3.2 in <span class="citation">Frye et al. (2020)</span>.</p>
 <p>We can use all approaches in <code>shapr</code>, both Monte
 Carlo-based and regression-based methods, to compute the asymmetric
 Shapley values. This is because the asymmetric Shapley value explanation
 framework does not change how we compute the contribution functions
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>,
 but rather which of the coalitions
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
 that are used to compute the Shapley value explanations. This means that
 the number of coalitions is no longer
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>2</mn><mi>M</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(2^M)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mn>2</mn><mi>M</mi></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(2^M)</annotation></semantics></math>,
 but rather
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mn>2</mn><msub><mi>τ</mi><mn>0</mn></msub></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">O(2^{\tau_0})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false" form="prefix">(</mo><msup><mn>2</mn><msub><mi>τ</mi><mn>0</mn></msub></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">O(2^{\tau_0})</annotation></semantics></math>,
 where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>0</mn></msub><mo>=</mo><msub><mo>max</mo><mi>i</mi></msub><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>τ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow></mrow><annotation encoding="application/x-tex">\tau_0 = \operatorname{max}_i |\tau_i|</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mn>0</mn></msub><mo>=</mo><msub><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><msub><mi>τ</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">\tau_0 = \operatorname{max}_i |\tau_i|</annotation></semantics></math>
 is the number of features
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>τ</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">|\tau_i|</annotation></semantics></math>)
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>τ</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">|\tau_i|</annotation></semantics></math>)
 in the largest component of the causal ordering.</p>
 <p>Furthermore, asymmetric Shapley values support groups of features,
 but then the causal ordering must be given on the group level instead of
@@ -231,7 +231,7 @@ component. We denote the set of these components by
 expectation by intervention needed to compute the causal Shapley values
 can be translated to an expectation by observation, by using the
 interventional formula for causal chain graphs:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left"><munder><mo>∏</mo><mrow><mi>τ</mi><mo>∈</mo><msub><mi>𝒯</mi><mrow><mspace width="0.167em"></mspace><mtext mathvariant="normal">confounding</mtext></mrow></msub></mrow></munder><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>τ</mi><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>∣</mo><msub><mi>X</mi><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mspace width="1.0em"></mspace><munder><mo>∏</mo><mrow><mi>τ</mi><mo>∈</mo><msub><mi>𝒯</mi><mrow><mspace width="0.167em"></mspace><mover><mtext mathvariant="normal">confounding</mtext><mo accent="true">¯</mo></mover></mrow></msub></mrow></munder><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>τ</mi><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>∣</mo><msub><mi>X</mi><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mi>τ</mi><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><munder><mo>∏</mo><mrow><mi>τ</mi><mo>∈</mo><msub><mi>𝒯</mi><mrow><mspace width="0.167em"></mspace><mtext mathvariant="normal">confounding</mtext></mrow></msub></mrow></munder><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>τ</mi><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>∣</mo><msub><mi>X</mi><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>×</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mspace width="1.0em"></mspace><munder><mo>∏</mo><mrow><mi>τ</mi><mo>∈</mo><msub><mi>𝒯</mi><mrow><mspace width="0.167em"></mspace><mover><mtext mathvariant="normal">confounding</mtext><mo accent="true">¯</mo></mover></mrow></msub></mrow></munder><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>τ</mi><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>∣</mo><msub><mi>X</mi><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>∩</mo><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo>,</mo><msub><mi>x</mi><mrow><mi>τ</mi><mo>∩</mo><mi>𝒮</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
 \label{eq:do}
 P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))
 = &amp;
@@ -265,11 +265,11 @@ all
 features are combined into a single component
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mi>ℳ</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><mi>M</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\tau = \mathcal{M} = \{1,2,...,M\}</annotation></semantics></math>
 and all dependencies are induced by confounding. Then
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>∅</mi></mrow><annotation encoding="application/x-tex">\text{pa}(\tau) = \emptyset</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>∅</mi></mrow><annotation encoding="application/x-tex">\text{pa}(\tau) = \emptyset</annotation></semantics></math>,
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math>
 in Equation () simplifies to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}})</annotation></semantics></math>,
 as specified in <span class="citation">Lundberg and Lee
 (2017)</span>.</p>
 <p>The Monte Carlo samples for the marginals are generated by sampling
@@ -288,13 +288,13 @@ values when all
 features are combined into a single component
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>=</mo><mi>ℳ</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><mi>M</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\tau = \mathcal{M} = \{1,2,...,M\}</annotation></semantics></math>
 and all dependencies are induced by mutual interaction. Then
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">pa</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>τ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>∅</mi></mrow><annotation encoding="application/x-tex">\text{pa}(\tau) = \emptyset</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">pa</mtext><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>∅</mi></mrow><annotation encoding="application/x-tex">\text{pa}(\tau) = \emptyset</annotation></semantics></math>,
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math>
 in Equation () simplifies to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math>,
-as specified in <span class="citation">Aas, Jullum, and Løland
-(2021)</span>. Symmetric means that we consider all coalitions.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math>,
+as specified in <span class="citation">Aas et al. (2021)</span>.
+Symmetric means that we consider all coalitions.</p>
 </div>
 <div class="section level2">
 <h2 id="Code">Code example<a class="anchor" aria-label="anchor" href="#Code"></a>
@@ -342,7 +342,7 @@ default <code>asymmetric = FALSE</code>, <code>ordering = NULL</code>,
 <tbody>
 <tr class="odd">
 <td align="left">Sym. Conditional</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math></td>
 <td align="left">All</td>
 <td align="left"><code>FALSE</code></td>
 <td align="left"><code>NULL</code></td>
@@ -350,7 +350,7 @@ default <code>asymmetric = FALSE</code>, <code>ordering = NULL</code>,
 </tr>
 <tr class="even">
 <td align="left">Asym. Conditional</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})</annotation></semantics></math></td>
 <td align="left">All</td>
 <td align="left"><code>TRUE</code></td>
 <td align="left"><code>list(...)</code></td>
@@ -358,7 +358,7 @@ default <code>asymmetric = FALSE</code>, <code>ordering = NULL</code>,
 </tr>
 <tr class="odd">
 <td align="left">Sym. Causal</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math></td>
 <td align="left">All MC-based</td>
 <td align="left"><code>FALSE</code></td>
 <td align="left"><code>list(...)</code></td>
@@ -366,7 +366,7 @@ default <code>asymmetric = FALSE</code>, <code>ordering = NULL</code>,
 </tr>
 <tr class="even">
 <td align="left">Asym. Causal</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><mi>d</mi><mi>o</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mi>𝒮</mi></msub><mo>=</mo><msub><mi>x</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))</annotation></semantics></math></td>
 <td align="left">All MC-based</td>
 <td align="left"><code>TRUE</code></td>
 <td align="left"><code>list(...)</code></td>
@@ -374,7 +374,7 @@ default <code>asymmetric = FALSE</code>, <code>ordering = NULL</code>,
 </tr>
 <tr class="odd">
 <td align="left">Sym. Marginal</td>
-<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}})</annotation></semantics></math></td>
+<td align="left"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>X</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(X_{\bar{\mathcal{S}}})</annotation></semantics></math></td>
 <td align="left">
 <code>indep.</code>, <code>gaussian</code>
 </td>
@@ -743,7 +743,7 @@ used.</p>
 <span><span class="co">#&gt; ── Iteration 7 ───────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 114 of 128 coalitions, 4 new.</span></span></code></pre></div>
 <p>We can then look at the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation scores to compare the approaches. All approaches are
 comparable, but <code>xgboost</code> is clearly the fastest
 approach.</p>
@@ -1064,8 +1064,8 @@ especially <code>temp</code> and <code>atemp</code>.</p>
 Shapley values for the 6 explicands. We often see that the asymmetric
 version gives larger Shapley values to the distal/root causes, i.e.,
 <code>trend</code> and <code>cosyear</code>, than the symmetric version.
-This is in line with Section 3.2 in <span class="citation">Frye, Rowat,
-and Feige (2020)</span>.</p>
+This is in line with Section 3.2 in <span class="citation">Frye et al.
+(2020)</span>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Order the symmetric and asymmetric conditional explanations into a joint list</span></span>
 <span><span class="va">explanation_sym_con_tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">explanation_sym_con</span><span class="op">)</span></span>
@@ -2374,12 +2374,12 @@ values is that we now see a much wider spread in the Shapley values for
 <code>atemp</code>. For example, for the symmetric causal framework, we
 saw above that the <code>temp</code> and <code>atemp</code> obtained
 Shapley values between (around)
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>500</mn></mrow><annotation encoding="application/x-tex">-500</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>500</mn></mrow><annotation encoding="application/x-tex">-500</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>500</mn><annotation encoding="application/x-tex">500</annotation></semantics></math>,
 while the grouped version <code>temp_group</code> obtains Shapley values
 between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>1000</mn></mrow><annotation encoding="application/x-tex">-1000</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>1000</mn></mrow><annotation encoding="application/x-tex">-1000</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1000</mn><annotation encoding="application/x-tex">1000</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
@@ -2478,7 +2478,7 @@ methods support unconditional sampling.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-aas2019explaining" class="csl-entry">
 Aas, Kjersti, Martin Jullum, and Anders Løland. 2021. <span>“Explaining
 Individual Predictions When Features Are Dependent: More Accurate
@@ -2499,7 +2499,7 @@ Information Processing Systems</em> 33: 4778–89.
 </div>
 <div id="ref-lundberg2017unified" class="csl-entry">
 Lundberg, Scott M, and Su-In Lee. 2017. <span>“A Unified Approach to
-Interpreting Model Predictions.”</span> In <em>Advances in Neural
+Interpreting Model Predictions.”</span> <em>Advances in Neural
 Information Processing Systems</em>, 4765–74.
 </div>
 </div>

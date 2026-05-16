@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>More details and advanced usage of the `vaeac` approach • shapr</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="More details and advanced usage of the `vaeac` approach">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,9 +95,9 @@ al. (2022)</span>), abbreviated to <code>vaeac</code>. The
 <code>vaeac</code> is an extension of the regular variational
 autoencoder (<span class="citation">Kingma and Welling (2014)</span>),
 but instead of giving a probabilistic representation of the distribution
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(\boldsymbol{x})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p(\boldsymbol{x})</annotation></semantics></math>
 it gives a probabilistic representation of the conditional distribution
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>𝐱</mi><mi>𝒮</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}})</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>𝒮</mi><mo accent="true">‾</mo></mover></msub><mo>∣</mo><msub><mi>𝐱</mi><mi>𝒮</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}})</annotation></semantics></math>,
 for all possible feature subsets
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒮</mi><mo>⊆</mo><mi>ℳ</mi></mrow><annotation encoding="application/x-tex">\mathcal{S}\subseteq\mathcal{M}</annotation></semantics></math>
 simultaneously, where
@@ -851,7 +851,7 @@ evaluation criterion. We do this by using the
 package, respectively. We also use the
 <code><a href="../reference/plot_vaeac_imputed_ggpairs.html">plot_vaeac_imputed_ggpairs()</a></code> function which generates
 samples from
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p(x)</annotation></semantics></math>,
 this is meant as a sanity check to see that the <code>vaeac</code> model
 is able to follow the general structure/distribution of the data.
 However, recall that the <code>vaeac</code> model is never trained on
@@ -1426,14 +1426,14 @@ default parameters.</p>
 <span>  index_explicands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_vaeac/vaeac-mixed-data-3.webp"></p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-torch" class="csl-entry">
 Falbel, Daniel, and Javier Luraschi. 2023. <em>Torch: Tensors and Neural
 Networks with ’GPU’ Acceleration</em>. <a href="https://CRAN.R-project.org/package=torch" class="external-link">https://CRAN.R-project.org/package=torch</a>.
 </div>
 <div id="ref-kingma2014autoencoding" class="csl-entry">
 Kingma, Diederik P., and Max Welling. 2014. <span>“<span>Auto-Encoding
-Variational Bayes</span>.”</span> In <em>2nd International Conference on
+Variational Bayes</span>.”</span> <em>2nd International Conference on
 Learning Representations, <span>ICLR</span> 2014, Banff, AB, Canada,
 April 14-16, 2014, Conference Track Proceedings</em>.
 </div>

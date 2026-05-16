@@ -1,5 +1,25 @@
 # Changelog
 
+## shapr 1.0.8.9000
+
+#### Development workflow
+
+- Added repository-wide agent instructions, VS Code tasks, and
+  snapshot-safe local testing helpers
+  ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+#### Continuous integration
+
+- Added scheduled/manual maintenance runs for R CMD check and Python
+  tests, and updated Python testing to use `uv` with Python 3.14
+  ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+#### Documentation
+
+- Simplified roxygen2 (following package update) inheritance for
+  approach-specific arguments and refreshed affected documentation
+  ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
 ## shapr 1.0.8
 
 CRAN release: 2026-01-20
@@ -366,10 +386,10 @@ CRAN release: 2025-01-16
   [here](https://github.com/NorskRegnesentral/shapr/tree/master/python).
 - Introduce batch computation of conditional expectations
   ([\#244](https://github.com/NorskRegnesentral/shapr/issues/244)). This
-  essentially compute $v(S)$ for a portion of the $S$-subsets at a time,
-  to reduce the amount of data needed to be held in memory. The user can
-  control the number of batches herself, but we set a reasonable value
-  by default
+  essentially compute $`v(S)`$ for a portion of the $`S`$-subsets at a
+  time, to reduce the amount of data needed to be held in memory. The
+  user can control the number of batches herself, but we set a
+  reasonable value by default
   ([\#327](https://github.com/NorskRegnesentral/shapr/pull/327)). This
   allows models with large number of features to be explained with a
   significantly lower RAM consumption (at the cost of a slight increase

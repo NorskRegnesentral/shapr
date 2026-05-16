@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://norskregnesentral.github.io/shapr/404.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/AGENTS.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/CONTRIBUTING.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/LICENSE-text.html</loc></url>
@@ -11,6 +12,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/articles/regression.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/articles/vaeac.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/authors.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/copilot-instructions.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/index.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/news/index.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/py_changelog.html</loc></url>

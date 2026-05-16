@@ -3,11 +3,10 @@
 ## Overview
 
 This vignette elaborates and demonstrates the asymmetric and causal
-Shapley value frameworks introduced by Frye, Rowat, and Feige (2020) and
-Heskes et al. (2020), respectively. We also consider the marginal and
-conditional Shapley value frameworks, see Lundberg and Lee (2017) and
-Aas, Jullum, and Løland (2021), respectively. We demonstrate the
-frameworks on the [bike
+Shapley value frameworks introduced by Frye et al. (2020) and Heskes et
+al. (2020), respectively. We also consider the marginal and conditional
+Shapley value frameworks, see Lundberg and Lee (2017) and Aas et al.
+(2021), respectively. We demonstrate the frameworks on the [bike
 sharing](https://archive.ics.uci.edu/dataset/275/) dataset from the UCI
 Machine Learning Repository. The setup is based on the `CauSHAPley`
 package, which is the [code
@@ -37,36 +36,35 @@ ordering.
 
 ## Asymmetric conditional Shapley values
 
-Asymmetric (conditional) Shapley values were proposed by Frye, Rowat,
-and Feige (2020) as a way to incorporate causal knowledge in the real
-world by computing the Shapley value explanations using only the feature
+Asymmetric (conditional) Shapley values were proposed by Frye et al.
+(2020) as a way to incorporate causal knowledge in the real world by
+computing the Shapley value explanations using only the feature
 combinations/coalitions consistent with a (partial) causal ordering. See
 the figure below for a schematic overview of the causal ordering we are
 going to use in the examples in this vignette. In the figure, we see
 that our causal ordering consists of three components:
-$\tau_{1} = \{ X_{1}\}$, $\tau_{2} = \{ X_{2},X_{3}\}$, and
-$\tau_{3} = \{ X_{4},X_{5},X_{6},X_{7}\}$. See the [code section](#Code)
-for what the features represent.
+$`\tau_1 = \{X_1\}`$, $`\tau_2 = \{X_2, X_3\}`$, and
+$`\tau_3 = \{X_4, X_5, X_6, X_7\}`$. See the [code section](#Code) for
+what the features represent.
 
-To elaborate, instead of considering the $2^{M}$ possible coalitions,
-where $M$ is the number of features, asymmetric Shapley values only
+To elaborate, instead of considering the $`2^M`$ possible coalitions,
+where $`M`$ is the number of features, asymmetric Shapley values only
 consider the subset of coalitions which respects the causal ordering.
 For our causal ordering, this means that the asymmetric Shapley value
-explanation framework skips the coalitions where $X_{2}$ is included but
-$X_{1}$, as $X_{1}$ is the ancestor of $X_{2}$. This will skew the
-explanations towards distal/root causes, see Section 3.2 in Frye, Rowat,
-and Feige (2020).
+explanation framework skips the coalitions where $`X_2`$ is included but
+$`X_1`$, as $`X_1`$ is the ancestor of $`X_2`$. This will skew the
+explanations towards distal/root causes, see Section 3.2 in Frye et al.
+(2020).
 
 We can use all approaches in `shapr`, both Monte Carlo-based and
 regression-based methods, to compute the asymmetric Shapley values. This
 is because the asymmetric Shapley value explanation framework does not
-change how we compute the contribution functions $v(S)$, but rather
-which of the coalitions $S$ that are used to compute the Shapley value
+change how we compute the contribution functions $`v(S)`$, but rather
+which of the coalitions $`S`$ that are used to compute the Shapley value
 explanations. This means that the number of coalitions is no longer
-$O\left( 2^{M} \right)$, but rather $O\left( 2^{\tau_{0}} \right)$,
-where $\tau_{0} = \max_{i}\left| \tau_{i} \right|$ is the number of
-features ($\left| \tau_{i} \right|$) in the largest component of the
-causal ordering.
+$`O(2^M)`$, but rather $`O(2^{\tau_0})`$, where
+$`\tau_0 = \operatorname{max}_i |\tau_i|`$ is the number of features
+($`|\tau_i|`$) in the largest component of the causal ordering.
 
 Furthermore, asymmetric Shapley values support groups of features, but
 then the causal ordering must be given on the group level instead of on
@@ -111,32 +109,42 @@ have confounding in the second component, but no confounding in the
 first and third components. This allows us to correctly distinguish
 between dependencies that are due to confounding and mutual
 interactions. That is, in the figure, the dependencies in chain
-component $\tau_{2}$ are assumed to be the result of a common
-confounder, and those in $\tau_{3}$ of mutual interactions, while we
-have no mutual interactions in $\tau_{1}$ as it is a singleton.
+component $`\tau_2`$ are assumed to be the result of a common
+confounder, and those in $`\tau_3`$ of mutual interactions, while we
+have no mutual interactions in $`\tau_1`$ as it is a singleton.
 
 Computing the effect of an intervention depends on how we interpret the
 generative process that leads to the feature dependencies within each
 component. If they are the result of marginalizing out a common
 confounder, then intervention on a particular feature will break the
 dependency with the other features, and we denote the set of these chain
-components by $\mathcal{T}_{\text{confounding}}$. For the components
+components by $`\mathcal{T}_{\text{confounding}}`$. For the components
 with mutual feature interactions, setting the value of a feature affects
 the distribution of the variables within the same component. We denote
 the set of these components by
-$\mathcal{T}_{\,\overline{\text{confounding}}}$.
+$`\mathcal{T}_{\,\overline{\text{confounding}}}`$.
 
 Heskes et al. (2020) described how any expectation by intervention
 needed to compute the causal Shapley values can be translated to an
 expectation by observation, by using the interventional formula for
-causal chain graphs: $$\begin{aligned}
-{P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right) =} & {\prod\limits_{\tau \in \mathcal{T}_{\,\text{confounding}}}P\left( X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}{(\tau)} \cap \bar{\mathcal{S}}},x_{\text{pa}{(\tau)} \cap \mathcal{S}} \right) \times} \\
- & {\quad\prod\limits_{\tau \in \mathcal{T}_{\,\overline{\text{confounding}}}}P\left( X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}{(\tau)} \cap \bar{\mathcal{S}}},x_{\text{pa}{(\tau)} \cap \mathcal{S}},x_{\tau \cap \mathcal{S}} \right).}
-\end{aligned}$$ Here, any of the Monte Carlo-based approaches in `shapr`
-can be used to compute the conditional distributions/observational
-expectations. The marginals are estimated from the training data for all
-approaches except `gaussian`, for which we use the marginals of the
-Gaussian distribution instead.
+causal chain graphs:
+``` math
+\begin{align}
+\label{eq:do}
+P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))
+= &
+\prod_{\tau \in \mathcal{T}_{\,\text{confounding}}}
+P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}) \times \tag{1} \\
+& \quad
+\prod_{\tau \in \mathcal{T}_{\,\overline{\text{confounding}}}}
+P(X_{\tau \cap \bar{\mathcal{S}}} \mid X_{\text{pa}(\tau) \cap \bar{\mathcal{S}}}, x_{\text{pa}(\tau) \cap \mathcal{S}}, x_{\tau \cap \mathcal{S}}).
+\end{align}
+```
+Here, any of the Monte Carlo-based approaches in `shapr` can be used to
+compute the conditional distributions/observational expectations. The
+marginals are estimated from the training data for all approaches except
+`gaussian`, for which we use the marginals of the Gaussian distribution
+instead.
 
 For specific causal chain graphs, the causal Shapley value framework
 simplifies to symmetric conditional, asymmetric conditional, and
@@ -151,12 +159,12 @@ Schematic overview of the causal chain graph used in this vignette.
 ## Marginal Shapley values
 
 Causal Shapley values are equivalent to marginal Shapley values when all
-$M$ features are combined into a single component
-$\tau = \mathcal{M} = \{ 1,2,...,M\}$ and all dependencies are induced
-by confounding. Then $\text{pa}(\tau) = \varnothing$, and
-$P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right)$
-in Equation () simplifies to
-$P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right) = P\left( X_{\bar{\mathcal{S}}} \right)$,
+$`M`$ features are combined into a single component
+$`\tau = \mathcal{M} = \{1,2,...,M\}`$ and all dependencies are induced
+by confounding. Then $`\text{pa}(\tau) = \emptyset`$, and
+$`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))`$ in
+Equation () simplifies to
+$`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}})`$,
 as specified in Lundberg and Lee (2017).
 
 The Monte Carlo samples for the marginals are generated by sampling from
@@ -169,14 +177,14 @@ framework.
 ## Symmetric conditional Shapley values
 
 Causal Shapley values are equivalent to symmetric conditional Shapley
-values when all $M$ features are combined into a single component
-$\tau = \mathcal{M} = \{ 1,2,...,M\}$ and all dependencies are induced
-by mutual interaction. Then $\text{pa}(\tau) = \varnothing$, and
-$P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right)$
-in Equation () simplifies to
-$P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right) = P\left( X_{\bar{\mathcal{S}}} \mid X_{\mathcal{S}} = x_{\mathcal{S}} \right)$,
-as specified in Aas, Jullum, and Løland (2021). Symmetric means that we
-consider all coalitions.
+values when all $`M`$ features are combined into a single component
+$`\tau = \mathcal{M} = \{1,2,...,M\}`$ and all dependencies are induced
+by mutual interaction. Then $`\text{pa}(\tau) = \emptyset`$, and
+$`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))`$ in
+Equation () simplifies to
+$`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S})) = P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})`$,
+as specified in Aas et al. (2021). Symmetric means that we consider all
+coalitions.
 
 ## Code example
 
@@ -203,13 +211,13 @@ Note that symmetric conditional Shapley values are the default version;
 i.e., by default `asymmetric = FALSE`, `ordering = NULL`,
 `confounding = NULL`.
 
-| Framework         | Sampling                                                                                        | Approaches           | `asymmetric` | `ordering`  | `confounding` |
-|:------------------|:------------------------------------------------------------------------------------------------|:---------------------|:-------------|:------------|:--------------|
-| Sym. Conditional  | $P\left( X_{\bar{\mathcal{S}}} \mid X_{\mathcal{S}} = x_{\mathcal{S}} \right)$                  | All                  | `FALSE`      | `NULL`      | `NULL`        |
-| Asym. Conditional | $P\left( X_{\bar{\mathcal{S}}} \mid X_{\mathcal{S}} = x_{\mathcal{S}} \right)$                  | All                  | `TRUE`       | `list(...)` | `NULL`        |
-| Sym. Causal       | $P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right)$ | All MC-based         | `FALSE`      | `list(...)` | `c(...)`      |
-| Asym. Causal      | $P\left( X_{\bar{\mathcal{S}}} \mid do\left( X_{\mathcal{S}} = x_{\mathcal{S}} \right) \right)$ | All MC-based         | `TRUE`       | `list(...)` | `c(...)`      |
-| Sym. Marginal     | $P\left( X_{\bar{\mathcal{S}}} \right)$                                                         | `indep.`, `gaussian` | `FALSE`      | `NULL`      | `TRUE`        |
+| Framework | Sampling | Approaches | `asymmetric` | `ordering` | `confounding` |
+|:---|:---|:---|:---|:---|:---|
+| Sym. Conditional | $`P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})`$ | All | `FALSE` | `NULL` | `NULL` |
+| Asym. Conditional | $`P(X_{\bar{\mathcal{S}}} \mid X_\mathcal{S} = x_\mathcal{S})`$ | All | `TRUE` | `list(...)` | `NULL` |
+| Sym. Causal | $`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))`$ | All MC-based | `FALSE` | `list(...)` | `c(...)` |
+| Asym. Causal | $`P(X_{\bar{\mathcal{S}}} \mid do(X_\mathcal{S} = x_\mathcal{S}))`$ | All MC-based | `TRUE` | `list(...)` | `c(...)` |
+| Sym. Marginal | $`P(X_{\bar{\mathcal{S}}})`$ | `indep.`, `gaussian` | `FALSE` | `NULL` | `TRUE` |
 
 ### Code setup
 
@@ -217,6 +225,7 @@ First, we load the needed libraries, set up the training/explicand data,
 plot the data, and train an `xgboost` model.
 
 ``` r
+
 library(ggplot2)
 library(xgboost)
 library(data.table)
@@ -236,6 +245,7 @@ conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 ```
 
 ``` r
+
 # Set up the data
 # Can also download the data set from the source https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
 # temp <- tempfile()
@@ -267,6 +277,7 @@ ggplot(bike, aes(x = trend, y = cnt, color = temp)) +
 ![](figure_asymmetric_causal/setup_1-1.webp)
 
 ``` r
+
 # Define the features and the response variable
 x_var <- c("trend", "cosyear", "sinyear", "temp", "atemp", "windspeed", "hum")
 y_var <- "cnt"
@@ -287,6 +298,7 @@ GGally::ggpairs(x_train)
 ![](figure_asymmetric_causal/setup_2-1.webp)
 
 ``` r
+
 # Test/explicand data
 x_explain <- as.matrix(bike[-train_index, x_var])
 y_explain_nc <- as.matrix(bike[-train_index, y_var]) # not centered
@@ -331,6 +343,7 @@ component (i.e., we do not know how to model the intricate relations
 between the weather features).
 
 ``` r
+
 causal_ordering <- list(1, c(2, 3), c(4:7))
 causal_ordering <- list("trend", c("cosyear", "sinyear"), c("temp", "atemp", "windspeed", "hum"))
 confounding <- c(FALSE, TRUE, FALSE)
@@ -341,6 +354,7 @@ functions that plot and summarize the results of the explanation
 methods. This code block is optional to understand and can be skipped.
 
 ``` r
+
 # Extract the MSEv criterion scores and elapsed times
 print_MSEv_scores_and_time <- function(explanation_list) {
   res <- as.data.frame(t(sapply(
@@ -401,6 +415,7 @@ sake of clarity. We use the `gaussian`, `ctree`, and
 approaches, but any other approach can also be used.
 
 ``` r
+
 # list to store the results
 explanation_sym_con <- list()
 
@@ -582,11 +597,12 @@ explanation_sym_con[["xgboost"]] <- explain(
 #> ℹ Using 114 of 128 coalitions, 4 new.
 ```
 
-We can then look at the $\operatorname{MSE}_{v}$ evaluation scores to
+We can then look at the $`\operatorname{MSE}_v`$ evaluation scores to
 compare the approaches. All approaches are comparable, but `xgboost` is
 clearly the fastest approach.
 
 ``` r
+
 print_MSEv_scores_and_time(explanation_sym_con)
 #>             MSEv MSEv_sd Time (secs)
 #> gaussian 1101051   71271       11.79
@@ -597,6 +613,7 @@ print_MSEv_scores_and_time(explanation_sym_con)
 We can then plot the Shapley values for the six explicands chosen above.
 
 ``` r
+
 plot_SV_several_approaches(explanation_sym_con, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom")
 ```
@@ -606,9 +623,11 @@ plot_SV_several_approaches(explanation_sym_con, index_x_explain, print_ggplot = 
 We can also make beeswarm plots of the Shapley values to look at the
 structure of the Shapley values for all explicands. The figures are
 quite similar, but with minor differences. E.g., the `gaussian` approach
-produces almost no Shapley values around $500$ for the `trend` feature.
+produces almost no Shapley values around $`500`$ for the `trend`
+feature.
 
 ``` r
+
 plot_beeswarms(explanation_sym_con, title = "Symmetric conditional Shapley values")
 ```
 
@@ -622,6 +641,7 @@ these types of Shapley values, we have to specify that
 `causal_ordering = list(1, c(2, 3), c(4:7))`.
 
 ``` r
+
 explanation_asym_con <- list()
 
 explanation_asym_con[["gaussian"]] <- explain(
@@ -815,10 +835,11 @@ explanation_asym_con[["xgboost"]] <- explain(
 ```
 
 The asymmetric conditional Shapley value framework is faster as we only
-consider $20$ coalitions (including the empty and grand coalitions)
-instead of all $128$ coalitions (see code below).
+consider $`20`$ coalitions (including the empty and grand coalitions)
+instead of all $`128`$ coalitions (see code below).
 
 ``` r
+
 print_MSEv_scores_and_time(explanation_asym_con)
 #>                          MSEv MSEv_sd Time (secs)
 #> gaussian               339662   38586        4.75
@@ -906,6 +927,7 @@ of the features’ Shapley values have now shrunk closer to zero,
 especially `temp` and `atemp`.
 
 ``` r
+
 plot_beeswarms(explanation_asym_con, title = "Asymmetric conditional Shapley values")
 ```
 
@@ -915,9 +937,10 @@ We can also compare the obtained symmetric and asymmetric conditional
 Shapley values for the 6 explicands. We often see that the asymmetric
 version gives larger Shapley values to the distal/root causes, i.e.,
 `trend` and `cosyear`, than the symmetric version. This is in line with
-Section 3.2 in Frye, Rowat, and Feige (2020).
+Section 3.2 in Frye et al. (2020).
 
 ``` r
+
 # Order the symmetric and asymmetric conditional explanations into a joint list
 explanation_sym_con_tmp <- copy(explanation_sym_con)
 names(explanation_sym_con_tmp) <- paste0(names(explanation_sym_con_tmp), "_sym")
@@ -949,6 +972,7 @@ there will be a minuscule difference in the produced Shapley values due
 to different sampling setups/orders.
 
 ``` r
+
 explanation_sym_marg <- list()
 
 # Here we sample from the estimated Gaussian marginals
@@ -1116,6 +1140,7 @@ explanation_sym_marg[["independence_con"]] <- explain(
 We can look at the beeswarm plots
 
 ``` r
+
 print_MSEv_scores_and_time(explanation_sym_marg)
 #>                      MSEv MSEv_sd Time (secs)
 #> gaussian          1396525  109151        9.95
@@ -1136,17 +1161,17 @@ be `causal_ordering = list(1, 2:3, 4:7)` and
 
 The causal framework takes longer than the other frameworks, as
 generating the Monte Carlo samples often consists of a chain of sampling
-steps. For example, for $\mathcal{S} = 2$, we must generate
-$X_{1},X_{3},X_{4},X_{5},X_{6},X_{7} \mid X_{2}$. However, we cannot do
-this directly due to the `causal_ordering` and `confounding` specified
-above. To generate the Monte Carlo samples, we have to follow a chain of
-sampling steps. More precisely, we first need to generate $X_{1}$ from
-the marginal, then $X_{3} \mid X_{1}$, and finally
-$X_{4},X_{5},X_{6},X_{7} \mid X_{1},X_{2},X_{3}$. The latter two steps
-are done by using the provided `approach` to model the conditional
-distributions. The `internal$objects$S_causal_steps_strings` object
-contains the sampling steps needed for the different feature
-combinations/coalitions $\mathcal{S}$.
+steps. For example, for $`\mathcal{S} = {2}`$, we must generate
+$`X_1,X_3,X_4,X_5,X_6,X_7 \mid X_2`$. However, we cannot do this
+directly due to the `causal_ordering` and `confounding` specified above.
+To generate the Monte Carlo samples, we have to follow a chain of
+sampling steps. More precisely, we first need to generate $`X_1`$ from
+the marginal, then $`X_3 \mid X_1`$, and finally
+$`X_4,X_5,X_6,X_7 \mid X_1,X_2,X_3`$. The latter two steps are done by
+using the provided `approach` to model the conditional distributions.
+The `internal$objects$S_causal_steps_strings` object contains the
+sampling steps needed for the different feature combinations/coalitions
+$`\mathcal{S}`$.
 
 For causal Shapley values, only the Monte Carlo-based approaches are
 applicable.
@@ -1154,6 +1179,7 @@ applicable.
 #### Symmetric
 
 ``` r
+
 explanation_sym_cau <- list()
 
 explanation_sym_cau[["gaussian"]] <- explain(
@@ -1267,6 +1293,7 @@ explanation_sym_cau[["copula"]] <- explain(
 ```
 
 ``` r
+
 print_MSEv_scores_and_time(explanation_sym_cau)
 #>             MSEv MSEv_sd Time (secs)
 #> gaussian 1147280   83432       35.70
@@ -1283,6 +1310,7 @@ the coalitions that respect the causal ordering. Thus, the computations
 are faster as the number of coalitions is reduced.
 
 ``` r
+
 explanation_asym_cau <- list()
 
 explanation_asym_cau[["gaussian"]] <- explain(
@@ -1443,6 +1471,7 @@ We can look at the elapsed time. See the [implementation
 details](#Implementation_details) for an explanation.
 
 ``` r
+
 print_time(explanation_asym_cau)
 #>      gaussian copula  vaeac
 #> [1,]   5.4413 4.8707 332.07
@@ -1451,6 +1480,7 @@ print_time(explanation_asym_cau)
 We can then plot the beeswarm plots.
 
 ``` r
+
 # Plot the beeswarm plots
 plot_beeswarms(explanation_asym_cau, title = "Asymmetric causal Shapley values")
 ```
@@ -1458,6 +1488,7 @@ plot_beeswarms(explanation_asym_cau, title = "Asymmetric causal Shapley values")
 ![](figure_asymmetric_causal/explanation_asym_cau_beeswarm-1.webp)
 
 ``` r
+
 # Plot the Shapley values
 plot_SV_several_approaches(explanation_asym_cau, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom")
@@ -1480,6 +1511,7 @@ direct effect, and symmetric conditional/causal Shapley values consider
 both for a more natural explanation.
 
 ``` r
+
 explanation_gaussian <- list(
   symmetric_marginal = explanation_sym_marg$gaussian,
   symmetric_conditional = explanation_sym_con$gaussian,
@@ -1509,6 +1541,7 @@ code below, but we chose these values to replicate Figure 3 in Heskes et
 al. (2020).
 
 ``` r
+
 # The color of the points
 color <- "temp"
 
@@ -1670,6 +1703,7 @@ conditional/causal Shapley values consider both for a more natural
 explanation.
 
 ``` r
+
 # Features of interest
 features <- c("cosyear", "temp")
 
@@ -1729,6 +1763,7 @@ function in `shapr`, but then we get each explicand in a separate facet
 instead of a facet for each framework.
 
 ``` r
+
 # Here 2012-10-09 is the left facet and 2012-12-03 the right facet
 plot_SV_several_approaches(explanations,
   index_explicands = dates_idx,
@@ -1747,6 +1782,7 @@ considering the features `cosyear` and `temp`, we can plot all features,
 too, to get a more complete overview.
 
 ``` r
+
 # Here 2012-10-09 is the left facet and 2012-12-03 the right facet
 plot_SV_several_approaches(explanations,
   index_explicands = dates_idx,
@@ -1774,6 +1810,7 @@ half the number of coalitions for both versions and see that the elapsed
 times are approximately halved, too.
 
 ``` r
+
 explanation_n_coal <- list()
 
 explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
@@ -1944,12 +1981,14 @@ between the Shapley values we obtain when we use all the coalitions and
 those we obtain when we use half of the valid coalitions.
 
 ``` r
+
 plot_beeswarms(explanation_n_coal, title = "Shapley values (gaussian) exact vs. approximation")
 ```
 
 ![](figure_asymmetric_causal/n_coalitions_plot_beeswarm-1.webp)
 
 ``` r
+
 plot_SV_several_approaches(explanation_n_coal, index_x_explain, print_ggplot = FALSE) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(nrow = 2))
@@ -1970,6 +2009,7 @@ group the features `temp` and `atemp` due to their (conceptual)
 similarity and high correlation.
 
 ``` r
+
 GGally::ggpairs(x_train[, 4:5])
 ```
 
@@ -1979,6 +2019,7 @@ We set up the groups and update the causal ordering to be on the group
 level.
 
 ``` r
+
 group_list <- list(
   trend = "trend",
   cosyear = "cosyear",
@@ -1997,6 +2038,7 @@ We can then compute the (group) Shapley values using the different
 Shapley value frameworks.
 
 ``` r
+
 explanation_group_gaussian <- list()
 
 explanation_group_gaussian[["symmetric_marginal"]] <-
@@ -2265,11 +2307,12 @@ The main difference between the feature-wise and group-wise Shapley
 values is that we now see a much wider spread in the Shapley values for
 `temp_group` than we did for `temp` and `atemp`. For example, for the
 symmetric causal framework, we saw above that the `temp` and `atemp`
-obtained Shapley values between (around) $- 500$ and $500$, while the
-grouped version `temp_group` obtains Shapley values between $- 1000$ and
-$1000$.
+obtained Shapley values between (around) $`-500`$ and $`500`$, while the
+grouped version `temp_group` obtains Shapley values between $`-1000`$
+and $`1000`$.
 
 ``` r
+
 plot_beeswarms(explanation_group_gaussian,
   title = "Group Shapley values (gaussian)",
   include_group_feature_means = TRUE
@@ -2279,6 +2322,7 @@ plot_beeswarms(explanation_group_gaussian,
 ![](figure_asymmetric_causal/group_gaussian_plot_beeswarm-1.webp)
 
 ``` r
+
 plot_SV_several_approaches(explanation_group_gaussian, index_x_explain, print_ggplot = FALSE) +
   ggtitle("Shapley value prediction explanation (gaussian)") +
   theme(legend.position = "bottom") + guides(fill = guide_legend(nrow = 2))
@@ -2296,27 +2340,27 @@ using many batches, we drastically reduce the memory usage as `shapr`
 does not need to store the Monte Carlo samples for all coalitions.
 
 This setup is not optimal for the causal Shapley value framework as the
-chains of sampling steps for two coalitions $\mathcal{S}$ and
-$\mathcal{S}^{*}$ can contain many of the same steps. Ideally, each
+chains of sampling steps for two coalitions $`\mathcal{S}`$ and
+$`\mathcal{S}^*`$ can contain many of the same steps. Ideally, each
 unique sampling step should only be modeled once to save computation
 time, but some of the sampling steps will occur in many of the chains.
 Thus, we would then have to store the Monte Carlo samples for all
 coalitions where this sampling step is included, and we can therefore
 run into memory consumption problems. Thus, in the current
-implementation, we treat each coalition $\mathcal{S}$ independently and
-remodel the needed sampling steps for each coalition.
+implementation, we treat each coalition $`\mathcal{S}`$ independently
+and remodel the needed sampling steps for each coalition.
 
 Furthermore, in the conditional Shapley value framework, we have that
-$\bar{\mathcal{S}} = \mathcal{M} \smallsetminus \mathcal{S}$, thus
-`shapr` will by default generate Monte Carlo samples for all features
-not in $\mathcal{S}$. For the causal Shapley value framework, this is
-not the case, i.e.,
-$\bar{\mathcal{S}} \neq \mathcal{M} \smallsetminus \mathcal{S}$ in
+$`\bar{\mathcal{S}} = \mathcal{M} \backslash \mathcal{S}`$, thus `shapr`
+will by default generate Monte Carlo samples for all features not in
+$`\mathcal{S}`$. For the causal Shapley value framework, this is not the
+case, i.e.,
+$`\bar{\mathcal{S}} \neq \mathcal{M} \backslash \mathcal{S}`$ in
 general. To reuse the code, we generate Monte Carlo samples for all
-features not in $\mathcal{S}$, but only keep the samples for the
-features in $\bar{\mathcal{S}}$. To speed up `shapr` further, one could
-rewrite all the approaches to support cases where $\bar{\mathcal{S}}$ is
-not the complement of $\mathcal{S}$.
+features not in $`\mathcal{S}`$, but only keep the samples for the
+features in $`\bar{\mathcal{S}}`$. To speed up `shapr` further, one
+could rewrite all the approaches to support cases where
+$`\bar{\mathcal{S}}`$ is not the complement of $`\mathcal{S}`$.
 
 In the code below, we see the unique coalitions/set of features to
 condition on to generate the Monte Carlo samples for all coalitions and
@@ -2330,6 +2374,7 @@ this will take a significant amount of extra time. The `vaeac` approach
 trains only on these relevant coalitions.
 
 ``` r
+
 S_causal_steps <- explanation_sym_cau$gaussian$internal$iter_list[[1]]$S_causal_steps
 S_causal_unlist <- do.call(c, unlist(S_causal_steps, recursive = FALSE))
 S_causal_steps_freq <- S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlist), perl = TRUE)]
@@ -2374,5 +2419,5 @@ Individual Predictions of Complex Models.” *Advances in Neural
 Information Processing Systems* 33: 4778–89.
 
 Lundberg, Scott M, and Su-In Lee. 2017. “A Unified Approach to
-Interpreting Model Predictions.” In *Advances in Neural Information
+Interpreting Model Predictions.” *Advances in Neural Information
 Processing Systems*, 4765–74.

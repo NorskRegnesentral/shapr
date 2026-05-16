@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Shapley value explanations using the regression paradigm • shapr</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Shapley value explanations using the regression paradigm">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@ For an in-depth explanation, we refer the reader to Sections 3.5 and 3.6
 in <span class="citation">Olsen et al. (2024)</span>.</p>
 <p>Briefly stated, the regression paradigm uses regression models to
 directly estimate the contribution function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*]</annotation></semantics></math>.
 The separate regression method class fits a separate regression model
 for each coalition
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>,
@@ -143,26 +143,26 @@ explanations.</p>
 </h2>
 <p>In the <code>regression_separate</code> methods, we train a new
 regression model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
 to estimate the conditional expectation for each coalition of
 features.</p>
 <p>The idea is to estimate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*]</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">v(S) = E[f(\boldsymbol{x})|\boldsymbol{x}_S = \boldsymbol{x}_S^*] = E[f(\boldsymbol{x}_{\bar{S}},\boldsymbol{x}_S)|\boldsymbol{x}_S=\boldsymbol{x}_S^*]</annotation></semantics></math>
 separately for each coalition
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
 using regression. Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒟</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msup><mi>𝐱</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><mo>,</mo><msup><mi>y</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup></mrow><annotation encoding="application/x-tex">\mathcal{D} = \{ \boldsymbol{x}^{[i]}, y^{[i]} \}_{i=1}^{N_{\text{train}}}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒟</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msup><mi>𝐱</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><mo>,</mo><msup><mi>y</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup></mrow><annotation encoding="application/x-tex">\mathcal{D} = \{ \boldsymbol{x}^{[i]}, y^{[i]} \}_{i=1}^{N_{\text{train}}}</annotation></semantics></math>
 denote the training data, where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>𝐱</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><annotation encoding="application/x-tex">\boldsymbol{x}^{[i]}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>𝐱</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><annotation encoding="application/x-tex">\boldsymbol{x}^{[i]}</annotation></semantics></math>
 is the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>th
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>-dimensional
 input and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>y</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><annotation encoding="application/x-tex">y^{[i]}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>y</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><annotation encoding="application/x-tex">y^{[i]}</annotation></semantics></math>
 is the associated response. For each coalition
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>⊆</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>M</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">S \subseteq \{1,2,\dots,M\}</annotation></semantics></math>,
 the corresponding training data set is
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝒟</mi><mi>S</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msubsup><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><munder><munder><mrow><msubsup><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msubsup><mo>,</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msubsup></mrow><mo accent="true">⏟</mo></munder><msup><mi>𝐱</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup></munder><mo stretchy="true" form="postfix">)</mo></mrow><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msubsup><mo>,</mo><munder><munder><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐱</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo accent="true">⏟</mo></munder><msup><mi>z</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup></munder><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msubsup><mo>,</mo><msup><mi>z</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>i</mi><mo stretchy="true" form="postfix">]</mo></mrow></msup><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>𝒟</mi><mi>S</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msubsup><mo>,</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><munder><munder><mrow><msubsup><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msubsup><mo>,</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msubsup></mrow><mo accent="true">⏟</mo></munder><msup><mi>𝐱</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup></munder><mo stretchy="false" form="postfix">)</mo><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msubsup><mo>,</mo><munder><munder><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>𝐱</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow><mo accent="true">⏟</mo></munder><msup><mi>z</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup></munder><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msubsup><mi>𝐱</mi><mi>S</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msubsup><mo>,</mo><msup><mi>z</mi><mrow><mo stretchy="false" form="prefix">[</mo><mi>i</mi><mo stretchy="false" form="postfix">]</mo></mrow></msup><msubsup><mo stretchy="false" form="postfix">}</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mtext mathvariant="normal">train</mtext></msub></msubsup><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
             \mathcal{D}_S
             =
             \{\boldsymbol{x}_S^{[i]}, f(\underbrace{\boldsymbol{x}_\bar{S}^{[i]}, \boldsymbol{x}_S^{[i]}}_{\boldsymbol{x}^{[i]}})\}_{i=1}^{N_{\text{train}}}
@@ -174,23 +174,23 @@ the corresponding training data set is
 <p>For each data set
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝒟</mi><mi>S</mi></msub><annotation encoding="application/x-tex">\mathcal{D}_S</annotation></semantics></math>,
 we train a regression model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
 with respect to the mean squared error loss function. That is, we fit a
 regression model where the prediction
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(\boldsymbol{x})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>𝐱</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f(\boldsymbol{x})</annotation></semantics></math>
 is acting as the response and the feature subset of coalition
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐱</mi><mi>S</mi></msub><annotation encoding="application/x-tex">\boldsymbol{x}_S</annotation></semantics></math>,
 is acting as the available features. The optimal model, with respect to
 the loss function, is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>g</mi><mi>S</mi><mo>*</mo></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>z</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">g^*_S(\boldsymbol{x}_S) = E[z|\boldsymbol{x}_S] = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S)|\boldsymbol{x}_S]</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>g</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>z</mi><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">]</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">g^*_S(\boldsymbol{x}_S) = E[z|\boldsymbol{x}_S] = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S)|\boldsymbol{x}_S]</annotation></semantics></math>,
 which corresponds to the contribution function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>.
 The regression model
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>g</mi><mi>S</mi></msub><annotation encoding="application/x-tex">g_S</annotation></semantics></math>
 aims for the optimal, hence, it resembles/estimates the contribution
 function, i.e.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mover><mi>v</mi><mo accent="true">̂</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>≈</mo><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S) = \hat{v}(S) \approx v(S) = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S) | \boldsymbol{x}_S = \boldsymbol{x}_S^*]</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mover><mi>v</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mover><mi>S</mi><mo accent="true">‾</mo></mover></msub><mo>,</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">|</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo>=</mo><msubsup><mi>𝐱</mi><mi>S</mi><mo>*</mo></msubsup><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S) = \hat{v}(S) \approx v(S) = E[f(\boldsymbol{x}_\bar{S}, \boldsymbol{x}_S) | \boldsymbol{x}_S = \boldsymbol{x}_S^*]</annotation></semantics></math>.</p>
 <div class="section level3">
 <h3 id="separate_code">Code<a class="anchor" aria-label="anchor" href="#separate_code"></a>
 </h3>
@@ -395,7 +395,7 @@ contribution function. Thus, it can produce inaccurate Shapley value
 explanations. The figure below shows that the <code>empirical</code>
 approach outperforms the linear regression model approach quite
 significantly concerning the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span></span>
@@ -607,7 +607,7 @@ transformations below are reasonable.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
 <p>We can examine the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation scores, and we see that the method using natural splines
 significantly outperforms the other methods.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -727,7 +727,7 @@ model are <code>tree_depth = 30</code>, <code>min_n = 2</code>, and
 if we want to use the pipe function (<code>%&gt;%</code>).</p>
 <p>We can now compare the two new methods. The decision tree with
 default parameters outperforms the linear model approach concerning the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion and is on the same level as the empirical approach. We
 obtained a worse method by using stumps, i.e., trees with depth one.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -1196,7 +1196,7 @@ the coalition size.</p>
 <span><span class="co">#&gt; #9: mtry = 1 trees = 750 rmse = 18.47 rmse_std_err =</span></span>
 <span><span class="co">#&gt; 3.61</span></span></code></pre></div>
 <p>We can look at the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion, and we see that cross-validation improves both the
 decision tree and the random forest methods. The two cross-validated
 decision tree methods are comparable, but the second version outperforms
@@ -1205,7 +1205,7 @@ for the <code>empirical</code> approach, which also has hyperparameters
 we could potentially tune. However, <code>shapr</code> does not
 currently provide a function to do this automatically. In the figure
 below, we include a vertical line at the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 score of the <code>empirical</code> method for easier comparison.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plot_MSEv_scores</span><span class="op">(</span><span class="va">explanation_list</span>, method_line <span class="op">=</span> <span class="st">"MC_empirical"</span><span class="op">)</span></span>
@@ -1239,7 +1239,7 @@ do hyperparameter tuning, we still overfit the data.</p>
 <p>The <code>future</code> package can train the separate regression
 models in parallel. More specifically, we parallelize both the training
 step (when we fit the models) and the prediction step (when we compute
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>).
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>).
 In the general usage, we also explain how to enable progress bars.</p>
 <p>In the code chunk below, we consider four regression-based methods.
 The first method uses <code>xgboost</code> models with default
@@ -1416,7 +1416,7 @@ more features (i.e., more coalitions to compute) and situations with
 more time-consuming cross-validation (i.e., more folds, hyperparameters
 to tune, or hyperparameter values to consider). Furthermore, we see that
 conducting the cross-validation has lowered the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion drastically. Finally, note that we obtain the same value
 whether we run the cross-validation in parallel or sequentially.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
@@ -1446,7 +1446,7 @@ whether we run the cross-validation in parallel or sequentially.</p>
 </h2>
 <p>Since the <code>regression_separate</code> methods train a new
 regression model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>S</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>𝐱</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g_S(\boldsymbol{x}_S)</annotation></semantics></math>
 for each coalition
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>⊆</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>M</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">S \subseteq \{1,2,\dots,M\}</annotation></semantics></math>,
 a total of
@@ -1457,7 +1457,7 @@ models. The minus two corresponds to the empty and grand coalitions.</p>
 ideas from the <code>regression_separate</code> class, but instead of
 fitting a new regression model for each coalition, we train a single
 regression model
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>𝐱</mi><mo accent="true">̃</mo></mover><mi>S</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\tilde{\boldsymbol{x}}_S)</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>𝐱</mi><mo accent="true">̃</mo></mover><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">g(\tilde{\boldsymbol{x}}_S)</annotation></semantics></math>
 for all coalitions
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>⊆</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>M</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">S \subseteq \{1,2,\dots,M\}</annotation></semantics></math>
 (except the empty and grand coalitions), where
@@ -1666,7 +1666,7 @@ cross-validation procedure in the training step; hence, we apply no
 parallelization in the training step of a surrogate model with specified
 hyperparameters. Furthermore, we parallelize the prediction step (when
 we compute
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>)
 in the same way as for the separate regression method class. Note that
 parallelization will introduce some overhead, which can cause it to be
 slower than running the code sequentially for smaller problems.</p>
@@ -1732,13 +1732,13 @@ slower than running the code sequentially for smaller problems.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>By looking at the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion and the elapsed time, we see that the surrogate
 methods (except the linear regression model) outperform
 <code>empirical</code> but are not on the same level as the best
 separate regression methods. Furthermore, parallelization (4 cores)
 decreased the elapsed time while obtaining the same
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 score. The identical scores mean that the separate models are identical
 and independent of whether they were run sequentially or in
 parallel.</p>
@@ -2042,7 +2042,7 @@ We do all four combinations below.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
 <p>We can then compare the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 and some of the Shapley value explanations. We see that conducting
 cross-validation improves the evaluation criterion, but also increase
 the running time.</p>
@@ -2269,10 +2269,10 @@ using the different Monte Carlo-based methods.</p>
 <span><span class="va">explanation_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">explanation_list_MC</span>, <span class="va">explanation_list</span><span class="op">)</span></span></code></pre></div>
 <p>We then compare the regression and Monte Carlo-based methods by
 plotting the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion. We continue with include a vertical line
 corresponding to the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 of the <code>MC_empirical</code> method to make the comparison
 easier.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
@@ -2317,16 +2317,16 @@ easier.</p>
 <p><img src="figure_regression/MSEv-sum-1.webp"></p>
 <p>The <code>vaeac</code> approach is the best-performing method
 according to the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion, while the <code>sep_xgboost_cv_2_par</code> is the
 best-performing regression-based method. However, we should note that
 the <code>vaeac</code> method is much slower and that the difference
 between the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 values is minuscule and inside the confidence intervals.</p>
 <p>We can also order the methods to more easily look at the order of the
 methods according to the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">)</span><span class="op">)</span></span>
@@ -2340,7 +2340,7 @@ for the most important features (the features with the largest absolute
 Shapley values), but there are some differences for the less important
 features. These tendencies/discrepancies are often more visible for the
 methods with poor/larger
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 values.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_SV_several_approaches.html">plot_SV_several_approaches</a></span><span class="op">(</span><span class="va">explanation_list</span><span class="op">[</span><span class="va">order</span><span class="op">]</span>, index_explicands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, facet_ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
@@ -3138,7 +3138,7 @@ perform worse, with <code>ctree</code> being the best, with a
 seventh-place overall ranking.</p>
 <p>We can also order the methods to more easily look at the order of the
 methods according to the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="fu">get_k_best_methods</span><span class="op">(</span><span class="va">explanation_list_mixed</span>, k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">explanation_list_mixed</span><span class="op">)</span><span class="op">)</span></span>
@@ -3152,7 +3152,7 @@ many methods produce similar explanations.</p>
 <p><img src="figure_regression/mixed-plot-3-1.webp"></p>
 <p>We can also focus on the Shapley value explanations for the best five
 methods according to the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 criterion. We also include the <code>ctree</code> method, the
 best-performing Monte Carlo-based method.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
@@ -3174,7 +3174,7 @@ associated <code>shaprpy</code> Python library. That is, the user only
 has to specify strings containing R code instead of having to deal with
 creating the R objects in Python. In the code chunk below, we see that
 we obtain identical
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 scores for the string and non-string versions.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_list_str</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -3419,7 +3419,7 @@ paradigm and the <code>tidymodels</code> framework add to the
 <code>shapr</code> package. We have seen that regression-based methods
 are on par with or outperform the Monte Carlo-based methods regarding
 the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mo>MSE</mo><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation criterion. Furthermore, we have seen that the
 regression-based methods are relatively computationally fast and that
 parallelization can be used to speed up the computations.</p>
@@ -3427,7 +3427,7 @@ parallelization can be used to speed up the computations.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-tidymodels" class="csl-entry">
 Kuhn, Max, and Hadley Wickham. 2020. <em>Tidymodels: A Collection of
 Packages for Modeling and Machine Learning Using Tidyverse

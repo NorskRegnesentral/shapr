@@ -18,7 +18,7 @@ restructuring of the code base, and a full suite of new functionality,
 including:
 
 - A long list of approaches for estimating the contribution/value
-  function $v(S)$, including Variational Autoencoders and
+  function $`v(S)`$, including Variational Autoencoders and
   regression-based methods
 - Iterative Shapley value estimation with convergence detection
 - Parallelized computations with progress updates
@@ -89,18 +89,21 @@ there for details and further examples.
 and can be installed in R as:
 
 ``` r
+
 install.packages("shapr")
 ```
 
 To install the development version of `shapr`, available on GitHub, use
 
 ``` r
+
 remotes::install_github("NorskRegnesentral/shapr")
 ```
 
 To also install all dependencies, use
 
 ``` r
+
 remotes::install_github("NorskRegnesentral/shapr", dependencies = TRUE)
 ```
 
@@ -119,6 +122,7 @@ performance and user-friendliness, particularly for problems with many
 features.
 
 ``` r
+
 # Enable parallel computation
 # Requires the future and future_lapply packages
 future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
@@ -132,6 +136,7 @@ progressr::handlers("cli") # Using the cli package as backend (recommended for t
 Here is the actual example:
 
 ``` r
+
 library(xgboost)
 library(shapr)
 

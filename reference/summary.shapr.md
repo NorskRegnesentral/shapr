@@ -68,7 +68,7 @@ explanation <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-02-05 16:53:54 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-05-16 21:01:14 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -81,7 +81,7 @@ explanation <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpWGjJWj/shapr_obj_1b9e49147c74.rds
+#> • Computations (temporary) saved at: /tmp/RtmpjrucBx/shapr_obj_60a71b12cec8.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -91,7 +91,7 @@ explanation <- explain(
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-02-05 16:53:54
+#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-05-16 21:01:14
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -100,30 +100,30 @@ summary(explanation)
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: /tmp/RtmpWGjJWj/shapr_obj_1b9e49147c74.rds
+#> • Computations (temporary) saved at: /tmp/RtmpjrucBx/shapr_obj_60a71b12cec8.rds
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
 #>         <int> <char>  <char> <char> <char> <char>
-#> 1:          1  42.79    0.88 -20.18  -5.51  -0.23
-#> 2:          2  42.79   -4.68   7.90  -8.16  -0.10
-#> 3:          3  42.79    4.11  -5.62 -24.44  -1.16
+#> 1:          1  42.79    2.42 -20.22  -7.24   0.01
+#> 2:          2  42.79   -3.14   7.86  -9.89   0.13
+#> 3:          3  42.79    5.65  -5.66 -26.17  -0.93
 #> 
 #> ── Estimated MSEv 
-#> Estimated MSE of v(S) = 240 (with sd = 90)
+#> Estimated MSE of v(S) = 275 (with sd = 102)
 
 # Assign to variable - returns shapr.summary with summary information for later use
 expl_summary <- summary(explanation) # print(expl_summary) provides the formatted output
 
 # Access components from the summary object
 expl_summary$shapley_est # Estimated Shapley values
-#>    explain_id     none    Solar.R       Wind       Temp       Month
-#>         <int>    <num>      <num>      <num>      <num>       <num>
-#> 1:          1 42.78704  0.8824554 -20.181070  -5.509617 -0.22639602
-#> 2:          2 42.78704 -4.6755745   7.898933  -8.157233 -0.09667692
-#> 3:          3 42.78704  4.1090449  -5.619535 -24.442822 -1.16106366
+#>    explain_id     none   Solar.R       Wind       Temp        Month
+#>         <int>    <num>     <num>      <num>      <num>        <num>
+#> 1:          1 42.78704  2.422441 -20.220654  -7.241425  0.005011148
+#> 2:          2 42.78704 -3.135589   7.859349  -9.889042  0.134730248
+#> 3:          3 42.78704  5.649030  -5.659119 -26.174630 -0.929656487
 expl_summary$timing_summary$total_time_secs # Total computation time
-#> [1] 0.3949673
+#> [1] 0.406831
 expl_summary$approach # Approach used
 #> [1] "gaussian"
 # }
