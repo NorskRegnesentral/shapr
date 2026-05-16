@@ -247,4 +247,5 @@ the preferred local workflow for snapshot updates in this repository.
 - [ ] Tests use `expect_snapshot_rds()` and `testing = TRUE`.
 - [ ] Python code has full type hints and NumPy-style docstrings.
 - [ ] Python R-bridging goes through `_rutils._importr` and `utils.py2r`/`r2py`.
-- [ ] `NEWS.md` updated with a brief entry under the current development version describing the change.
+- [ ] `DESCRIPTION` version incremented when preparing package changes for merge or release.
+- [ ] `NEWS.md` updated with a brief entry under the current development version describing user-facing or developer-facing changes.
