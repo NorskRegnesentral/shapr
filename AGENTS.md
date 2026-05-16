@@ -152,6 +152,45 @@ The project enforces the **tidyverse style guide** via `styler` and checks compl
 - Set `testing = TRUE` in `explain()` calls inside tests to strip timing and random output.
 - Use `set.seed()` in helper files, not inside individual tests.
 
+### Local R Test Workflow
+Local snapshot testing should use the repository's development scripts instead of `devtools::test()`.
+This is intentional: under local `devtools::test()` / `pkgload::load_all()` runs, `future` can emit serialization warnings
+such as `'package:shapr' may not be available when loading`, and `expect_snapshot()` records those warnings in the
+`.md` snapshots. GitHub Actions does not have the same issue, so do not change package defaults or the snapshot
+expectations just to silence this local-only warning.
+
+Use the VS Code tasks in `.vscode/tasks.json`:
+- `R: Run all tests (snapshot-safe)` runs file-by-file tests via `Rscript inst/devel/snapshot_diff.R --run-tests` and is the default test task.
+- `R: Run current test file (snapshot-safe)` runs the active test file through `testthat::test_file()`.
+- `R: Run and review snapshots (snapshot-safe)` runs the file-by-file tests and then opens the `.md` and `.rds` review helpers.
+- `R: Review MD snapshots` reviews only changed `.md` snapshots with `testthat::snapshot_review()`.
+- `R: Review RDS snapshots` reviews only changed `.rds` snapshots with the manual `waldo`-based workflow.
+- `R: Inspect MD snapshot diffs (agent helper)` and `R: Inspect RDS snapshot diffs (agent helper)` are read-only
+  terminal diff helpers intended mainly for agents investigating snapshot changes, not the normal developer review flow.
+
+Equivalent terminal commands from the repository root:
+```sh
+Rscript inst/devel/snapshot_diff.R --run-tests
+Rscript inst/devel/snapshot_diff.R --review-md
+Rscript inst/devel/snapshot_diff.R --review-rds
+Rscript inst/devel/snapshot_diff.R --run-tests --review-md --review-rds
+Rscript inst/devel/snapshot_diff.R --run-tests --file tests/testthat/test-forecast-output.R
+```
+
+Snapshot review is intentionally split by file extension. Changed `.md` snapshots use `testthat::snapshot_review()`;
+changed `.rds` snapshots use the manual `waldo` comparison flow copied from `snapshot_review_man()` in `.Rprofile`.
+Do not use a review command that mixes `.md` and `.rds` files when the goal is to inspect only one snapshot type.
+The `Inspect ... snapshot diffs (agent helper)` tasks never accept snapshots; they only print differences to help agents
+understand what changed before reporting back or choosing the correct review task.
+
+The developer's original all-in-one script remains available for manual use:
+```sh
+Rscript inst/devel/test.R
+```
+
+The `devtools::test()` task remains available for checks that specifically need to mirror that command, but it is not
+the preferred local workflow for snapshot updates in this repository.
+
 ---
 
 ## Python Wrapper (`shaprpy`) Conventions

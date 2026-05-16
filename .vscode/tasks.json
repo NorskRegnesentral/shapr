@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "R: Run all tests",
+      "label": "R: Run all tests (snapshot-safe)",
       "type": "shell",
-      "command": "Rscript -e \"devtools::test()\"",
+      "command": "Rscript inst/devel/snapshot_diff.R --run-tests",
       "group": {
         "kind": "test",
         "isDefault": true
@@ -17,7 +17,56 @@
       "problemMatcher": []
     },
     {
-      "label": "R: Run tests for current file",
+      "label": "R: Run and review snapshots (snapshot-safe)",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R --run-tests --review-md --review-rds",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run current test file (snapshot-safe)",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R --run-tests --file '${file}'",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Review RDS snapshots",
+      "detail": "Reviews only changed *.rds snapshots with waldo diffs and an Enter prompt between files.",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R --review-rds",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run all tests (devtools::test)",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::test()\"",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run tests for current file (devtools)",
       "type": "shell",
       "command": "Rscript -e \"devtools::test_active_file('${file}')\"",
       "group": "test",
@@ -29,10 +78,10 @@
       "problemMatcher": []
     },
     {
-      "label": "R: Review failing snapshots (interactive)",
-      "detail": "Opens a Shiny app in your browser to compare old vs new snapshots and accept/reject each one.",
+      "label": "R: Review MD snapshots",
+      "detail": "Opens the testthat snapshot review app for changed *.md snapshots only.",
       "type": "shell",
-      "command": "Rscript -e \"testthat::snapshot_review('tests/testthat')\"",
+      "command": "Rscript inst/devel/snapshot_diff.R --review-md",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -41,10 +90,34 @@
       "problemMatcher": []
     },
     {
-      "label": "R: Diff failing snapshots (terminal)",
-      "detail": "Prints waldo::compare() diffs for every *.new.rds / *.new.md file in _snaps/ directly in the terminal.",
+      "label": "R: Inspect snapshot diffs (agent helper)",
+      "detail": "Agent-oriented read-only helper: prints terminal diffs for every changed *.rds and *.md snapshot.",
       "type": "shell",
       "command": "Rscript inst/devel/snapshot_diff.R",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Inspect RDS snapshot diffs (agent helper)",
+      "detail": "Agent-oriented read-only helper: prints waldo::compare() diffs for changed *.rds snapshots only.",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R --rds",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Inspect MD snapshot diffs (agent helper)",
+      "detail": "Agent-oriented read-only helper: prints waldo::compare() diffs for changed *.md snapshots only.",
+      "type": "shell",
+      "command": "Rscript inst/devel/snapshot_diff.R --md",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -56,7 +129,7 @@
       "label": "R: Accept all new snapshots",
       "detail": "Replaces every stored snapshot with the new version. Run only after reviewing diffs.",
       "type": "shell",
-      "command": "Rscript -e \"testthat::snapshot_accept(path = 'tests/testthat')\"",
+      "command": "Rscript inst/devel/snapshot_diff.R --accept",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
