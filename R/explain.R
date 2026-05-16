@@ -168,16 +168,7 @@
 #' @param ... Further arguments passed to specific approaches, see below.
 #'
 #'
-#' @inheritDotParams setup_approach.categorical
-#' @inheritDotParams setup_approach.copula
-#' @inheritDotParams setup_approach.ctree
-#' @inheritDotParams setup_approach.empirical
-#' @inheritDotParams setup_approach.gaussian
-#' @inheritDotParams setup_approach.independence
-#' @inheritDotParams setup_approach.regression_separate
-#' @inheritDotParams setup_approach.regression_surrogate
-#' @inheritDotParams setup_approach.timeseries
-#' @inheritDotParams setup_approach.vaeac
+#' @inheritDotParams setup_approach -internal
 #'
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
 #' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.

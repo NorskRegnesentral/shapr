@@ -21,6 +21,10 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 
 on:
+  schedule:
+    # Monthly maintenance check on the default branch, at 14:05 UTC on day 17.
+    - cron: '5 14 17 * *'
+  workflow_dispatch:
   push:
     branches: [main, master, cranversion, devel, 'shapr-1.0.0']
     paths-ignore:

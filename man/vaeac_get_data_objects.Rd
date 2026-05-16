@@ -67,7 +67,7 @@ This includes \code{epochs_initiation_phase}, where the default is \code{2}.}
 \item{save_every_nth_epoch}{Positive integer (default is \code{NULL}). If provided, then the vaeac model after
 every \code{save_every_nth_epoch}th epoch will be saved.}
 
-\item{folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+\item{folder_to_save_model}{String (default is \code{\link[base:tempdir]{base::tempdir()}}). String specifying a path to a folder where
 the function is to save the fitted vaeac model. Note that  the path will be removed from the returned
 \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}.}
 

@@ -2,6 +2,18 @@
 [shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
+# shapr 1.0.8.9000
+
+### Development workflow
+* Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+### Continuous integration
+* Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+### Documentation
+* Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+
 # shapr 1.0.8
 
 ### Improvements

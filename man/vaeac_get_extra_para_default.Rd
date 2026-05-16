@@ -39,7 +39,7 @@ data distribution or additional parameter information. Used in the save name of 
 then a name will be generated based on \code{\link[base:Sys.time]{base::Sys.time()}} to ensure a unique name. We use \code{\link[base:make.names]{base::make.names()}} to
 ensure a valid file name for all operating systems.}
 
-\item{vaeac.folder_to_save_model}{String (default is \code{\link[base:tempfile]{base::tempdir()}}). String specifying a path to a folder where
+\item{vaeac.folder_to_save_model}{String (default is \code{\link[base:tempdir]{base::tempdir()}}). String specifying a path to a folder where
 the function is to save the fitted vaeac model. Note that the path will be removed from the returned
 \code{\link[=explain]{explain()}} object if \code{vaeac.save_model = FALSE}. Furthermore, the model cannot be moved from its
 original folder if we are to use the \code{\link[=vaeac_train_model_continue]{vaeac_train_model_continue()}} function to continue training the model.}
@@ -151,7 +151,7 @@ Note that additional choices are available if \code{vaeac.save_every_nth_epoch} 
 \code{"epoch_15"}, and so on.}
 
 \item{vaeac.save_model}{Boolean. If \code{TRUE} (default), the \code{vaeac} model will be saved either in a
-\code{\link[base:tempfile]{base::tempdir()}} folder or in a user specified location in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then
+\code{\link[base:tempdir]{base::tempdir()}} folder or in a user specified location in \code{vaeac.folder_to_save_model}. If \code{FALSE}, then
 the paths to model and the model will will be deleted from the returned object from \code{\link[=explain]{explain()}}.}
 }
 \value{

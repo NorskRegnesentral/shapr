@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Martin Jullum \email{Martin.Jullum@nr.no} (\href{https://orcid.org/0000-0003-3908-5155}{ORCID})
   \item Lars Henry Berge Olsen \email{lhbolsen@nr.no} (\href{https://orcid.org/0009-0006-9360-6993}{ORCID})
   \item Annabelle Redelmeier \email{ardelmeier@gmail.com}
   \item Jon Lachmann \email{Jon@lachmann.nu} (\href{https://orcid.org/0000-0001-8396-5673}{ORCID})

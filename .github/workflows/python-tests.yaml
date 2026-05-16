@@ -4,6 +4,10 @@
 name: Python Tests
 
 on:
+  schedule:
+    # Monthly maintenance check on the default branch, at 14:05 UTC on day 17.
+    - cron: '5 14 17 * *'
+  workflow_dispatch:
   push:
     branches: [main, master, cranversion, devel]
   pull_request:
@@ -16,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     name: Python ${{ matrix.python-version }}
 
@@ -32,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -41,12 +45,15 @@ jobs:
           use-public-rspm: true
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v8.1.0
+
       - name: Cache R packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION') }}
@@ -54,12 +61,12 @@ jobs:
             ${{ runner.os }}-r-release-shapr-
 
       - name: Cache Python packages
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('python/pyproject.toml') }}
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ matrix.python-version }}-${{ hashFiles('python/uv.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-uv-${{ matrix.python-version }}-
 
       - name: Install system dependencies
         run: |
@@ -79,14 +86,13 @@ jobs:
 
       - name: Install Python shaprpy package for testing
         run: |
-          python -m pip install --upgrade pip
           cd python
-          pip install -e ".[test]"
+          uv sync --locked --extra test --python ${{ matrix.python-version }}
 
       - name: Verify installation
         run: |
           cd python
-          python -c "
+          uv run --locked python -c "
           import rpy2.robjects as ro
           ro.r('library(shapr)')
           print('✓ R shapr package loaded')
@@ -97,4 +103,4 @@ jobs:
       - name: Run Python tests (excluding local-only tests)
         run: |
           cd python
-          python -m pytest tests/ -v --tb=short -m "not localonly"
+          uv run --locked pytest tests/ -v --tb=short -m "not localonly"
