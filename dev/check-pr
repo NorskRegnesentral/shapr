@@ -95,11 +95,18 @@ description_changed=false
 python_changelog_changed=false
 python_version_changed=false
 tooling_changed=false
+vignette_changed=false
 
 for file in "${changed_files[@]}"; do
   case "$file" in
     R/*|src/*|tests/testthat/*|vignettes/*|DESCRIPTION|NAMESPACE|NEWS.md|README.Rmd|man/*)
       r_changed=true
+      ;;
+  esac
+
+  case "$file" in
+    vignettes/*.Rmd|vignettes/*.Rmd.orig)
+      vignette_changed=true
       ;;
   esac
 
@@ -169,7 +176,8 @@ echo "### Scope"
 [ "$python_changed" = true ] && echo "- Python"
 [ "$snapshot_changed" = true ] && echo "- Snapshots"
 [ "$tooling_changed" = true ] && echo "- Tooling"
-if [ "$r_changed" = false ] && [ "$python_changed" = false ] && [ "$snapshot_changed" = false ] && [ "$tooling_changed" = false ]; then
+[ "$vignette_changed" = true ] && echo "- Vignettes"
+if [ "$r_changed" = false ] && [ "$python_changed" = false ] && [ "$snapshot_changed" = false ] && [ "$tooling_changed" = false ] && [ "$vignette_changed" = false ]; then
   echo "- Other/docs"
 fi
 
@@ -196,7 +204,7 @@ if [ "$r_changed" = true ]; then
   not_run+=("R documentation freshness: run dev/prepare-pr to regenerate docs, then inspect the diff")
 
   if [ "$with_r_tests" = true ]; then
-    run_check "R snapshot-safe tests" Rscript inst/devel/snapshot_diff.R --run-tests
+    run_check "R snapshot-safe tests" Rscript dev/snapshot-diff.R --run-tests
   else
     not_run+=("R snapshot-safe tests: pass --with-r-tests to run")
   fi
@@ -214,6 +222,13 @@ if [ "$r_changed" = true ]; then
   if [ "$description_changed" = false ]; then
     needs_attention+=("DESCRIPTION was not changed; this is normal unless preparing a release or explicit version bump")
   fi
+fi
+
+if [ "$vignette_changed" = true ]; then
+  run_check "Vignette rendered error scan" bash -c \
+    '! rg -n "^(Error in|Error:|Execution halted|Quitting from lines|Backtrace:|Traceback)" vignettes --glob "*.Rmd"'
+
+  not_run+=("Long-running vignette rebuild: ask before running Rscript dev/rebuild-long-running-vignettes.R --webp")
 fi
 
 if [ "$python_changed" = true ]; then

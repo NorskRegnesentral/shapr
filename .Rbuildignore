@@ -21,7 +21,6 @@
 ^CRAN-SUBMISSION$
 ^.Rprofile
 ^python$
-^rebuild_long_running_vignette\.R$
 ^vignettes/general_usage\.Rmd\.orig$
 ^vignettes/vaeac\.Rmd\.orig$
 ^vignettes/regression\.Rmd\.orig$
@@ -38,4 +37,3 @@
 ^inst/devel/*$
 ^dev$
 ^\.venv$
-

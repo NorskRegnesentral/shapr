@@ -72,6 +72,8 @@ prepare-stage edits include:
 - updating `DESCRIPTION` or `python/pyproject.toml` versions only for release/version-preparation work or when the user
   explicitly requests it
 - inspecting snapshot diffs and asking before accepting, deleting, or replacing generated snapshots
+- asking whether to run `Rscript dev/rebuild-long-running-vignettes.R --webp` when executable vignette sources
+  (`vignettes/*.Rmd.orig`) changed; this can be time-consuming and is not part of the default workflow
 
 ### Prepare Report
 
@@ -82,6 +84,7 @@ Stop after the preparation edits and report in chat:
 - files changed by preparation
 - NEWS/changelog/version edits made or intentionally skipped
 - snapshot decisions still needed
+- whether long-running vignettes were changed and whether rebuild was run or deferred
 - recommended next step
 
 Ask whether the user wants to run `dev/check-pr` next. Do not run it automatically unless the user requested a full
@@ -130,6 +133,10 @@ Optional checks require explicit user approval before running:
 - `dev/check-pr --with-r-check`
 - `dev/check-pr --with-python-localonly`
 - `dev/check-pr --check-updates`
+
+When vignettes changed, `dev/check-pr` also scans rendered vignette `.Rmd` files for common embedded R execution
+errors. This is a lightweight guard only; it does not replace rebuilding the long-running vignettes when the source
+changes require it.
 
 ## Publish PR
 

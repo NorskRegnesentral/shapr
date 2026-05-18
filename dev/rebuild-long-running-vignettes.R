@@ -1,0 +1,117 @@
+# Rebuild long-running precomputed vignettes.
+#
+# The `.Rmd.orig` files contain executable code for vignettes that are too slow
+# to run during routine package checks/builds. This helper knits those sources
+# into the checked-in `.Rmd` files. Optionally, it converts generated PNG figures
+# to WebP and rewrites image references to reduce repository and package size.
+#
+# Usage from the repository root:
+#   Rscript dev/rebuild-long-running-vignettes.R
+#   Rscript dev/rebuild-long-running-vignettes.R --webp
+#   Rscript dev/rebuild-long-running-vignettes.R --vignette general_usage --webp
+
+args <- commandArgs(trailingOnly = TRUE)
+
+convert_webp <- "--webp" %in% args
+
+vignette_arg_index <- match("--vignette", args)
+selected_vignettes <- character()
+
+if (!is.na(vignette_arg_index)) {
+  if (vignette_arg_index == length(args)) {
+    stop("`--vignette` must be followed by one or more vignette names.", call. = FALSE)
+  }
+
+  selected_vignettes <- args[(vignette_arg_index + 1):length(args)]
+  selected_vignettes <- selected_vignettes[!grepl("^--", selected_vignettes)]
+}
+
+all_vignettes <- c(
+  "general_usage",
+  "vaeac",
+  "regression",
+  "asymmetric_causal"
+)
+
+vignettes <- if (length(selected_vignettes) == 0) all_vignettes else selected_vignettes
+unknown_vignettes <- setdiff(vignettes, all_vignettes)
+
+if (length(unknown_vignettes) > 0) {
+  stop(
+    "Unknown vignette(s): ",
+    paste(unknown_vignettes, collapse = ", "),
+    call. = FALSE
+  )
+}
+
+repo_root <- tryCatch(
+  system2("git", c("rev-parse", "--show-toplevel"), stdout = TRUE, stderr = FALSE),
+  error = function(error) getwd()
+)
+
+if (length(repo_root) == 0 || is.na(repo_root[[1]])) {
+  repo_root <- getwd()
+}
+
+repo_root <- repo_root[[1]]
+vignette_dir <- file.path(repo_root, "vignettes")
+
+if (!dir.exists(vignette_dir)) {
+  stop("Could not find `vignettes/` from repository root: ", repo_root, call. = FALSE)
+}
+
+if (!requireNamespace("knitr", quietly = TRUE)) {
+  stop("The `knitr` package is required to rebuild vignettes.", call. = FALSE)
+}
+
+if (convert_webp) {
+  if (!requireNamespace("png", quietly = TRUE)) {
+    stop("The `png` package is required when using `--webp`.", call. = FALSE)
+  }
+  if (!requireNamespace("webp", quietly = TRUE)) {
+    stop("The `webp` package is required when using `--webp`.", call. = FALSE)
+  }
+}
+
+message("Rebuilding long-running vignette(s): ", paste(vignettes, collapse = ", "))
+
+old_wd <- getwd()
+on.exit(setwd(old_wd), add = TRUE)
+setwd(vignette_dir)
+
+for (vignette in vignettes) {
+  input <- paste0(vignette, ".Rmd.orig")
+  output <- paste0(vignette, ".Rmd")
+
+  message("Knitting ", input, " -> ", output)
+  knitr::knit(input = input, output = output, quiet = FALSE)
+}
+
+if (!convert_webp) {
+  message("Skipping PNG to WebP conversion. Re-run with `--webp` to convert generated vignette figures.")
+  quit(status = 0)
+}
+
+message("Converting generated PNG figures to WebP.")
+
+for (vignette in vignettes) {
+  figure_dir <- paste0("figure_", vignette)
+  png_files <- list.files(figure_dir, pattern = "\\.png$", full.names = TRUE)
+
+  if (length(png_files) == 0) {
+    next
+  }
+
+  for (png_file in png_files) {
+    image <- png::readPNG(png_file)
+    webp_file <- sub("\\.png$", ".webp", png_file)
+
+    webp::write_webp(image, webp_file, quality = 80)
+    unlink(png_file)
+  }
+
+  rmd_file <- paste0(vignette, ".Rmd")
+  rmd <- readLines(rmd_file, warn = FALSE)
+  rmd <- gsub("\\.png", ".webp", rmd, fixed = FALSE)
+  writeLines(rmd, rmd_file)
+}

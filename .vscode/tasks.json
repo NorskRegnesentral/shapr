@@ -4,7 +4,7 @@
     {
       "label": "R: Run all tests (snapshot-safe)",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --run-tests",
+      "command": "Rscript dev/snapshot-diff.R --run-tests",
       "group": {
         "kind": "test",
         "isDefault": true
@@ -19,7 +19,7 @@
     {
       "label": "R: Run and review snapshots (snapshot-safe)",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --run-tests --review-md --review-rds",
+      "command": "Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds",
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -31,7 +31,7 @@
     {
       "label": "R: Run current test file (snapshot-safe)",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --run-tests --file '${file}'",
+      "command": "Rscript dev/snapshot-diff.R --run-tests --file '${file}'",
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -44,7 +44,7 @@
       "label": "R: Review RDS snapshots",
       "detail": "Reviews only changed *.rds snapshots with waldo diffs and an Enter prompt between files.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --review-rds",
+      "command": "Rscript dev/snapshot-diff.R --review-rds",
       "group": "test",
       "presentation": {
         "reveal": "always",
@@ -81,7 +81,7 @@
       "label": "R: Review MD snapshots",
       "detail": "Opens the testthat snapshot review app for changed *.md snapshots only.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --review-md",
+      "command": "Rscript dev/snapshot-diff.R --review-md",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -93,7 +93,7 @@
       "label": "R: Inspect snapshot diffs (agent helper)",
       "detail": "Agent-oriented read-only helper: prints terminal diffs for every changed *.rds and *.md snapshot.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R",
+      "command": "Rscript dev/snapshot-diff.R",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -105,7 +105,7 @@
       "label": "R: Inspect RDS snapshot diffs (agent helper)",
       "detail": "Agent-oriented read-only helper: prints waldo::compare() diffs for changed *.rds snapshots only.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --rds",
+      "command": "Rscript dev/snapshot-diff.R --rds",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -117,7 +117,7 @@
       "label": "R: Inspect MD snapshot diffs (agent helper)",
       "detail": "Agent-oriented read-only helper: prints waldo::compare() diffs for changed *.md snapshots only.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --md",
+      "command": "Rscript dev/snapshot-diff.R --md",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
@@ -129,7 +129,20 @@
       "label": "R: Accept all new snapshots",
       "detail": "Replaces every stored snapshot with the new version. Run only after reviewing diffs.",
       "type": "shell",
-      "command": "Rscript inst/devel/snapshot_diff.R --accept",
+      "command": "Rscript dev/snapshot-diff.R --accept",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Rebuild long-running vignettes",
+      "detail": "Rebuilds precomputed vignettes from *.Rmd.orig and converts generated PNG figures to WebP.",
+      "type": "shell",
+      "command": "Rscript dev/rebuild-long-running-vignettes.R --webp",
+      "group": "build",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",
