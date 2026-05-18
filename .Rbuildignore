@@ -37,3 +37,5 @@
 ^inst/devel/*$
 ^dev$
 ^\.venv$
+^\.vscode$
+^AGENTS\.md$
