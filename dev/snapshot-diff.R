@@ -1,17 +1,17 @@
-# inst/devel/snapshot_diff.R
+# dev/snapshot-diff.R
 #
 # Developer helper for snapshot testing.
 #
 # Usage (from repo root):
-#   Rscript inst/devel/snapshot_diff.R
-#   Rscript inst/devel/snapshot_diff.R --md
-#   Rscript inst/devel/snapshot_diff.R --rds
-#   Rscript inst/devel/snapshot_diff.R --review-md
-#   Rscript inst/devel/snapshot_diff.R --review-rds
-#   Rscript inst/devel/snapshot_diff.R --run-tests
-#   Rscript inst/devel/snapshot_diff.R --run-tests --file tests/testthat/test-forecast-output.R
-#   Rscript inst/devel/snapshot_diff.R --run-tests --review-md --review-rds
-#   Rscript inst/devel/snapshot_diff.R --accept
+#   Rscript dev/snapshot-diff.R
+#   Rscript dev/snapshot-diff.R --md
+#   Rscript dev/snapshot-diff.R --rds
+#   Rscript dev/snapshot-diff.R --review-md
+#   Rscript dev/snapshot-diff.R --review-rds
+#   Rscript dev/snapshot-diff.R --run-tests
+#   Rscript dev/snapshot-diff.R --run-tests --file tests/testthat/test-forecast-output.R
+#   Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds
+#   Rscript dev/snapshot-diff.R --accept
 
 test_path <- file.path("tests", "testthat")
 snap_dir <- file.path(test_path, "_snaps")
@@ -303,9 +303,9 @@ if (show_diff) {
 
   cat(strrep("=", 72), "\n")
   cat("To accept selected new snapshots, re-run with:\n")
-  cat("  Rscript inst/devel/snapshot_diff.R --accept\n")
-  cat("  Rscript inst/devel/snapshot_diff.R --rds --accept\n")
-  cat("  Rscript inst/devel/snapshot_diff.R --md --accept\n")
+  cat("  Rscript dev/snapshot-diff.R --accept\n")
+  cat("  Rscript dev/snapshot-diff.R --rds --accept\n")
+  cat("  Rscript dev/snapshot-diff.R --md --accept\n")
 }
 
 unresolved_snapshots <- length(final_snapshots$md) > 0 || length(final_snapshots$rds) > 0

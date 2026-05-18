@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+
+set -u
+
+base_ref="main"
+draft=true
+yes=false
+
+usage() {
+  cat <<'USAGE'
+Usage: dev/publish-pr [options]
+
+Pushes the current branch and creates or updates a GitHub PR. If a PR already
+exists for the branch, this command reuses it and asks whether title/body edits
+are needed.
+
+Options:
+  --base REF       PR base branch. Default: main.
+  --ready          Create a non-draft PR when no PR exists.
+  --yes            Skip confirmation prompts where possible.
+  -h, --help       Show this help.
+
+This command does not create commits. Commit intentionally before running it.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --base)
+      base_ref="${2:-}"
+      shift 2
+      ;;
+    --ready)
+      draft=false
+      shift
+      ;;
+    --yes)
+      yes=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "dev/publish-pr must be run inside a Git repository." >&2
+  exit 2
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "GitHub CLI is required: gh" >&2
+  exit 2
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root" || exit 2
+
+branch="$(git branch --show-current)"
+if [ -z "$branch" ]; then
+  echo "Cannot publish from detached HEAD." >&2
+  exit 2
+fi
+
+case "$branch" in
+  main|master|devel|cranversion)
+    echo "Refusing to publish directly from protected/base-like branch: $branch" >&2
+    exit 2
+    ;;
+esac
+
+if ! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+  echo "Working tree has uncommitted changes. Commit intentionally before publishing." >&2
+  git status --short
+  exit 2
+fi
+
+confirm() {
+  local prompt="$1"
+  if [ "$yes" = true ]; then
+    return 0
+  fi
+  read -r -p "$prompt [y/N] " answer
+  case "$answer" in
+    y|Y|yes|YES)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+echo "## Publish PR"
+echo
+echo "Branch: $branch"
+echo "Base: $base_ref"
+echo
+
+if gh pr view "$branch" --json number,title,body,state,url,headRefName,baseRefName >/dev/null 2>&1; then
+  pr_number="$(gh pr view "$branch" --json number --jq .number)"
+  pr_url="$(gh pr view "$branch" --json url --jq .url)"
+  pr_title="$(gh pr view "$branch" --json title --jq .title)"
+
+  echo "Existing PR found: #$pr_number"
+  echo "URL: $pr_url"
+  echo "Title: $pr_title"
+  echo
+
+  if confirm "Push current branch to update the existing PR?"; then
+    git push -u origin "$branch"
+  else
+    echo "Skipped push."
+  fi
+
+  if confirm "Open PR edit flow for title/body review?"; then
+    gh pr edit "$pr_number"
+  else
+    echo "Skipped PR title/body edit."
+    echo "Review manually whether the PR title and description still match the latest changes."
+  fi
+
+  echo
+  echo "PR: $pr_url"
+  exit 0
+fi
+
+echo "No existing PR found for branch: $branch"
+if confirm "Push branch and create a new PR?"; then
+  git push -u origin "$branch"
+else
+  echo "Skipped push and PR creation."
+  exit 0
+fi
+
+create_args=(--base "$base_ref" --head "$branch" --fill)
+if [ "$draft" = true ]; then
+  create_args+=(--draft)
+fi
+
+gh pr create "${create_args[@]}"

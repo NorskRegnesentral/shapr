@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+set -u
+
+base_ref="origin/main"
+
+usage() {
+  cat <<'USAGE'
+Usage: dev/prepare-pr [--base REF]
+
+Applies mechanical pre-PR readiness edits:
+  - styles changed R-like files with styler
+  - runs devtools::document() when R package source/documentation files changed
+  - formats Python files with ruff when Python files changed
+
+This command may modify files. It does not update NEWS/changelog/version files
+by itself; those require AI or human judgment following dev/pr-workflow.md.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --base)
+      base_ref="${2:-}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "dev/prepare-pr must be run inside a Git repository." >&2
+  exit 2
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root" || exit 2
+
+base_sha=""
+if git rev-parse --verify "$base_ref" >/dev/null 2>&1; then
+  base_sha="$(git merge-base HEAD "$base_ref")"
+fi
+
+tmp_files="$(mktemp)"
+trap 'rm -f "$tmp_files"' EXIT
+
+if [ -n "$base_sha" ]; then
+  git diff --name-only "$base_sha"...HEAD >> "$tmp_files"
+else
+  git diff --name-only HEAD >> "$tmp_files"
+fi
+git diff --name-only --cached >> "$tmp_files"
+git diff --name-only >> "$tmp_files"
+git ls-files --others --exclude-standard >> "$tmp_files"
+
+mapfile -t changed_files < <(sort -u "$tmp_files" | sed '/^$/d')
+
+r_style_files=()
+r_docs_needed=false
+python_changed=false
+
+for file in "${changed_files[@]}"; do
+  case "$file" in
+    *.R|*.Rmd|*.Rmarkdown|*.qmd|*.Rnw)
+      if [ -f "$file" ]; then
+        r_style_files+=("$file")
+      fi
+      ;;
+  esac
+
+  case "$file" in
+    R/*|src/*|vignettes/*|DESCRIPTION|NAMESPACE|README.Rmd)
+      r_docs_needed=true
+      ;;
+  esac
+
+  case "$file" in
+    python/src/*|python/tests/*|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
+      python_changed=true
+      ;;
+  esac
+done
+
+echo "## Prepare PR"
+echo
+echo "Branch: $(git branch --show-current)"
+echo "Base: $base_ref"
+echo "Changed files: ${#changed_files[@]}"
+echo
+
+if [ "${#changed_files[@]}" -eq 0 ]; then
+  echo "No changed files detected."
+  exit 0
+fi
+
+if [ "${#r_style_files[@]}" -gt 0 ]; then
+  echo "### Styling R files"
+  Rscript -e 'files <- commandArgs(TRUE); styler::style_file(files)' "${r_style_files[@]}"
+  echo
+else
+  echo "### Styling R files"
+  echo "Skipped: no changed R-like files."
+  echo
+fi
+
+if [ "$r_docs_needed" = true ]; then
+  echo "### Regenerating R documentation"
+  Rscript -e 'devtools::document()'
+  echo
+else
+  echo "### Regenerating R documentation"
+  echo "Skipped: no R package source/documentation files detected."
+  echo
+fi
+
+if [ "$python_changed" = true ]; then
+  echo "### Formatting Python"
+  if [ -d python ]; then
+    (cd python && uv run --locked ruff format)
+  else
+    echo "Skipped: python/ directory not found."
+  fi
+  echo
+else
+  echo "### Formatting Python"
+  echo "Skipped: no Python wrapper files detected."
+  echo
+fi
+
+echo "### Next AI/Human Steps"
+echo "- Review the diff after formatting and documentation updates."
+echo "- Update NEWS.md if R-facing or developer-facing behavior changed."
+echo "- Update python/CHANGELOG.md if Python-facing behavior changed."
+echo "- Update package versions only for release/version-preparation work or when explicitly requested."
+echo "- If vignette sources changed, ask before running Rscript dev/rebuild-long-running-vignettes.R --webp."
+echo "- Ask whether to run dev/check-pr next; do not run it automatically unless requested."

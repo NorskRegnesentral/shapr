@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+
+set -u
+
+base_ref="origin/main"
+with_r_tests=false
+with_r_check=false
+with_python_localonly=false
+check_updates=false
+
+usage() {
+  cat <<'USAGE'
+Usage: dev/check-pr [options]
+
+Read-only PR readiness audit. Runs checks based on changed files and prints a
+Markdown report for chat.
+
+Options:
+  --base REF                 Compare against REF instead of origin/main.
+  --with-r-tests             Run snapshot-safe R tests when R files changed.
+  --with-r-check             Run devtools::check() when R files changed.
+  --with-python-localonly    Include Python tests marked localonly.
+  --check-updates            Run optional dependency freshness checks.
+  -h, --help                 Show this help.
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --base)
+      base_ref="${2:-}"
+      shift 2
+      ;;
+    --with-r-tests)
+      with_r_tests=true
+      shift
+      ;;
+    --with-r-check)
+      with_r_check=true
+      shift
+      ;;
+    --with-python-localonly)
+      with_python_localonly=true
+      shift
+      ;;
+    --check-updates)
+      check_updates=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "dev/check-pr must be run inside a Git repository." >&2
+  exit 2
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root" || exit 2
+
+base_sha=""
+if git rev-parse --verify "$base_ref" >/dev/null 2>&1; then
+  base_sha="$(git merge-base HEAD "$base_ref")"
+fi
+
+tmp_files="$(mktemp)"
+trap 'rm -f "$tmp_files"' EXIT
+
+if [ -n "$base_sha" ]; then
+  git diff --name-only "$base_sha"...HEAD >> "$tmp_files"
+else
+  git diff --name-only HEAD >> "$tmp_files"
+fi
+git diff --name-only --cached >> "$tmp_files"
+git diff --name-only >> "$tmp_files"
+git ls-files --others --exclude-standard >> "$tmp_files"
+
+mapfile -t changed_files < <(sort -u "$tmp_files" | sed '/^$/d')
+
+r_changed=false
+r_style_files=()
+python_changed=false
+snapshot_changed=false
+news_changed=false
+description_changed=false
+python_changelog_changed=false
+python_version_changed=false
+tooling_changed=false
+vignette_changed=false
+
+for file in "${changed_files[@]}"; do
+  case "$file" in
+    R/*|src/*|tests/testthat/*|vignettes/*|DESCRIPTION|NAMESPACE|NEWS.md|README.Rmd|man/*)
+      r_changed=true
+      ;;
+  esac
+
+  case "$file" in
+    vignettes/*.Rmd|vignettes/*.Rmd.orig)
+      vignette_changed=true
+      ;;
+  esac
+
+  case "$file" in
+    *.R|*.Rmd|*.Rmarkdown|*.qmd|*.Rnw)
+      if [ -f "$file" ]; then
+        r_style_files+=("$file")
+      fi
+      ;;
+  esac
+
+  case "$file" in
+    python/src/*|python/tests/*|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
+      python_changed=true
+      ;;
+  esac
+
+  case "$file" in
+    tests/testthat/_snaps/*|python/tests/**/__snapshots__/*)
+      snapshot_changed=true
+      ;;
+  esac
+
+  [ "$file" = "NEWS.md" ] && news_changed=true
+  [ "$file" = "DESCRIPTION" ] && description_changed=true
+  [ "$file" = "python/CHANGELOG.md" ] && python_changelog_changed=true
+  [ "$file" = "python/pyproject.toml" ] && python_version_changed=true
+
+  case "$file" in
+    .github/*|.vscode/*|AGENTS.md|dev/*|inst/devel/*)
+      tooling_changed=true
+      ;;
+  esac
+done
+
+passed=()
+failed=()
+needs_attention=()
+not_run=()
+
+run_check() {
+  local label="$1"
+  shift
+
+  echo
+  echo "### $label"
+  if "$@"; then
+    passed+=("$label")
+  else
+    failed+=("$label")
+  fi
+}
+
+echo "## PR Readiness Report"
+echo
+echo "Branch: \`$(git branch --show-current)\`"
+echo "Base: \`$base_ref\`"
+if [ -n "$base_sha" ]; then
+  echo "Base SHA: \`$base_sha\`"
+else
+  echo "Base SHA: unavailable; using working-tree changes relative to HEAD where possible."
+fi
+echo "Changed files: ${#changed_files[@]}"
+echo
+echo "### Scope"
+[ "$r_changed" = true ] && echo "- R"
+[ "$python_changed" = true ] && echo "- Python"
+[ "$snapshot_changed" = true ] && echo "- Snapshots"
+[ "$tooling_changed" = true ] && echo "- Tooling"
+[ "$vignette_changed" = true ] && echo "- Vignettes"
+if [ "$r_changed" = false ] && [ "$python_changed" = false ] && [ "$snapshot_changed" = false ] && [ "$tooling_changed" = false ] && [ "$vignette_changed" = false ]; then
+  echo "- Other/docs"
+fi
+
+if [ "${#changed_files[@]}" -gt 0 ]; then
+  echo
+  echo "### Changed Files"
+  for file in "${changed_files[@]}"; do
+    echo "- \`$file\`"
+  done
+fi
+
+if [ "$r_changed" = true ]; then
+  if [ "${#r_style_files[@]}" -gt 0 ]; then
+    run_check "R styler check" Rscript -e 'files <- commandArgs(TRUE); styler::style_file(files, dry = "fail")' "${r_style_files[@]}"
+  else
+    not_run+=("R styler check: no changed R-like files")
+  fi
+
+  run_check "R lint" Rscript -e 'lintr::lint_package()'
+
+  run_check "R package convention grep" bash -c \
+    '! rg -n "([^[:alnum:]_.]|^)(stop|warning|message|library|require)[[:space:]]*\\(|%>%|\\|>" R src --glob "*.R"'
+
+  not_run+=("R documentation freshness: run dev/prepare-pr to regenerate docs, then inspect the diff")
+
+  if [ "$with_r_tests" = true ]; then
+    run_check "R snapshot-safe tests" Rscript dev/snapshot-diff.R --run-tests
+  else
+    not_run+=("R snapshot-safe tests: pass --with-r-tests to run")
+  fi
+
+  if [ "$with_r_check" = true ]; then
+    run_check "R package check" Rscript -e 'devtools::check()'
+  else
+    not_run+=("R package check: pass --with-r-check to run")
+  fi
+
+  if [ "$news_changed" = false ]; then
+    needs_attention+=("NEWS.md was not changed; confirm this PR has no R-facing or developer-facing changelog entry")
+  fi
+
+  if [ "$description_changed" = false ]; then
+    needs_attention+=("DESCRIPTION was not changed; this is normal unless preparing a release or explicit version bump")
+  fi
+fi
+
+if [ "$vignette_changed" = true ]; then
+  run_check "Vignette rendered error scan" bash -c \
+    '! rg -n "^(Error in|Error:|Execution halted|Quitting from lines|Backtrace:|Traceback)" vignettes --glob "*.Rmd"'
+
+  not_run+=("Long-running vignette rebuild: ask before running Rscript dev/rebuild-long-running-vignettes.R --webp")
+fi
+
+if [ "$python_changed" = true ]; then
+  if [ -d python ]; then
+    run_check "Python format check" bash -c 'cd python && uv run --locked ruff format --check'
+    run_check "Python lint" bash -c 'cd python && uv run --locked ruff check'
+    if [ "$with_python_localonly" = true ]; then
+      run_check "Python tests including localonly" bash -c 'cd python && uv run --locked pytest tests/ -v --tb=short'
+    else
+      run_check "Python tests excluding localonly" bash -c 'cd python && uv run --locked pytest tests/ -v --tb=short -m "not localonly"'
+    fi
+  else
+    failed+=("Python checks: python/ directory not found")
+  fi
+
+  if [ "$python_changelog_changed" = false ]; then
+    needs_attention+=("python/CHANGELOG.md was not changed; confirm this PR has no Python-facing changelog entry")
+  fi
+
+  if [ "$python_version_changed" = false ]; then
+    needs_attention+=("python/pyproject.toml version was not changed; this is normal unless preparing a Python release")
+  fi
+fi
+
+if [ "$snapshot_changed" = true ]; then
+  needs_attention+=("Snapshots changed; inspect diffs and ask before accepting/removing generated snapshots")
+fi
+
+if [ "$check_updates" = true ]; then
+  run_check "R dependency freshness" Rscript -e 'old <- old.packages(); if (is.null(old)) quit(status = 0); print(old[, c("Package", "Installed", "ReposVer")]); quit(status = 1)'
+  if [ -d python ]; then
+    not_run+=("Python dependency freshness: inspect with uv manually; no stable read-only project command is defined")
+  fi
+else
+  not_run+=("Dependency freshness: pass --check-updates to run optional checks")
+fi
+
+echo
+echo "### Passed"
+if [ "${#passed[@]}" -eq 0 ]; then
+  echo "- None"
+else
+  for item in "${passed[@]}"; do
+    echo "- $item"
+  done
+fi
+
+echo
+echo "### Failed"
+if [ "${#failed[@]}" -eq 0 ]; then
+  echo "- None"
+else
+  for item in "${failed[@]}"; do
+    echo "- $item"
+  done
+fi
+
+echo
+echo "### Needs Attention"
+if [ "${#needs_attention[@]}" -eq 0 ]; then
+  echo "- None"
+else
+  for item in "${needs_attention[@]}"; do
+    echo "- $item"
+  done
+fi
+
+echo
+echo "### Not Run"
+if [ "${#not_run[@]}" -eq 0 ]; then
+  echo "- None"
+else
+  for item in "${not_run[@]}"; do
+    echo "- $item"
+  done
+fi
+
+if [ "${#failed[@]}" -gt 0 ]; then
+  exit 1
+fi
+
+exit 0
