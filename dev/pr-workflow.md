@@ -13,10 +13,14 @@ GitHub Copilot, a terminal, or any future assistant.
 Use the helper commands from the repository root:
 
 ```sh
-dev/prepare-pr
-dev/check-pr
-dev/publish-pr
+dev/prepare-pr --base <base-branch>
+dev/check-pr   --base <base-branch>
+dev/publish-pr --base <base-branch>
 ```
+
+**Always pass `--base <base-branch>`.** The scripts default to `origin/main`, but this repository uses
+`master`. Always run with `--base master` (or whichever branch the PR will target). Omitting this flag
+will make the scripts see zero changed files and produce misleading results.
 
 The helper scripts automate repeatable command-line work. They do not replace
 AI judgment. An agent running this workflow must still inspect the diff, apply
@@ -30,7 +34,13 @@ This stage may edit files.
 
 ### Prepare Scope
 
-1. Inspect the current branch and changed files with Git before editing.
+1. Inspect the current branch and changed files with Git before editing. Use a single compact command,
+   not one `git diff` call per file:
+   ```sh
+   git diff <base>...HEAD --stat        # list changed files with rough sizes
+   git diff <base>...HEAD --name-only   # list changed files only
+   ```
+   Read individual file diffs only when the change is non-obvious or the patch is small enough to be useful.
 2. Classify every changed file into one or more scopes:
    - R package code: `R/`, `src/`
    - R tests and snapshots: `tests/testthat/`, `tests/testthat/_snaps/`
@@ -134,6 +144,11 @@ Optional checks require explicit user approval before running:
 - `dev/check-pr --with-python-localonly`
 - `dev/check-pr --check-updates`
 
+**Long-running checks** (`--with-r-tests`, `--with-r-check`) take 20–30 minutes. When running these,
+use a `mode=sync` terminal call with a generous timeout (≥ 1 800 000 ms / 30 min) so you wait for
+completion in one call rather than polling `get_terminal_output` repeatedly. Do not start a separate
+polling loop — you will be notified automatically when the command finishes.
+
 When vignettes changed, `dev/check-pr` also scans rendered vignette `.Rmd` files for common embedded R execution
 errors. This is a lightweight guard only; it does not replace rebuilding the long-running vignettes when the source
 changes require it.
@@ -143,12 +158,19 @@ changes require it.
 Run this only when the user asks to publish, push, create a PR, or update an
 existing PR.
 
-1. Run `dev/check-pr` or confirm that a recent check report exists.
+1. Confirm that a recent check report exists from this session. If `dev/check-pr` was already run and
+   passed in the same session, **do not run it again** — `dev/publish-pr` will re-run the check
+   internally (see note below).
 2. Inspect the current branch and Git status.
 3. Commit changes only after the user approves the exact scope and commit message.
 4. **Before pushing any commits**, present a summary of what will be pushed (commits and files) and ask the user
    to explicitly confirm. Do not push until the user says yes.
 5. Run `dev/publish-pr` to push and create or update the PR.
+
+   > **Note:** `dev/publish-pr` runs `dev/check-pr` internally before pushing, including any slow
+   > optional flags (e.g. `--with-r-tests`, `--with-r-check`) if you pass them to `dev/publish-pr`.
+   > If you already ran the full check in this session and it passed, pass only basic flags (or none)
+   > to `dev/publish-pr` to avoid re-running a 30-minute test suite unnecessarily.
 6. If an open PR already exists for the branch:
    - reuse it
    - push new commits to the existing branch
