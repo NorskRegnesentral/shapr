@@ -2,6 +2,16 @@
 
 These instructions apply to the entire repository.
 
+## Pre-PR Workflow
+
+When asked to prepare a PR, check PR readiness, push work, or
+create/update a PR, follow `dev/pr-workflow.md`. Use `dev/prepare-pr`
+for readiness edits that may modify files, `dev/check-pr` for read-only
+checks and a chat report, and `dev/publish-pr` only after explicit
+approval to push or create/update a GitHub PR. **Always prompt the user
+to confirm before pushing commits or creating/updating a PR** — never do
+either automatically, even if the overall workflow was already approved.
+
 ## When to Use
 
 - Adding a new feature, approach, or function to the R package
@@ -207,7 +217,7 @@ checks compliance with `lintr`.
   `indentation_linter`, and `return_linter`.
 - Only restyle code that is directly related to your change — do not
   reformat unrelated lines.
-- The following paths are excluded from linting: `inst/devel`,
+- The following paths are excluded from linting: `dev`, `inst/devel`,
   `inst/scripts`, `inst/code_paper`, `inst/demo`, `vignettes`,
   `R/RcppExports.R`, `R/zzz.R`.
 
@@ -250,7 +260,7 @@ warning.
 
 Use the VS Code tasks in `.vscode/tasks.json`: -
 `R: Run all tests (snapshot-safe)` runs file-by-file tests via
-`Rscript inst/devel/snapshot_diff.R --run-tests` and is the default test
+`Rscript dev/snapshot-diff.R --run-tests` and is the default test
 task. - `R: Run current test file (snapshot-safe)` runs the active test
 file through
 [`testthat::test_file()`](https://testthat.r-lib.org/reference/test_file.html). -
@@ -263,16 +273,19 @@ manual `waldo`-based workflow. -
 `R: Inspect MD snapshot diffs (agent helper)` and
 `R: Inspect RDS snapshot diffs (agent helper)` are read-only terminal
 diff helpers intended mainly for agents investigating snapshot changes,
-not the normal developer review flow.
+not the normal developer review flow. -
+`R: Rebuild long-running vignettes` rebuilds precomputed vignettes from
+`vignettes/*.Rmd.orig` and converts generated PNG figures to WebP. Run
+it only when vignette source changes require it.
 
 Equivalent terminal commands from the repository root:
 
 ``` sh
-Rscript inst/devel/snapshot_diff.R --run-tests
-Rscript inst/devel/snapshot_diff.R --review-md
-Rscript inst/devel/snapshot_diff.R --review-rds
-Rscript inst/devel/snapshot_diff.R --run-tests --review-md --review-rds
-Rscript inst/devel/snapshot_diff.R --run-tests --file tests/testthat/test-forecast-output.R
+Rscript dev/snapshot-diff.R --run-tests
+Rscript dev/snapshot-diff.R --review-md
+Rscript dev/snapshot-diff.R --review-rds
+Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds
+Rscript dev/snapshot-diff.R --run-tests --file tests/testthat/test-forecast-output.R
 ```
 
 Snapshot review is intentionally split by file extension. Changed `.md`
@@ -350,49 +363,79 @@ local workflow for snapshot updates in this repository.
 
 ------------------------------------------------------------------------
 
-## Checklist Before Submitting Changes
+## PR Readiness Checklist
 
-All new R functions use `snake_case` naming and `<-` assignment.
+Use this checklist with `dev/pr-workflow.md` before publishing a PR.
+Apply only the sections relevant to the changed files.
 
-`styler::style_pkg()` run on changed files; only changed lines restyled.
+### R Code
 
-`lintr::lint_package()` passes with no new issues.
+New or changed R identifiers use `snake_case` naming and `<-`
+assignment.
 
-External calls qualified with `::` (e.g.,
+External calls are qualified with `::` (e.g.,
 [`cli::cli_abort`](https://cli.r-lib.org/reference/cli_abort.html),
 [`data.table::setkey`](https://rdrr.io/pkg/data.table/man/setkey.html)).
 
-Data manipulation uses `data.table` only — no `dplyr`/`tidyr`/pipes.
+Data manipulation uses `data.table` only — no `dplyr`, `tidyr`, `%>%`,
+or `|>`.
 
 Errors use
 [`cli::cli_abort()`](https://cli.r-lib.org/reference/cli_abort.html),
 warnings use
-[`cli::cli_warn()`](https://cli.r-lib.org/reference/cli_abort.html).
+[`cli::cli_warn()`](https://cli.r-lib.org/reference/cli_abort.html), and
+messages use
+[`cli::cli_inform()`](https://cli.r-lib.org/reference/cli_abort.html) or
+[`cli::cli_text()`](https://cli.r-lib.org/reference/cli_text.html).
 
-New approach implements both `setup_approach.<name>` and
+New approach code implements both `setup_approach.<name>` and
 `prepare_data.<name>`.
 
-Approach parameters stored via `insert_defaults(internal, mget(...))`.
+Approach parameters are stored via
+`insert_defaults(internal, mget(...))`.
 
-All exported functions have roxygen2 docs with `@inheritParams` where
+Computationally heavy loops are offloaded to Rcpp or `future.apply`
+where appropriate.
+
+### R Formatting, Documentation, And Tests
+
+`styler::style_pkg()` or targeted `styler` formatting has run on changed
+R files.
+
+`lintr::lint_package()` passes with no new issues.
+
+Exported functions have roxygen2 docs with `@inheritParams` where
 applicable.
 
-Internal functions have `@keywords internal`.
+Internal documented functions have `@keywords internal`.
 
-Computationally heavy loops offloaded to Rcpp or `future.apply`.
-
-New test file follows `test-<area>-setup.R` / `test-<area>-output.R`
+New test files follow the `test-<area>-setup.R` / `test-<area>-output.R`
 pattern.
 
-Tests use `expect_snapshot_rds()` and `testing = TRUE`.
+Tests use `expect_snapshot_rds()` and `testing = TRUE` where applicable.
+
+### Python Wrapper
 
 Python code has full type hints and NumPy-style docstrings.
 
-Python R-bridging goes through `_rutils._importr` and
-`utils.py2r`/`r2py`.
+Imports are explicit and grouped stdlib, third-party, local.
 
-`DESCRIPTION` version incremented when preparing package changes for
-merge or release.
+Python R-bridging goes through `_rutils._importr` and `utils.py2r` /
+`r2py`.
 
-`NEWS.md` updated with a brief entry under the current development
-version describing user-facing or developer-facing changes.
+Public API functions return structured objects, not raw dictionaries.
+
+### Changelog And Versioning
+
+`NEWS.md` has a brief entry under the current development version for
+R-facing or developer-facing changes. Use `(branch: <branch-name>)` as a
+placeholder at the end of each bullet when the PR number is not yet
+known; replace with `([#NNN](url))` during the Publish PR step.
+
+`python/CHANGELOG.md` has an entry for Python-facing changes.
+
+`DESCRIPTION` version is incremented only when preparing package changes
+for merge/release or when explicitly requested.
+
+`python/pyproject.toml` version is incremented only when preparing a
+Python package release or when explicitly requested.

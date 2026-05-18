@@ -51,6 +51,11 @@
 <div class="section level4">
 <h4 id="development-workflow-1-0-8-9000">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow-1-0-8-9000"></a></h4>
 <ul><li>Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
+<li>Added pre-PR workflow scripts (<code>dev/prepare-pr</code>, <code>dev/check-pr</code>, <code>dev/publish-pr</code>) with <code>dev/pr-workflow.md</code> for automated and agent-assisted PR readiness checks; consolidated development scripts under <code>dev/</code>. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
+</ul></div>
+<div class="section level4">
+<h4 id="tests-1-0-8-9000">Tests<a class="anchor" aria-label="anchor" href="#tests-1-0-8-9000"></a></h4>
+<ul><li>Skip <code>vdiffr</code> plot snapshot tests on R &lt; 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="continuous-integration-1-0-8-9000">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration-1-0-8-9000"></a></h4>

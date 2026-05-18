@@ -50,6 +50,10 @@
 
 <p>These instructions apply to the entire repository.</p>
 <div class="section level2">
+<h2 id="pre-pr-workflow">Pre-PR Workflow<a class="anchor" aria-label="anchor" href="#pre-pr-workflow"></a></h2>
+<p>When asked to prepare a PR, check PR readiness, push work, or create/update a PR, follow <code>dev/pr-workflow.md</code>. Use <code>dev/prepare-pr</code> for readiness edits that may modify files, <code>dev/check-pr</code> for read-only checks and a chat report, and <code>dev/publish-pr</code> only after explicit approval to push or create/update a GitHub PR. <strong>Always prompt the user to confirm before pushing commits or creating/updating a PR</strong> — never do either automatically, even if the overall workflow was already approved.</p>
+</div>
+<div class="section level2">
 <h2 id="when-to-use">When to Use<a class="anchor" aria-label="anchor" href="#when-to-use"></a></h2>
 <ul><li>Adding a new feature, approach, or function to the R package</li>
 <li>Editing or extending the Python <code>shaprpy</code> wrapper</li>
@@ -179,7 +183,7 @@
 <li>Run <code>lintr::lint_package()</code> and resolve all reported issues before submitting.</li>
 <li>The <code>.lintr</code> config sets a <strong>120-character line limit</strong> and disables <code>object_name_linter</code>, <code>object_usage_linter</code>, <code>commented_code_linter</code>, <code>indentation_linter</code>, and <code>return_linter</code>.</li>
 <li>Only restyle code that is directly related to your change — do not reformat unrelated lines.</li>
-<li>The following paths are excluded from linting: <code>inst/devel</code>, <code>inst/scripts</code>, <code>inst/code_paper</code>, <code>inst/demo</code>, <code>vignettes</code>, <code>R/RcppExports.R</code>, <code>R/zzz.R</code>.</li>
+<li>The following paths are excluded from linting: <code>dev</code>, <code>inst/devel</code>, <code>inst/scripts</code>, <code>inst/code_paper</code>, <code>inst/demo</code>, <code>vignettes</code>, <code>R/RcppExports.R</code>, <code>R/zzz.R</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="comments">Comments<a class="anchor" aria-label="anchor" href="#comments"></a></h3>
@@ -199,13 +203,13 @@
 <div class="section level3">
 <h3 id="local-r-test-workflow">Local R Test Workflow<a class="anchor" aria-label="anchor" href="#local-r-test-workflow"></a></h3>
 <p>Local snapshot testing should use the repository’s development scripts instead of <code>devtools::test()</code>. This is intentional: under local <code>devtools::test()</code> / <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> runs, <code>future</code> can emit serialization warnings such as <code>'package:shapr' may not be available when loading</code>, and <code>expect_snapshot()</code> records those warnings in the <code>.md</code> snapshots. GitHub Actions does not have the same issue, so do not change package defaults or the snapshot expectations just to silence this local-only warning.</p>
-<p>Use the VS Code tasks in <code>.vscode/tasks.json</code>: - <code>R: Run all tests (snapshot-safe)</code> runs file-by-file tests via <code>Rscript inst/devel/snapshot_diff.R --run-tests</code> and is the default test task. - <code>R: Run current test file (snapshot-safe)</code> runs the active test file through <code><a href="https://testthat.r-lib.org/reference/test_file.html" class="external-link">testthat::test_file()</a></code>. - <code>R: Run and review snapshots (snapshot-safe)</code> runs the file-by-file tests and then opens the <code>.md</code> and <code>.rds</code> review helpers. - <code>R: Review MD snapshots</code> reviews only changed <code>.md</code> snapshots with <code><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">testthat::snapshot_review()</a></code>. - <code>R: Review RDS snapshots</code> reviews only changed <code>.rds</code> snapshots with the manual <code>waldo</code>-based workflow. - <code>R: Inspect MD snapshot diffs (agent helper)</code> and <code>R: Inspect RDS snapshot diffs (agent helper)</code> are read-only terminal diff helpers intended mainly for agents investigating snapshot changes, not the normal developer review flow.</p>
+<p>Use the VS Code tasks in <code>.vscode/tasks.json</code>: - <code>R: Run all tests (snapshot-safe)</code> runs file-by-file tests via <code>Rscript dev/snapshot-diff.R --run-tests</code> and is the default test task. - <code>R: Run current test file (snapshot-safe)</code> runs the active test file through <code><a href="https://testthat.r-lib.org/reference/test_file.html" class="external-link">testthat::test_file()</a></code>. - <code>R: Run and review snapshots (snapshot-safe)</code> runs the file-by-file tests and then opens the <code>.md</code> and <code>.rds</code> review helpers. - <code>R: Review MD snapshots</code> reviews only changed <code>.md</code> snapshots with <code><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">testthat::snapshot_review()</a></code>. - <code>R: Review RDS snapshots</code> reviews only changed <code>.rds</code> snapshots with the manual <code>waldo</code>-based workflow. - <code>R: Inspect MD snapshot diffs (agent helper)</code> and <code>R: Inspect RDS snapshot diffs (agent helper)</code> are read-only terminal diff helpers intended mainly for agents investigating snapshot changes, not the normal developer review flow. - <code>R: Rebuild long-running vignettes</code> rebuilds precomputed vignettes from <code>vignettes/*.Rmd.orig</code> and converts generated PNG figures to WebP. Run it only when vignette source changes require it.</p>
 <p>Equivalent terminal commands from the repository root:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/snapshot_diff.R <span class="at">--run-tests</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/snapshot_diff.R <span class="at">--review-md</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/snapshot_diff.R <span class="at">--review-rds</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/snapshot_diff.R <span class="at">--run-tests</span> <span class="at">--review-md</span> <span class="at">--review-rds</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/snapshot_diff.R <span class="at">--run-tests</span> <span class="at">--file</span> tests/testthat/test-forecast-output.R</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">Rscript</span> dev/snapshot-diff.R <span class="at">--run-tests</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">Rscript</span> dev/snapshot-diff.R <span class="at">--review-md</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="ex">Rscript</span> dev/snapshot-diff.R <span class="at">--review-rds</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ex">Rscript</span> dev/snapshot-diff.R <span class="at">--run-tests</span> <span class="at">--review-md</span> <span class="at">--review-rds</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ex">Rscript</span> dev/snapshot-diff.R <span class="at">--run-tests</span> <span class="at">--file</span> tests/testthat/test-forecast-output.R</span></code></pre></div>
 <p>Snapshot review is intentionally split by file extension. Changed <code>.md</code> snapshots use <code><a href="https://testthat.r-lib.org/reference/snapshot_accept.html" class="external-link">testthat::snapshot_review()</a></code>; changed <code>.rds</code> snapshots use the manual <code>waldo</code> comparison flow copied from <code>snapshot_review_man()</code> in <code>.Rprofile</code>. Do not use a review command that mixes <code>.md</code> and <code>.rds</code> files when the goal is to inspect only one snapshot type. The <code>Inspect ... snapshot diffs (agent helper)</code> tasks never accept snapshots; they only print differences to help agents understand what changed before reporting back or choosing the correct review task.</p>
 <p>The developer’s original all-in-one script remains available for manual use:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/devel/test.R</span></code></pre></div>
@@ -257,25 +261,42 @@
 </ul><hr></div>
 </div>
 <div class="section level2">
-<h2 id="checklist-before-submitting-changes">Checklist Before Submitting Changes<a class="anchor" aria-label="anchor" href="#checklist-before-submitting-changes"></a></h2>
-<ul class="task-list"><li><label><input type="checkbox">All new R functions use <code>snake_case</code> naming and <code>&lt;-</code> assignment.</label></li>
-<li><label><input type="checkbox"><code>styler::style_pkg()</code> run on changed files; only changed lines restyled.</label></li>
-<li><label><input type="checkbox"><code>lintr::lint_package()</code> passes with no new issues.</label></li>
-<li><label><input type="checkbox">External calls qualified with <code>::</code> (e.g., <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_abort</a></code>, <code><a href="https://rdrr.io/pkg/data.table/man/setkey.html" class="external-link">data.table::setkey</a></code>).</label></li>
-<li><label><input type="checkbox">Data manipulation uses <code>data.table</code> only — no <code>dplyr</code>/<code>tidyr</code>/pipes.</label></li>
-<li><label><input type="checkbox">Errors use <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_abort()</a></code>, warnings use <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_warn()</a></code>.</label></li>
-<li><label><input type="checkbox">New approach implements both <code>setup_approach.&lt;name&gt;</code> and <code>prepare_data.&lt;name&gt;</code>.</label></li>
-<li><label><input type="checkbox">Approach parameters stored via <code>insert_defaults(internal, mget(...))</code>.</label></li>
-<li><label><input type="checkbox">All exported functions have roxygen2 docs with <code>@inheritParams</code> where applicable.</label></li>
-<li><label><input type="checkbox">Internal functions have <code>@keywords internal</code>.</label></li>
-<li><label><input type="checkbox">Computationally heavy loops offloaded to Rcpp or <code>future.apply</code>.</label></li>
-<li><label><input type="checkbox">New test file follows <code>test-&lt;area&gt;-setup.R</code> / <code>test-&lt;area&gt;-output.R</code> pattern.</label></li>
-<li><label><input type="checkbox">Tests use <code>expect_snapshot_rds()</code> and <code>testing = TRUE</code>.</label></li>
-<li><label><input type="checkbox">Python code has full type hints and NumPy-style docstrings.</label></li>
-<li><label><input type="checkbox">Python R-bridging goes through <code>_rutils._importr</code> and <code>utils.py2r</code>/<code>r2py</code>.</label></li>
-<li><label><input type="checkbox"><code>DESCRIPTION</code> version incremented when preparing package changes for merge or release.</label></li>
-<li><label><input type="checkbox"><code>NEWS.md</code> updated with a brief entry under the current development version describing user-facing or developer-facing changes.</label></li>
+<h2 id="pr-readiness-checklist">PR Readiness Checklist<a class="anchor" aria-label="anchor" href="#pr-readiness-checklist"></a></h2>
+<p>Use this checklist with <code>dev/pr-workflow.md</code> before publishing a PR. Apply only the sections relevant to the changed files.</p>
+<div class="section level3">
+<h3 id="r-code">R Code<a class="anchor" aria-label="anchor" href="#r-code"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox">New or changed R identifiers use <code>snake_case</code> naming and <code>&lt;-</code> assignment.</label></li>
+<li><label><input type="checkbox">External calls are qualified with <code>::</code> (e.g., <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_abort</a></code>, <code><a href="https://rdrr.io/pkg/data.table/man/setkey.html" class="external-link">data.table::setkey</a></code>).</label></li>
+<li><label><input type="checkbox">Data manipulation uses <code>data.table</code> only — no <code>dplyr</code>, <code>tidyr</code>, <code>%&gt;%</code>, or <code>|&gt;</code>.</label></li>
+<li><label><input type="checkbox">Errors use <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_abort()</a></code>, warnings use <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_warn()</a></code>, and messages use <code><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli::cli_inform()</a></code> or <code><a href="https://cli.r-lib.org/reference/cli_text.html" class="external-link">cli::cli_text()</a></code>.</label></li>
+<li><label><input type="checkbox">New approach code implements both <code>setup_approach.&lt;name&gt;</code> and <code>prepare_data.&lt;name&gt;</code>.</label></li>
+<li><label><input type="checkbox">Approach parameters are stored via <code>insert_defaults(internal, mget(...))</code>.</label></li>
+<li><label><input type="checkbox">Computationally heavy loops are offloaded to Rcpp or <code>future.apply</code> where appropriate.</label></li>
 </ul></div>
+<div class="section level3">
+<h3 id="r-formatting-documentation-and-tests">R Formatting, Documentation, And Tests<a class="anchor" aria-label="anchor" href="#r-formatting-documentation-and-tests"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox"><code>styler::style_pkg()</code> or targeted <code>styler</code> formatting has run on changed R files.</label></li>
+<li><label><input type="checkbox"><code>lintr::lint_package()</code> passes with no new issues.</label></li>
+<li><label><input type="checkbox">Exported functions have roxygen2 docs with <code>@inheritParams</code> where applicable.</label></li>
+<li><label><input type="checkbox">Internal documented functions have <code>@keywords internal</code>.</label></li>
+<li><label><input type="checkbox">New test files follow the <code>test-&lt;area&gt;-setup.R</code> / <code>test-&lt;area&gt;-output.R</code> pattern.</label></li>
+<li><label><input type="checkbox">Tests use <code>expect_snapshot_rds()</code> and <code>testing = TRUE</code> where applicable.</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="python-wrapper">Python Wrapper<a class="anchor" aria-label="anchor" href="#python-wrapper"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox">Python code has full type hints and NumPy-style docstrings.</label></li>
+<li><label><input type="checkbox">Imports are explicit and grouped stdlib, third-party, local.</label></li>
+<li><label><input type="checkbox">Python R-bridging goes through <code>_rutils._importr</code> and <code>utils.py2r</code> / <code>r2py</code>.</label></li>
+<li><label><input type="checkbox">Public API functions return structured objects, not raw dictionaries.</label></li>
+</ul></div>
+<div class="section level3">
+<h3 id="changelog-and-versioning">Changelog And Versioning<a class="anchor" aria-label="anchor" href="#changelog-and-versioning"></a></h3>
+<ul class="task-list"><li><label><input type="checkbox"><code>NEWS.md</code> has a brief entry under the current development version for R-facing or developer-facing changes. Use <code>(branch: &lt;branch-name&gt;)</code> as a placeholder at the end of each bullet when the PR number is not yet known; replace with <code>([#NNN](url))</code> during the Publish PR step.</label></li>
+<li><label><input type="checkbox"><code>python/CHANGELOG.md</code> has an entry for Python-facing changes.</label></li>
+<li><label><input type="checkbox"><code>DESCRIPTION</code> version is incremented only when preparing package changes for merge/release or when explicitly requested.</label></li>
+<li><label><input type="checkbox"><code>python/pyproject.toml</code> version is incremented only when preparing a Python package release or when explicitly requested.</label></li>
+</ul></div>
+</div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
