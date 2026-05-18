@@ -2,6 +2,13 @@
 
 These instructions apply to the entire repository.
 
+## Pre-PR Workflow
+
+When asked to prepare a PR, check PR readiness, push work, or create/update a PR, follow
+`dev/pr-workflow.md`. Use `dev/prepare-pr` for readiness edits that may modify files, `dev/check-pr` for
+read-only checks and a chat report, and `dev/publish-pr` only after explicit approval to push or create/update a
+GitHub PR.
+
 ## When to Use
 - Adding a new feature, approach, or function to the R package
 - Editing or extending the Python `shaprpy` wrapper
@@ -230,22 +237,39 @@ the preferred local workflow for snapshot updates in this repository.
 
 ---
 
-## Checklist Before Submitting Changes
+## PR Readiness Checklist
 
-- [ ] All new R functions use `snake_case` naming and `<-` assignment.
-- [ ] `styler::style_pkg()` run on changed files; only changed lines restyled.
+Use this checklist with `dev/pr-workflow.md` before publishing a PR. Apply only the sections relevant to the changed
+files.
+
+### R Code
+- [ ] New or changed R identifiers use `snake_case` naming and `<-` assignment.
+- [ ] External calls are qualified with `::` (e.g., `cli::cli_abort`, `data.table::setkey`).
+- [ ] Data manipulation uses `data.table` only — no `dplyr`, `tidyr`, `%>%`, or `|>`.
+- [ ] Errors use `cli::cli_abort()`, warnings use `cli::cli_warn()`, and messages use `cli::cli_inform()` or
+  `cli::cli_text()`.
+- [ ] New approach code implements both `setup_approach.<name>` and `prepare_data.<name>`.
+- [ ] Approach parameters are stored via `insert_defaults(internal, mget(...))`.
+- [ ] Computationally heavy loops are offloaded to Rcpp or `future.apply` where appropriate.
+
+### R Formatting, Documentation, And Tests
+- [ ] `styler::style_pkg()` or targeted `styler` formatting has run on changed R files.
 - [ ] `lintr::lint_package()` passes with no new issues.
-- [ ] External calls qualified with `::` (e.g., `cli::cli_abort`, `data.table::setkey`).
-- [ ] Data manipulation uses `data.table` only — no `dplyr`/`tidyr`/pipes.
-- [ ] Errors use `cli::cli_abort()`, warnings use `cli::cli_warn()`.
-- [ ] New approach implements both `setup_approach.<name>` and `prepare_data.<name>`.
-- [ ] Approach parameters stored via `insert_defaults(internal, mget(...))`.
-- [ ] All exported functions have roxygen2 docs with `@inheritParams` where applicable.
-- [ ] Internal functions have `@keywords internal`.
-- [ ] Computationally heavy loops offloaded to Rcpp or `future.apply`.
-- [ ] New test file follows `test-<area>-setup.R` / `test-<area>-output.R` pattern.
-- [ ] Tests use `expect_snapshot_rds()` and `testing = TRUE`.
+- [ ] Exported functions have roxygen2 docs with `@inheritParams` where applicable.
+- [ ] Internal documented functions have `@keywords internal`.
+- [ ] New test files follow the `test-<area>-setup.R` / `test-<area>-output.R` pattern.
+- [ ] Tests use `expect_snapshot_rds()` and `testing = TRUE` where applicable.
+
+### Python Wrapper
 - [ ] Python code has full type hints and NumPy-style docstrings.
-- [ ] Python R-bridging goes through `_rutils._importr` and `utils.py2r`/`r2py`.
-- [ ] `DESCRIPTION` version incremented when preparing package changes for merge or release.
-- [ ] `NEWS.md` updated with a brief entry under the current development version describing user-facing or developer-facing changes.
+- [ ] Imports are explicit and grouped stdlib, third-party, local.
+- [ ] Python R-bridging goes through `_rutils._importr` and `utils.py2r` / `r2py`.
+- [ ] Public API functions return structured objects, not raw dictionaries.
+
+### Changelog And Versioning
+- [ ] `NEWS.md` has a brief entry under the current development version for R-facing or developer-facing changes.
+- [ ] `python/CHANGELOG.md` has an entry for Python-facing changes.
+- [ ] `DESCRIPTION` version is incremented only when preparing package changes for merge/release or when explicitly
+  requested.
+- [ ] `python/pyproject.toml` version is incremented only when preparing a Python package release or when explicitly
+  requested.
