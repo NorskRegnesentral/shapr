@@ -270,6 +270,8 @@ files.
 
 ### Changelog And Versioning
 - [ ] `NEWS.md` has a brief entry under the current development version for R-facing or developer-facing changes.
+  Use `(branch: <branch-name>)` as a placeholder at the end of each bullet when the PR number is not yet known;
+  replace with `([#NNN](url))` during the Publish PR step.
 - [ ] `python/CHANGELOG.md` has an entry for Python-facing changes.
 - [ ] `DESCRIPTION` version is incremented only when preparing package changes for merge/release or when explicitly
   requested.

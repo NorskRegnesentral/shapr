@@ -167,8 +167,14 @@ Do not bump versions mechanically for every PR.
 - Bump the R package version only when preparing a release, beginning a new development cycle, or when the user asks.
 - `python/pyproject.toml` should usually stay unchanged during normal development.
 - Bump the Python package version only when preparing a Python package release or when the user asks.
-- `NEWS.md` and `python/CHANGELOG.md` should describe user-facing changes, developer-facing workflow changes, bug fixes,
-  and notable compatibility changes.
+- `NEWS.md` and `python/CHANGELOG.md` should describe **significant** user-facing changes, developer-facing workflow
+  changes, bug fixes, and notable compatibility changes. Aim for one entry per meaningful change, not one entry per
+  file touched. Omit internal refactors, config tweaks, and mechanical moves that do not affect how contributors or
+  users interact with the package.
+- When the PR number is not yet known, end each new bullet with `(branch: <branch-name>)` as a placeholder
+  (e.g., `(branch: my-feature-branch)`). This uniquely identifies which bullets belong to the same future PR
+  and makes them easy to find and replace once the PR number is assigned during the Publish PR step.
+  Replace `(branch: <branch-name>)` with the standard `([#NNN](url))` link when the PR number is known.
 
 ## Dependency Freshness
 
