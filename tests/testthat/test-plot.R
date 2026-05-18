@@ -2,6 +2,7 @@ skip_on_cran()
 skip_if_not_installed("ggplot2")
 skip_if_not_installed("vdiffr")
 skip_if_not_installed("party")
+skip_if(getRversion() < "4.5.0", "vdiffr snapshots are known to differ on older R versions")
 
 
 set.seed(123) #
