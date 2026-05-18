@@ -7,7 +7,8 @@ These instructions apply to the entire repository.
 When asked to prepare a PR, check PR readiness, push work, or create/update a PR, follow
 `dev/pr-workflow.md`. Use `dev/prepare-pr` for readiness edits that may modify files, `dev/check-pr` for
 read-only checks and a chat report, and `dev/publish-pr` only after explicit approval to push or create/update a
-GitHub PR.
+GitHub PR. **Always prompt the user to confirm before pushing commits or creating/updating a PR** — never do
+either automatically, even if the overall workflow was already approved.
 
 ## When to Use
 - Adding a new feature, approach, or function to the R package

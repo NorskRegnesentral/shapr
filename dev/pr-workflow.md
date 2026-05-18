@@ -146,18 +146,20 @@ existing PR.
 1. Run `dev/check-pr` or confirm that a recent check report exists.
 2. Inspect the current branch and Git status.
 3. Commit changes only after the user approves the exact scope and commit message.
-4. Run `dev/publish-pr`.
-5. If an open PR already exists for the branch:
+4. **Before pushing any commits**, present a summary of what will be pushed (commits and files) and ask the user
+   to explicitly confirm. Do not push until the user says yes.
+5. Run `dev/publish-pr` to push and create or update the PR.
+6. If an open PR already exists for the branch:
    - reuse it
    - push new commits to the existing branch
    - review whether the PR title still matches the branch contents
    - review whether the PR description needs a summary, test updates, changelog notes, or changed risk notes
-   - update the PR title/body only after user approval
-6. If no PR exists:
-   - create a draft PR by default
+   - **Before updating the PR title/body**, show the proposed changes and ask the user to confirm.
+7. If no PR exists:
    - draft the title/body from the branch name, commit summary, and latest readiness report
-   - ask the user before creating a non-draft PR
-7. Report the final PR URL and exactly what changed on GitHub.
+   - **Before creating the PR**, show the draft title and body and ask the user to confirm.
+   - create a draft PR by default; ask the user before creating a non-draft PR
+8. Report the final PR URL and exactly what changed on GitHub.
 
 ## Version And Changelog Guidance
 
