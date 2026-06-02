@@ -161,8 +161,35 @@ regression.train_model <- function(x,
   if (!is.null(regression.recipe_func)) regression.recipe <- regression.recipe_func(regression.recipe)
 
   # Combine workflow, model specification, and recipe
-  regression.workflow <-
-    workflows::add_recipe(workflows::add_model(workflows::workflow(), regression.model), regression.recipe)
+  regression.workflow <- workflows::workflow()
+
+  if (inherits(regression.model, "gen_additive_mod")) {
+    all_predictors <- regression.recipe$var_info$variable[regression.recipe$var_info$role == "predictor"]
+
+    # Identify Var terms for splines vs mask_Var terms for linear effects
+    spline_vars <- all_predictors[grepl("^Var", all_predictors)]
+    linear_vars <- all_predictors[grepl("^mask_Var", all_predictors)]
+
+    # Create the formula string: y_hat ~ s(Var1) + s(Var2) + mask_Var1 + ...
+    gam_formula_str <- paste(
+      regression.response_var, "~",
+      paste(c(paste0("s(", spline_vars, ")"), linear_vars), collapse = " + ")
+    )
+    gam_formula <- as.formula(gam_formula_str)
+
+    # Supply the custom spline formula to the GAM model
+    regression.workflow <- workflows::add_model(
+      regression.workflow,
+      regression.model,
+      formula = gam_formula
+    )
+  } else {
+    regression.workflow <- workflows::add_model(regression.workflow, regression.model)
+  }
+
+  # Still add the recipe for general preprocessing
+  regression.workflow <- workflows::add_recipe(regression.workflow, regression.recipe)
+
 
   # Check if we are to tune hyperparameters in the regression model, as we then need to update the workflow.
   # If we are not doing any hyperparameter tuning, then the workflow above is enough.

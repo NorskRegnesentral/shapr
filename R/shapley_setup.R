@@ -6,7 +6,7 @@
 #'
 #' @export
 #' @keywords internal
-shapley_setup <- function(internal) {
+shapley_setup <- function(internal, X_specific = NULL) {
   verbose <- internal$parameters$verbose
   n_shapley_values <- internal$parameters$n_shapley_values
   n_features <- internal$parameters$n_features
@@ -34,22 +34,26 @@ shapley_setup <- function(internal) {
   if ("progress" %in% verbose) {
     cli::cli_progress_step("Sampling coalitions")
   }
-
-  X <- create_coalition_table(
-    m = n_shapley_values,
-    exact = exact,
-    n_coalitions = n_coalitions,
-    n_coal_each_size = n_coal_each_size,
-    weight_zero_m = 10^6,
-    paired_shap_sampling = paired_shap_sampling,
-    prev_X = prev_X,
-    coal_feature_list = coal_feature_list,
-    approach0 = approach,
-    kernelSHAP_reweighting = kernelSHAP_reweighting,
-    semi_deterministic_sampling = semi_deterministic_sampling,
-    dt_coal_samp_info = dt_coal_samp_info,
-    dt_valid_causal_coalitions = dt_valid_causal_coalitions
-  )
+  if (is.null(X_specific)) {
+    # Get the coalition table with info about the coalitions to be used in this iteration)
+    X <- create_coalition_table(
+      m = n_shapley_values,
+      exact = exact,
+      n_coalitions = n_coalitions,
+      n_coal_each_size = n_coal_each_size,
+      weight_zero_m = 10^6,
+      paired_shap_sampling = paired_shap_sampling,
+      prev_X = prev_X,
+      coal_feature_list = coal_feature_list,
+      approach0 = approach,
+      kernelSHAP_reweighting = kernelSHAP_reweighting,
+      semi_deterministic_sampling = semi_deterministic_sampling,
+      dt_coal_samp_info = dt_coal_samp_info,
+      dt_valid_causal_coalitions = dt_valid_causal_coalitions
+    )
+  } else {
+    X <- X_specific
+  }
 
   coalition_map <- X[, .(id_coalition, coalitions_str)]
 

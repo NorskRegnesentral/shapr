@@ -487,6 +487,7 @@ explain <- function(model,
                     extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
+                    X_specific = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -525,7 +526,6 @@ explain <- function(model,
     ...
   )
 
-
   # Gets predict_model (if not passed to explain)
   predict_model <- get_predict_model(predict_model = predict_model, model = model)
 
@@ -549,6 +549,7 @@ explain <- function(model,
 
   converged <- FALSE
   iter <- length(internal$iter_list)
+  iter_org = iter
 
   if (!is.null(seed)) {
     set.seed(seed)
@@ -563,7 +564,7 @@ explain <- function(model,
     internal$timing_list <- list(init = Sys.time())
 
     # Setup the Shapley framework
-    internal <- shapley_setup(internal)
+    internal <- shapley_setup(internal, X_specific = X_specific)
 
     # Only actually called for approach %in% c("regression_surrogate","vaeac")
     internal <- setup_approach(internal, model = model, predict_model = predict_model)
@@ -578,7 +579,7 @@ explain <- function(model,
     internal <- check_convergence(internal)
 
     # Save intermediate results
-    save_results(internal)
+    if (iter == iter_org || iter %% 20 == 0 || converged) save_results(internal)
 
     # Preparing parameters for next iteration (does not do anything if already converged)
     internal <- prepare_next_iteration(internal)
@@ -595,6 +596,8 @@ explain <- function(model,
 
     iter <- iter + 1
   }
+
+  save_results(internal)
 
   internal$main_timing_list$main_computation <- Sys.time()
 
