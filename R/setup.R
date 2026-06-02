@@ -604,7 +604,7 @@ get_data_specs <- function(x) {
   feature_specs <- list()
   feature_specs$labels <- names(x)
   # If a column is of a class with multiple classes, then we need to do some processing to only have one class per feature.
-  # Some approches like gaussian, copula, empirical checks that we do not have any factors by explicility checking for the class "factor". 
+  # Some approaches like gaussian, copula, empirical checks that we do not have any factors by explicility checking for the class "factor". 
   # If we have a factor that is ordered, then the class will be c("ordered", "factor"), hence we check for "factor" in the class vector
   # to be sure to catch all factors. For other classes, we just take the first one.
   # NOTE: an alternative would be to have that feature_specs contains a list of classes for each feature, but that would require more adjustments
@@ -613,7 +613,7 @@ get_data_specs <- function(x) {
   feature_specs$classes <- vapply(x, function(col) {
     cl <- class(col)
     if ("factor" %in% cl) "factor" else cl[1]
-    if ("date" %in% cl) "date" else cl[1]
+    if ("Date" %in% cl) "Date" else cl[1]
   }, character(1))
   feature_specs$factor_levels <- lapply(x, levels)
 
