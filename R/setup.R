@@ -475,11 +475,57 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
 
+  # Check feature specs to ensure consistent number of features, classes, and factor levels
+  check_feature_specs(x_train_feature_specs)
+  check_feature_specs(x_explain_feature_specs)
+  check_feature_specs(model_feature_specs)
+
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
 
   # Then x_train vs x_explain (requiring exact same order)
   compare_feature_specs(x_train_feature_specs, x_explain_feature_specs, "x_train", "x_explain")
+}
+
+#' @keywords internal
+check_feature_specs <- function(spec) {
+  if (is.null(spec$labels) || is.null(spec$classes) || is.null(spec$factor_levels)) {
+    cli::cli_abort("`feature_specs` must be a list with the elements `labels`, `classes`, and `factor_levels`.")
+  }
+  if (!is.character(spec$labels)) {
+    cli::cli_abort("`feature_specs$labels` must be a character vector.")
+  }
+  if (!(is.character(spec$classes) || all(is.na(spec$classes))) || is.null(names(spec$classes))) {
+    cli::cli_abort("`feature_specs$classes` must be a named character vector or contain only `NA` values.")
+  }
+  if (!is.list(spec$factor_levels) || is.null(names(spec$factor_levels))) {
+    cli::cli_abort("`feature_specs$factor_levels` must be a named list.")
+  }
+  # Check that the length of feature names, classes, and factor levels are consistent
+  if (!(length(spec$labels) == length(spec$classes) && length(spec$classes) == length(spec$factor_levels))) {
+    cli::cli_abort(c(
+      "The lengths of `feature_specs$labels`, `feature_specs$classes`, and `feature_specs$factor_levels` are not the same.",
+      "i" = paste0(
+        "`feature_specs$labels` has length ", length(spec$labels), ": ", paste(spec$labels, collapse = ", ")
+      ),
+      "i" = paste0(
+        "`feature_specs$classes` has length ", length(spec$classes), ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
+      ),
+      "i" = paste0(
+        "`feature_specs$factor_levels` has length ", length(spec$factor_levels), ": ",
+        paste(
+          vapply(
+            names(spec$factor_levels),
+            function(nm) {
+              paste0(nm, "={{", paste(spec$factor_levels[[nm]], collapse = ", "), "}}")
+            },
+            character(1)
+          ),
+          collapse = ", "
+        )
+      )
+    ))
+  }
 }
 
 #' @keywords internal
