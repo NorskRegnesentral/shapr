@@ -143,6 +143,29 @@
       "type": "shell",
       "command": "Rscript dev/rebuild-long-running-vignettes.R --webp",
       "group": "build",
+      "options": {
+        "env": {
+          "SHAPR_OUTPUT_WIDTH": "85"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Rebuild long-running vignettes (no cache)",
+      "detail": "Rebuilds precomputed vignettes from *.Rmd.orig without reading or writing knitr cache, then converts generated PNG figures to WebP.",
+      "type": "shell",
+      "command": "Rscript dev/rebuild-long-running-vignettes.R --webp --no-cache",
+      "group": "build",
+      "options": {
+        "env": {
+          "SHAPR_OUTPUT_WIDTH": "85"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",

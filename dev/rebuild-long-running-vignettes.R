@@ -8,11 +8,22 @@
 # Usage from the repository root:
 #   Rscript dev/rebuild-long-running-vignettes.R
 #   Rscript dev/rebuild-long-running-vignettes.R --webp
+#   Rscript dev/rebuild-long-running-vignettes.R --webp --no-cache
 #   Rscript dev/rebuild-long-running-vignettes.R --vignette general_usage --webp
+#   SHAPR_OUTPUT_WIDTH=85 Rscript dev/rebuild-long-running-vignettes.R --webp
 
 args <- commandArgs(trailingOnly = TRUE)
 
+output_width <- suppressWarnings(as.integer(Sys.getenv("SHAPR_OUTPUT_WIDTH", unset = NA_character_)))
+
+if (!is.na(output_width)) {
+  output_width <- max(output_width, 20L)
+  options(width = output_width, cli.width = output_width, crayon.width = output_width)
+  Sys.setenv(COLUMNS = output_width, CLI_WIDTH = output_width)
+}
+
 convert_webp <- "--webp" %in% args
+disable_cache <- "--no-cache" %in% args
 
 vignette_arg_index <- match("--vignette", args)
 selected_vignettes <- character()
@@ -75,9 +86,24 @@ if (convert_webp) {
 
 message("Rebuilding long-running vignette(s): ", paste(vignettes, collapse = ", "))
 
+if (disable_cache) {
+  message("Disabling knitr cache for this rebuild.")
+}
+
 old_wd <- getwd()
 on.exit(setwd(old_wd), add = TRUE)
 setwd(vignette_dir)
+
+old_cache_hook <- knitr::opts_hooks$get("cache")
+
+if (disable_cache) {
+  knitr::opts_hooks$set(cache = function(options) {
+    options$cache <- FALSE
+    return(options)
+  })
+
+  on.exit(knitr::opts_hooks$set(cache = old_cache_hook), add = TRUE)
+}
 
 for (vignette in vignettes) {
   input <- paste0(vignette, ".Rmd.orig")
