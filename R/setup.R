@@ -649,13 +649,8 @@ get_extra_parameters <- function(internal, type) {
 get_data_specs <- function(x) {
   feature_specs <- list()
   feature_specs$labels <- names(x)
-  # If a column is of a class with multiple classes, then we need to do some processing to only have one class per feature.
-  # Some approaches like gaussian, copula, empirical checks that we do not have any factors by explicility checking for the class "factor". 
-  # If we have a factor that is ordered, then the class will be c("ordered", "factor"), hence we check for "factor" in the class vector
-  # to be sure to catch all factors. For other classes, we just take the first one.
-  # NOTE: an alternative would be to have that feature_specs contains a list of classes for each feature, but that would require more adjustments
-  # in the code and the checks, and as we only need to know if a feature is a factor or not, we can just check for "factor" in the class vector.
-  # TODO: Discuss with Martin.
+  # Want only one class per feature, but if we have multiple classes, we want to make sure to catch
+  # factors by checking for "factor" in the class vector, and otherwise just take the first class.
   feature_specs$classes <- vapply(x, function(col) {
     cl <- class(col)
     if ("factor" %in% cl) "factor" else cl[1]
