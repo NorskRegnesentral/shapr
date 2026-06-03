@@ -518,8 +518,10 @@ check_feature_specs <- function(spec) {
           vapply(
             names(spec$factor_levels),
             function(nm) {
-              paste0(nm, "={{", paste(spec$factor_levels[[nm]], collapse = ", "), "}}")
-            },
+              lvls <- spec$factor_levels[[nm]]
+              lvls_str <- if (is.null(lvls)) "NULL" else paste(lvls, collapse = ", ")
+              paste0(nm, "={{", lvls_str, "}}")
+            }
             character(1)
           ),
           collapse = ", "
