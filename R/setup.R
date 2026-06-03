@@ -654,8 +654,13 @@ get_data_specs <- function(x) {
   # factors by checking for "factor" in the class vector, and otherwise just take the first class.
   feature_specs$classes <- vapply(x, function(col) {
     cl <- class(col)
-    if ("factor" %in% cl) "factor" else cl[1]
-    if ("Date" %in% cl) "Date" else cl[1]
+    if ("Date" %in% cl) {
+      "Date"
+    } else if ("factor" %in% cl) {
+      "factor"
+    } else {
+      cl[1]
+    }
   }, character(1))
   feature_specs$factor_levels <- lapply(x, levels)
 
