@@ -504,12 +504,13 @@ check_feature_specs <- function(spec) {
   # Check that the length of feature names, classes, and factor levels are consistent
   if (!(length(spec$labels) == length(spec$classes) && length(spec$classes) == length(spec$factor_levels))) {
     cli::cli_abort(c(
-      "The lengths of `feature_specs$labels`, `feature_specs$classes`, and `feature_specs$factor_levels` are not the same.",
+    "The lengths of `labels`, `classes`, and `factor_levels` in `feature_specs` are not the same.",
       "i" = paste0(
         "`feature_specs$labels` has length ", length(spec$labels), ": ", paste(spec$labels, collapse = ", ")
       ),
       "i" = paste0(
-        "`feature_specs$classes` has length ", length(spec$classes), ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
+        "`feature_specs$classes` has length ", length(spec$classes),
+         ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
       ),
       "i" = paste0(
         "`feature_specs$factor_levels` has length ", length(spec$factor_levels), ": ",
