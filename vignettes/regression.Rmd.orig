@@ -156,12 +156,14 @@ the `tidymodels` framework: `parsnip`, `recipes`, `workflows`,
 which package the functions originate from in the `tidymodels` framework.
 
 ```{r setup, message = FALSE, cache = TRUE}
-# Either use `library(tidymodels)` or separately specify the libraries indicated above
+# Either use `library(tidymodels)` or separately specify the libraries indicated
+# above
 library(tidymodels)
 library(shapr)
 
-# Ensure that shapr's functions are prioritized, otherwise we need to use the `shapr::`
-# prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
+# Ensure that shapr's functions are prioritized, otherwise we need to use the
+# `shapr::` prefix when calling explain(). The `conflicted` package is imported
+# by `tidymodels`.
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 ```
 
@@ -203,7 +205,8 @@ functions that plot and summarize the results of the explanation methods.
 This code block is optional to understand and can be skipped.
 
 ```{r setup-help, cache = TRUE}
-# Plot the MSEv criterion scores as horizontal bars and add dashed line of one method's score
+# Plot the MSEv criterion scores as horizontal bars and add dashed line of one
+# method's score
 plot_MSEv_scores <- function(explanation_list, method_line = NULL) {
   fig <- plot_MSEv_eval_crit(explanation_list) +
     ggplot2::theme(legend.position = "none") +
@@ -357,7 +360,8 @@ Furthermore, we stress that the purpose of this example is to highlight
 the framework's flexibility, *not* that the transformations below are reasonable.
 
 ```{r recipe-func, cache=TRUE}
-# Example function of how to apply step functions from the recipes package to specific features
+# Example function of how to apply step functions from the recipes package to
+# specific features
 regression.recipe_func <- function(recipe) {
   # Get the names of the present features
   feature_names <- recipe$var_info$variable[recipe$var_info$role == "predictor"]
@@ -370,7 +374,7 @@ regression.recipe_func <- function(recipe) {
   # If Solar.R is present, then log transform it
   if ("Solar.R" %in% feature_names) recipe <- recipes::step_log(recipe, Solar.R)
 
-  # If Wind is present, then scale it to be between 0 and 1 and then sqrt transform it
+  # If Wind is present, then scale it to be between 0 and 1 and then sqrt it
   if ("Wind" %in% feature_names) recipe <- recipes::step_sqrt(recipes::step_range(recipe, Wind))
 
   # If Temp is present, then expand it using orthogonal polynomials of degree 3
@@ -546,7 +550,8 @@ explanation_list$sep_tree_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 
-# Use trees with cross-validation on the depth and cost complexity. Manually set the values.
+# Use trees with cross-validation on the depth and cost complexity. Manually set the
+# values.
 explanation_list$sep_tree_cv_2 <- explain(
   model = model,
   x_explain = x_explain,
@@ -828,7 +833,8 @@ explanation_list$sur_rf <- explain(
   regression.model = parsnip::rand_forest(engine = "ranger", mode = "regression")
 )
 
-# Using random forest with parameters tuned by cross-validation as the surrogate model
+# Using random forest with parameters tuned by cross-validation as the surrogate
+# model
 explanation_list$sur_rf_cv <- explain(
   model = model,
   x_explain = x_explain,
@@ -938,7 +944,8 @@ parsnip::set_model_mode(model = "ppr_reg", mode = "regression")
 parsnip::set_model_engine(model = "ppr_reg", mode = "regression", eng = "ppr")
 parsnip::set_dependency("ppr_reg", eng = "ppr", pkg = "stats")
 
-# If your function has several parameters, then we add one of these functions for each parameter
+# If your function has several parameters, then we add one of these functions for
+# each parameter
 parsnip::set_model_arg(
   model = "ppr_reg",
   eng = "ppr",
@@ -1356,7 +1363,8 @@ explanation_list_mixed$sep_tree <- explain(
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 
-# Use trees with cross-validation on the depth and cost complexity. Manually set the values.
+# Use trees with cross-validation on the depth and cost complexity. Manually set the
+# values.
 explanation_list_mixed$sep_tree_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1485,7 +1493,8 @@ explanation_list_mixed$sur_tree <- explain(
   regression.model = parsnip::decision_tree(engine = "rpart", mode = "regression")
 )
 
-# Use trees with cross-validation on the depth and cost complexity. Manually set the values.
+# Use trees with cross-validation on the depth and cost complexity. Manually set the
+# values.
 explanation_list_mixed$sur_tree_cv <- explain(
   model = model_cat,
   x_explain = x_explain_cat,
@@ -1699,7 +1708,8 @@ explanation_list_str$sep_rf_cv <- explain(
   regression.vfold_cv_para = list(v = 5)
 )
 
-# Using random forest with parameters tuned by cross-validation as the surrogate model
+# Using random forest with parameters tuned by cross-validation as the surrogate
+# model
 explanation_list_str$sur_rf_cv <- explain(
   model = model,
   x_explain = x_explain,
