@@ -504,13 +504,13 @@ check_feature_specs <- function(spec) {
   # Check that the length of feature names, classes, and factor levels are consistent
   if (!(length(spec$labels) == length(spec$classes) && length(spec$classes) == length(spec$factor_levels))) {
     cli::cli_abort(c(
-    "The lengths of `labels`, `classes`, and `factor_levels` in `feature_specs` are not the same.",
+      "The lengths of `labels`, `classes`, and `factor_levels` in `feature_specs` are not the same.",
       "i" = paste0(
         "`feature_specs$labels` has length ", length(spec$labels), ": ", paste(spec$labels, collapse = ", ")
       ),
       "i" = paste0(
         "`feature_specs$classes` has length ", length(spec$classes),
-         ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
+        ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
       ),
       "i" = paste0(
         "`feature_specs$factor_levels` has length ", length(spec$factor_levels), ": ",
@@ -521,7 +521,7 @@ check_feature_specs <- function(spec) {
               lvls <- spec$factor_levels[[nm]]
               lvls_str <- if (is.null(lvls)) "NULL" else paste(lvls, collapse = ", ")
               paste0(nm, "={{", lvls_str, "}}")
-            }
+            },
             character(1)
           ),
           collapse = ", "
