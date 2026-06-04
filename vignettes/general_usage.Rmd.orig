@@ -1094,6 +1094,9 @@ Below is a basic example of a parallelization with two workers.
 
 ```{r para, warning=FALSE, cache = TRUE}
 library(future)
+old_future_plan <- future::plan()
+on.exit(future::plan(old_future_plan), add = TRUE)
+
 future::plan(multisession, workers = 2)
 
 explanation_par <- explain(
@@ -1105,7 +1108,7 @@ explanation_par <- explain(
   seed = 1
 )
 
-future::plan(sequential) # To return to non-parallel computation
+future::plan(old_future_plan) # To return to the previous computation plan
 ```
 
 # Verbosity and progress updates {#verbose}
