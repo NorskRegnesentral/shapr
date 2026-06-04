@@ -518,8 +518,10 @@ check_feature_specs <- function(spec) {
           vapply(
             names(spec$factor_levels),
             function(nm) {
-              paste0(nm, "={{", paste(spec$factor_levels[[nm]], collapse = ", "), "}}")
-            },
+              lvls <- spec$factor_levels[[nm]]
+              lvls_str <- if (is.null(lvls)) "NULL" else paste(lvls, collapse = ", ")
+              paste0(nm, "={{", lvls_str, "}}")
+            }
             character(1)
           ),
           collapse = ", "
@@ -654,8 +656,13 @@ get_data_specs <- function(x) {
   # factors by checking for "factor" in the class vector, and otherwise just take the first class.
   feature_specs$classes <- vapply(x, function(col) {
     cl <- class(col)
-    if ("factor" %in% cl) "factor" else cl[1]
-    if ("Date" %in% cl) "Date" else cl[1]
+    if ("Date" %in% cl) {
+      "Date"
+    } else if ("factor" %in% cl) {
+      "factor"
+    } else {
+      cl[1]
+    }
   }, character(1))
   feature_specs$factor_levels <- lapply(x, levels)
 

@@ -2030,7 +2030,7 @@ outputting the corresponding prediction as a numeric vector. The second
 the model as input and outputting a list with the following elements:
 *labels* (vector with the feature names to compute Shapley values for),
 *classes* (a named vector with the labels as names and the class type as
-elements. Note, only one class per feature is supported and for ordered 
+elements. Note, only one class per feature is supported and for ordered
 factors the element should be "factor" and not "ordered"), and
 *factor_levels* (a named list with the labels as names and
 vectors with the factor levels as elements (NULL if the feature is not a
