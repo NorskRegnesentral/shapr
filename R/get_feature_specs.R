@@ -63,6 +63,10 @@ get_feature_specs <- function(get_model_specs, model) {
         )
       )
     }
+
+    # Convert ordered factors to factors to avoid issues with the check_data function
+    feature_specs$classes[feature_specs$classes == "ordered"] <- "factor"
+
   } else {
     feature_specs <- NULL
   }
