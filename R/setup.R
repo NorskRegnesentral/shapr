@@ -521,7 +521,7 @@ check_feature_specs <- function(spec) {
               lvls <- spec$factor_levels[[nm]]
               lvls_str <- if (is.null(lvls)) "NULL" else paste(lvls, collapse = ", ")
               paste0(nm, "={{", lvls_str, "}}")
-            }
+            },
             character(1)
           ),
           collapse = ", "
