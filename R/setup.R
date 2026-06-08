@@ -529,6 +529,8 @@ check_feature_specs <- function(spec) {
       )
     ))
   }
+
+  return(NULL)
 }
 
 #' @keywords internal
