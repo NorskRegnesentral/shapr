@@ -475,11 +475,62 @@ check_data <- function(internal) {
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
   }
 
+  # Check feature specs to ensure consistent number of features, classes, and factor levels
+  check_feature_specs(x_train_feature_specs)
+  check_feature_specs(x_explain_feature_specs)
+  check_feature_specs(model_feature_specs)
+
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
 
   # Then x_train vs x_explain (requiring exact same order)
   compare_feature_specs(x_train_feature_specs, x_explain_feature_specs, "x_train", "x_explain")
+}
+
+#' @keywords internal
+check_feature_specs <- function(spec) {
+  if (is.null(spec$labels) || is.null(spec$classes) || is.null(spec$factor_levels)) {
+    cli::cli_abort("`feature_specs` must be a list with the elements `labels`, `classes`, and `factor_levels`.")
+  }
+  if (!is.character(spec$labels)) {
+    cli::cli_abort("`feature_specs$labels` must be a character vector.")
+  }
+  if (!(is.character(spec$classes) || all(is.na(spec$classes))) || is.null(names(spec$classes))) {
+    cli::cli_abort("`feature_specs$classes` must be a named character vector or contain only `NA` values.")
+  }
+  if (!is.list(spec$factor_levels) || is.null(names(spec$factor_levels))) {
+    cli::cli_abort("`feature_specs$factor_levels` must be a named list.")
+  }
+  # Check that the length of feature names, classes, and factor levels are consistent
+  if (!(length(spec$labels) == length(spec$classes) && length(spec$classes) == length(spec$factor_levels))) {
+    cli::cli_abort(c(
+      "The lengths of `labels`, `classes`, and `factor_levels` in `feature_specs` are not the same.",
+      "i" = paste0(
+        "`feature_specs$labels` has length ", length(spec$labels), ": ", paste(spec$labels, collapse = ", ")
+      ),
+      "i" = paste0(
+        "`feature_specs$classes` has length ", length(spec$classes),
+        ": ", paste(names(spec$classes), spec$classes, sep = "=", collapse = ", ")
+      ),
+      "i" = paste0(
+        "`feature_specs$factor_levels` has length ", length(spec$factor_levels), ": ",
+        paste(
+          vapply(
+            names(spec$factor_levels),
+            function(nm) {
+              lvls <- spec$factor_levels[[nm]]
+              lvls_str <- if (is.null(lvls)) "NULL" else paste(lvls, collapse = ", ")
+              paste0(nm, "={{", lvls_str, "}}")
+            },
+            character(1)
+          ),
+          collapse = ", "
+        )
+      )
+    ))
+  }
+
+  return(NULL)
 }
 
 #' @keywords internal
@@ -603,7 +654,18 @@ get_extra_parameters <- function(internal, type) {
 get_data_specs <- function(x) {
   feature_specs <- list()
   feature_specs$labels <- names(x)
-  feature_specs$classes <- unlist(lapply(x, class))
+  # Want only one class per feature, but if we have multiple classes, we want to make sure to catch
+  # factors by checking for "factor" in the class vector, and otherwise just take the first class.
+  feature_specs$classes <- vapply(x, function(col) {
+    cl <- class(col)
+    if ("Date" %in% cl) {
+      "Date"
+    } else if ("factor" %in% cl) {
+      "factor"
+    } else {
+      cl[1]
+    }
+  }, character(1))
   feature_specs$factor_levels <- lapply(x, levels)
 
   # Defining all integer values as numeric

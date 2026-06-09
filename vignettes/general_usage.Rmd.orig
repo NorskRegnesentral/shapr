@@ -463,8 +463,9 @@ model <- xgboost::xgboost(
 # Specifying the phi_0, i.e. the expected prediction without any features
 p0 <- mean(y_train)
 
-# Computing the actual Shapley values with Kernel SHAP accounting for feature dependence using
-# the empirical (conditional) distribution approach with bandwidth parameter sigma = 0.1 (default)
+# Computing the actual Shapley values with Kernel SHAP accounting for feature
+# dependence using the empirical (conditional) distribution approach with bandwidth
+# parameter sigma = 0.1 (default)
 explanation <- explain(
   model = model,
   x_explain = x_explain,
@@ -475,7 +476,8 @@ explanation <- explain(
 )
 
 # Printing the Shapley values for the test data.
-# For more information about the interpretation of the values in the table, see ?shapr::explain.
+# For more information about the interpretation of the values in the table, see
+# ?shapr::explain.
 print(explanation)
 
 # Plot the resulting explanations for observations 1 and 6
@@ -650,7 +652,8 @@ y_var_ts <- "X41"
 ind_x_explain <- 1:6
 data_ts_train <- data_ts[-ind_x_explain]
 
-# Creating a predictive model (for illustration just predicting the next point in the time series with a linear model)
+# Creating a predictive model (for illustration just predicting the next point in
+# the time series with a linear model)
 lm_ts_formula <- as.formula(X41 ~ .)
 model_lm_ts <- lm(lm_ts_formula, data_ts_train)
 
@@ -859,7 +862,8 @@ The main plot if interest is the `MSEv_bar`, which displays the $\operatorname{M
 we have only averaged over the observations or the coalitions (both as bar and line plots).
 
 ```{r MSEv-plot-2, warning=FALSE, cache = TRUE}
-# The main plot of the overall MSEv averaged over both the coalitions and observations
+# The main plot of the overall MSEv averaged over both the coalitions and
+# observations
 MSEv_plots$MSEv_bar
 
 # The MSEv averaged over only the explicands for each coalition
@@ -1022,7 +1026,8 @@ print(ex, what = "MSEv")        # Prints the MSEv evaluation criterion
 # When called without assignment, summary() prints formatted output to console
 summary(ex)
 
-# When assigned, it returns a summary.shapr object with all components available for extraction
+# When assigned, it returns a summary.shapr object with all components available for
+# extraction
 summary_ex <- summary(ex) # print(summary_ex) also provides the formatted output
 
 summary_ex$shapley_est             # The estimated Shapley values
@@ -1033,7 +1038,8 @@ summary_ex$parameters$n_MC_samples  # Number of Monte Carlo samples used
 summary_ex$parameters$gaussian.mu       # Estimated mean vector (Gaussian approach)
 summary_ex$parameters$gaussian.cov_mat  # Estimated covariance matrix (Gaussian approach)
 
-# Alternatively, use get_results() to get the same components without printing the summary
+# Alternatively, use get_results() to get the same components without printing the
+# summary
 res_ex <- get_results(ex)
 
 # You may also extract individual summary components directly using get_results()
@@ -1088,6 +1094,9 @@ Below is a basic example of a parallelization with two workers.
 
 ```{r para, warning=FALSE, cache = TRUE}
 library(future)
+old_future_plan <- future::plan()
+on.exit(future::plan(old_future_plan), add = TRUE)
+
 future::plan(multisession, workers = 2)
 
 explanation_par <- explain(
@@ -1099,7 +1108,7 @@ explanation_par <- explain(
   seed = 1
 )
 
-future::plan(sequential) # To return to non-parallel computation
+future::plan(old_future_plan) # To return to the previous computation plan
 ```
 
 # Verbosity and progress updates {#verbose}
@@ -1319,7 +1328,9 @@ outputting the corresponding prediction as a numeric vector. The second
 the model as input and outputting a list with the following elements:
 *labels* (vector with the feature names to compute Shapley values for),
 *classes* (a named vector with the labels as names and the class type as
-elements), *factor_levels* (a named list with the labels as names and
+elements. Note, only one class per feature is supported and for ordered
+factors the element should be "factor" and not "ordered"), and
+*factor_levels* (a named list with the labels as names and
 vectors with the factor levels as elements (NULL if the feature is not a
 factor)). The `get_model_specs` function is used to check that the
 data passed to `explain` have the correct format in terms
@@ -1566,7 +1577,8 @@ and is updated after each iteration.
 This can be particularly handy for long-running computations.
 
 ```{r cont-comp, cache = TRUE}
-# First we run the computation with the iterative estimation procedure for a limited number of coalition samples
+# First we run the computation with the iterative estimation procedure for a limited
+# number of coalition samples
 library(xgboost)
 library(data.table)
 
@@ -1623,8 +1635,8 @@ ex_further <- explain(
 
 ex_further_path <- get_results(ex_further, what = "saving_path") # Gets path to the saved intermediate estimation object
 
-# Using the ex_init object to continue the computation for the remaining coalition samples
-# but this time using the path to the saved intermediate estimation object
+# Using the ex_init object to continue the computation for the remaining coalition
+# samples but this time using the path to the saved intermediate estimation object
 ex_even_further <- explain(
   model = model,
   x_explain = x_explain,

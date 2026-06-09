@@ -130,6 +130,68 @@
       2:          2 42.44       -7.256             -18.88         24.751     -13.445
       3:          3 42.44       15.594             -26.01          5.887     -13.834
 
+# output_lm_mixed_ordered_independence
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
+      * Approach: independence
+      * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
+    Output
+         explain_id  none Solar.R    Wind   Temp    Day Month_factor_ordered
+              <int> <num>   <num>   <num>  <num>  <num>                <num>
+      1:          1 42.44  -4.730   7.750 17.753 -2.601               -7.588
+      2:          2 42.44   2.338  -3.147 -5.310 -1.676               -7.588
+      3:          3 42.44   3.857 -17.469 -1.466  1.099                3.379
+
+# output_lm_mixed_ordered_ctree
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
+      * Approach: ctree
+      * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 1000
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 3
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
+    Output
+         explain_id  none Solar.R    Wind   Temp     Day Month_factor_ordered
+              <int> <num>   <num>   <num>  <num>   <num>                <num>
+      1:          1 42.44  -9.267   9.620 16.724 -2.9901               -3.503
+      2:          2 42.44   5.357  -5.752 -8.489 -1.6979               -4.801
+      3:          3 42.44   6.947 -19.988 -4.925  0.9966                6.369
+
 # output_lm_mixed_lm_separate
 
     Code

@@ -78,6 +78,38 @@ test_that("output_lm_categorical_lm_separate", {
   )
 })
 
+test_that("output_lm_mixed_ordered_independence", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_mixed_ordered,
+      x_explain = x_explain_mixed_ordered,
+      x_train = x_train_mixed_ordered,
+      approach = "independence",
+      phi0 = p0,
+      seed = 1,
+      iterative = FALSE
+    ),
+    "output_lm_mixed_ordered_independence"
+  )
+})
+
+test_that("output_lm_mixed_ordered_ctree", {
+  expect_snapshot_rds(
+    explain(
+      testing = TRUE,
+      model = model_lm_mixed_ordered,
+      x_explain = x_explain_mixed_ordered,
+      x_train = x_train_mixed_ordered,
+      approach = "ctree",
+      phi0 = p0,
+      seed = 1,
+      iterative = FALSE
+    ),
+    "output_lm_mixed_ordered_ctree"
+  )
+})
+
 test_that("output_lm_mixed_lm_separate", {
   expect_snapshot_rds(
     explain(

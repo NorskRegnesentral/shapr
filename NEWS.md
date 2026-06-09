@@ -8,6 +8,9 @@
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 
+### Bug fixes
+* Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. ([#495](https://github.com/NorskRegnesentral/shapr/pull/495))
+
 ### Tests
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 

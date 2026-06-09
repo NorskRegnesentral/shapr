@@ -245,8 +245,9 @@ library(gridExtra)
 
 
 
-# Ensure that shapr's functions are prioritized; otherwise, we need to use the `shapr::`
-# prefix when calling explain(). The `conflicted` package is imported by `tidymodels`.
+# Ensure that shapr's functions are prioritized; otherwise, we need to use the
+# `shapr::` prefix when calling explain(). The `conflicted` package is imported
+# by `tidymodels`.
 conflicted::conflicts_prefer(shapr::explain, shapr::prepare_data)
 ```
 
@@ -303,7 +304,8 @@ x_explain <- as.matrix(bike[-train_index, x_var])
 y_explain_nc <- as.matrix(bike[-train_index, y_var]) # not centered
 y_explain <- y_explain_nc - mean(y_train_nc)
 
-# Get 6 explicands to plot the Shapley values for, with a wide spread in their predicted outcomes
+# Get 6 explicands to plot the Shapley values for, with a wide spread in their
+# predicted outcomes
 n_index_x_explain <- 6
 index_x_explain <- order(y_explain)[seq(1, length(y_explain), length.out = n_index_x_explain)]
 y_explain[index_x_explain]
@@ -632,7 +634,8 @@ explanation_sym_marg[["independence_marg"]] <- explain(
   confounding = TRUE
 )
 
-# Here we use the conditional Shapley value framework with the `independence` approach
+# Here we use the conditional Shapley value framework with the `independence`
+# approach
 explanation_sym_marg[["independence_con"]] <- explain(
   model = model,
   x_train = x_train,
@@ -990,7 +993,7 @@ conditional/causal Shapley values consider both for a more natural explanation.
 # Features of interest
 features <- c("cosyear", "temp")
 
-# Get explicands with similar temperature: 2012-10-09 (October) and 2012-12-03 (December)
+# Get explicands with similar temperature: 2012-10-09 (Oct) and 2012-12-03 (Dec)
 dates <- c("2012-10-09", "2012-12-03")
 dates_idx <- sapply(dates, function(data) which(as.integer(row.names(x_explain)) == which(bike$dteday == data)))
 # predict(model, x_explain)[dates_idx] + mean(y_train_nc) # predicted values for the two points
