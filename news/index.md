@@ -13,6 +13,13 @@
   under `dev/`.
   ([\#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 
+#### Bug fixes
+
+- Fixed handling of ordered factor features by treating them as factors
+  in feature specifications and adding stricter checks for malformed
+  feature specification lists.
+  ([\#495](https://github.com/NorskRegnesentral/shapr/pull/495))
+
 #### Tests
 
 - Skip `vdiffr` plot snapshot tests on R \< 4.5.0 to avoid spurious
