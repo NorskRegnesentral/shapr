@@ -56,6 +56,7 @@
 <div class="section level4">
 <h4 id="bug-fixes-1-0-8-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-8-9000"></a></h4>
 <ul><li>Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. (<a href="https://github.com/NorskRegnesentral/shapr/pull/495" class="external-link">#495</a>)</li>
+<li>Fixed <code><a href="https://cli.r-lib.org/reference/cli_progress_step.html" class="external-link">cli::cli_progress_step()</a></code> reporting artificially short timings for the v(S) computation step by passing <code>.envir = parent.frame()</code> to bind the progress bar’s lifetime to the correct calling environment. (<a href="https://github.com/NorskRegnesentral/shapr/pull/496" class="external-link">#496</a>)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="tests-1-0-8-9000">Tests<a class="anchor" aria-label="anchor" href="#tests-1-0-8-9000"></a></h4>

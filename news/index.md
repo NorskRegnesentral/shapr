@@ -19,6 +19,12 @@
   in feature specifications and adding stricter checks for malformed
   feature specification lists.
   ([\#495](https://github.com/NorskRegnesentral/shapr/pull/495))
+- Fixed
+  [`cli::cli_progress_step()`](https://cli.r-lib.org/reference/cli_progress_step.html)
+  reporting artificially short timings for the v(S) computation step by
+  passing `.envir = parent.frame()` to bind the progress bar’s lifetime
+  to the correct calling environment.
+  ([\#496](https://github.com/NorskRegnesentral/shapr/pull/496))
 
 #### Tests
 
