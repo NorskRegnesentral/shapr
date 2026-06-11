@@ -157,7 +157,7 @@ cli_compute_vS <- function(internal) {
   approach <- internal$parameters$approach
 
   if ("progress" %in% verbose) {
-    cli::cli_progress_step("Computing v(S)")
+    cli::cli_progress_step("Computing v(S)", .envir = parent.frame())
   }
   if ("vS_details" %in% verbose) {
     if ("regression_separate" %in% approach) {
