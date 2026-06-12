@@ -4,6 +4,9 @@
 
 # shapr 1.0.8.9000
 
+### New features
+* Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package (branch: add-arf).
+
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))

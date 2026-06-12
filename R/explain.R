@@ -24,7 +24,8 @@
 #'
 #' @param approach Character vector of length `1` or one less than the number of features.
 #' All elements should either be `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
-#' `"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or `"regression_surrogate"`.
+#' `"categorical"`, `"arf"`, `"timeseries"`, `"independence"`, `"regression_separate"`, or
+#' `"regression_surrogate"`.
 #' The two regression approaches cannot be combined with any other approach.
 #' See details for more information.
 #'
@@ -171,7 +172,7 @@
 #' @inheritDotParams setup_approach -internal
 #'
 #' @details The `shapr` package implements kernelSHAP estimation of dependence-aware Shapley values with
-#' eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
+#' nine different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 #' These are all introduced in the
 #' \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
 #' (From R: `vignette("general_usage", package = "shapr")`).
@@ -185,6 +186,7 @@
 #' Redelmeier et al. (2020)} introduces the approach `"ctree"`.
 #' \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} introduces the `"vaeac"`
 #' approach.
+#' The `"arf"` approach uses adversarial random forests through the `arf` package.
 #' Approach `"timeseries"` is discussed in
 #' \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}.
 #' `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`,

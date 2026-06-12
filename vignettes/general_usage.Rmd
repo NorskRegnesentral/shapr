@@ -59,8 +59,9 @@ documentation and see examples with `?function_name`.
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
-eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
-`"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+nine different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+`"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`, `"timeseries"`, and
+`"independence"`.
 `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
 See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
@@ -410,7 +411,7 @@ the individual predictions. Since which approach should be used to estimate the
 contribution functions will depend on the type of data one is working with,
 the user must specify the approach to be used through the `approach` argument.
 Allowed values are `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
-`"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
+`"categorical"`, `"arf"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
 `"regression_surrogate"`.
 
 First we load the shapr package

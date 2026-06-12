@@ -45,7 +45,8 @@ needed to properly estimate the conditional expectations in the Shapley formula.
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
-\code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
+\code{"categorical"}, \code{"arf"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or
+\code{"regression_surrogate"}.
 The two regression approaches cannot be combined with any other approach.
 See details for more information.}
 
@@ -191,6 +192,22 @@ See the help file of \code{\link[=get_output_args_default]{get_output_args_defau
 \item{...}{
   Arguments passed on to \code{\link{setup_approach}}
   \describe{
+    \item{\code{arf.num_trees}}{Positive integer.
+The number of trees in the adversarial random forest.}
+    \item{\code{arf.min_node_size}}{Positive integer.
+The minimum number of observations in each terminal node.}
+    \item{\code{arf.delta}}{Non-negative numeric scalar.
+Tuning parameter passed to \code{\link[arf:adversarial_rf]{arf::adversarial_rf()}}.}
+    \item{\code{arf.max_iters}}{Positive integer.
+The maximum number of adversarial forest iterations.}
+    \item{\code{arf.alpha}}{Numeric scalar between 0 and 1.
+Tuning parameter passed to \code{\link[arf:forde]{arf::forde()}}.}
+    \item{\code{arf.epsilon}}{Positive numeric scalar.
+Small regularization constant passed to \code{\link[arf:forde]{arf::forde()}}.}
+    \item{\code{arf.parallel_train}}{Logical scalar.
+If \code{TRUE}, \code{\link[arf:adversarial_rf]{arf::adversarial_rf()}} and \code{\link[arf:forde]{arf::forde()}} use parallel processing.}
+    \item{\code{arf.parallel_gen}}{Logical scalar.
+If \code{TRUE}, \code{\link[arf:forge]{arf::forge()}} uses parallel processing when generating samples.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
@@ -352,7 +369,7 @@ For an overview of the methodology and capabilities of the package, see the soft
 }
 \details{
 The \code{shapr} package implements kernelSHAP estimation of dependence-aware Shapley values with
-eight different Monte Carlo-based approaches for estimating the conditional distributions of the data.
+nine different Monte Carlo-based approaches for estimating the conditional distributions of the data.
 These are all introduced in the
 \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}.
 (From R: \code{vignette("general_usage", package = "shapr")}).
@@ -366,6 +383,7 @@ gives a general introduction to dependence-aware Shapley values and the approach
 Redelmeier et al. (2020)} introduces the approach \code{"ctree"}.
 \href{https://www.jmlr.org/papers/volume23/21-1413/21-1413.pdf}{Olsen et al. (2022)} introduces the \code{"vaeac"}
 approach.
+The \code{"arf"} approach uses adversarial random forests through the \code{arf} package.
 Approach \code{"timeseries"} is discussed in
 \href{https://martinjullum.com/publication/jullum-2021-efficient/jullum-2021-efficient.pdf}{Jullum et al. (2021)}.
 \code{shapr} has also implemented two regression-based approaches \code{"regression_separate"} and \code{"regression_surrogate"},
