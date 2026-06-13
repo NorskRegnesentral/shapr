@@ -19,10 +19,18 @@
 #' Small regularization constant passed to [arf::forde()].
 #'
 #' @param arf.parallel_train Logical scalar.
-#' If `TRUE`, [arf::adversarial_rf()] and [arf::forde()] use parallel processing.
+#' If `TRUE`, [arf::adversarial_rf()] and [arf::forde()] use parallel processing
+#' when training the feature distribution.
+#' The training step uses `ranger` threads, controlled by `options(ranger.num.threads = n)`
+#' or the `R_RANGER_NUM_THREADS` environment variable. The [arf::forde()] step uses
+#' `foreach` and only runs in parallel when a `foreach` backend is registered.
 #'
 #' @param arf.parallel_gen Logical scalar.
-#' If `TRUE`, [arf::forge()] uses parallel processing when generating samples.
+#' If `TRUE`, [arf::forge()] uses `foreach` parallel processing when generating
+#' samples for the Monte Carlo integration used to estimate `v(S)`.
+#' This can be faster for ARF-heavy explanations, but is best combined with sequential
+#' shapr batching, for example `extra_computation_args = list(vS_batching_method = "forloop",
+#' min_n_batches = 1, max_batch_size = Inf)`, to avoid nested parallelization with `future`.
 #'
 #' @inheritParams default_doc_export
 #'
@@ -54,6 +62,7 @@ setup_approach.arf <- function(internal,
   parallel_train <- internal$parameters$arf.parallel_train
 
   check_arf_available()
+  check_arf_extra_parameters(internal$parameters)
   check_arf_parameters(
     num_trees = num_trees,
     min_node_size = min_node_size,
@@ -103,7 +112,6 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
   parallel_gen <- internal$parameters$arf.parallel_gen
 
   iter <- length(internal$iter_list)
-  X <- internal$iter_list[[iter]]$X
   x <- internal$iter_list[[iter]]$X
 
   if (is.null(index_features)) {
@@ -194,4 +202,14 @@ check_arf_parameters <- function(num_trees,
 #' @keywords internal
 is_arf_whole_number <- function(x) {
   is.numeric(x) && length(x) == 1 && !is.na(x) && is.finite(x) && x == as.integer(x)
+}
+
+#' @keywords internal
+check_arf_extra_parameters <- function(parameters) {
+  if ("num.threads" %in% names(parameters)) {
+    cli::cli_abort(c(
+      "{.arg num.threads} cannot be passed through {.fn explain} for {.code approach = \"arf\"}.",
+      "i" = "Use {.code options(ranger.num.threads = n)} or the {.envvar R_RANGER_NUM_THREADS} environment variable."
+    ))
+  }
 }

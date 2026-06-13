@@ -32,6 +32,14 @@ test_that("arf parameter validation", {
 })
 
 
+test_that("arf rejects ranger thread pass-through", {
+  expect_error(
+    shapr:::check_arf_extra_parameters(list(num.threads = 2)),
+    "ranger.num.threads"
+  )
+})
+
+
 test_that("output_lm_numeric_arf", {
   skip_if_not_installed("arf")
 
