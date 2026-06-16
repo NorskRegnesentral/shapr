@@ -59,6 +59,7 @@ setup_approach.arf <- function(internal,
   max_iters <- internal$parameters$arf.max_iters
   alpha <- internal$parameters$arf.alpha
   epsilon <- internal$parameters$arf.epsilon
+  seed <- internal$parameters$seed
   parallel_train <- internal$parameters$arf.parallel_train
 
   check_arf_available()
@@ -81,7 +82,8 @@ setup_approach.arf <- function(internal,
     delta = delta,
     max_iters = max_iters,
     verbose = FALSE,
-    parallel = parallel_train
+    parallel = parallel_train,
+    seed = seed
   )
 
   internal$objects$arf_sampler <- arf::forde(
