@@ -357,11 +357,11 @@
         out <- code
       }, digits = digits)
     Output
-         explain_id  none Solar.R    Wind   Temp   Month     Day
-              <int> <num>   <num>   <num>  <num>   <num>   <num>
-      1:          1 42.44 -11.924  -1.159  28.30  -1.159  -1.452
-      2:          2 42.44  11.468  -3.310 -20.64  -3.310   1.917
-      3:          3 42.44   9.861 -12.983  11.75 -12.983 -13.213
+         explain_id  none Solar.R    Wind   Temp   Month      Day
+              <int> <num>   <num>   <num>  <num>   <num>    <num>
+      1:          1 42.44 -12.979  -1.401 28.311  -1.401  0.07134
+      2:          2 42.44   1.910  -3.863 -5.548  -3.863 -2.51532
+      3:          3 42.44   1.881 -15.266 13.255 -15.266 -2.17240
 
 # output_lm_numeric_vaeac
 
@@ -434,9 +434,9 @@
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
-      1:          1 42.44       -8.602              13.96         -14.96       9.099
-      2:          2 42.44       -9.289             -24.50          31.98     -13.019
-      3:          3 42.44       16.382             -13.85          -3.93     -16.964
+      1:          1 42.44       -4.547              16.33       -19.4015       7.109
+      2:          2 42.44       -8.352             -21.02        25.5975     -11.062
+      3:          3 42.44       17.403             -23.58        -0.1678     -12.015
 
 # output_lm_categorical_vaeac
 
