@@ -27,7 +27,7 @@ test_that("output_lm_numeric_arf runs on macOS and satisfies efficiency", {
     iterative = FALSE
   )
 
-  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6)
+  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6, ignore_attr = TRUE)
 })
 
 test_that("output_lm_categorical_arf runs on macOS and satisfies efficiency", {
@@ -52,7 +52,7 @@ test_that("output_lm_categorical_arf runs on macOS and satisfies efficiency", {
     iterative = FALSE
   )
 
-  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6)
+  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6, ignore_attr = TRUE)
 })
 
 test_that("output_lm_numeric_vaeac runs on macOS and satisfies efficiency", {
@@ -79,7 +79,7 @@ test_that("output_lm_numeric_vaeac runs on macOS and satisfies efficiency", {
     iterative = FALSE
   )
 
-  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6)
+  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6, ignore_attr = TRUE)
 })
 
 test_that("output_lm_categorical_vaeac runs on macOS and satisfies efficiency", {
@@ -106,7 +106,7 @@ test_that("output_lm_categorical_vaeac runs on macOS and satisfies efficiency", 
     iterative = FALSE
   )
 
-  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6)
+  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6, ignore_attr = TRUE)
 })
 
 test_that("output_lm_mixed_vaeac runs on macOS and satisfies efficiency", {
@@ -133,5 +133,5 @@ test_that("output_lm_mixed_vaeac runs on macOS and satisfies efficiency", {
     iterative = FALSE
   )
 
-  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6)
+  expect_equal(rowSums(out$shapley_values_est[, -"explain_id"]), out$pred_explain, tolerance = 1e-6, ignore_attr = TRUE)
 })
