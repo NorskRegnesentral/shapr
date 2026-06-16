@@ -17,6 +17,7 @@
 
 ### Tests
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
+* Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (branch: add-arf)
 
 ### Continuous integration
 * Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).

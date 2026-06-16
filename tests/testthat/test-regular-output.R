@@ -195,6 +195,7 @@ test_that("output_lm_numeric_ctree", {
 })
 
 test_that("output_lm_numeric_arf", {
+  skip_on_os("mac") # Gives different Shapley values on macOS, likely due to platform differences in ranger/arf RNG
   skip_if_not_installed("arf")
 
   expect_snapshot_rds(
@@ -220,7 +221,7 @@ test_that("output_lm_numeric_arf", {
 })
 
 test_that("output_lm_numeric_vaeac", {
-  skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_on_os("mac") # Gives different Shapley values on macOS, likely due to inconsistencies in torch seed
   skip_if_not_installed("torch")
   skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
@@ -267,6 +268,7 @@ test_that("output_lm_categorical_ctree", {
 })
 
 test_that("output_lm_categorical_arf", {
+  skip_on_os("mac") # Gives different Shapley values on macOS, likely due to platform differences in ranger/arf RNG
   skip_if_not_installed("arf")
 
   expect_snapshot_rds(
@@ -292,7 +294,7 @@ test_that("output_lm_categorical_arf", {
 })
 
 test_that("output_lm_categorical_vaeac", {
-  skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_on_os("mac") # Gives different Shapley values on macOS, likely due to inconsistencies in torch seed
   skip_if_not_installed("torch")
   skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
@@ -459,7 +461,7 @@ test_that("output_lm_mixed_ctree", {
 })
 
 test_that("output_lm_mixed_vaeac", {
-  skip_on_os("mac") # The code runs on macOS, but it gives different Shapley values due to inconsistencies in torch seed
+  skip_on_os("mac") # Gives different Shapley values on macOS, likely due to inconsistencies in torch seed
   skip_if_not_installed("torch")
   skip_if_not_installed("coro")
   skip_if_not(torch::torch_is_installed())
