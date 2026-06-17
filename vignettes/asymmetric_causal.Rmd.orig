@@ -46,7 +46,8 @@ to the @heskes2020causal paper. The `CauSHAPley` package was based
 on an old version of `shapr` and was restricted to the `gaussian` approach (see section 6 in @heskes2020causal for more details).
 
 We have extended the causal Shapley value framework to work for all
-Monte Carlo-based approaches (`independence` (not recommended), `empirical`, `gaussian`, `copula`, `ctree`, `vaeac` and `categorical`), while the extension of the asymmetric
+Monte Carlo-based approaches (`arf`, `categorical`, `copula`, `ctree`, `empirical`, `gaussian`, `vaeac`,
+and `independence` (not recommended)), while the extension of the asymmetric
 Shapley value framework works for all the Monte Carlo and regression-based approaches.
 Our generalization is of uttermost importance, as many real-world data sets
 are far from the Gaussian distribution, and, compared to `CauSHAPley`, our implementation

@@ -124,12 +124,15 @@ prepare_data.arf <- function(internal, index_features = NULL, ...) {
     coalition_ids <- index_features
   }
 
-  unfeatures <- lapply(features, function(x) setdiff(1:n_features, x))
+  S_bar_indices <- lapply(features, function(x) setdiff(1:n_features, x))
 
+  # For each coalition S, set Sbar columns to NA in x_explain.
+  # In arf::forge(), non-missing values are conditioning evidence,
+  # while NA columns are sampled conditionally.
   evidence_list <- vector("list", length(features))
   for (i in seq_along(features)) {
     evidence_list[[i]] <- data.table::copy(x_explain)
-    data.table::set(evidence_list[[i]], j = unfeatures[[i]], value = NA)
+    data.table::set(evidence_list[[i]], j = S_bar_indices[[i]], value = NA)
   }
 
   evidence <- data.table::rbindlist(evidence_list)

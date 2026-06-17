@@ -461,7 +461,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
         # Generate the MC samples conditioning on S_now
         dt_new <- prepare_data(internal_copy, index_features = 1, ...)
 
-        if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
+        if (approach %in% c("categorical", "ctree", "empirical", "independence")) {
           # These approaches produce weighted MC samples; they do not necessarily generate n_MC_samples samples.
           # Ensure n_MC_samples by weighted resampling (with replacement) those ids that do not have n_MC_samples.
           n_samp_now <- internal_copy$parameters$n_MC_samples
@@ -509,7 +509,7 @@ prepare_data_causal <- function(internal, index_features = NULL, ...) {
 
   # Aggregate the weights for the non-unique rows such that we only return a data table with unique rows.
   # Only done for these approaches as they are the only approaches that are likely to return duplicates.
-  if (approach %in% c("independence", "empirical", "ctree", "categorical")) {
+  if (approach %in% c("categorical", "ctree", "empirical", "independence")) {
     dt <- dt[, list(w = sum(w)), by = c("id_coalition", "id", feature_names)]
   }
 

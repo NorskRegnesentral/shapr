@@ -299,7 +299,7 @@ The previous three methods can only handle numerical data. This means
 that if the data contains categorical/discrete/ordinal features, the
 features first have to be one-hot encoded. When the number of
 levels/features is large, this is not feasible. An approach that handles
-mixed (i.e., numerical, categorical, discrete, ordinal) features and both
+mixed (i.e., numerical, categorical, discrete, and ordinal) features and both
 univariate and multivariate responses is conditional inference trees
 (@hothorn2006unbiased).
 
@@ -542,7 +542,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e., continuous, categorical, ordinal) data with `ctree`, `arf`, or `vaeac`.
+We can use mixed (i.e., continuous, categorical, discrete, and ordinal) data with `ctree`, `arf`, or `vaeac`.
 Use `ctree` with mixed data in the following manner:
 
 ```{r factor, warning=FALSE, cache = TRUE}
