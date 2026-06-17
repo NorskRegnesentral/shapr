@@ -7,6 +7,9 @@ Generate data used for predictions and Monte Carlo integration
 ``` r
 prepare_data(internal, index_features = NULL, ...)
 
+# S3 method for class 'arf'
+prepare_data(internal, index_features = NULL, ...)
+
 # S3 method for class 'categorical'
 prepare_data(internal, index_features = NULL, ...)
 

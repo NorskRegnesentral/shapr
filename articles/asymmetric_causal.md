@@ -16,8 +16,8 @@ an old version of `shapr` and was restricted to the `gaussian` approach
 (see section 6 in Heskes et al. (2020) for more details).
 
 We have extended the causal Shapley value framework to work for all
-Monte Carlo-based approaches (`independence` (not recommended),
-`empirical`, `gaussian`, `copula`, `ctree`, `vaeac` and `categorical`),
+Monte Carlo-based approaches (`arf`, `categorical`, `copula`, `ctree`,
+`empirical`, `gaussian`, `vaeac`, and `independence` (not recommended)),
 while the extension of the asymmetric Shapley value framework works for
 all the Monte Carlo and regression-based approaches. Our generalization
 is of uttermost importance, as many real-world data sets are far from
@@ -433,60 +433,60 @@ explanation_sym_con[["gaussian"]] <- explain(
   causal_ordering = NULL, # Default value
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:41:56 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d15682a5b.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
+#>
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
+#>
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 46 of 128 coalitions, 20 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 46 of 128 coalitions, 20 new.
+#>
+#>
+#>
 #> ── Iteration 4 ──────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ℹ Using 68 of 128 coalitions, 22 new.
 
 explanation_sym_con[["ctree"]] <- explain(
@@ -501,14 +501,14 @@ explanation_sym_con[["ctree"]] <- explain(
   causal_ordering = NULL, # Default value
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:42:08 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
@@ -517,24 +517,24 @@ explanation_sym_con[["ctree"]] <- explain(
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d5b17ab4f.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 46 of 128 coalitions, 20 new. 
-#> 
+#> ℹ Using 46 of 128 coalitions, 20 new.
+#>
 #> ── Iteration 4 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 70 of 128 coalitions, 24 new. 
-#> 
+#> ℹ Using 70 of 128 coalitions, 24 new.
+#>
 #> ── Iteration 5 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 94 of 128 coalitions, 24 new. 
-#> 
+#> ℹ Using 94 of 128 coalitions, 24 new.
+#>
 #> ── Iteration 6 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 108 of 128 coalitions, 14 new.
 
@@ -550,14 +550,14 @@ explanation_sym_con[["xgboost"]] <- explain(
   causal_ordering = NULL, # Default value
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:43:35 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -565,27 +565,27 @@ explanation_sym_con[["xgboost"]] <- explain(
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3adf1601.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 46 of 128 coalitions, 20 new. 
-#> 
+#> ℹ Using 46 of 128 coalitions, 20 new.
+#>
 #> ── Iteration 4 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 70 of 128 coalitions, 24 new. 
-#> 
+#> ℹ Using 70 of 128 coalitions, 24 new.
+#>
 #> ── Iteration 5 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 94 of 128 coalitions, 24 new. 
-#> 
+#> ℹ Using 94 of 128 coalitions, 24 new.
+#>
 #> ── Iteration 6 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 110 of 128 coalitions, 16 new. 
-#> 
+#> ℹ Using 110 of 128 coalitions, 16 new.
+#>
 #> ── Iteration 7 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 114 of 128 coalitions, 4 new.
 ```
@@ -649,52 +649,52 @@ explanation_asym_con[["gaussian"]] <- explain(
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:43:55 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Number of asymmetric coalitions: 20
-#> 
+#>
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d129269c2.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 13 of 20 coalitions, 13 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 13 of 20 coalitions, 13 new.
+#>
+#>
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
 explanation_asym_con[["gaussian_non_iterative"]] <- explain(
@@ -710,14 +710,14 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
   confounding = NULL, # Default value
   iterative = FALSE
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:43:59 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -728,9 +728,9 @@ explanation_asym_con[["gaussian_non_iterative"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d1b1d6ff6.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 20 of 20 coalitions.
 
 explanation_asym_con[["ctree"]] <- explain(
@@ -745,14 +745,14 @@ explanation_asym_con[["ctree"]] <- explain(
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:44:01 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: ctree
@@ -763,12 +763,12 @@ explanation_asym_con[["ctree"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7bb4ea4.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 13 of 20 coalitions, 13 new. 
-#> 
+#> ℹ Using 13 of 20 coalitions, 13 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
@@ -784,14 +784,14 @@ explanation_asym_con[["xgboost"]] <- explain(
   causal_ordering = causal_ordering,
   confounding = NULL # Default value
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:44:19 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Regression
 #> • Approach: regression_separate
@@ -801,12 +801,12 @@ explanation_asym_con[["xgboost"]] <- explain(
 #> • Number of asymmetric coalitions: 20
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7ff95b8.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 13 of 20 coalitions, 13 new. 
-#> 
+#> ℹ Using 13 of 20 coalitions, 13 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 ```
@@ -834,61 +834,61 @@ explanation_asym_con$gaussian$internal$parameters$max_n_coalitions
 explanation_asym_con$gaussian$internal$objects$dt_valid_causal_coalitions[["coalitions"]]
 #> [[1]]
 #> integer(0)
-#> 
+#>
 #> [[2]]
 #> [1] 1
-#> 
+#>
 #> [[3]]
 #> [1] 1 2
-#> 
+#>
 #> [[4]]
 #> [1] 1 3
-#> 
+#>
 #> [[5]]
 #> [1] 1 2 3
-#> 
+#>
 #> [[6]]
 #> [1] 1 2 3 4
-#> 
+#>
 #> [[7]]
 #> [1] 1 2 3 5
-#> 
+#>
 #> [[8]]
 #> [1] 1 2 3 6
-#> 
+#>
 #> [[9]]
 #> [1] 1 2 3 7
-#> 
+#>
 #> [[10]]
 #> [1] 1 2 3 4 5
-#> 
+#>
 #> [[11]]
 #> [1] 1 2 3 4 6
-#> 
+#>
 #> [[12]]
 #> [1] 1 2 3 4 7
-#> 
+#>
 #> [[13]]
 #> [1] 1 2 3 5 6
-#> 
+#>
 #> [[14]]
 #> [1] 1 2 3 5 7
-#> 
+#>
 #> [[15]]
 #> [1] 1 2 3 6 7
-#> 
+#>
 #> [[16]]
 #> [1] 1 2 3 4 5 6
-#> 
+#>
 #> [[17]]
 #> [1] 1 2 3 4 5 7
-#> 
+#>
 #> [[18]]
 #> [1] 1 2 3 4 6 7
-#> 
+#>
 #> [[19]]
 #> [1] 1 2 3 5 6 7
-#> 
+#>
 #> [[20]]
 #> [1] 1 2 3 4 5 6 7
 ```
@@ -965,59 +965,59 @@ explanation_sym_marg[["gaussian"]] <- explain(
   causal_ordering = list(1:7),
   confounding = TRUE
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:44:25 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Causal ordering: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}
-#> 
+#>
 #> • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed,
 #> hum}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d267fb4a5.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
+#>
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
+#>
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ℹ Using 46 of 128 coalitions, 20 new.
 
 # Here we sample from the marginals of the training data
@@ -1033,14 +1033,14 @@ explanation_sym_marg[["independence_marg"]] <- explain(
   causal_ordering = list(1:7),
   confounding = TRUE
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:44:36 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: independence
@@ -1052,15 +1052,15 @@ explanation_sym_marg[["independence_marg"]] <- explain(
 #> • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed,
 #> hum}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0decfaecb.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 
@@ -1075,14 +1075,14 @@ explanation_sym_marg[["independence_con"]] <- explain(
   n_MC_samples = 1000,
   approach = "independence"
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:44:45 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: independence
@@ -1091,15 +1091,15 @@ explanation_sym_marg[["independence_con"]] <- explain(
 #> • Number of feature-wise Shapley values: 7
 #> • Number of observations to explain: 144
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d30c92495.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 ```
@@ -1163,44 +1163,44 @@ explanation_sym_cau[["gaussian"]] <- explain(
   iterative = FALSE, # Set to FALSE to get a single iteration to illustrate sampling steps below
   exact = TRUE
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:45:00 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> 
+#>
 #> • Components with confounding: {cosyear, sinyear}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3e9a65dc.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 128 of 128 coalitions.
 
 # Look at the sampling steps for the third coalition (S = {2})
@@ -1220,14 +1220,14 @@ explanation_sym_cau[["copula"]] <- explain(
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:45:33 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore
 #>   set to `2^n_features = 128`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: copula
@@ -1238,15 +1238,15 @@ explanation_sym_cau[["copula"]] <- explain(
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2dfef3fd.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 46 of 128 coalitions, 20 new.
 ```
@@ -1284,54 +1284,54 @@ explanation_asym_cau[["gaussian"]] <- explain(
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:46:01 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Number of asymmetric coalitions: 20
-#> 
+#>
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> 
+#>
 #> • Components with confounding: {cosyear, sinyear}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d43249e33.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 13 of 20 coalitions, 13 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 13 of 20 coalitions, 13 new.
+#>
+#>
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
 # Use the copula approach
@@ -1347,14 +1347,14 @@ explanation_asym_cau[["copula"]] <- explain(
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:46:05 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: copula
@@ -1366,12 +1366,12 @@ explanation_asym_cau[["copula"]] <- explain(
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d29463708.rds'
-#> 
+#>
 #> ── Iterative computation started ──
-#> 
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> ℹ Using 13 of 20 coalitions, 13 new. 
-#> 
+#> ℹ Using 13 of 20 coalitions, 13 new.
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
 #> ℹ Using 20 of 20 coalitions, 7 new.
 
@@ -1389,14 +1389,14 @@ explanation_asym_cau[["vaeac"]] <- explain(
   causal_ordering = list(1, 2:3, 4:7),
   confounding = c(FALSE, TRUE, FALSE)
  )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:46:11 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (20), and is therefore set to 20.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: vaeac
@@ -1408,9 +1408,9 @@ explanation_asym_cau[["vaeac"]] <- explain(
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3d5bfa87.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 20 of 20 coalitions.
 ```
 
@@ -1772,68 +1772,68 @@ explanation_n_coal[["sym_cau_gaussian_64"]] <- explain(
   confounding = c(FALSE, TRUE, FALSE),
   max_n_coalitions = 64 # Instead of 128
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:52:41 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 7
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
-#> 
+#>
 #> • Components with confounding: {cosyear, sinyear}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0de81c898.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iterative computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Iteration 1 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 14 of 128 coalitions, 14 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 14 of 128 coalitions, 14 new.
+#>
+#>
+#>
 #> ── Iteration 2 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 26 of 128 coalitions, 12 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 26 of 128 coalitions, 12 new.
+#>
+#>
+#>
 #> ── Iteration 3 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 46 of 128 coalitions, 20 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 46 of 128 coalitions, 20 new.
+#>
+#>
+#>
 #> ── Iteration 4 ──────────────────────────────────────────────────────────────────────
-#> 
-#> ℹ Using 50 of 128 coalitions, 4 new. 
-#> 
-#> 
-#> 
+#>
+#> ℹ Using 50 of 128 coalitions, 4 new.
+#>
+#>
+#>
 #> ── Iteration 5 ──────────────────────────────────────────────────────────────────────
-#> 
+#>
 #> ℹ Using 52 of 128 coalitions, 2 new.
 
 explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
@@ -1850,12 +1850,12 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
   max_n_coalitions = 10, # Instead of 20
   iterative = FALSE # Due to small number of coalitions
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:52:57 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -1867,16 +1867,16 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0de93b100.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
-#> ℹ Using 10 of 10 coalitions. 
-#> 
-#> ── Convergence info 
+#>
+#> ℹ Using 10 of 10 coalitions.
+#>
+#> ── Convergence info
 #> ✔ Iterative Shapley value estimation stopped at 10 coalitions after 1 iterations, due to:
 #> Maximum number of iterations (1) reached!
 #> Maximum number of coalitions (10) reached!
-#> 
+#>
 #> Final estimated Shapley values (sd)
 #>      explain_id   none              trend            cosyear          sinyear
 #>           <int> <char>             <char>             <char>           <char>
@@ -1885,7 +1885,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #>   3:          3  0 (0) -1930.76 ( 296.16)  -973.40 ( 322.03) -186.42 (261.74)
 #>   4:          4  0 (0) -1932.90 ( 301.60)  -958.90 ( 330.38) -149.19 (274.88)
 #>   5:          5  0 (0) -1877.93 ( 305.06)  -852.85 ( 314.05) -207.57 (239.95)
-#>  ---                                                                         
+#>  ---
 #> 140:        140  0 (0)   995.51 ( 362.01)  -479.45 ( 325.45)  187.74 (253.89)
 #> 141:        141  0 (0)  1012.39 ( 381.91)  -530.82 ( 333.78)   42.14 (135.80)
 #> 142:        142  0 (0)  1012.41 ( 425.56)  -702.60 ( 371.05)  -97.43 (159.67)
@@ -1898,7 +1898,7 @@ explanation_n_coal[["asym_cau_gaussian_10"]] <- explain(
 #>   3:  -31.78 ( 69.57)   -4.72 ( 32.51)    21.73 ( 28.34)  -331.86 ( 72.67)
 #>   4:   65.18 ( 43.48)   16.32 ( 28.82)  -112.62 ( 30.50)   -88.37 ( 56.64)
 #>   5:   40.33 ( 48.58)   12.35 ( 22.21)   110.09 ( 29.35)  -137.02 ( 54.02)
-#>  ---                                                                      
+#>  ---
 #> 140:   61.56 (168.08)   98.78 (168.21)   594.81 (147.78)   533.16 (210.24)
 #> 141:  -21.32 ( 43.50)   26.16 ( 22.80)   176.34 ( 22.24)  -190.41 ( 53.27)
 #> 142:  -26.81 ( 68.60)   87.47 ( 26.02)   -32.60 ( 31.01)   279.85 ( 87.32)
@@ -1997,47 +1997,47 @@ explanation_group_gaussian[["symmetric_marginal"]] <-
     group = group_list,
     iterative = FALSE
   )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:53:03 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore
 #>   set to `2^n_groups = 64`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: gaussian
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of group-wise Shapley values: 6
-#> 
+#>
 #> • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"};
 #> temp_group: {"temp", "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
-#> 
+#>
 #> • Number of observations to explain: 144
-#> 
+#>
 #> • Causal ordering: {trend, cosyear, sinyear, temp_group, windspeed, hum}
-#> 
+#>
 #> • Components with confounding: {trend, cosyear, sinyear, temp_group, windspeed, hum}
-#> 
+#>
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d1fefe725.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 64 of 64 coalitions.
 
 explanation_group_gaussian[["symmetric_conditional"]] <-
@@ -2055,14 +2055,14 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
     group = group_list,
     iterative = FALSE
   )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:53:11 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore
 #>   set to `2^n_groups = 64`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2073,9 +2073,9 @@ explanation_group_gaussian[["symmetric_conditional"]] <-
 #> temp_group: {"temp", "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}
 #> • Number of observations to explain: 144
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0dd67bd76.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 64 of 64 coalitions.
 
 explanation_group_gaussian[["asymmetric_conditional"]] <-
@@ -2093,14 +2093,14 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
     group = group_list,
     iterative = FALSE
   )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:53:16 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (12), and is therefore set to 12.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2113,9 +2113,9 @@ explanation_group_gaussian[["asymmetric_conditional"]] <-
 #> • Number of asymmetric coalitions: 12
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d719cde56.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 12 of 12 coalitions.
 
 explanation_group_gaussian[["symmetric_causal"]] <-
@@ -2133,14 +2133,14 @@ explanation_group_gaussian[["symmetric_causal"]] <-
     group = group_list,
     iterative = FALSE
   )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:53:17 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore
 #>   set to `2^n_groups = 64`.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2153,9 +2153,9 @@ explanation_group_gaussian[["symmetric_causal"]] <-
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7f049fd8.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 64 of 64 coalitions.
 
 explanation_group_gaussian[["asymmetric_causal"]] <-
@@ -2173,14 +2173,14 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
     group = group_list,
     iterative = FALSE
   )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-06-04 09:53:30 ───────────────────────────────
 #> ℹ Feature classes extracted from the model contain `NA`.
 #>   Assuming feature classes from the data are correct.
 #> ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting
 #>   the causal ordering (12), and is therefore set to 12.
 #> ── Explanation overview ──
-#> 
+#>
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -2194,9 +2194,9 @@ explanation_group_gaussian[["asymmetric_causal"]] <-
 #> • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}
 #> • Components with confounding: {cosyear, sinyear}
 #> • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2395b3c1.rds'
-#> 
+#>
 #> ── Main computation started ──
-#> 
+#>
 #> ℹ Using 12 of 12 coalitions.
 
 # Look at the elapsed times (symmetric takes the longest time)
@@ -2292,12 +2292,12 @@ S_causal_steps_freq <- S_causal_unlist[grepl("\\.S(?!bar)", names(S_causal_unlis
 S_causal_steps_freq <- S_causal_steps_freq[!sapply(S_causal_steps_freq, is.null)] # Remove NULLs
 S_causal_steps_freq <- S_causal_steps_freq[sapply(S_causal_steps_freq, length) > 0] # Remove extra integer(0)
 table(sapply(S_causal_steps_freq, paste0, collapse = ","))
-#> 
-#>           1       1,2,3     1,2,3,4   1,2,3,4,5 1,2,3,4,5,6 1,2,3,4,5,7   1,2,3,4,6 
-#>          95           7           8           8           8           8           8 
-#> 1,2,3,4,6,7   1,2,3,4,7     1,2,3,5   1,2,3,5,6 1,2,3,5,6,7   1,2,3,5,7     1,2,3,6 
-#>           8           8           8           8           8           8           8 
-#>   1,2,3,6,7     1,2,3,7 
+#>
+#>           1       1,2,3     1,2,3,4   1,2,3,4,5 1,2,3,4,5,6 1,2,3,4,5,7   1,2,3,4,6
+#>          95           7           8           8           8           8           8
+#> 1,2,3,4,6,7   1,2,3,4,7     1,2,3,5   1,2,3,5,6 1,2,3,5,6,7   1,2,3,5,7     1,2,3,6
+#>           8           8           8           8           8           8           8
+#>   1,2,3,6,7     1,2,3,7
 #>           8           8
 ```
 

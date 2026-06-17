@@ -59,8 +59,8 @@ setup(
 
   Character vector of length `1` or one less than the number of
   features. All elements should either be `"gaussian"`, `"copula"`,
-  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`,
-  `"independence"`, `"regression_separate"`, or
+  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`,
+  `"timeseries"`, `"independence"`, `"regression_separate"`, or
   `"regression_surrogate"`. The two regression approaches cannot be
   combined with any other approach. See details for more information.
 

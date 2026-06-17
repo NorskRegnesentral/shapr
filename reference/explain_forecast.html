@@ -160,7 +160,8 @@ The forecast horizon to explain. Passed to the <code>predict_model</code> functi
 <dt id="arg-approach">approach<a class="anchor" aria-label="anchor" href="#arg-approach"></a></dt>
 <dd><p>Character vector of length <code>1</code> or one less than the number of features.
 All elements should either be <code>"gaussian"</code>, <code>"copula"</code>, <code>"empirical"</code>, <code>"ctree"</code>, <code>"vaeac"</code>,
-<code>"categorical"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or <code>"regression_surrogate"</code>.
+<code>"categorical"</code>, <code>"arf"</code>, <code>"timeseries"</code>, <code>"independence"</code>, <code>"regression_separate"</code>, or
+<code>"regression_surrogate"</code>.
 The two regression approaches cannot be combined with any other approach.
 See details for more information.</p></dd>
 
@@ -293,7 +294,46 @@ See the help file of <code><a href="get_output_args_default.html">get_output_arg
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach</a></code></p><dl><dt><code>categorical.joint_prob_dt</code></dt>
+<dd><p>Arguments passed on to <code><a href="setup_approach.html">setup_approach</a></code></p><dl><dt><code>arf.num_trees</code></dt>
+<dd><p>Positive integer.
+The number of trees in the adversarial random forest.</p></dd>
+
+    <dt><code>arf.min_node_size</code></dt>
+<dd><p>Positive integer.
+The minimum number of observations in each terminal node.</p></dd>
+
+    <dt><code>arf.delta</code></dt>
+<dd><p>Non-negative numeric scalar.
+Tuning parameter passed to <code><a href="https://bips-hb.github.io/arf/reference/adversarial_rf.html" class="external-link">arf::adversarial_rf()</a></code>.</p></dd>
+
+    <dt><code>arf.max_iters</code></dt>
+<dd><p>Positive integer.
+The maximum number of adversarial forest iterations.</p></dd>
+
+    <dt><code>arf.alpha</code></dt>
+<dd><p>Numeric scalar between 0 and 1.
+Tuning parameter passed to <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code>.</p></dd>
+
+    <dt><code>arf.epsilon</code></dt>
+<dd><p>Positive numeric scalar.
+Small regularization constant passed to <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code>.</p></dd>
+
+    <dt><code>arf.parallel_train</code></dt>
+<dd><p>Logical scalar.
+If <code>TRUE</code>, <code><a href="https://bips-hb.github.io/arf/reference/adversarial_rf.html" class="external-link">arf::adversarial_rf()</a></code> and <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code> use parallel processing
+when training the feature distribution.
+The training step uses <code>ranger</code> threads, controlled by <code>options(ranger.num.threads = n)</code>
+or the <code>R_RANGER_NUM_THREADS</code> environment variable. The <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code> step uses
+<code>foreach</code> and only runs in parallel when a <code>foreach</code> backend is registered.</p></dd>
+
+    <dt><code>arf.parallel_gen</code></dt>
+<dd><p>Logical scalar.
+If <code>TRUE</code>, <code><a href="https://bips-hb.github.io/arf/reference/forge.html" class="external-link">arf::forge()</a></code> uses <code>foreach</code> parallel processing when generating
+samples for the Monte Carlo integration used to estimate <code>v(S)</code>.
+This can be faster for ARF-heavy explanations, but is best combined with sequential
+shapr batching, for example <code>extra_computation_args = list(vS_batching_method = "forloop", min_n_batches = 1, max_batch_size = Inf)</code>, to avoid nested parallelization with <code>future</code>.</p></dd>
+
+    <dt><code>categorical.joint_prob_dt</code></dt>
 <dd><p>Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
@@ -554,7 +594,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-11 07:41:02</span> <span style="color: #00BBBB;">─────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain_forecast()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-17 16:10:53</span> <span style="color: #00BBBB;">─────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Feature names extracted from the model contain `NA`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   Consistency checks between model and data are therefore disabled.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is</span>
@@ -569,7 +609,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpGKPk2Y/shapr_obj_227757dc45ce.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/Rtmp9VfSyE/shapr_obj_1b7c65ba4d94.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>

@@ -2,6 +2,12 @@
 
 ## shapr 1.0.8.9000
 
+#### New features
+
+- Added the `"arf"` approach for conditional sampling with adversarial
+  random forests via the `arf` package
+  ([\#494](https://github.com/NorskRegnesentral/shapr/pull/497))
+
 #### Development workflow
 
 - Added repository-wide agent instructions, VS Code tasks, and
@@ -31,6 +37,12 @@
 - Skip `vdiffr` plot snapshot tests on R \< 4.5.0 to avoid spurious
   failures caused by formatting changes in older R versions.
   ([\#494](https://github.com/NorskRegnesentral/shapr/pull/494))
+- Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches
+  that verify
+  [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
+  runs without errors and that the returned Shapley values satisfy the
+  efficiency property, providing platform coverage for the snapshot
+  tests skipped on macOS. (branch: add-arf)
 
 #### Continuous integration
 

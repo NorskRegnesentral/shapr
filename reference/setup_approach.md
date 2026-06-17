@@ -15,6 +15,20 @@ setup_approach(internal, ...)
 # S3 method for class 'combined'
 setup_approach(internal, ...)
 
+# S3 method for class 'arf'
+setup_approach(
+  internal,
+  arf.num_trees = 10L,
+  arf.min_node_size = 2L,
+  arf.delta = 0,
+  arf.max_iters = 10L,
+  arf.alpha = 0.1,
+  arf.epsilon = 1e-15,
+  arf.parallel_train = TRUE,
+  arf.parallel_gen = FALSE,
+  ...
+)
+
 # S3 method for class 'categorical'
 setup_approach(
   internal,
@@ -112,6 +126,60 @@ setup_approach(
 - ...:
 
   Arguments passed to specific classes. See below.
+
+- arf.num_trees:
+
+  Positive integer. The number of trees in the adversarial random
+  forest.
+
+- arf.min_node_size:
+
+  Positive integer. The minimum number of observations in each terminal
+  node.
+
+- arf.delta:
+
+  Non-negative numeric scalar. Tuning parameter passed to
+  [`arf::adversarial_rf()`](https://bips-hb.github.io/arf/reference/adversarial_rf.html).
+
+- arf.max_iters:
+
+  Positive integer. The maximum number of adversarial forest iterations.
+
+- arf.alpha:
+
+  Numeric scalar between 0 and 1. Tuning parameter passed to
+  [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html).
+
+- arf.epsilon:
+
+  Positive numeric scalar. Small regularization constant passed to
+  [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html).
+
+- arf.parallel_train:
+
+  Logical scalar. If `TRUE`,
+  [`arf::adversarial_rf()`](https://bips-hb.github.io/arf/reference/adversarial_rf.html)
+  and
+  [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html)
+  use parallel processing when training the feature distribution. The
+  training step uses `ranger` threads, controlled by
+  `options(ranger.num.threads = n)` or the `R_RANGER_NUM_THREADS`
+  environment variable. The
+  [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html)
+  step uses `foreach` and only runs in parallel when a `foreach` backend
+  is registered.
+
+- arf.parallel_gen:
+
+  Logical scalar. If `TRUE`,
+  [`arf::forge()`](https://bips-hb.github.io/arf/reference/forge.html)
+  uses `foreach` parallel processing when generating samples for the
+  Monte Carlo integration used to estimate `v(S)`. This can be faster
+  for ARF-heavy explanations, but is best combined with sequential shapr
+  batching, for example
+  `extra_computation_args = list(vS_batching_method = "forloop", min_n_batches = 1, max_batch_size = Inf)`,
+  to avoid nested parallelization with `future`.
 
 - categorical.joint_prob_dt:
 

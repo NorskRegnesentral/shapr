@@ -97,8 +97,8 @@ explain_forecast(
 
   Character vector of length `1` or one less than the number of
   features. All elements should either be `"gaussian"`, `"copula"`,
-  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`,
-  `"independence"`, `"regression_separate"`, or
+  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`,
+  `"timeseries"`, `"independence"`, `"regression_separate"`, or
   `"regression_surrogate"`. The two regression approaches cannot be
   combined with any other approach. See details for more information.
 
@@ -248,6 +248,61 @@ explain_forecast(
 
   Arguments passed on to
   [`setup_approach`](https://norskregnesentral.github.io/shapr/reference/setup_approach.md)
+
+  `arf.num_trees`
+
+  :   Positive integer. The number of trees in the adversarial random
+      forest.
+
+  `arf.min_node_size`
+
+  :   Positive integer. The minimum number of observations in each
+      terminal node.
+
+  `arf.delta`
+
+  :   Non-negative numeric scalar. Tuning parameter passed to
+      [`arf::adversarial_rf()`](https://bips-hb.github.io/arf/reference/adversarial_rf.html).
+
+  `arf.max_iters`
+
+  :   Positive integer. The maximum number of adversarial forest
+      iterations.
+
+  `arf.alpha`
+
+  :   Numeric scalar between 0 and 1. Tuning parameter passed to
+      [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html).
+
+  `arf.epsilon`
+
+  :   Positive numeric scalar. Small regularization constant passed to
+      [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html).
+
+  `arf.parallel_train`
+
+  :   Logical scalar. If `TRUE`,
+      [`arf::adversarial_rf()`](https://bips-hb.github.io/arf/reference/adversarial_rf.html)
+      and
+      [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html)
+      use parallel processing when training the feature distribution.
+      The training step uses `ranger` threads, controlled by
+      `options(ranger.num.threads = n)` or the `R_RANGER_NUM_THREADS`
+      environment variable. The
+      [`arf::forde()`](https://bips-hb.github.io/arf/reference/forde.html)
+      step uses `foreach` and only runs in parallel when a `foreach`
+      backend is registered.
+
+  `arf.parallel_gen`
+
+  :   Logical scalar. If `TRUE`,
+      [`arf::forge()`](https://bips-hb.github.io/arf/reference/forge.html)
+      uses `foreach` parallel processing when generating samples for the
+      Monte Carlo integration used to estimate `v(S)`. This can be
+      faster for ARF-heavy explanations, but is best combined with
+      sequential shapr batching, for example
+      `extra_computation_args = list(vS_batching_method = "forloop", min_n_batches = 1, max_batch_size = Inf)`,
+      to avoid nested parallelization with `future`.
 
   `categorical.joint_prob_dt`
 
@@ -589,7 +644,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-06-11 07:41:02 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-06-17 16:10:53 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -604,7 +659,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/RtmpGKPk2Y/shapr_obj_227757dc45ce.rds
+#> • Computations (temporary) saved at: /tmp/Rtmp9VfSyE/shapr_obj_1b7c65ba4d94.rds
 #> 
 #> ── Main computation started ──
 #> 

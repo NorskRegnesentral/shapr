@@ -49,6 +49,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.8.9000" id="shapr-1089000">shapr 1.0.8.9000<a class="anchor" aria-label="anchor" href="#shapr-1089000"></a></h2>
 <div class="section level4">
+<h4 id="new-features-1-0-8-9000">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-8-9000"></a></h4>
+<ul><li>Added the <code>"arf"</code> approach for conditional sampling with adversarial random forests via the <code>arf</code> package (<a href="https://github.com/NorskRegnesentral/shapr/pull/497" class="external-link">#494</a>)</li>
+</ul></div>
+<div class="section level4">
 <h4 id="development-workflow-1-0-8-9000">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow-1-0-8-9000"></a></h4>
 <ul><li>Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
 <li>Added pre-PR workflow scripts (<code>dev/prepare-pr</code>, <code>dev/check-pr</code>, <code>dev/publish-pr</code>) with <code>dev/pr-workflow.md</code> for automated and agent-assisted PR readiness checks; consolidated development scripts under <code>dev/</code>. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
@@ -61,6 +65,7 @@
 <div class="section level4">
 <h4 id="tests-1-0-8-9000">Tests<a class="anchor" aria-label="anchor" href="#tests-1-0-8-9000"></a></h4>
 <ul><li>Skip <code>vdiffr</code> plot snapshot tests on R &lt; 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
+<li>Added macOS-only smoke tests for the <code>"arf"</code> and <code>"vaeac"</code> approaches that verify <code><a href="../reference/explain.html">explain()</a></code> runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (branch: add-arf)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="continuous-integration-1-0-8-9000">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration-1-0-8-9000"></a></h4>

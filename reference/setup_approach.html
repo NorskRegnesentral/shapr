@@ -49,7 +49,7 @@ for more information about the different approaches."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Set up the framework for the chosen approach</h1>
-      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_copula.R" class="external-link"><code>R/approach_copula.R</code></a>, and 8 more</small>
+      <small class="dont-index">Source: <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach.R" class="external-link"><code>R/approach.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_arf.R" class="external-link"><code>R/approach_arf.R</code></a>, <a href="https://github.com/NorskRegnesentral/shapr/blob/master/R/approach_categorical.R" class="external-link"><code>R/approach_categorical.R</code></a>, and 9 more</small>
       <div class="d-none name"><code>setup_approach.Rd</code></div>
     </div>
 
@@ -66,6 +66,20 @@ for more information about the different approaches.</p>
 <span></span>
 <span><span class="co"># S3 method for class 'combined'</span></span>
 <span><span class="fu">setup_approach</span><span class="op">(</span><span class="va">internal</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'arf'</span></span>
+<span><span class="fu">setup_approach</span><span class="op">(</span></span>
+<span>  <span class="va">internal</span>,</span>
+<span>  arf.num_trees <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  arf.min_node_size <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  arf.delta <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  arf.max_iters <span class="op">=</span> <span class="fl">10L</span>,</span>
+<span>  arf.alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  arf.epsilon <span class="op">=</span> <span class="fl">1e-15</span>,</span>
+<span>  arf.parallel_train <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  arf.parallel_gen <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'categorical'</span></span>
 <span><span class="fu">setup_approach</span><span class="op">(</span></span>
@@ -165,6 +179,53 @@ Not used directly, but passed through from <code><a href="explain.html">explain(
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Arguments passed to specific classes. See below.</p></dd>
+
+
+<dt id="arg-arf-num-trees">arf.num_trees<a class="anchor" aria-label="anchor" href="#arg-arf-num-trees"></a></dt>
+<dd><p>Positive integer.
+The number of trees in the adversarial random forest.</p></dd>
+
+
+<dt id="arg-arf-min-node-size">arf.min_node_size<a class="anchor" aria-label="anchor" href="#arg-arf-min-node-size"></a></dt>
+<dd><p>Positive integer.
+The minimum number of observations in each terminal node.</p></dd>
+
+
+<dt id="arg-arf-delta">arf.delta<a class="anchor" aria-label="anchor" href="#arg-arf-delta"></a></dt>
+<dd><p>Non-negative numeric scalar.
+Tuning parameter passed to <code><a href="https://bips-hb.github.io/arf/reference/adversarial_rf.html" class="external-link">arf::adversarial_rf()</a></code>.</p></dd>
+
+
+<dt id="arg-arf-max-iters">arf.max_iters<a class="anchor" aria-label="anchor" href="#arg-arf-max-iters"></a></dt>
+<dd><p>Positive integer.
+The maximum number of adversarial forest iterations.</p></dd>
+
+
+<dt id="arg-arf-alpha">arf.alpha<a class="anchor" aria-label="anchor" href="#arg-arf-alpha"></a></dt>
+<dd><p>Numeric scalar between 0 and 1.
+Tuning parameter passed to <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code>.</p></dd>
+
+
+<dt id="arg-arf-epsilon">arf.epsilon<a class="anchor" aria-label="anchor" href="#arg-arf-epsilon"></a></dt>
+<dd><p>Positive numeric scalar.
+Small regularization constant passed to <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code>.</p></dd>
+
+
+<dt id="arg-arf-parallel-train">arf.parallel_train<a class="anchor" aria-label="anchor" href="#arg-arf-parallel-train"></a></dt>
+<dd><p>Logical scalar.
+If <code>TRUE</code>, <code><a href="https://bips-hb.github.io/arf/reference/adversarial_rf.html" class="external-link">arf::adversarial_rf()</a></code> and <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code> use parallel processing
+when training the feature distribution.
+The training step uses <code>ranger</code> threads, controlled by <code>options(ranger.num.threads = n)</code>
+or the <code>R_RANGER_NUM_THREADS</code> environment variable. The <code><a href="https://bips-hb.github.io/arf/reference/forde.html" class="external-link">arf::forde()</a></code> step uses
+<code>foreach</code> and only runs in parallel when a <code>foreach</code> backend is registered.</p></dd>
+
+
+<dt id="arg-arf-parallel-gen">arf.parallel_gen<a class="anchor" aria-label="anchor" href="#arg-arf-parallel-gen"></a></dt>
+<dd><p>Logical scalar.
+If <code>TRUE</code>, <code><a href="https://bips-hb.github.io/arf/reference/forge.html" class="external-link">arf::forge()</a></code> uses <code>foreach</code> parallel processing when generating
+samples for the Monte Carlo integration used to estimate <code>v(S)</code>.
+This can be faster for ARF-heavy explanations, but is best combined with sequential
+shapr batching, for example <code>extra_computation_args = list(vS_batching_method = "forloop", min_n_batches = 1, max_batch_size = Inf)</code>, to avoid nested parallelization with <code>future</code>.</p></dd>
 
 
 <dt id="arg-categorical-joint-prob-dt">categorical.joint_prob_dt<a class="anchor" aria-label="anchor" href="#arg-categorical-joint-prob-dt"></a></dt>
