@@ -125,7 +125,8 @@ insert_defaults <- function(internal, defaults) {
 #' @keywords internal
 get_factor_approaches <- function() {
   c(
-    "'independence' (not recommended)", "'ctree'", "'vaeac'",
-    "'categorical'", "'regression_separate'", "'regression_surrogate'"
+    "'arf'", "'categorical'", "'ctree'",
+    "'regression_separate'", "'regression_surrogate'", "'vaeac'",
+    "'independence' (not recommended)"
   )
 }

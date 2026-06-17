@@ -350,6 +350,19 @@
       2:          2 42.44   5.283  -6.046 -8.095 -2.7998 -2.222
       3:          3 42.44   6.984 -20.837 -4.762 -0.1545  1.201
 
+# output_lm_numeric_arf
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Output
+         explain_id  none Solar.R    Wind   Temp   Month      Day
+              <int> <num>   <num>   <num>  <num>   <num>    <num>
+      1:          1 42.44 -12.979  -1.401 28.311  -1.401  0.07134
+      2:          2 42.44   1.910  -3.863 -5.548  -3.863 -2.51532
+      3:          3 42.44   1.881 -15.266 13.255 -15.266 -2.17240
+
 # output_lm_numeric_vaeac
 
     Code
@@ -411,6 +424,19 @@
       1:          1 42.44       -5.719              15.22         -6.220      -3.791
       2:          2 42.44       -5.687             -17.48         22.095     -13.755
       3:          3 42.44        6.839             -21.90          1.997      -5.301
+
+# output_lm_categorical_arf
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Output
+         explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
+              <int> <num>        <num>              <num>          <num>       <num>
+      1:          1 42.44       -4.547              16.33       -19.4015       7.109
+      2:          2 42.44       -8.352             -21.02        25.5975     -11.062
+      3:          3 42.44       17.403             -23.58        -0.1678     -12.015
 
 # output_lm_categorical_vaeac
 

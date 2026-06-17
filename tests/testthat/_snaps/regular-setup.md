@@ -264,7 +264,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'arf', 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -278,7 +278,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'arf', 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 ---
 
@@ -292,7 +292,7 @@
       -- Starting `shapr::explain()` -------------------------------------------------
     Condition
       Error in `check_approach()`:
-      ! `approach` must be one of the following: 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
+      ! `approach` must be one of the following: 'arf', 'categorical', 'copula', 'ctree', 'empirical', 'gaussian', 'independence', 'regression_separate', 'regression_surrogate', 'timeseries', 'vaeac'. These can also be combined (except 'regression_surrogate' and 'regression_separate') by passing a vector of length one less than the number of features (4).
 
 # erroneous input: `phi0`
 
@@ -932,7 +932,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 ---
 
@@ -946,7 +946,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 ---
 
@@ -960,7 +960,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 # Message with too low `max_n_coalitions`
 

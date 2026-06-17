@@ -37,6 +37,7 @@ Imports:
     cli,
     rlang
 Suggests:
+    arf,
     ranger,
     xgboost,
     mgcv,

@@ -73,8 +73,9 @@ documentation and see examples with `?function_name`.
 : Main functions in the `shapr` package.
 
 The `shapr` package implements Kernel SHAP estimation of dependence-aware Shapley values with
-eight different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
-`"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"timeseries"`, and `"independence"`.
+nine different Monte Carlo-based approaches for estimating the conditional distributions of the data, namely
+`"empirical"`, `"gaussian"`, `"copula"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`,
+`"timeseries"`, and `"independence"`.
 `shapr` has also implemented two regression-based approaches `"regression_separate"` and `"regression_surrogate"`.
 See [Estimation approaches and plotting functionality](#ex) below for examples.
 It is also possible to combine the different approaches, see the [combined approach](#combined).
@@ -298,7 +299,7 @@ The previous three methods can only handle numerical data. This means
 that if the data contains categorical/discrete/ordinal features, the
 features first have to be one-hot encoded. When the number of
 levels/features is large, this is not feasible. An approach that handles
-mixed (i.e., numerical, categorical, discrete, ordinal) features and both
+mixed (i.e., numerical, categorical, discrete, and ordinal) features and both
 univariate and multivariate responses is conditional inference trees
 (@hothorn2006unbiased).
 
@@ -324,6 +325,22 @@ the conditional expectations as in Kernel SHAP. See
 
 The conditional inference trees are fit using the *party* or *partykit*
 packages (@partykit_package).
+
+
+
+## Adversarial Random Forest (arf) Approach {#arf}
+
+Another approach that supports mixed features, including factor features,
+is the adversarial random forest approach, abbreviated to `arf`. The `arf`
+approach first fits an adversarial random forest to the training data and
+then uses the fitted forest to estimate the joint feature distribution. We
+use this estimated distribution to generate Monte Carlo samples from
+$p(\boldsymbol{x}_{\bar{\mathcal{S}}} \mid \boldsymbol{x}_{\mathcal{S}}^*)$
+for each coalition. The resulting samples are then used to approximate the
+conditional expectations in the same Kernel SHAP framework as the other
+Monte Carlo-based approaches. The `arf` approach is implemented through the
+*arf* package and can be a flexible alternative for data sets containing both
+numeric and factor features.
 
 
 
@@ -424,7 +441,7 @@ the individual predictions. Since which approach should be used to estimate the
 contribution functions will depend on the type of data one is working with,
 the user must specify the approach to be used through the `approach` argument.
 Allowed values are `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"vaeac"`,
-`"categorical"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
+`"categorical"`, `"arf"`, `"timeseries"`, `"independence"`, `"regression_separate"`, and
 `"regression_surrogate"`.
 
 First we load the shapr package
@@ -525,7 +542,7 @@ scatter_hist showing the distribution of the feature data:
 plot(explanation_plot, plot_type = "scatter", scatter_hist = TRUE)
 ```
 
-We can use mixed (i.e., continuous, categorical, ordinal) data with `ctree` or `vaeac`.
+We can use mixed (i.e., continuous, categorical, discrete, and ordinal) data with `ctree`, `arf`, or `vaeac`.
 Use `ctree` with mixed data in the following manner:
 
 ```{r factor, warning=FALSE, cache = TRUE}
@@ -584,6 +601,27 @@ explanation_ctree <- explain(
 # mincriterion = 0.95
 # minsplit = 20
 # minbucket = 7
+```
+
+The `arf` approach can be used with the same mixed feature data, including
+the factor feature `Month_factor`. For a small example, we reduce the number
+of Monte Carlo samples and the number of trees.
+
+```{r arf, warning=FALSE, cache = TRUE}
+explanation_arf <- explain(
+  model = model_lm_cat,
+  x_explain = x_explain_cat,
+  x_train = x_train_cat,
+  approach = "arf",
+  phi0 = p0,
+  seed = 1,
+  n_MC_samples = 100,
+  arf.num_trees = 10,
+  arf.parallel_train = FALSE,
+  arf.parallel_gen = FALSE
+)
+
+plot(explanation_arf, bar_plot_phi0 = FALSE, index_x_explain = c(1, 6))
 ```
 
 If **all** features are categorical, one may use the categorical

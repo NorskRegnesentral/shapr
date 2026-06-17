@@ -69,7 +69,8 @@ The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
 All elements should either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
-\code{"categorical"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or \code{"regression_surrogate"}.
+\code{"categorical"}, \code{"arf"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or
+\code{"regression_surrogate"}.
 The two regression approaches cannot be combined with any other approach.
 See details for more information.}
 
@@ -173,6 +174,29 @@ See the help file of \code{\link[=get_output_args_default]{get_output_args_defau
 \item{...}{
   Arguments passed on to \code{\link{setup_approach}}
   \describe{
+    \item{\code{arf.num_trees}}{Positive integer.
+The number of trees in the adversarial random forest.}
+    \item{\code{arf.min_node_size}}{Positive integer.
+The minimum number of observations in each terminal node.}
+    \item{\code{arf.delta}}{Non-negative numeric scalar.
+Tuning parameter passed to \code{\link[arf:adversarial_rf]{arf::adversarial_rf()}}.}
+    \item{\code{arf.max_iters}}{Positive integer.
+The maximum number of adversarial forest iterations.}
+    \item{\code{arf.alpha}}{Numeric scalar between 0 and 1.
+Tuning parameter passed to \code{\link[arf:forde]{arf::forde()}}.}
+    \item{\code{arf.epsilon}}{Positive numeric scalar.
+Small regularization constant passed to \code{\link[arf:forde]{arf::forde()}}.}
+    \item{\code{arf.parallel_train}}{Logical scalar.
+If \code{TRUE}, \code{\link[arf:adversarial_rf]{arf::adversarial_rf()}} and \code{\link[arf:forde]{arf::forde()}} use parallel processing
+when training the feature distribution.
+The training step uses \code{ranger} threads, controlled by \code{options(ranger.num.threads = n)}
+or the \code{R_RANGER_NUM_THREADS} environment variable. The \code{\link[arf:forde]{arf::forde()}} step uses
+\code{foreach} and only runs in parallel when a \code{foreach} backend is registered.}
+    \item{\code{arf.parallel_gen}}{Logical scalar.
+If \code{TRUE}, \code{\link[arf:forge]{arf::forge()}} uses \code{foreach} parallel processing when generating
+samples for the Monte Carlo integration used to estimate \code{v(S)}.
+This can be faster for ARF-heavy explanations, but is best combined with sequential
+shapr batching, for example \code{extra_computation_args = list(vS_batching_method = "forloop", min_n_batches = 1, max_batch_size = Inf)}, to avoid nested parallelization with \code{future}.}
     \item{\code{categorical.joint_prob_dt}}{Data.table. (Optional)
 Containing the joint probability distribution for each combination of feature
 values.
