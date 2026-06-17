@@ -64,8 +64,8 @@ def explain(
       needed to properly estimate the conditional expectations in the Shapley formula.
     approach: str or list[str]
       The method(s) to estimate the conditional expectation. All elements should,
-      either be `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`, `"independence"`,
-      `"regression_separate"`, or `"regression_surrogate"`.
+            either be `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
+            `"independence"`, `"regression_separate"`, `"regression_surrogate"`, or `"vaeac"`.
     phi0: float
       The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
       features. Typically we set this value equal to the mean of the response variable in our training data, but other

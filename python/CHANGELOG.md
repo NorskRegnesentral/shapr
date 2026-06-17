@@ -7,6 +7,16 @@ Changes to the underlying `shapr` R package is documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added basic shaprpy snapshot tests for `approach="arf"` on both numerical and mixed categorical feature sets.
+- Added an `arf`/`vaeac` end-to-end example script for numerical and mixed categorical feature sets.
+
+### Changed
+- Updated shaprpy documentation to explicitly list `arf` and `vaeac` as supported approaches.
+- Updated local `vaeac` snapshot tests to pass `vaeac_*` arguments directly to `explain()`.
+
 ## [0.4.3] - 2026-01-24
 
 ### Fixed

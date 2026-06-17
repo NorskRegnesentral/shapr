@@ -385,7 +385,35 @@ class TestRegressionOutputs:
             approach='vaeac',
             phi0=dfy_train.mean().item(),
             max_n_coalitions=20,
-            extra_computation_args={'vaeac.epochs': 10, 'vaeac.width': 16, 'vaeac.depth': 2},
+            n_MC_samples=100,
+            vaeac_epochs=10,
+            vaeac_width=16,
+            vaeac_depth=2,
+            vaeac_n_vaeacs_initialize=1,
+            seed=1
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        # Use syrupy for snapshot testing
+        assert result == snapshot
+
+    @pytest.mark.localonly
+    @pytest.mark.snapshot
+    def test_rf_regressor_arf_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+        """Test RandomForest regressor with arf approach - basic case with short runtime."""
+        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_test,
+            approach='arf',
+            phi0=dfy_train.mean().item(),
+            max_n_coalitions=20,
+            n_MC_samples=200,
+            arf_num_trees=20,
+            arf_max_iters=5,
             seed=1
         )
 

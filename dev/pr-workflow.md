@@ -144,6 +144,8 @@ Optional checks require explicit user approval before running:
 - `dev/check-pr --with-python-localonly`
 - `dev/check-pr --check-updates`
 
+**Package Installation Requirement for R Tests:** The `--with-r-tests` flag requires the R package to be properly installed (not just loaded with `devtools::load_all()`). The check script handles this automatically, but if you run tests manually via the VS Code tasks or terminal, always use the install-enabled test tasks or manually run `devtools::install()` first.
+
 **Long-running checks** (`--with-r-tests`, `--with-r-check`) take 20–30 minutes. When running these,
 use a `mode=sync` terminal call with a generous timeout (≥ 1 800 000 ms / 30 min) so you wait for
 completion in one call rather than polling `get_terminal_output` repeatedly. Do not start a separate

@@ -133,6 +133,38 @@ to `shaprpy.explain`.
 
 ---
 
+## Supported Approaches
+
+`shaprpy` forwards all approach-specific arguments to `shapr::explain()`. Commonly used approaches include:
+
+- `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"independence"`
+- `"categorical"`, `"regression_separate"`, `"regression_surrogate"`
+- `"arf"` and `"vaeac"` for mixed numerical/categorical feature sets
+
+`arf` and `vaeac` depend on optional R packages:
+
+- `approach="arf"` requires the R package `arf`
+- `approach="vaeac"` requires the R package `torch` and a working torch install
+
+Minimal usage pattern:
+
+```python
+explanation = explain(
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_test,
+    approach="arf",  # or "vaeac"
+    phi0=dfy_train.mean().item(),
+    arf_num_trees=20,
+    arf_max_iters=5,
+    seed=1,
+)
+```
+
+For `vaeac`, pass `vaeac_*` arguments directly, for example `vaeac_epochs=10`, `vaeac_width=16`, and `vaeac_depth=2`.
+
+---
+
 ## Examples
 
 See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master/python/examples) on GitHub for runnable examples, including:
@@ -143,6 +175,7 @@ See the [examples folder](https://github.com/NorskRegnesentral/shapr/tree/master
 - A custom PyTorch model
 - Usage of the `Shapr` class and associated `ShaprSummary` class for exploration and extraction of explanation results.
 - Plotting functionality for the Shapley values through the `shap` package
+- ARF and VAEAC examples for both numerical and mixed categorical feature sets
 - The **regression paradigm** described in [Olsen et al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z),
   which shows:
   - How to specify the regression model
