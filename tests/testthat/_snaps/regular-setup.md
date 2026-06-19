@@ -932,7 +932,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate', 'arf'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'gaussian' does not support factor features. Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 ---
 
@@ -946,7 +946,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate', 'arf'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'empirical' does not support factor features. Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 ---
 
@@ -960,7 +960,7 @@
       i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
     Condition
       Error in `setup_approach()`:
-      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'independence' (not recommended), 'ctree', 'vaeac', 'categorical', 'regression_separate', 'regression_surrogate', 'arf'.
+      ! The following feature(s) are factor(s): Month_factor. approach = 'copula' does not support factor features.Please change approach to one of 'arf', 'categorical', 'ctree', 'regression_separate', 'regression_surrogate', 'vaeac', 'independence' (not recommended).
 
 # Message with too low `max_n_coalitions`
 
