@@ -31,6 +31,7 @@ class ShaprSummary:
         """Enable tab-completion for bracket notation in IPython/Jupyter."""
         return list(self._summary_data.keys())
 
+
 class Shapr:
     """
     A class to hold and explore Shapley value explanations using R functions.

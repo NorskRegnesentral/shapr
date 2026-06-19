@@ -11,12 +11,12 @@ model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
 explanation = explain(
-    model = model,
-    x_train = dfx_train,
-   x_explain = dfx_explain,
-    approach = 'empirical',
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 
 explanation.print()
@@ -47,18 +47,20 @@ explanation.print("MSEv")
 
 # Now do this for grouping as well
 
-group = {'A': ['MedInc','HouseAge','AveRooms'],
-         'B': ['AveBedrms','Population','AveOccup'],
-         'C': ['Latitude','Longitude']}
+group = {
+    "A": ["MedInc", "HouseAge", "AveRooms"],
+    "B": ["AveBedrms", "Population", "AveOccup"],
+    "C": ["Latitude", "Longitude"],
+}
 
 explanation_g = explain(
-    model = model,
-    x_train = dfx_train,
-   x_explain = dfx_explain,
-    approach = 'empirical',
-    phi0 = dfy_train.mean().item(),
-    group = group,
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    phi0=dfy_train.mean().item(),
+    group=group,
+    seed=1,
 )
 explanation_g.print()
 
@@ -77,20 +79,22 @@ explanation_g.print()
 #### Asymmetric and causal Shapley values
 
 # Assuming a causal ordering (just random in this case)
-causal_ordering = {"A": ["MedInc"],
-                   "B": ["HouseAge", "AveRooms"],
-                   "C": ["AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"]}
+causal_ordering = {
+    "A": ["MedInc"],
+    "B": ["HouseAge", "AveRooms"],
+    "C": ["AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"],
+}
 
 
 explanation_c_a = explain(
-    model = model,
-    x_train = dfx_train,
-   x_explain = dfx_explain,
-    approach = 'empirical',
-    causal_ordering = causal_ordering,
-    asymmetric = True,
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    causal_ordering=causal_ordering,
+    asymmetric=True,
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 
 explanation_c_a.print()

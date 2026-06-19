@@ -1,6 +1,7 @@
 """
 Shared pytest fixtures for shaprpy tests.
 """
+
 import os
 
 import numpy as np
@@ -18,10 +19,10 @@ def set_random_seeds():
     """Set random seeds for reproducible tests."""
     np.random.seed(42)
     # Set environment variables for R reproducibility
-    os.environ['R_SEED'] = '1'
-    os.environ['OMP_NUM_THREADS'] = '1'  # For consistent threading
-    os.environ['OPENBLAS_NUM_THREADS'] = '1'
-    os.environ['MKL_NUM_THREADS'] = '1'
+    os.environ["R_SEED"] = "1"
+    os.environ["OMP_NUM_THREADS"] = "1"  # For consistent threading
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
 
 
 @pytest.fixture(scope="session")
@@ -67,9 +68,9 @@ def trained_xgb_regressor(california_housing_data):
 def regression_group_config():
     """Group configuration for regression tests."""
     return {
-        'A': ['MedInc', 'HouseAge', 'AveRooms'],
-        'B': ['AveBedrms', 'Population', 'AveOccup'],
-        'C': ['Latitude', 'Longitude']
+        "A": ["MedInc", "HouseAge", "AveRooms"],
+        "B": ["AveBedrms", "Population", "AveOccup"],
+        "C": ["Latitude", "Longitude"],
     }
 
 
@@ -79,7 +80,7 @@ def causal_ordering_config():
     return {
         "A": ["MedInc"],
         "B": ["HouseAge", "AveRooms"],
-        "C": ["AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"]
+        "C": ["AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"],
     }
 
 
@@ -91,29 +92,33 @@ def california_housing_categorical_data():
     # Create categorical features by binning continuous variables
     # Income category: Low, Medium, High
     income_bins = [0, 3, 6, 15]
-    income_labels = ['Low', 'Medium', 'High']
-    dfx_train['IncomeCategory'] = pd.cut(dfx_train['MedInc'], bins=income_bins, labels=income_labels)
-    dfx_explain['IncomeCategory'] = pd.cut(dfx_explain['MedInc'], bins=income_bins, labels=income_labels)
+    income_labels = ["Low", "Medium", "High"]
+    dfx_train["IncomeCategory"] = pd.cut(
+        dfx_train["MedInc"], bins=income_bins, labels=income_labels
+    )
+    dfx_explain["IncomeCategory"] = pd.cut(
+        dfx_explain["MedInc"], bins=income_bins, labels=income_labels
+    )
 
     # House age category: New, Mid, Old
     age_bins = [0, 15, 35, 60]
-    age_labels = ['New', 'Mid', 'Old']
-    dfx_train['AgeCategory'] = pd.cut(dfx_train['HouseAge'], bins=age_bins, labels=age_labels)
-    dfx_explain['AgeCategory'] = pd.cut(dfx_explain['HouseAge'], bins=age_bins, labels=age_labels)
+    age_labels = ["New", "Mid", "Old"]
+    dfx_train["AgeCategory"] = pd.cut(dfx_train["HouseAge"], bins=age_bins, labels=age_labels)
+    dfx_explain["AgeCategory"] = pd.cut(dfx_explain["HouseAge"], bins=age_bins, labels=age_labels)
 
     # Location type based on latitude: North, Central, South
     lat_bins = [32, 34, 37, 42]
-    lat_labels = ['South', 'Central', 'North']
-    dfx_train['LocationType'] = pd.cut(dfx_train['Latitude'], bins=lat_bins, labels=lat_labels)
-    dfx_explain['LocationType'] = pd.cut(dfx_explain['Latitude'], bins=lat_bins, labels=lat_labels)
+    lat_labels = ["South", "Central", "North"]
+    dfx_train["LocationType"] = pd.cut(dfx_train["Latitude"], bins=lat_bins, labels=lat_labels)
+    dfx_explain["LocationType"] = pd.cut(dfx_explain["Latitude"], bins=lat_bins, labels=lat_labels)
 
     # Convert categorical columns to pandas categorical dtype with consistent categories
     # This ensures rpy2 will convert them to R factors properly and both train/explain have same levels
-    cat_cols = ['IncomeCategory', 'AgeCategory', 'LocationType']
+    cat_cols = ["IncomeCategory", "AgeCategory", "LocationType"]
     for col in cat_cols:
         # Fill any NaN values with a placeholder before converting to string (pandas 3.0 compatibility)
-        dfx_train[col] = dfx_train[col].cat.add_categories(['Unknown']).fillna('Unknown')
-        dfx_explain[col] = dfx_explain[col].cat.add_categories(['Unknown']).fillna('Unknown')
+        dfx_train[col] = dfx_train[col].cat.add_categories(["Unknown"]).fillna("Unknown")
+        dfx_explain[col] = dfx_explain[col].cat.add_categories(["Unknown"]).fillna("Unknown")
 
         # Convert to string
         dfx_train[col] = dfx_train[col].astype(str)
@@ -141,22 +146,35 @@ def trained_rf_regressor_categorical(california_housing_categorical_data):
     dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
     # Define numeric and categorical features
-    numeric_features = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
-    categorical_features = ['IncomeCategory', 'AgeCategory', 'LocationType']
+    numeric_features = [
+        "MedInc",
+        "HouseAge",
+        "AveRooms",
+        "AveBedrms",
+        "Population",
+        "AveOccup",
+        "Latitude",
+        "Longitude",
+    ]
+    categorical_features = ["IncomeCategory", "AgeCategory", "LocationType"]
 
     # Create preprocessing pipeline
     preprocessor = ColumnTransformer(
         transformers=[
-            ('num', 'passthrough', numeric_features),
-            ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features)
+            ("num", "passthrough", numeric_features),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                categorical_features,
+            ),
         ]
     )
 
     # Create full pipeline with RandomForest
     pipeline = Pipeline(
         steps=[
-            ('preprocessor', preprocessor),
-            ('model', RandomForestRegressor(random_state=1, n_estimators=100))
+            ("preprocessor", preprocessor),
+            ("model", RandomForestRegressor(random_state=1, n_estimators=100)),
         ]
     )
 
@@ -168,10 +186,10 @@ def trained_rf_regressor_categorical(california_housing_categorical_data):
 def categorical_group_config():
     """Group configuration for categorical regression tests."""
     return {
-        'NumericA': ['MedInc', 'HouseAge', 'AveRooms'],
-        'NumericB': ['AveBedrms', 'Population', 'AveOccup'],
-        'Location': ['Latitude', 'Longitude'],
-        'Categories': ['IncomeCategory', 'AgeCategory', 'LocationType']
+        "NumericA": ["MedInc", "HouseAge", "AveRooms"],
+        "NumericB": ["AveBedrms", "Population", "AveOccup"],
+        "Location": ["Latitude", "Longitude"],
+        "Categories": ["IncomeCategory", "AgeCategory", "LocationType"],
     }
 
 
@@ -181,14 +199,16 @@ def extract_shapley_outputs():
     Extract only the shapley_values_est and shapley_values_sd from explanation results.
     This is what we'll use for snapshot testing.
     """
+
     def _extract(explanation):
         # Convert DataFrames to markdown format for stable snapshot comparison
         # Round to 5 decimal places to avoid numerical precision issues across environments
         result = {
             "shapley_values_est": explanation.get_results("shapley_est").round(5).to_markdown(),
-            "shapley_values_sd": explanation.get_results("shapley_sd").round(5).to_markdown()
+            "shapley_values_sd": explanation.get_results("shapley_sd").round(5).to_markdown(),
         }
         return result
+
     return _extract
 
 
@@ -198,6 +218,7 @@ class SimpleLinearModel:
     Simple linear regression model implemented from scratch.
     Used for testing custom model support without sklearn.
     """
+
     def __init__(self):
         self.coef_ = None
         self.intercept_ = None
@@ -205,8 +226,8 @@ class SimpleLinearModel:
 
     def fit(self, X, y):
         """Fit linear model using normal equations: (X'X)^-1 X'y"""
-        X_array = X.values if hasattr(X, 'values') else X
-        y_array = y.values.flatten() if hasattr(y, 'values') else y.flatten()
+        X_array = X.values if hasattr(X, "values") else X
+        y_array = y.values.flatten() if hasattr(y, "values") else y.flatten()
 
         # Add intercept column
         X_with_intercept = np.column_stack([np.ones(len(X_array)), X_array])
@@ -222,7 +243,7 @@ class SimpleLinearModel:
         """Predict using the linear model"""
         if not self.is_fitted_:
             raise ValueError("Model must be fitted before calling predict")
-        X_array = X.values if hasattr(X, 'values') else X
+        X_array = X.values if hasattr(X, "values") else X
         return self.intercept_ + X_array @ self.coef_
 
 
@@ -238,6 +259,8 @@ def trained_custom_regressor(california_housing_data):
 @pytest.fixture
 def custom_predict_model():
     """Custom predict_model function for SimpleLinearModel."""
+
     def predict_fn(model, x):
         return model.predict(x).flatten()
+
     return predict_fn

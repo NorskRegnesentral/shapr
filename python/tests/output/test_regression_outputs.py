@@ -4,6 +4,7 @@ Output tests for regression models using Syrupy.
 These tests ensure that the shapley_values_est and shapley_values_sd outputs
 remain consistent across changes to the codebase.
 """
+
 import pytest
 
 from shaprpy import explain
@@ -13,7 +14,9 @@ class TestRegressionOutputs:
     """Output tests for regression model explanations."""
 
     @pytest.mark.snapshot
-    def test_rf_regressor_empirical_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_empirical_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with empirical approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -21,9 +24,9 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             phi0=dfy_train.mean().item(),
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -32,7 +35,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_independence_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_independence_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with independence approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -40,9 +45,9 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='independence',
+            approach="independence",
             phi0=dfy_train.mean().item(),
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -51,8 +56,14 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_empirical_with_groups(self, california_housing_data, trained_rf_regressor,
-                                                regression_group_config, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_empirical_with_groups(
+        self,
+        california_housing_data,
+        trained_rf_regressor,
+        regression_group_config,
+        extract_shapley_outputs,
+        snapshot,
+    ):
         """Test RandomForest regressor with empirical approach and feature groups."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -60,10 +71,10 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             phi0=dfy_train.mean().item(),
             group=regression_group_config,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -73,7 +84,9 @@ class TestRegressionOutputs:
 
     @pytest.mark.slow
     @pytest.mark.snapshot
-    def test_xgb_regressor_empirical_basic(self, california_housing_data, trained_xgb_regressor, extract_shapley_outputs, snapshot):
+    def test_xgb_regressor_empirical_basic(
+        self, california_housing_data, trained_xgb_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test XGBoost regressor with empirical approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -81,9 +94,9 @@ class TestRegressionOutputs:
             model=trained_xgb_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             phi0=dfy_train.mean().item(),
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -92,7 +105,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_gaussian_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_gaussian_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with gaussian approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -100,10 +115,10 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='gaussian',
+            approach="gaussian",
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -113,7 +128,9 @@ class TestRegressionOutputs:
 
     @pytest.mark.slow
     @pytest.mark.snapshot
-    def test_rf_regressor_ctree_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_ctree_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with ctree approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -121,10 +138,10 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='ctree',
+            approach="ctree",
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -133,8 +150,14 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_gaussian_with_groups(self, california_housing_data, trained_rf_regressor,
-                                              regression_group_config, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_gaussian_with_groups(
+        self,
+        california_housing_data,
+        trained_rf_regressor,
+        regression_group_config,
+        extract_shapley_outputs,
+        snapshot,
+    ):
         """Test RandomForest regressor with gaussian approach and feature groups."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -142,11 +165,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='gaussian',
+            approach="gaussian",
             phi0=dfy_train.mean().item(),
             group=regression_group_config,
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -156,8 +179,14 @@ class TestRegressionOutputs:
 
     @pytest.mark.slow
     @pytest.mark.snapshot
-    def test_rf_regressor_empirical_with_causal_ordering(self, california_housing_data, trained_rf_regressor,
-                                                        causal_ordering_config, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_empirical_with_causal_ordering(
+        self,
+        california_housing_data,
+        trained_rf_regressor,
+        causal_ordering_config,
+        extract_shapley_outputs,
+        snapshot,
+    ):
         """Test RandomForest regressor with empirical approach and causal ordering."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -165,12 +194,12 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             phi0=dfy_train.mean().item(),
             asymmetric=True,
             causal_ordering=causal_ordering_config,
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -179,7 +208,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_separate_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_separate_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_separate approach - basic linear regression."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -187,11 +218,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_separate',
+            approach="regression_separate",
             phi0=dfy_train.mean().item(),
-            regression_model='parsnip::linear_reg()',
+            regression_model="parsnip::linear_reg()",
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -200,7 +231,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_separate_splines(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_separate_splines(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_separate approach - linear regression with natural splines."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -208,14 +241,14 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_separate',
+            approach="regression_separate",
             phi0=dfy_train.mean().item(),
-            regression_model='parsnip::linear_reg()',
-            regression_recipe_func='''function(regression_recipe) {
+            regression_model="parsnip::linear_reg()",
+            regression_recipe_func="""function(regression_recipe) {
                 return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
-            }''',
+            }""",
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -224,7 +257,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_separate_ranger(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_separate_ranger(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_separate approach - ranger random forest."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -232,11 +267,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_separate',
+            approach="regression_separate",
             phi0=dfy_train.mean().item(),
             regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')",
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -245,7 +280,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_surrogate_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_surrogate_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_surrogate approach - decision tree."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -253,11 +290,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_surrogate',
+            approach="regression_surrogate",
             phi0=dfy_train.mean().item(),
             regression_model="parsnip::decision_tree(engine = 'rpart', mode = 'regression')",
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -266,7 +303,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_surrogate_ranger(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_surrogate_ranger(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_surrogate approach - ranger random forest."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -274,11 +313,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_surrogate',
+            approach="regression_surrogate",
             phi0=dfy_train.mean().item(),
             regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')",
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -288,7 +327,9 @@ class TestRegressionOutputs:
 
     @pytest.mark.slow
     @pytest.mark.snapshot
-    def test_rf_regressor_regression_surrogate_ranger_tuned(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_regression_surrogate_ranger_tuned(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with regression_surrogate approach - ranger with CV tuning."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -296,13 +337,13 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='regression_surrogate',
+            approach="regression_surrogate",
             phi0=dfy_train.mean().item(),
             regression_model="parsnip::rand_forest(mtry = hardhat::tune(), engine = 'ranger', mode = 'regression')",
-            regression_tune_values='dials::grid_regular(dials::mtry(c(1, 8)), levels = 3)',
-            regression_vfold_cv_para={'v': 3},
+            regression_tune_values="dials::grid_regular(dials::mtry(c(1, 8)), levels = 3)",
+            regression_vfold_cv_para={"v": 3},
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -311,7 +352,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_gaussian_iterative_low_coalitions(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_gaussian_iterative_low_coalitions(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with gaussian approach - iterative with low n_coalitions."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -319,11 +362,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='gaussian',
+            approach="gaussian",
             phi0=dfy_train.mean().item(),
             iterative=True,
             max_n_coalitions=20,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -332,7 +375,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_empirical_iterative(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_empirical_iterative(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with empirical approach - explicit iterative mode."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -340,11 +385,11 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             phi0=dfy_train.mean().item(),
             iterative=True,
             max_n_coalitions=100,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -353,7 +398,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_copula_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_copula_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with copula approach - basic case."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -361,10 +408,10 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='copula',
+            approach="copula",
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -374,7 +421,9 @@ class TestRegressionOutputs:
 
     @pytest.mark.localonly
     @pytest.mark.snapshot
-    def test_rf_regressor_vaeac_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_vaeac_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with vaeac approach - basic case with short runtime."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -382,7 +431,7 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='vaeac',
+            approach="vaeac",
             phi0=dfy_train.mean().item(),
             max_n_coalitions=20,
             n_MC_samples=100,
@@ -390,7 +439,7 @@ class TestRegressionOutputs:
             vaeac_width=16,
             vaeac_depth=2,
             vaeac_n_vaeacs_initialize=1,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -400,7 +449,9 @@ class TestRegressionOutputs:
 
     @pytest.mark.localonly
     @pytest.mark.snapshot
-    def test_rf_regressor_arf_basic(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_arf_basic(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with arf approach - basic case with short runtime."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -408,13 +459,13 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='arf',
+            approach="arf",
             phi0=dfy_train.mean().item(),
             max_n_coalitions=20,
             n_MC_samples=200,
             arf_num_trees=20,
             arf_max_iters=5,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -423,8 +474,14 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_custom_model_with_predict_model(self, california_housing_data, trained_custom_regressor,
-                                            custom_predict_model, extract_shapley_outputs, snapshot):
+    def test_custom_model_with_predict_model(
+        self,
+        california_housing_data,
+        trained_custom_regressor,
+        custom_predict_model,
+        extract_shapley_outputs,
+        snapshot,
+    ):
         """Test custom model with user-provided predict_model function."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -432,11 +489,11 @@ class TestRegressionOutputs:
             model=trained_custom_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach='empirical',
+            approach="empirical",
             predict_model=custom_predict_model,
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -445,7 +502,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_combined_approach_1(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_combined_approach_1(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with combined approach - gaussian, empirical, independence, gaussian."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -455,10 +514,18 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach=['gaussian', 'empirical', 'independence', 'gaussian', 'empirical', 'gaussian', 'independence'],
+            approach=[
+                "gaussian",
+                "empirical",
+                "independence",
+                "gaussian",
+                "empirical",
+                "gaussian",
+                "independence",
+            ],
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)
@@ -467,7 +534,9 @@ class TestRegressionOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
-    def test_rf_regressor_combined_approach_2(self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot):
+    def test_rf_regressor_combined_approach_2(
+        self, california_housing_data, trained_rf_regressor, extract_shapley_outputs, snapshot
+    ):
         """Test RandomForest regressor with combined approach - independence, empirical, copula, gaussian."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -476,10 +545,18 @@ class TestRegressionOutputs:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain,
-            approach=['independence', 'empirical', 'copula', 'gaussian', 'empirical', 'copula', 'gaussian'],
+            approach=[
+                "independence",
+                "empirical",
+                "copula",
+                "gaussian",
+                "empirical",
+                "copula",
+                "gaussian",
+            ],
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
-            seed=1
+            seed=1,
         )
 
         result = extract_shapley_outputs(explanation)

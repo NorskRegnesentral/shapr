@@ -540,6 +540,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
         import xgboost as xgb
 
         if isinstance(model, (xgb.XGBRegressor, xgb.XGBClassifier, xgb.XGBRanker)):
+
             def get_xgb_sklearn_specs(m):
                 # Try to get feature names, fall back to None if not available
                 try:
@@ -551,6 +552,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
                     "classes": None,
                     "factor_levels": None,
                 }
+
             return get_xgb_sklearn_specs
     except (ImportError, AttributeError):
         pass
@@ -573,6 +575,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
         from sklearn.base import BaseEstimator
 
         if isinstance(model, BaseEstimator):
+
             def get_sklearn_specs(m):
                 # Try to get feature names, fall back to None if not available
                 try:
@@ -584,6 +587,7 @@ def prebuilt_get_model_specs(model: Any) -> Callable | None:
                     "classes": None,
                     "factor_levels": None,
                 }
+
             return get_sklearn_specs
     except (ImportError, AttributeError):
         pass

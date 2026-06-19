@@ -27,10 +27,10 @@ explanation_list["empirical"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='empirical',
-    iterative = False,
+    approach="empirical",
+    iterative=False,
     phi0=dfy_train.mean().item(),
-    seed = 1
+    seed=1,
 )
 
 # Explain the model using several separate regression methods
@@ -39,10 +39,10 @@ explanation_list["sep_lm"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()',
-    seed = 1
+    regression_model="parsnip::linear_reg()",
+    seed=1,
 )
 
 # Principal component regression with (up to) three principal components
@@ -50,13 +50,13 @@ explanation_list["sep_pca"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()',
-    regression_recipe_func='''function(regression_recipe) {
+    regression_model="parsnip::linear_reg()",
+    regression_recipe_func="""function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
-    }''',
-    seed = 1
+    }""",
+    seed=1,
 )
 
 #  GAM with splines with (up to) three degrees of freedom
@@ -64,13 +64,13 @@ explanation_list["sep_splines"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()',
-    regression_recipe_func='''function(regression_recipe) {
+    regression_model="parsnip::linear_reg()",
+    regression_recipe_func="""function(regression_recipe) {
         return(recipes::step_ns(regression_recipe, recipes::all_numeric_predictors(), deg_free = 3))
-    }''',
-    seed = 1
+    }""",
+    seed=1,
 )
 
 # Decision tree with cross validated tree depth
@@ -78,12 +78,12 @@ explanation_list["sep_tree_cv"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::decision_tree(tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression')",
-    regression_tune_values='dials::grid_regular(dials::tree_depth(), levels = 4)',
-    regression_vfold_cv_para={'v': 5},
-    seed = 1
+    regression_tune_values="dials::grid_regular(dials::tree_depth(), levels = 4)",
+    regression_vfold_cv_para={"v": 5},
+    seed=1,
 )
 
 # XGboost with default parameters
@@ -91,10 +91,10 @@ explanation_list["sep_xgboost"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
-    seed = 1
+    seed=1,
 )
 
 # XGboost with cross validated number of trees
@@ -102,12 +102,12 @@ explanation_list["sep_xgboost_cv"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_separate',
+    approach="regression_separate",
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::boost_tree(trees = hardhat::tune(), engine = 'xgboost', mode = 'regression')",
-    regression_tune_values='expand.grid(trees = c(10, 15, 25, 50, 100, 500))',
-    regression_vfold_cv_para={'v': 5},
-    seed = 1
+    regression_tune_values="expand.grid(trees = c(10, 15, 25, 50, 100, 500))",
+    regression_vfold_cv_para={"v": 5},
+    seed=1,
 )
 
 # Explain the model using several surrogate regression methods
@@ -116,10 +116,10 @@ explanation_list["sur_lm"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_surrogate',
+    approach="regression_surrogate",
     phi0=dfy_train.mean().item(),
-    regression_model='parsnip::linear_reg()',
-    seed = 1
+    regression_model="parsnip::linear_reg()",
+    seed=1,
 )
 
 # Using random forest with default parameters as the surrogate model
@@ -127,10 +127,10 @@ explanation_list["sur_rf"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_surrogate',
+    approach="regression_surrogate",
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')",
-    seed = 1
+    seed=1,
 )
 
 # Using random forest with parameters tuned by cross-validation as the surrogate model
@@ -138,7 +138,7 @@ explanation_list["sur_rf_cv"] = explain(
     model=model,
     x_train=dfx_train,
     x_explain=dfx_explain,
-    approach='regression_surrogate',
+    approach="regression_surrogate",
     phi0=dfy_train.mean().item(),
     regression_model="""parsnip::rand_forest(
         mtry = hardhat::tune(), trees = hardhat::tune(), engine = 'ranger', mode = 'regression'
@@ -148,14 +148,18 @@ explanation_list["sur_rf_cv"] = explain(
       dials::trees(c(50, 750)),
       levels = 4
     )""",
-    regression_vfold_cv_para={'v': 4},
-    seed = 1
+    regression_vfold_cv_para={"v": 4},
+    seed=1,
 )
 
 # Print the MSEv evaluation criterion scores
 print("Method", "MSEv", "Elapsed time (seconds)")
 for i, (method, explanation) in enumerate(explanation_list.items()):
-    print(method, round(explanation.get_results("MSEv")["MSEv"].iloc[0], 3), round(explanation.get_results("timing_summary")["total_time_secs"].iloc[0], 3))
+    print(
+        method,
+        round(explanation.get_results("MSEv")["MSEv"].iloc[0], 3),
+        round(explanation.get_results("timing_summary")["total_time_secs"].iloc[0], 3),
+    )
 
 """
 Method MSEv Elapsed time (seconds)

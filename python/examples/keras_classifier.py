@@ -8,28 +8,26 @@ dfx_train, dfx_explain, dfy_train, dfy_explain = load_binary_iris()
 utils.set_random_seed(1)
 
 ## Build model
-model = Sequential([
-    layers.Dense(units=8, activation='relu'),
-    layers.Dense(units=16, activation='relu'),
-    layers.Dense(units=8, activation='relu'),
-    layers.Dense(units=1, activation='sigmoid')
-])
-model.compile(optimizer="adam",
-              loss ="binary_crossentropy",
-              metrics=["accuracy"])
+model = Sequential(
+    [
+        layers.Dense(units=8, activation="relu"),
+        layers.Dense(units=16, activation="relu"),
+        layers.Dense(units=8, activation="relu"),
+        layers.Dense(units=1, activation="sigmoid"),
+    ]
+)
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 
 ## Fit Model
-model.fit(dfx_train, dfy_train,
-          epochs=10,
-          validation_data=(dfx_explain, dfy_explain))
+model.fit(dfx_train, dfy_train, epochs=10, validation_data=(dfx_explain, dfy_explain))
 ## Shapr
 explanation = explain(
-    model = model,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'empirical',
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 
 explanation.print()

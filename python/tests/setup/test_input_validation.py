@@ -4,6 +4,7 @@ Unit tests for input validation and error handling in shaprpy.
 These tests ensure that the explain function properly validates inputs
 and raises appropriate errors for invalid configurations.
 """
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -18,32 +19,36 @@ class TestInputValidation:
         """Test that invalid approach parameter raises appropriate error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
-        with pytest.raises((ValueError, Exception)):  # Using Exception for now, can be more specific later
+        with pytest.raises(
+            (ValueError, Exception)
+        ):  # Using Exception for now, can be more specific later
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain,
-                approach='invalid_approach',
+                approach="invalid_approach",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
-    def test_mismatched_feature_names_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_mismatched_feature_names_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that mismatched feature names between train and explain raise error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Create explain data with different column names
         dfx_explain_bad = dfx_explain.copy()
-        dfx_explain_bad.columns = ['BadCol' + str(i) for i in range(len(dfx_explain_bad.columns))]
+        dfx_explain_bad.columns = ["BadCol" + str(i) for i in range(len(dfx_explain_bad.columns))]
 
         with pytest.raises((ValueError, KeyError, Exception)):  # Can be more specific later
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain_bad,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
     def test_empty_explain_data_raises_error(self, california_housing_data, trained_rf_regressor):
@@ -58,9 +63,9 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain_empty,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
     def test_nan_in_x_train_raises_error(self, california_housing_data, trained_rf_regressor):
@@ -76,9 +81,9 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train_with_nan,
                 x_explain=dfx_explain,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
     def test_nan_in_x_explain_raises_error(self, california_housing_data, trained_rf_regressor):
@@ -94,12 +99,14 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain_with_nan,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
-    def test_mismatched_feature_dimensions_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_mismatched_feature_dimensions_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that different number of features between train and explain raises error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -111,12 +118,14 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain_fewer_cols,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
-                seed=1
+                seed=1,
             )
 
-    def test_invalid_max_n_coalitions_negative_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_invalid_max_n_coalitions_negative_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that negative max_n_coalitions raises appropriate error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -125,13 +134,15 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
                 max_n_coalitions=-10,
-                seed=1
+                seed=1,
             )
 
-    def test_invalid_max_n_coalitions_zero_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_invalid_max_n_coalitions_zero_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that zero max_n_coalitions raises appropriate error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -140,13 +151,15 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
                 max_n_coalitions=0,
-                seed=1
+                seed=1,
             )
 
-    def test_invalid_group_specification_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_invalid_group_specification_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that invalid group specification raises appropriate error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -158,13 +171,15 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
                 group=invalid_group,
-                seed=1
+                seed=1,
             )
 
-    def test_invalid_group_wrong_length_raises_error(self, california_housing_data, trained_rf_regressor):
+    def test_invalid_group_wrong_length_raises_error(
+        self, california_housing_data, trained_rf_regressor
+    ):
         """Test that group specification with wrong length raises appropriate error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
@@ -176,10 +191,10 @@ class TestInputValidation:
                 model=trained_rf_regressor,
                 x_train=dfx_train,
                 x_explain=dfx_explain,
-                approach='empirical',
+                approach="empirical",
                 phi0=dfy_train.mean().item(),
                 group=invalid_group,
-                seed=1
+                seed=1,
             )
 
 
@@ -194,13 +209,13 @@ class TestBasicFunctionality:
             model=trained_rf_regressor,
             x_train=dfx_train,
             x_explain=dfx_explain.iloc[:1],  # Just one row for speed
-            approach='independence',  # Fastest approach
+            approach="independence",  # Fastest approach
             phi0=dfy_train.mean().item(),
-            seed=1
+            seed=1,
         )
 
         # Check that the explanation contains expected keys
-        expected_keys = ['shapley_est', 'shapley_sd']
+        expected_keys = ["shapley_est", "shapley_sd"]
 
         res = explanation.get_results(expected_keys)
 
@@ -208,9 +223,9 @@ class TestBasicFunctionality:
             assert key in res, f"Expected key '{key}' not found in explanation"
 
         # Check that shapley values are DataFrames with expected structure
-        assert isinstance(res['shapley_est'], pd.DataFrame)
-        assert isinstance(res['shapley_sd'], pd.DataFrame)
+        assert isinstance(res["shapley_est"], pd.DataFrame)
+        assert isinstance(res["shapley_sd"], pd.DataFrame)
 
         # Check that we have the right number of rows (should match x_explain)
-        assert len(res['shapley_est']) == 1
-        assert len(res['shapley_sd']) == 1
+        assert len(res["shapley_est"]) == 1
+        assert len(res["shapley_sd"]) == 1

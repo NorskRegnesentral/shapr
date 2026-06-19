@@ -18,16 +18,16 @@ model.fit(dfx_train, dfy_train.values.flatten())
 
 ## ARF approach (numeric features)
 explanation_arf = explain(
-    model = model,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'arf',
-    phi0 = dfy_train.mean().item(),
-    n_MC_samples = 200,
-    arf_num_trees = 20,
-    arf_max_iters = 5,
-    max_n_coalitions = 20,
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="arf",
+    phi0=dfy_train.mean().item(),
+    n_MC_samples=200,
+    arf_num_trees=20,
+    arf_max_iters=5,
+    max_n_coalitions=20,
+    seed=1,
 )
 
 explanation_arf.print()
@@ -48,18 +48,18 @@ explanation_arf.print()
 ## VAEAC approach (numeric features)
 # Requires the R package torch (install.packages("torch"); torch::install_torch())
 explanation_vaeac = explain(
-    model = model,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'vaeac',
-    phi0 = dfy_train.mean().item(),
-    n_MC_samples = 100,
-    vaeac_epochs = 10,
-    vaeac_width = 16,
-    vaeac_depth = 2,
-    vaeac_n_vaeacs_initialize = 1,
-    max_n_coalitions = 20,
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="vaeac",
+    phi0=dfy_train.mean().item(),
+    n_MC_samples=100,
+    vaeac_epochs=10,
+    vaeac_width=16,
+    vaeac_depth=2,
+    vaeac_n_vaeacs_initialize=1,
+    max_n_coalitions=20,
+    seed=1,
 )
 
 explanation_vaeac.print()
@@ -80,43 +80,69 @@ explanation_vaeac.print()
 ## ARF and VAEAC also support categorical (factor) features.
 # Add three categorical columns derived from existing numeric ones.
 for df in [dfx_train, dfx_explain]:
-    df['IncomeCategory'] = pd.cut(df['MedInc'], bins=[0, 3, 6, 15], labels=['Low', 'Medium', 'High'])
-    df['AgeCategory']    = pd.cut(df['HouseAge'], bins=[0, 15, 35, 60], labels=['New', 'Mid', 'Old'])
-    df['LocationType']   = pd.cut(df['Latitude'], bins=[32, 34, 37, 42], labels=['South', 'Central', 'North'])
+    df["IncomeCategory"] = pd.cut(
+        df["MedInc"], bins=[0, 3, 6, 15], labels=["Low", "Medium", "High"]
+    )
+    df["AgeCategory"] = pd.cut(df["HouseAge"], bins=[0, 15, 35, 60], labels=["New", "Mid", "Old"])
+    df["LocationType"] = pd.cut(
+        df["Latitude"], bins=[32, 34, 37, 42], labels=["South", "Central", "North"]
+    )
 
 # Ensure consistent categorical levels and convert to pandas Categorical
-for col in ['IncomeCategory', 'AgeCategory', 'LocationType']:
+for col in ["IncomeCategory", "AgeCategory", "LocationType"]:
     for df in [dfx_train, dfx_explain]:
-        df[col] = df[col].cat.add_categories(['Unknown']).fillna('Unknown').astype(str)
-    cats = [c for c in pd.unique(pd.concat([dfx_train[col], dfx_explain[col]]).values) if pd.notna(c)]
+        df[col] = df[col].cat.add_categories(["Unknown"]).fillna("Unknown").astype(str)
+    cats = [
+        c for c in pd.unique(pd.concat([dfx_train[col], dfx_explain[col]]).values) if pd.notna(c)
+    ]
     dfx_train[col] = pd.Categorical(dfx_train[col], categories=cats)
-    dfx_explain[col]  = pd.Categorical(dfx_explain[col],  categories=cats)
+    dfx_explain[col] = pd.Categorical(dfx_explain[col], categories=cats)
 
 # Build a model that handles the mixed feature types
-numeric_features     = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
-categorical_features = ['IncomeCategory', 'AgeCategory', 'LocationType']
+numeric_features = [
+    "MedInc",
+    "HouseAge",
+    "AveRooms",
+    "AveBedrms",
+    "Population",
+    "AveOccup",
+    "Latitude",
+    "Longitude",
+]
+categorical_features = ["IncomeCategory", "AgeCategory", "LocationType"]
 
-model_mixed = Pipeline(steps=[
-    ('pre', ColumnTransformer([
-        ('num', 'passthrough', numeric_features),
-        ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features),
-    ])),
-    ('rf', RandomForestRegressor(random_state=0)),
-])
+model_mixed = Pipeline(
+    steps=[
+        (
+            "pre",
+            ColumnTransformer(
+                [
+                    ("num", "passthrough", numeric_features),
+                    (
+                        "cat",
+                        OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                        categorical_features,
+                    ),
+                ]
+            ),
+        ),
+        ("rf", RandomForestRegressor(random_state=0)),
+    ]
+)
 model_mixed.fit(dfx_train, dfy_train.values.flatten())
 
 ## ARF with mixed features
 explanation_arf_mixed = explain(
-    model = model_mixed,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'arf',
-    phi0 = dfy_train.mean().item(),
-    n_MC_samples = 200,
-    arf_num_trees = 20,
-    arf_max_iters = 5,
-    max_n_coalitions = 20,
-    seed = 1
+    model=model_mixed,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="arf",
+    phi0=dfy_train.mean().item(),
+    n_MC_samples=200,
+    arf_num_trees=20,
+    arf_max_iters=5,
+    max_n_coalitions=20,
+    seed=1,
 )
 
 explanation_arf_mixed.print()
@@ -136,18 +162,18 @@ explanation_arf_mixed.print()
 
 ## VAEAC with mixed features
 explanation_vaeac_mixed = explain(
-    model = model_mixed,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'vaeac',
-    phi0 = dfy_train.mean().item(),
-    n_MC_samples = 100,
-    vaeac_epochs = 10,
-    vaeac_width = 16,
-    vaeac_depth = 2,
-    vaeac_n_vaeacs_initialize = 1,
-    max_n_coalitions = 20,
-    seed = 1
+    model=model_mixed,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="vaeac",
+    phi0=dfy_train.mean().item(),
+    n_MC_samples=100,
+    vaeac_epochs=10,
+    vaeac_width=16,
+    vaeac_depth=2,
+    vaeac_n_vaeacs_initialize=1,
+    max_n_coalitions=20,
+    seed=1,
 )
 
 explanation_vaeac_mixed.print()

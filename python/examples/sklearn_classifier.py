@@ -11,12 +11,12 @@ model.fit(dfx_train, dfy_train.values.flatten())
 
 ## Shapr
 explanation = explain(
-    model = model,
-    x_train = dfx_train,
-    x_explain = dfx_explain,
-    approach = 'empirical',
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 
 explanation.print()

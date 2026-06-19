@@ -7,16 +7,20 @@ dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 ## Fit model
 dtrain = xgb.DMatrix(data=dfx_train, label=dfy_train)
-model = xgb.train(params={}, num_boost_round=20, dtrain=dtrain,)
+model = xgb.train(
+    params={},
+    num_boost_round=20,
+    dtrain=dtrain,
+)
 
 ## Shapr
 explanation = explain(
-    model = model,
-    x_train = dfx_train,
-   x_explain = dfx_explain,
-    approach = 'gaussian',
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="gaussian",
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 
 explanation.print()
