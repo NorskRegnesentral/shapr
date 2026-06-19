@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
@@ -9,148 +7,160 @@ from sklearn.preprocessing import OneHotEncoder
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
+dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train = dfx_train.iloc[:600].copy()
+dfx_test = dfx_test.iloc[:3].copy()
+dfy_train = dfy_train.iloc[:600].copy()
 
-def make_mixed_data(dfx_train: pd.DataFrame, dfx_test: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    dfx_train = dfx_train.copy()
-    dfx_test = dfx_test.copy()
+## Fit model
+model = RandomForestRegressor(random_state=0)
+model.fit(dfx_train, dfy_train.values.flatten())
 
-    dfx_train["IncomeCategory"] = pd.cut(
-        dfx_train["MedInc"], bins=[0, 3, 6, 15], labels=["Low", "Medium", "High"]
-    )
-    dfx_test["IncomeCategory"] = pd.cut(
-        dfx_test["MedInc"], bins=[0, 3, 6, 15], labels=["Low", "Medium", "High"]
-    )
+## ARF approach (numeric features)
+explanation_arf = explain(
+    model = model,
+    x_train = dfx_train,
+    x_explain = dfx_test,
+    approach = 'arf',
+    phi0 = dfy_train.mean().item(),
+    n_MC_samples = 200,
+    arf_num_trees = 20,
+    arf_max_iters = 5,
+    max_n_coalitions = 20,
+    seed = 1
+)
 
-    dfx_train["AgeCategory"] = pd.cut(
-        dfx_train["HouseAge"], bins=[0, 15, 35, 60], labels=["New", "Mid", "Old"]
-    )
-    dfx_test["AgeCategory"] = pd.cut(
-        dfx_test["HouseAge"], bins=[0, 15, 35, 60], labels=["New", "Mid", "Old"]
-    )
+explanation_arf.print()
 
-    dfx_train["LocationType"] = pd.cut(
-        dfx_train["Latitude"], bins=[32, 34, 37, 42], labels=["South", "Central", "North"]
-    )
-    dfx_test["LocationType"] = pd.cut(
-        dfx_test["Latitude"], bins=[32, 34, 37, 42], labels=["South", "Central", "North"]
-    )
+"""
+   explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+        <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+1:          1  2.21 -0.845   -0.119   -0.176    0.0479   -0.11500   -0.274
+2:          2  2.21 -0.655    0.129   -0.492   -0.1662   -0.00546    0.117
+3:          3  2.21  0.417    0.611    0.241   -0.8324   -0.07894    0.787
+   Latitude Longitude
+      <num>     <num>
+1:  -0.0182    0.0138
+2:  -0.0792   -0.0352
+3:  -0.0436    0.9592
+"""
 
-    for col in ["IncomeCategory", "AgeCategory", "LocationType"]:
-        dfx_train[col] = dfx_train[col].cat.add_categories(["Unknown"]).fillna("Unknown").astype(str)
-        dfx_test[col] = dfx_test[col].cat.add_categories(["Unknown"]).fillna("Unknown").astype(str)
-        categories = pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values)
-        categories = [cat for cat in categories if pd.notna(cat)]
-        dfx_train[col] = pd.Categorical(dfx_train[col], categories=categories)
-        dfx_test[col] = pd.Categorical(dfx_test[col], categories=categories)
+## VAEAC approach (numeric features)
+# Requires the R package torch (install.packages("torch"); torch::install_torch())
+explanation_vaeac = explain(
+    model = model,
+    x_train = dfx_train,
+    x_explain = dfx_test,
+    approach = 'vaeac',
+    phi0 = dfy_train.mean().item(),
+    n_MC_samples = 100,
+    vaeac_epochs = 10,
+    vaeac_width = 16,
+    vaeac_depth = 2,
+    vaeac_n_vaeacs_initialize = 1,
+    max_n_coalitions = 20,
+    seed = 1
+)
 
-    return dfx_train, dfx_test
+explanation_vaeac.print()
 
+"""
+   explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+        <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+1:          1  2.21 -1.308   0.0600   0.0209    0.0436    -0.1320  -0.0156
+2:          2  2.21 -1.015  -0.0114  -0.2196    0.0784     0.0269  -0.0300
+3:          3  2.21  0.197   0.7837   0.0484   -0.0974    -0.0794   1.1205
+   Latitude Longitude
+      <num>     <num>
+1:  -0.1211   -0.0342
+2:  -0.0869    0.0713
+3:  -0.0570    0.1448
+"""
 
-def main() -> None:
-    dfx_train, dfx_test, dfy_train, _ = load_california_housing()
+## ARF and VAEAC also support categorical (factor) features.
+# Add three categorical columns derived from existing numeric ones.
+for df in [dfx_train, dfx_test]:
+    df['IncomeCategory'] = pd.cut(df['MedInc'], bins=[0, 3, 6, 15], labels=['Low', 'Medium', 'High'])
+    df['AgeCategory']    = pd.cut(df['HouseAge'], bins=[0, 15, 35, 60], labels=['New', 'Mid', 'Old'])
+    df['LocationType']   = pd.cut(df['Latitude'], bins=[32, 34, 37, 42], labels=['South', 'Central', 'North'])
 
-    # Keep the example light enough to run quickly.
-    dfx_train = dfx_train.iloc[:1000].copy()
-    dfx_test = dfx_test.iloc[:3].copy()
-    dfy_train = dfy_train.iloc[:1000].copy()
+# Ensure consistent categorical levels and convert to pandas Categorical
+for col in ['IncomeCategory', 'AgeCategory', 'LocationType']:
+    for df in [dfx_train, dfx_test]:
+        df[col] = df[col].cat.add_categories(['Unknown']).fillna('Unknown').astype(str)
+    cats = [c for c in pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values) if pd.notna(c)]
+    dfx_train[col] = pd.Categorical(dfx_train[col], categories=cats)
+    dfx_test[col]  = pd.Categorical(dfx_test[col],  categories=cats)
 
-    phi0 = dfy_train.mean().item()
+# Build a model that handles the mixed feature types
+numeric_features     = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
+categorical_features = ['IncomeCategory', 'AgeCategory', 'LocationType']
 
-    model_numeric = RandomForestRegressor(random_state=1, n_estimators=100)
-    model_numeric.fit(dfx_train, dfy_train.values.flatten())
+model_mixed = Pipeline(steps=[
+    ('pre', ColumnTransformer([
+        ('num', 'passthrough', numeric_features),
+        ('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=False), categorical_features),
+    ])),
+    ('rf', RandomForestRegressor(random_state=0)),
+])
+model_mixed.fit(dfx_train, dfy_train.values.flatten())
 
-    print("\n=== Numeric features with ARF ===")
-    explanation_arf_num = explain(
-        model=model_numeric,
-        x_train=dfx_train,
-        x_explain=dfx_test,
-        approach="arf",
-        phi0=phi0,
-        max_n_coalitions=20,
-        n_MC_samples=200,
-        arf_num_trees=20,
-        arf_max_iters=5,
-        seed=1,
-    )
-    explanation_arf_num.print()
+## ARF with mixed features
+explanation_arf_mixed = explain(
+    model = model_mixed,
+    x_train = dfx_train,
+    x_explain = dfx_test,
+    approach = 'arf',
+    phi0 = dfy_train.mean().item(),
+    n_MC_samples = 200,
+    arf_num_trees = 20,
+    arf_max_iters = 5,
+    max_n_coalitions = 20,
+    seed = 1
+)
 
-    print("\n=== Numeric features with VAEAC ===")
-    explanation_vaeac_num = explain(
-        model=model_numeric,
-        x_train=dfx_train,
-        x_explain=dfx_test,
-        approach="vaeac",
-        phi0=phi0,
-        max_n_coalitions=20,
-        n_MC_samples=100,
-        vaeac_epochs=10,
-        vaeac_width=16,
-        vaeac_depth=2,
-        vaeac_n_vaeacs_initialize=1,
-        seed=1,
-    )
-    explanation_vaeac_num.print()
+explanation_arf_mixed.print()
 
-    dfx_train_cat, dfx_test_cat = make_mixed_data(dfx_train, dfx_test)
+"""
+   explain_id  none MedInc HouseAge AveRooms AveBedrms Population AveOccup
+        <int> <num>  <num>    <num>    <num>     <num>      <num>    <num>
+1:          1  2.21 -0.358  -0.0344   -0.150    0.0448    -0.2492  -0.0689
+2:          2  2.21 -0.332   0.1954   -0.204   -0.1338    -0.0682   0.1023
+3:          3  2.21 -0.276   0.3038   -0.898    0.5820    -0.7012   0.9768
+   Latitude Longitude IncomeCategory AgeCategory LocationType
+      <num>     <num>          <num>       <num>        <num>
+1:   -0.223   -0.0104         -0.358     -0.0254      -0.0769
+2:   -0.181   -0.0632         -0.332     -0.0708      -0.1023
+3:   -0.164   -0.0160         -0.276      1.5607       0.9812
+"""
 
-    numeric_features = [
-        "MedInc",
-        "HouseAge",
-        "AveRooms",
-        "AveBedrms",
-        "Population",
-        "AveOccup",
-        "Latitude",
-        "Longitude",
-    ]
-    categorical_features = ["IncomeCategory", "AgeCategory", "LocationType"]
+## VAEAC with mixed features
+explanation_vaeac_mixed = explain(
+    model = model_mixed,
+    x_train = dfx_train,
+    x_explain = dfx_test,
+    approach = 'vaeac',
+    phi0 = dfy_train.mean().item(),
+    n_MC_samples = 100,
+    vaeac_epochs = 10,
+    vaeac_width = 16,
+    vaeac_depth = 2,
+    vaeac_n_vaeacs_initialize = 1,
+    max_n_coalitions = 20,
+    seed = 1
+)
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("num", "passthrough", numeric_features),
-            ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), categorical_features),
-        ]
-    )
-    model_mixed = Pipeline(
-        steps=[
-            ("preprocessor", preprocessor),
-            ("model", RandomForestRegressor(random_state=1, n_estimators=100)),
-        ]
-    )
-    model_mixed.fit(dfx_train_cat, dfy_train.values.flatten())
+explanation_vaeac_mixed.print()
 
-    print("\n=== Mixed numeric/categorical features with ARF ===")
-    explanation_arf_cat = explain(
-        model=model_mixed,
-        x_train=dfx_train_cat,
-        x_explain=dfx_test_cat,
-        approach="arf",
-        phi0=phi0,
-        max_n_coalitions=20,
-        n_MC_samples=200,
-        arf_num_trees=20,
-        arf_max_iters=5,
-        seed=1,
-    )
-    explanation_arf_cat.print()
-
-    print("\n=== Mixed numeric/categorical features with VAEAC ===")
-    explanation_vaeac_cat = explain(
-        model=model_mixed,
-        x_train=dfx_train_cat,
-        x_explain=dfx_test_cat,
-        approach="vaeac",
-        phi0=phi0,
-        max_n_coalitions=20,
-        n_MC_samples=100,
-        vaeac_epochs=10,
-        vaeac_width=16,
-        vaeac_depth=2,
-        vaeac_n_vaeacs_initialize=1,
-        seed=1,
-    )
-    explanation_vaeac_cat.print()
-
-
-if __name__ == "__main__":
-    main()
+"""
+   explain_id  none   MedInc HouseAge AveRooms AveBedrms Population AveOccup
+        <int> <num>    <num>    <num>    <num>     <num>      <num>    <num>
+1:          1  2.21 -0.59851    0.139   0.1018   0.13597     -0.287   -0.131
+2:          2  2.21 -0.40255    0.077  -0.0298  -0.01953     -0.216   -0.023
+3:          3  2.21 -0.00262    0.467   0.0270   0.00472      0.251    0.714
+   Latitude Longitude IncomeCategory AgeCategory LocationType
+      <num>     <num>          <num>       <num>        <num>
+1:   -0.259   -0.0344       -0.59851     0.00404       0.0189
+2:   -0.171   -0.0742       -0.40255    -0.00521       0.0783
+3:    0.270    0.1988       -0.00262     0.16048      -0.0158
+"""
