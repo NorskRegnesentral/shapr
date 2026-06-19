@@ -17,12 +17,12 @@ class TestCategoricalOutputs:
                                                    trained_rf_regressor_categorical,
                                                    extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with ctree approach - mixed numeric/categorical data."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
         explanation = explain(
             model=trained_rf_regressor_categorical,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='ctree',
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,
@@ -40,12 +40,12 @@ class TestCategoricalOutputs:
                                                         categorical_group_config,
                                                         extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with ctree approach - categorical data with feature groups."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
         explanation = explain(
             model=trained_rf_regressor_categorical,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='ctree',
             phi0=dfy_train.mean().item(),
             group=categorical_group_config,
@@ -64,12 +64,12 @@ class TestCategoricalOutputs:
                                                 trained_rf_regressor_categorical,
                                                 extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with arf approach - mixed numeric/categorical data with short runtime."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
         explanation = explain(
             model=trained_rf_regressor_categorical,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='arf',
             phi0=dfy_train.mean().item(),
             max_n_coalitions=20,
@@ -90,12 +90,12 @@ class TestCategoricalOutputs:
                                                    trained_rf_regressor_categorical,
                                                    extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with vaeac approach - mixed numeric/categorical data with short runtime."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
         explanation = explain(
             model=trained_rf_regressor_categorical,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='vaeac',
             phi0=dfy_train.mean().item(),
             max_n_coalitions=20,
@@ -119,12 +119,12 @@ class TestCategoricalOutputs:
                                                         categorical_group_config,
                                                         extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with vaeac approach - categorical data with feature groups and short runtime."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
         explanation = explain(
             model=trained_rf_regressor_categorical,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='vaeac',
             phi0=dfy_train.mean().item(),
             group=categorical_group_config,

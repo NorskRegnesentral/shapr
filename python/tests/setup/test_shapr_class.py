@@ -16,12 +16,12 @@ class TestShaprClassMethods:
     @pytest.fixture(scope="class")
     def explanation_object(self, california_housing_data, trained_rf_regressor):
         """Create a single Shapr explanation object to test all methods."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test.iloc[:3],  # Use only 3 observations for faster tests
+            x_explain=dfx_explain.iloc[:3],  # Use only 3 observations for faster tests
             approach='empirical',
             phi0=dfy_train.mean().item(),
             max_n_coalitions=50,

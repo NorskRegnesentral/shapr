@@ -39,7 +39,7 @@ def binary_iris_data():
 @pytest.fixture(scope="session")
 def trained_rf_regressor(california_housing_data):
     """Trained RandomForest regressor on California housing data."""
-    dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+    dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
     model = RandomForestRegressor(random_state=1, n_estimators=100)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
@@ -48,7 +48,7 @@ def trained_rf_regressor(california_housing_data):
 @pytest.fixture(scope="session")
 def trained_rf_classifier(binary_iris_data):
     """Trained RandomForest classifier on binary iris data."""
-    dfx_train, dfx_test, dfy_train, dfy_test = binary_iris_data
+    dfx_train, dfx_explain, dfy_train, dfy_explain = binary_iris_data
     model = RandomForestClassifier(random_state=1, n_estimators=100)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
@@ -57,7 +57,7 @@ def trained_rf_classifier(binary_iris_data):
 @pytest.fixture(scope="session")
 def trained_xgb_regressor(california_housing_data):
     """Trained XGBoost regressor on California housing data."""
-    dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+    dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
     model = xgb.XGBRegressor(random_state=1, n_estimators=100, n_jobs=1)
     model.fit(dfx_train, dfy_train.values.flatten())
     return model
@@ -86,49 +86,49 @@ def causal_ordering_config():
 @pytest.fixture(scope="session")
 def california_housing_categorical_data():
     """Load California housing dataset with added categorical features."""
-    dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+    dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
     # Create categorical features by binning continuous variables
     # Income category: Low, Medium, High
     income_bins = [0, 3, 6, 15]
     income_labels = ['Low', 'Medium', 'High']
     dfx_train['IncomeCategory'] = pd.cut(dfx_train['MedInc'], bins=income_bins, labels=income_labels)
-    dfx_test['IncomeCategory'] = pd.cut(dfx_test['MedInc'], bins=income_bins, labels=income_labels)
+    dfx_explain['IncomeCategory'] = pd.cut(dfx_explain['MedInc'], bins=income_bins, labels=income_labels)
 
     # House age category: New, Mid, Old
     age_bins = [0, 15, 35, 60]
     age_labels = ['New', 'Mid', 'Old']
     dfx_train['AgeCategory'] = pd.cut(dfx_train['HouseAge'], bins=age_bins, labels=age_labels)
-    dfx_test['AgeCategory'] = pd.cut(dfx_test['HouseAge'], bins=age_bins, labels=age_labels)
+    dfx_explain['AgeCategory'] = pd.cut(dfx_explain['HouseAge'], bins=age_bins, labels=age_labels)
 
     # Location type based on latitude: North, Central, South
     lat_bins = [32, 34, 37, 42]
     lat_labels = ['South', 'Central', 'North']
     dfx_train['LocationType'] = pd.cut(dfx_train['Latitude'], bins=lat_bins, labels=lat_labels)
-    dfx_test['LocationType'] = pd.cut(dfx_test['Latitude'], bins=lat_bins, labels=lat_labels)
+    dfx_explain['LocationType'] = pd.cut(dfx_explain['Latitude'], bins=lat_bins, labels=lat_labels)
 
     # Convert categorical columns to pandas categorical dtype with consistent categories
-    # This ensures rpy2 will convert them to R factors properly and both train/test have same levels
+    # This ensures rpy2 will convert them to R factors properly and both train/explain have same levels
     cat_cols = ['IncomeCategory', 'AgeCategory', 'LocationType']
     for col in cat_cols:
         # Fill any NaN values with a placeholder before converting to string (pandas 3.0 compatibility)
         dfx_train[col] = dfx_train[col].cat.add_categories(['Unknown']).fillna('Unknown')
-        dfx_test[col] = dfx_test[col].cat.add_categories(['Unknown']).fillna('Unknown')
+        dfx_explain[col] = dfx_explain[col].cat.add_categories(['Unknown']).fillna('Unknown')
 
         # Convert to string
         dfx_train[col] = dfx_train[col].astype(str)
-        dfx_test[col] = dfx_test[col].astype(str)
+        dfx_explain[col] = dfx_explain[col].astype(str)
 
         # Get all unique categories from both train and test
-        all_categories = pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values)
+        all_categories = pd.unique(pd.concat([dfx_train[col], dfx_explain[col]]).values)
         # Ensure no null/nan values in categories list (pandas 3.0 requirement)
         all_categories = [cat for cat in all_categories if pd.notna(cat)]
 
         # Create categorical with explicit categories for both
         dfx_train[col] = pd.Categorical(dfx_train[col], categories=all_categories)
-        dfx_test[col] = pd.Categorical(dfx_test[col], categories=all_categories)
+        dfx_explain[col] = pd.Categorical(dfx_explain[col], categories=all_categories)
 
-    return dfx_train, dfx_test, dfy_train, dfy_test
+    return dfx_train, dfx_explain, dfy_train, dfy_explain
 
 
 @pytest.fixture(scope="session")
@@ -138,7 +138,7 @@ def trained_rf_regressor_categorical(california_housing_categorical_data):
     from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import OneHotEncoder
 
-    dfx_train, dfx_test, dfy_train, dfy_test = california_housing_categorical_data
+    dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_categorical_data
 
     # Define numeric and categorical features
     numeric_features = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']

@@ -16,13 +16,13 @@ class TestInputValidation:
 
     def test_invalid_approach_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that invalid approach parameter raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         with pytest.raises((ValueError, Exception)):  # Using Exception for now, can be more specific later
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='invalid_approach',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -30,17 +30,17 @@ class TestInputValidation:
 
     def test_mismatched_feature_names_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that mismatched feature names between train and explain raise error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
-        # Create test data with different column names
-        dfx_test_bad = dfx_test.copy()
-        dfx_test_bad.columns = ['BadCol' + str(i) for i in range(len(dfx_test_bad.columns))]
+        # Create explain data with different column names
+        dfx_explain_bad = dfx_explain.copy()
+        dfx_explain_bad.columns = ['BadCol' + str(i) for i in range(len(dfx_explain_bad.columns))]
 
         with pytest.raises((ValueError, KeyError, Exception)):  # Can be more specific later
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test_bad,
+                x_explain=dfx_explain_bad,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -48,16 +48,16 @@ class TestInputValidation:
 
     def test_empty_explain_data_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that empty x_explain data raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Create empty explain data
-        dfx_test_empty = dfx_test.iloc[0:0]  # Empty DataFrame with same columns
+        dfx_explain_empty = dfx_explain.iloc[0:0]  # Empty DataFrame with same columns
 
         with pytest.raises((ValueError, Exception)):  # Can be more specific later
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test_empty,
+                x_explain=dfx_explain_empty,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -65,7 +65,7 @@ class TestInputValidation:
 
     def test_nan_in_x_train_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that NaN values in x_train raise appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Inject NaN values into training data
         dfx_train_with_nan = dfx_train.copy()
@@ -75,7 +75,7 @@ class TestInputValidation:
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train_with_nan,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -83,17 +83,17 @@ class TestInputValidation:
 
     def test_nan_in_x_explain_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that NaN values in x_explain raise appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Inject NaN values into explain data
-        dfx_test_with_nan = dfx_test.copy()
-        dfx_test_with_nan.iloc[0, 0] = np.nan
+        dfx_explain_with_nan = dfx_explain.copy()
+        dfx_explain_with_nan.iloc[0, 0] = np.nan
 
         with pytest.raises((ValueError, Exception)):
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test_with_nan,
+                x_explain=dfx_explain_with_nan,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -101,16 +101,16 @@ class TestInputValidation:
 
     def test_mismatched_feature_dimensions_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that different number of features between train and explain raises error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Drop a column from x_explain
-        dfx_test_fewer_cols = dfx_test.iloc[:, :-1]
+        dfx_explain_fewer_cols = dfx_explain.iloc[:, :-1]
 
         with pytest.raises((ValueError, KeyError, Exception)):
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test_fewer_cols,
+                x_explain=dfx_explain_fewer_cols,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 seed=1
@@ -118,13 +118,13 @@ class TestInputValidation:
 
     def test_invalid_max_n_coalitions_negative_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that negative max_n_coalitions raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         with pytest.raises((ValueError, Exception)):
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 max_n_coalitions=-10,
@@ -133,13 +133,13 @@ class TestInputValidation:
 
     def test_invalid_max_n_coalitions_zero_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that zero max_n_coalitions raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         with pytest.raises((ValueError, Exception)):
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 max_n_coalitions=0,
@@ -148,7 +148,7 @@ class TestInputValidation:
 
     def test_invalid_group_specification_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that invalid group specification raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Create invalid group specification (e.g., group index out of bounds)
         invalid_group = [1, 1, 2, 2, 2, 2, 2, 99]  # 99 is invalid
@@ -157,7 +157,7 @@ class TestInputValidation:
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 group=invalid_group,
@@ -166,7 +166,7 @@ class TestInputValidation:
 
     def test_invalid_group_wrong_length_raises_error(self, california_housing_data, trained_rf_regressor):
         """Test that group specification with wrong length raises appropriate error."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         # Create group specification with wrong length
         invalid_group = [1, 1, 2]  # Should match number of features
@@ -175,7 +175,7 @@ class TestInputValidation:
             explain(
                 model=trained_rf_regressor,
                 x_train=dfx_train,
-                x_explain=dfx_test,
+                x_explain=dfx_explain,
                 approach='empirical',
                 phi0=dfy_train.mean().item(),
                 group=invalid_group,
@@ -188,12 +188,12 @@ class TestBasicFunctionality:
 
     def test_explain_returns_expected_keys(self, california_housing_data, trained_rf_regressor):
         """Test that explain function returns expected dictionary keys."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test.iloc[:1],  # Just one row for speed
+            x_explain=dfx_explain.iloc[:1],  # Just one row for speed
             approach='independence',  # Fastest approach
             phi0=dfy_train.mean().item(),
             seed=1

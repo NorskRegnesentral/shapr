@@ -17,12 +17,12 @@ class TestCausalOrderingOutputs:
     def test_rf_regressor_gaussian_causal_symmetric(self, california_housing_data, trained_rf_regressor,
                                                      causal_ordering_config, extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with gaussian approach - symmetric with causal ordering."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='gaussian',
             phi0=dfy_train.mean().item(),
             asymmetric=False,
@@ -40,12 +40,12 @@ class TestCausalOrderingOutputs:
     def test_rf_regressor_gaussian_causal_asymmetric(self, california_housing_data, trained_rf_regressor,
                                                       causal_ordering_config, extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with gaussian approach - asymmetric with causal ordering, no confounding."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='gaussian',
             phi0=dfy_train.mean().item(),
             asymmetric=True,
@@ -63,12 +63,12 @@ class TestCausalOrderingOutputs:
     def test_rf_regressor_copula_causal_asymmetric_confounding(self, california_housing_data, trained_rf_regressor,
                                                                 causal_ordering_config, extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with copula approach - asymmetric with causal ordering and confounding."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='copula',
             phi0=dfy_train.mean().item(),
             asymmetric=True,
@@ -87,12 +87,12 @@ class TestCausalOrderingOutputs:
     def test_rf_regressor_ctree_causal_symmetric(self, california_housing_data, trained_rf_regressor,
                                                   causal_ordering_config, extract_shapley_outputs, snapshot):
         """Test RandomForest regressor with ctree approach - symmetric with causal ordering."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         explanation = explain(
             model=trained_rf_regressor,
             x_train=dfx_train,
-            x_explain=dfx_test,
+            x_explain=dfx_explain,
             approach='ctree',
             phi0=dfy_train.mean().item(),
             asymmetric=False,
