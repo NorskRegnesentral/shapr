@@ -7,9 +7,9 @@ from sklearn.preprocessing import OneHotEncoder
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 dfx_train = dfx_train.iloc[:600].copy()
-dfx_test = dfx_test.iloc[:3].copy()
+dfx_explain = dfx_explain.iloc[:3].copy()
 dfy_train = dfy_train.iloc[:600].copy()
 
 ## Fit model
@@ -20,7 +20,7 @@ model.fit(dfx_train, dfy_train.values.flatten())
 explanation_arf = explain(
     model = model,
     x_train = dfx_train,
-    x_explain = dfx_test,
+    x_explain = dfx_explain,
     approach = 'arf',
     phi0 = dfy_train.mean().item(),
     n_MC_samples = 200,
@@ -50,7 +50,7 @@ explanation_arf.print()
 explanation_vaeac = explain(
     model = model,
     x_train = dfx_train,
-    x_explain = dfx_test,
+    x_explain = dfx_explain,
     approach = 'vaeac',
     phi0 = dfy_train.mean().item(),
     n_MC_samples = 100,
@@ -79,18 +79,18 @@ explanation_vaeac.print()
 
 ## ARF and VAEAC also support categorical (factor) features.
 # Add three categorical columns derived from existing numeric ones.
-for df in [dfx_train, dfx_test]:
+for df in [dfx_train, dfx_explain]:
     df['IncomeCategory'] = pd.cut(df['MedInc'], bins=[0, 3, 6, 15], labels=['Low', 'Medium', 'High'])
     df['AgeCategory']    = pd.cut(df['HouseAge'], bins=[0, 15, 35, 60], labels=['New', 'Mid', 'Old'])
     df['LocationType']   = pd.cut(df['Latitude'], bins=[32, 34, 37, 42], labels=['South', 'Central', 'North'])
 
 # Ensure consistent categorical levels and convert to pandas Categorical
 for col in ['IncomeCategory', 'AgeCategory', 'LocationType']:
-    for df in [dfx_train, dfx_test]:
+    for df in [dfx_train, dfx_explain]:
         df[col] = df[col].cat.add_categories(['Unknown']).fillna('Unknown').astype(str)
-    cats = [c for c in pd.unique(pd.concat([dfx_train[col], dfx_test[col]]).values) if pd.notna(c)]
+    cats = [c for c in pd.unique(pd.concat([dfx_train[col], dfx_explain[col]]).values) if pd.notna(c)]
     dfx_train[col] = pd.Categorical(dfx_train[col], categories=cats)
-    dfx_test[col]  = pd.Categorical(dfx_test[col],  categories=cats)
+    dfx_explain[col]  = pd.Categorical(dfx_explain[col],  categories=cats)
 
 # Build a model that handles the mixed feature types
 numeric_features     = ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']
@@ -109,7 +109,7 @@ model_mixed.fit(dfx_train, dfy_train.values.flatten())
 explanation_arf_mixed = explain(
     model = model_mixed,
     x_train = dfx_train,
-    x_explain = dfx_test,
+    x_explain = dfx_explain,
     approach = 'arf',
     phi0 = dfy_train.mean().item(),
     n_MC_samples = 200,
@@ -138,7 +138,7 @@ explanation_arf_mixed.print()
 explanation_vaeac_mixed = explain(
     model = model_mixed,
     x_train = dfx_train,
-    x_explain = dfx_test,
+    x_explain = dfx_explain,
     approach = 'vaeac',
     phi0 = dfy_train.mean().item(),
     n_MC_samples = 100,

@@ -13,7 +13,7 @@ import xgboost as xgb
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 # Fit model
 model = xgb.XGBRegressor()
@@ -26,7 +26,7 @@ explanation_list = {}
 explanation_list["empirical"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='empirical',
     iterative = False,
     phi0=dfy_train.mean().item(),
@@ -38,7 +38,7 @@ explanation_list["empirical"] = explain(
 explanation_list["sep_lm"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model='parsnip::linear_reg()',
@@ -49,7 +49,7 @@ explanation_list["sep_lm"] = explain(
 explanation_list["sep_pca"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model='parsnip::linear_reg()',
@@ -63,7 +63,7 @@ explanation_list["sep_pca"] = explain(
 explanation_list["sep_splines"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model='parsnip::linear_reg()',
@@ -77,7 +77,7 @@ explanation_list["sep_splines"] = explain(
 explanation_list["sep_tree_cv"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::decision_tree(tree_depth = hardhat::tune(), engine = 'rpart', mode = 'regression')",
@@ -90,7 +90,7 @@ explanation_list["sep_tree_cv"] = explain(
 explanation_list["sep_xgboost"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::boost_tree(engine = 'xgboost', mode = 'regression')",
@@ -101,7 +101,7 @@ explanation_list["sep_xgboost"] = explain(
 explanation_list["sep_xgboost_cv"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_separate',
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::boost_tree(trees = hardhat::tune(), engine = 'xgboost', mode = 'regression')",
@@ -115,7 +115,7 @@ explanation_list["sep_xgboost_cv"] = explain(
 explanation_list["sur_lm"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
     regression_model='parsnip::linear_reg()',
@@ -126,7 +126,7 @@ explanation_list["sur_lm"] = explain(
 explanation_list["sur_rf"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
     regression_model="parsnip::rand_forest(engine = 'ranger', mode = 'regression')",
@@ -137,7 +137,7 @@ explanation_list["sur_rf"] = explain(
 explanation_list["sur_rf_cv"] = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach='regression_surrogate',
     phi0=dfy_train.mean().item(),
     regression_model="""parsnip::rand_forest(

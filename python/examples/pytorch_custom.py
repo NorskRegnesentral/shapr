@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 ## Fit model (not seed controlled here)
 class MyNeuralNet(nn.Module):
@@ -40,7 +40,7 @@ for epoch in range(200):
 explanation = explain(
     model = model,
     x_train = dfx_train,
-    x_explain = dfx_test,
+    x_explain = dfx_explain,
     approach = 'empirical',
     predict_model = lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
     phi0 = dfy_train.mean().item(),
