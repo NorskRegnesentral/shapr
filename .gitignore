@@ -43,3 +43,10 @@ python/*.egg-info/
 python/**/.pytest_cache/
 python/.ruff_cache/
 python/.mypy_cache/
+
+# Local virtual environments
+.venv/
+python/.venv/
+
+# Personal VS Code settings (keep shared tasks.json tracked)
+.vscode/settings.json
