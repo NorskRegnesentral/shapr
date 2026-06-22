@@ -170,7 +170,7 @@ See the help file of \code{\link[=get_iterative_args_default]{get_iterative_args
 Indicates whether the function is called from the Python wrapper.
 Default is FALSE, which is never changed when calling the function via \code{explain()} in R.
 The parameter is later used to disallow running the AICc versions of the empirical method,
-as that requires data-based optimization, which is not supported in \code{shaprpy}.}
+as that requires data-based optimization, which is not supported in \code{pyshapr}.}
 
 \item{testing}{Logical.
 Only used to remove random components, like timing, from the output when comparing with testthat.

@@ -37,7 +37,7 @@ and thus the type of explanation to generate.}
 Indicates whether the function is called from the Python wrapper.
 Default is FALSE, which is never changed when calling the function via \code{explain()} in R.
 The parameter is later used to disallow running the AICc versions of the empirical method,
-as that requires data-based optimization, which is not supported in \code{shaprpy}.}
+as that requires data-based optimization, which is not supported in \code{pyshapr}.}
 }
 \value{
 No return value (but prints header with cli unless \code{verbose} is \code{NULL})
