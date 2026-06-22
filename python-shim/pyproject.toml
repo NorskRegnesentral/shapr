@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shaprpy"
+version = "0.4.4"
+description = "Compatibility shim: 'shaprpy' has been renamed to 'pyshapr'. Installs and forwards to 'pyshapr'."
+readme = "README.md"
+license = { file = "LICENSE.md" }
+authors = [
+  { name = "Martin Jullum" },
+  { name = "Lars Henry Berge Olsen" },
+  { name = "Didrik Nielsen" }
+]
+requires-python = ">=3.10"
+keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Development Status :: 7 - Inactive"
+]
+dependencies = [
+  "pyshapr>=0.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/NorskRegnesentral/shapr"
+Documentation = "https://norskregnesentral.github.io/shapr/pyshapr.html"
+Issues = "https://github.com/NorskRegnesentral/shapr/issues"
+Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["shaprpy*"]
