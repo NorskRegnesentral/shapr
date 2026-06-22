@@ -68,9 +68,9 @@ If \code{xreg != NULL}, denotes the number of lags that should be used for each 
 The forecast horizon to explain. Passed to the \code{predict_model} function.}
 
 \item{approach}{Character vector of length \code{1} or one less than the number of features.
-All elements should either be \code{"gaussian"}, \code{"copula"}, \code{"empirical"}, \code{"ctree"}, \code{"vaeac"},
-\code{"categorical"}, \code{"arf"}, \code{"timeseries"}, \code{"independence"}, \code{"regression_separate"}, or
-\code{"regression_surrogate"}.
+All elements should either be \code{"arf"}, \code{"categorical"}, \code{"copula"}, \code{"ctree"}, \code{"empirical"},
+\code{"gaussian"}, \code{"independence"}, \code{"regression_separate"}, \code{"regression_surrogate"}, \code{"timeseries"}, or
+\code{"vaeac"}.
 The two regression approaches cannot be combined with any other approach.
 See details for more information.}
 
