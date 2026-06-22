@@ -8,7 +8,7 @@ produce consistent output.
 import pandas as pd
 import pytest
 
-from shaprpy import explain
+from pyshapr import explain
 
 
 @pytest.fixture(scope="class")
@@ -121,7 +121,7 @@ class TestShaprClassMethods:
 
     def test_summary(self, explanation_object):
         """Test summary() method returns ShaprSummary object."""
-        from shaprpy.explanation import ShaprSummary
+        from pyshapr.explanation import ShaprSummary
 
         result = explanation_object.summary(digits=3)
 

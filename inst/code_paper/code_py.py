@@ -1,6 +1,6 @@
 import xgboost as xgb
 import pandas as pd
-from shaprpy import explain
+from pyshapr import explain
 
 
 

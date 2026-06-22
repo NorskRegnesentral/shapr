@@ -7,7 +7,7 @@ remain consistent across changes to the codebase.
 
 import pytest
 
-from shaprpy import explain
+from pyshapr import explain
 
 
 class TestClassificationOutputs:
