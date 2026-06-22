@@ -13,7 +13,7 @@ authors = [
   { name = "Lars Henry Berge Olsen" },
   { name = "Didrik Nielsen" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
 classifiers = [
   "Programming Language :: Python :: 3",
