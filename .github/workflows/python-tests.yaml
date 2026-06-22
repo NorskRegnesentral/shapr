@@ -1,5 +1,5 @@
 # GitHub Actions workflow for Python testing
-# Tests the shaprpy package (requires R backend for shapr package)
+# Tests the pyshapr package (requires R backend for shapr package)
 
 name: Python Tests
 
@@ -84,11 +84,10 @@ jobs:
           remotes::install_local(".", dependencies = FALSE, build_vignettes = FALSE)
         shell: Rscript {0}
 
-      - name: Install Python shaprpy package for testing
+      - name: Install Python pyshapr package for testing
         run: |
           cd python
           uv sync --locked --extra test --python ${{ matrix.python-version }}
-
       - name: Verify installation
         run: |
           cd python
@@ -96,8 +95,8 @@ jobs:
           import rpy2.robjects as ro
           ro.r('library(shapr)')
           print('✓ R shapr package loaded')
-          import shaprpy
-          print('✓ Python shaprpy package loaded')
+          import pyshapr
+          print('✓ Python pyshapr package loaded')
           "
 
       - name: Run Python tests (excluding local-only tests)

@@ -51,7 +51,7 @@ a full suite of new functionality, including:
 * New function `explain_forecast()` for explaining forecasts
 * Asymmetric and causal Shapley values
 * Several other methodological, computational and user-experience improvements
-* Python wrapper `shaprpy` making the core functionality of `shapr` available in Python
+* Python wrapper `pyshapr` making the core functionality of `shapr` available in Python
 
 
 See the [NEWS](https://norskregnesentral.github.io/shapr/news/index.html) for a complete list.
@@ -67,10 +67,10 @@ Click [here](https://github.com/NorskRegnesentral/shapr/blob/cranversion_0.2.2/R
 
 ### Python wrapper
 
-We provide a Python wrapper (`shaprpy`) which allows explaining Python models with the methodology
+We provide a Python wrapper (`pyshapr`) which allows explaining Python models with the methodology
 implemented in `shapr`, directly from Python.
 The wrapper calls R internally and therefore requires an installation of R.
-See [here](https://norskregnesentral.github.io/shapr/shaprpy.html) for installation instructions and examples.
+See [here](https://norskregnesentral.github.io/shapr/pyshapr.html) for installation instructions and examples.
 
 
 ## The package

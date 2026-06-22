@@ -6,6 +6,7 @@ redirects:
   - ["vaeac.html", "articles/vaeac.html"]
   - ["regression.html", "articles/regression.html"]
   - ["asymmetric_causal.html", "articles/asymmetric_causal.html"]
+  - ["shaprpy.html", "pyshapr.html"]
 
 template:
   bootstrap: 5
@@ -34,4 +35,4 @@ navbar:
       href: reference/index.html
     python:
       text: Python
-      href: shaprpy.html
+      href: pyshapr.html

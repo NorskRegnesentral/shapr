@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Python `shaprpy` library will be documented in this file.
+All notable changes to the Python `pyshapr` library will be documented in this file.
 Changes to the underlying `shapr` R package is documented in
 [shapr CHANGELOG](https://norskregnesentral.github.io/shapr/news/index.html)
 
@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Added basic shaprpy snapshot tests for `approach="arf"` on both numerical and mixed categorical feature sets.
+- Added basic snapshot tests for `approach="arf"` on both numerical and mixed categorical feature sets.
 - Added an `arf`/`vaeac` end-to-end example script for numerical and mixed categorical feature sets.
 
 ### Changed
-- Updated shaprpy documentation to explicitly list `arf` and `vaeac` as supported approaches.
+- **Renamed the package from `shaprpy` to `pyshapr`** (both the PyPI distribution name and the import name).
+  Update installs to `pip install pyshapr` and imports to `import pyshapr`. The old `shaprpy` package remains
+  available on PyPI for a transition period as a thin compatibility shim that depends on and forwards to `pyshapr`.
+- Updated documentation to explicitly list `arf` and `vaeac` as supported approaches.
 - Updated local `vaeac` snapshot tests to pass `vaeac_*` arguments directly to `explain()`.
 
 ## [0.4.3] - 2026-01-24
