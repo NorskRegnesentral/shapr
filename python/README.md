@@ -11,7 +11,7 @@ using the [`rpy2`](https://rpy2.github.io/) Python library to access R from with
 > `rpy2` has limited support on Windows, and the same therefore applies to `pyshapr`.
 > `pyshapr` has only been tested on Linux (and WSL - Windows Subsystem for Linux), and the below instructions assume a Linux environment.
 >
-> **Requirement:** Python 3.10 or later is required to use `pyshapr`.
+> **Requirement:** Python 3.11 or later is required to use `pyshapr`.
 
 ## Changelog
 

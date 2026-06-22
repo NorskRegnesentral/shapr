@@ -13,12 +13,11 @@ authors = [
   { name = "Lars Henry Berge Olsen" },
   { name = "Didrik Nielsen" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 keywords = ["explainable-ai", "shapley-values", "machine-learning", "model-interpretability"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -85,7 +84,7 @@ markers = [
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 exclude = [
   ".git",
   "__pycache__",
