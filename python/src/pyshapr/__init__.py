@@ -8,7 +8,7 @@ from ._rutils import get_package_lib_loc
 __all__ = ["Shapr", "datasets", "ensure_r_ready", "explain"]
 
 try:
-    __version__ = version("shaprpy")
+    __version__ = version("pyshapr")
 except PackageNotFoundError:
     __version__ = "0.0.0+local"
 
@@ -27,7 +27,7 @@ def ensure_r_ready() -> bool:
         from rpy2.robjects.packages import importr
     except Exception as e:
         raise ImportError(
-            "shaprpy requires rpy2 and a working R installation.\n"
+            "pyshapr requires rpy2 and a working R installation.\n"
             "Install R and rpy2, and ensure R is on PATH/R_HOME. See README."
         ) from e
 

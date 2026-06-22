@@ -3,8 +3,8 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "shaprpy"
-version = "0.4.3"
+name = "pyshapr"
+version = "0.5.0"
 description = "Python wrapper for the R package shapr (via rpy2)"
 readme = "README.md"
 license = { file = "LICENSE.md" }
@@ -53,7 +53,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/NorskRegnesentral/shapr"
-Documentation = "https://norskregnesentral.github.io/shapr/shaprpy.html"
+Documentation = "https://norskregnesentral.github.io/shapr/pyshapr.html"
 Issues = "https://github.com/NorskRegnesentral/shapr/issues"
 Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
 
@@ -62,7 +62,7 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["shaprpy*" ]
+include = ["pyshapr*" ]
 
 [tool.setuptools.dynamic]
 # (none needed now)
