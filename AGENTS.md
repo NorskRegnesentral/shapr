@@ -15,7 +15,7 @@ either automatically, even if the overall workflow was already approved.
 ## When to Use
 
 - Adding a new feature, approach, or function to the R package
-- Editing or extending the Python `shaprpy` wrapper
+- Editing or extending the Python `pyshapr` wrapper
 - Writing or updating tests
 - Writing roxygen2 documentation
 - Reviewing a diff for style compliance
@@ -24,7 +24,7 @@ either automatically, even if the overall workflow was already approved.
 
 The `shapr` package has two components: - **R package** (`R/`, `src/`) —
 core Shapley value computation - **Python wrapper**
-(`python/src/shaprpy/`) — thin `rpy2`-based wrapper around the R package
+(`python/src/pyshapr/`) — thin `rpy2`-based wrapper around the R package
 
 Both must be **highly human-readable** and **computationally
 efficient**. Do not sacrifice either.
@@ -362,7 +362,7 @@ local workflow for snapshot updates in this repository.
 
 ------------------------------------------------------------------------
 
-## Python Wrapper (`shaprpy`) Conventions
+## Python Wrapper (`pyshapr`) Conventions
 
 ### Naming
 
@@ -390,9 +390,9 @@ local workflow for snapshot updates in this repository.
 
 ### R Bridging (`rpy2`)
 
-- Use `_importr()` from `shaprpy._rutils` (not bare
+- Use `_importr()` from `pyshapr._rutils` (not bare
   `rpy2.robjects.packages.importr`) — it handles `lib_loc` correctly.
-- Use `py2r()` / `r2py()` from `shaprpy.utils` for type conversion.
+- Use `py2r()` / `r2py()` from `pyshapr.utils` for type conversion.
 - Convert `None` → R `NULL` with `maybe_null()`.
 - Keep all `rpy2` calls inside `_explain.py` or utility modules;
   higher-level code must not import `rpy2` directly.

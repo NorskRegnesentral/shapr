@@ -236,7 +236,7 @@ setup(
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
   in R. The parameter is later used to disallow running the AICc
   versions of the empirical method, as that requires data-based
-  optimization, which is not supported in `shaprpy`.
+  optimization, which is not supported in `pyshapr`.
 
 - testing:
 

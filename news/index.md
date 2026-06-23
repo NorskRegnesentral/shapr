@@ -1,15 +1,13 @@
 # Changelog
 
-## shapr 1.0.8.9000
+## shapr 1.0.8.9001
 
 #### New features
 
 - Added the `"arf"` approach for conditional sampling with adversarial
   random forests via the `arf` package
-  ([\#494](https://github.com/NorskRegnesentral/shapr/pull/497))
-
-#### Development workflow
-
+  ([\#497](https://github.com/NorskRegnesentral/shapr/pull/497)) \###
+  Development workflow
 - Added repository-wide agent instructions, VS Code tasks, and
   snapshot-safe local testing helpers
   ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
@@ -42,7 +40,8 @@
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
   runs without errors and that the returned Shapley values satisfy the
   efficiency property, providing platform coverage for the snapshot
-  tests skipped on macOS. (branch: add-arf)
+  tests skipped on macOS.
+  ([\#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 
 #### Continuous integration
 
@@ -55,6 +54,16 @@
 - Simplified roxygen2 (following package update) inheritance for
   approach-specific arguments and refreshed affected documentation
   ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+#### Python
+
+- Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console
+  output from
+  [`summary()`](https://rdrr.io/r/base/summary.html)/[`print()`](https://rdrr.io/r/base/print.html)
+  on Python-initiated explanations now references
+  `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy`
+  compatibility package remains available on PyPI for a transition
+  period. ([\#500](https://github.com/NorskRegnesentral/shapr/pull/500))
 
 ## shapr 1.0.8
 

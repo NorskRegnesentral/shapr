@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,7 @@
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">News</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Manual</a></li>
-<li class="nav-item"><a class="nav-link" href="shaprpy.html">Python</a></li>
+<li class="nav-item"><a class="nav-link" href="pyshapr.html">Python</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/NorskRegnesentral/shapr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -48,18 +48,26 @@
 
 <div id="changelog" class="section level1">
 
-<p>All notable changes to the Python <code>shaprpy</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
+<p>All notable changes to the Python <code>pyshapr</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="unreleased">[Unreleased]<a class="anchor" aria-label="anchor" href="#unreleased"></a></h2>
+<h2 id="id_050">[0.5.0]<a class="anchor" aria-label="anchor" href="#id_050"></a></h2>
+<div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>
+<strong>Renamed the package from <code>shaprpy</code> to <code>pyshapr</code></strong> (both the PyPI distribution name and the import name). Update installs to <code>pip install pyshapr</code> and imports to <code>import pyshapr</code>. This is the first release published under the <code>pyshapr</code> name. The previous <code>shaprpy</code> package remains available on PyPI for a transition period as a thin compatibility shim (released as <code>shaprpy 0.4.4</code>) that depends on and forwards to <code>pyshapr</code>.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_044">[0.4.4]<a class="anchor" aria-label="anchor" href="#id_044"></a></h2>
 <div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
-<ul><li>Added basic shaprpy snapshot tests for <code>approach="arf"</code> on both numerical and mixed categorical feature sets.</li>
+<ul><li>Added basic snapshot tests for <code>approach="arf"</code> on both numerical and mixed categorical feature sets.</li>
 <li>Added an <code>arf</code>/<code>vaeac</code> end-to-end example script for numerical and mixed categorical feature sets.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
-<ul><li>Updated shaprpy documentation to explicitly list <code>arf</code> and <code>vaeac</code> as supported approaches.</li>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<ul><li>Updated documentation to explicitly list <code>arf</code> and <code>vaeac</code> as supported approaches.</li>
 <li>Updated local <code>vaeac</code> snapshot tests to pass <code>vaeac_*</code> arguments directly to <code><a href="reference/explain.html">explain()</a></code>.</li>
 <li>Made the <code>python/</code> package pass <code>ruff check</code> and <code>ruff format</code>.</li>
 </ul></div>
@@ -99,7 +107,7 @@
 <li>Adjusted the unit tests to cover the new <code>ShaprSummary</code> class functionality</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
 <ul><li>Update <code>class_exploration.py</code> example to demonstrate the new <code>ShaprSummary</code> class</li>
 </ul></div>
 </div>
@@ -120,7 +128,7 @@
 <li>Added comprehensive unit and snapshot tests covering all approaches and full functionality, including categorical features and causal ordering</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
+<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: <code><a href="reference/explain.html">explain()</a></code> function now returns a <code>Shapr</code> object instead of a plain dictionary</li>
 <li>Restructured internal module organization with private <code>_explain.py</code> and <code>_rutils.py</code> modules</li>
@@ -146,7 +154,7 @@
 <li>Input validation tests for error handling</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
+<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: Minimum Python version requirement increased from 3.8+ to 3.10+</li>
 <li>Updated package classifiers to reflect Python 3.10+ requirement</li>

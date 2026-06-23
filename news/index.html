@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,7 @@
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Manual</a></li>
-<li class="nav-item"><a class="nav-link" href="../shaprpy.html">Python</a></li>
+<li class="nav-item"><a class="nav-link" href="../pyshapr.html">Python</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/NorskRegnesentral/shapr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -47,33 +47,34 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.8.9000" id="shapr-1089000">shapr 1.0.8.9000<a class="anchor" aria-label="anchor" href="#shapr-1089000"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.0.8.9001" id="shapr-1089001">shapr 1.0.8.9001<a class="anchor" aria-label="anchor" href="#shapr-1089001"></a></h2>
 <div class="section level4">
-<h4 id="new-features-1-0-8-9000">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-8-9000"></a></h4>
-<ul><li>Added the <code>"arf"</code> approach for conditional sampling with adversarial random forests via the <code>arf</code> package (<a href="https://github.com/NorskRegnesentral/shapr/pull/497" class="external-link">#494</a>)</li>
-</ul></div>
-<div class="section level4">
-<h4 id="development-workflow-1-0-8-9000">Development workflow<a class="anchor" aria-label="anchor" href="#development-workflow-1-0-8-9000"></a></h4>
-<ul><li>Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
+<h4 id="new-features-1-0-8-9001">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-8-9001"></a></h4>
+<ul><li>Added the <code>"arf"</code> approach for conditional sampling with adversarial random forests via the <code>arf</code> package (<a href="https://github.com/NorskRegnesentral/shapr/pull/497" class="external-link">#497</a>) ### Development workflow</li>
+<li>Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
 <li>Added pre-PR workflow scripts (<code>dev/prepare-pr</code>, <code>dev/check-pr</code>, <code>dev/publish-pr</code>) with <code>dev/pr-workflow.md</code> for automated and agent-assisted PR readiness checks; consolidated development scripts under <code>dev/</code>. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="bug-fixes-1-0-8-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-8-9000"></a></h4>
+<h4 id="bug-fixes-1-0-8-9001">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-8-9001"></a></h4>
 <ul><li>Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. (<a href="https://github.com/NorskRegnesentral/shapr/pull/495" class="external-link">#495</a>)</li>
 <li>Fixed <code><a href="https://cli.r-lib.org/reference/cli_progress_step.html" class="external-link">cli::cli_progress_step()</a></code> reporting artificially short timings for the v(S) computation step by passing <code>.envir = parent.frame()</code> to bind the progress bar’s lifetime to the correct calling environment. (<a href="https://github.com/NorskRegnesentral/shapr/pull/496" class="external-link">#496</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="tests-1-0-8-9000">Tests<a class="anchor" aria-label="anchor" href="#tests-1-0-8-9000"></a></h4>
+<h4 id="tests-1-0-8-9001">Tests<a class="anchor" aria-label="anchor" href="#tests-1-0-8-9001"></a></h4>
 <ul><li>Skip <code>vdiffr</code> plot snapshot tests on R &lt; 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
-<li>Added macOS-only smoke tests for the <code>"arf"</code> and <code>"vaeac"</code> approaches that verify <code><a href="../reference/explain.html">explain()</a></code> runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (branch: add-arf)</li>
+<li>Added macOS-only smoke tests for the <code>"arf"</code> and <code>"vaeac"</code> approaches that verify <code><a href="../reference/explain.html">explain()</a></code> runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (<a href="https://github.com/NorskRegnesentral/shapr/pull/497" class="external-link">#497</a>)</li>
 </ul></div>
 <div class="section level4">
-<h4 id="continuous-integration-1-0-8-9000">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration-1-0-8-9000"></a></h4>
+<h4 id="continuous-integration-1-0-8-9001">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration-1-0-8-9001"></a></h4>
 <ul><li>Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use <code>uv</code> with Python 3.14 (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
 </ul></div>
 <div class="section level4">
-<h4 id="documentation-1-0-8-9000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-8-9000"></a></h4>
+<h4 id="documentation-1-0-8-9001">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-8-9001"></a></h4>
 <ul><li>Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
+</ul></div>
+<div class="section level4">
+<h4 id="python-1-0-8-9001">Python<a class="anchor" aria-label="anchor" href="#python-1-0-8-9001"></a></h4>
+<ul><li>Renamed the Python wrapper from <code>shaprpy</code> to <code>pyshapr</code>. R console output from <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>/<code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> on Python-initiated explanations now references <code>pyshapr.explain()</code>/<code>pyshapr.explain_forecast()</code>. A thin <code>shaprpy</code> compatibility package remains available on PyPI for a transition period. (<a href="https://github.com/NorskRegnesentral/shapr/pull/500" class="external-link">#500</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">

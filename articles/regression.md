@@ -3023,7 +3023,7 @@ In this section, we demonstrate that the `regression.model`,
 `regression.tune_values`, and `regression.recipe_func` parameters can be
 provided as strings. This is a property which is convenient when the
 [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
-function is called from Python through the associated `shaprpy` Python
+function is called from Python through the associated `pyshapr` Python
 library. That is, the user only has to specify strings containing R code
 instead of having to deal with creating the R objects in Python. In the
 code chunk below, we see that we obtain identical
