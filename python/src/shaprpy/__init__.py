@@ -1,3 +1,4 @@
+import contextlib
 from importlib import import_module
 from importlib.metadata import PackageNotFoundError, version
 
@@ -65,8 +66,5 @@ def _import_shapr():
 
 # Make Shapr available when the module is imported
 Shapr = None
-if True:  # Keep simple for compatibility
-    try:
-        Shapr = _import_shapr()
-    except ImportError:
-        pass
+with contextlib.suppress(ImportError):
+    Shapr = _import_shapr()

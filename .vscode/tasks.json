@@ -17,6 +17,45 @@
       "problemMatcher": []
     },
     {
+      "label": "R: Run all tests with install (snapshot-safe)",
+      "detail": "Installs the package, then runs file-by-file tests via Rscript dev/snapshot-diff.R --run-tests.",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::install(quick=FALSE)\" && Rscript dev/snapshot-diff.R --run-tests",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run current test file with install (snapshot-safe)",
+      "detail": "Installs the package, then runs the active test file through testthat::test_file().",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::install(quick=FALSE)\" && Rscript dev/snapshot-diff.R --run-tests --file '${file}'",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Run and review snapshots with install (snapshot-safe)",
+      "detail": "Installs the package, runs file-by-file tests, then opens the review helpers.",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::install(quick=FALSE)\" && Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "R: Run and review snapshots (snapshot-safe)",
       "type": "shell",
       "command": "Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds",
@@ -166,6 +205,18 @@
           "SHAPR_OUTPUT_WIDTH": "85"
         }
       },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "R: Install package (devtools::install)",
+      "type": "shell",
+      "command": "Rscript -e \"devtools::install(quick=FALSE)\"",
+      "group": "build",
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",

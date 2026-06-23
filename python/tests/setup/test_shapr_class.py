@@ -4,30 +4,32 @@ Tests for the Shapr explanation class methods.
 These tests verify that the Shapr class methods work correctly and
 produce consistent output.
 """
+
 import pandas as pd
 import pytest
 
 from shaprpy import explain
 
 
+@pytest.fixture(scope="class")
+def explanation_object(california_housing_data, trained_rf_regressor):
+    """Create a single Shapr explanation object to test all methods."""
+    dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
+
+    explanation = explain(
+        model=trained_rf_regressor,
+        x_train=dfx_train,
+        x_explain=dfx_explain.iloc[:3],  # Use only 3 observations for faster tests
+        approach="empirical",
+        phi0=dfy_train.mean().item(),
+        max_n_coalitions=50,
+        seed=1,
+    )
+    return explanation
+
+
 class TestShaprClassMethods:
     """Tests for Shapr class methods and functionality."""
-
-    @pytest.fixture(scope="class")
-    def explanation_object(self, california_housing_data, trained_rf_regressor):
-        """Create a single Shapr explanation object to test all methods."""
-        dfx_train, dfx_test, dfy_train, dfy_test = california_housing_data
-
-        explanation = explain(
-            model=trained_rf_regressor,
-            x_train=dfx_train,
-            x_explain=dfx_test.iloc[:3],  # Use only 3 observations for faster tests
-            approach='empirical',
-            phi0=dfy_train.mean().item(),
-            max_n_coalitions=50,
-            seed=1
-        )
-        return explanation
 
     @pytest.mark.snapshot
     def test_str_representation(self, explanation_object, snapshot):
@@ -76,8 +78,14 @@ class TestShaprClassMethods:
         exp_dict = explanation_object.get_explanation_dict()
 
         assert isinstance(exp_dict, dict)
-        expected_keys = ['shapley_values_est', 'shapley_values_sd', 'pred_explain',
-                        'MSEv', 'internal', 'timing']
+        expected_keys = [
+            "shapley_values_est",
+            "shapley_values_sd",
+            "pred_explain",
+            "MSEv",
+            "internal",
+            "timing",
+        ]
         for key in expected_keys:
             assert key in exp_dict, f"Expected key '{key}' not found in explanation dict"
 
@@ -86,7 +94,7 @@ class TestShaprClassMethods:
         r_obj = explanation_object.get_r_object()
         assert r_obj is not None
         # Check it's an R object by checking for typical R object attributes
-        assert hasattr(r_obj, 'rx2')
+        assert hasattr(r_obj, "rx2")
 
     def test_get_results_default(self, explanation_object):
         """Test get_results() with no arguments returns all components."""

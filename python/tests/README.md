@@ -25,6 +25,9 @@ tests/
 ### Install test dependencies
 ```bash
 cd python
+uv sync --extra test
+
+# Alternative editable install with pip
 pip install -e ".[test]"
 ```
 
@@ -47,6 +50,9 @@ pytest -m snapshot
 
 # Run fast tests only (exclude slow tests)
 pytest -m "not slow"
+
+# Exclude tests requiring optional local R dependencies (e.g. arf/torch)
+pytest -m "not localonly"
 ```
 
 ### Update snapshots
@@ -64,6 +70,8 @@ pytest tests/output/test_regression_outputs.py --snapshot-update
 - **Output Tests**: Tests that use Syrupy to ensure explanation outputs remain consistent
 - **Snapshot Tests**: Tests marked with `@pytest.mark.snapshot` (subset of output tests)
 - **Slow Tests**: Tests marked as slow (can be excluded with `-m "not slow"`)
+- **Local-only Tests**: Tests marked as `localonly` rely on optional local R dependencies
+	(for example `arf` and `torch` for `vaeac`) and can be excluded with `-m "not localonly"`
 
 ## Adding New Tests
 

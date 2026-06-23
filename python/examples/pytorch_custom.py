@@ -7,11 +7,11 @@ from torch.utils.data import DataLoader, TensorDataset
 from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
+
 
 ## Fit model (not seed controlled here)
 class MyNeuralNet(nn.Module):
-
     def __init__(self, in_dim, hidden_dim):
         super().__init__()
         self.lin0 = nn.Linear(in_dim, hidden_dim)
@@ -22,13 +22,16 @@ class MyNeuralNet(nn.Module):
         x = F.relu(x)
         return self.lin1(x).squeeze(-1)
 
-data = TensorDataset(torch.from_numpy(dfx_train.values).float(), torch.from_numpy(dfy_train.values.flatten()).float())
+
+data = TensorDataset(
+    torch.from_numpy(dfx_train.values).float(), torch.from_numpy(dfy_train.values.flatten()).float()
+)
 data_loader = DataLoader(data, batch_size=128, shuffle=True)
 model = MyNeuralNet(dfx_train.shape[-1], hidden_dim=128)
 optim = Adam(model.parameters(), lr=1e-3)
 
 for epoch in range(200):
-    print(f'Training, epoch {epoch+1}...')
+    print(f"Training, epoch {epoch + 1}...")
     for x, y in data_loader:
         p = model(x)
         loss = F.mse_loss(p, y)
@@ -38,13 +41,13 @@ for epoch in range(200):
 
 ## Shapr
 explanation = explain(
-    model = model,
-    x_train = dfx_train,
-    x_explain = dfx_test,
-    approach = 'empirical',
-    predict_model = lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
-    phi0 = dfy_train.mean().item(),
-    seed = 1
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="empirical",
+    predict_model=lambda m, x: m(torch.from_numpy(x.values).float()).cpu().detach().numpy(),
+    phi0=dfy_train.mean().item(),
+    seed=1,
 )
 explanation.print()
 
