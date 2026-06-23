@@ -32,7 +32,7 @@ dependencies = [
 Homepage = "https://github.com/NorskRegnesentral/shapr"
 Documentation = "https://norskregnesentral.github.io/shapr/pyshapr.html"
 Issues = "https://github.com/NorskRegnesentral/shapr/issues"
-Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
+Changelog = "https://github.com/NorskRegnesentral/shapr/blob/master/python/CHANGELOG.md"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
