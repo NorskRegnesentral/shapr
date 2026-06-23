@@ -58,11 +58,11 @@ setup(
 - approach:
 
   Character vector of length `1` or one less than the number of
-  features. All elements should either be `"gaussian"`, `"copula"`,
-  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`,
-  `"timeseries"`, `"independence"`, `"regression_separate"`, or
-  `"regression_surrogate"`. The two regression approaches cannot be
-  combined with any other approach. See details for more information.
+  features. All elements should either be `"arf"`, `"categorical"`,
+  `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`, `"independence"`,
+  `"regression_separate"`, `"regression_surrogate"`, `"timeseries"`, or
+  `"vaeac"`. The two regression approaches cannot be combined with any
+  other approach. See details for more information.
 
 - phi0:
 

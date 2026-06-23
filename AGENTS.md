@@ -247,6 +247,25 @@ checks compliance with `lintr`.
 
 ### Local R Test Workflow
 
+#### Package Installation Requirement
+
+**Always install the package before running tests.** `testthat` requires
+the package to be properly installed in the library, not just loaded via
+`devtools::load_all()`. Running tests without proper installation will
+use stale code and produce misleading results.
+
+Before running any test task, run the
+`R: Install package (devtools::install)` task first, or use the test
+tasks that include installation
+(`R: Run all tests with install (snapshot-safe)`, etc.). These
+automatically install the package before running tests, ensuring you
+always test the current code.
+
+If you forget to install and tests behave unexpectedly, this is likely
+the cause. Always install first.
+
+#### Snapshot Testing Strategy
+
 Local snapshot testing should use the repository’s development scripts
 instead of `devtools::test()`. This is intentional: under local
 `devtools::test()` /
@@ -258,15 +277,31 @@ GitHub Actions does not have the same issue, so do not change package
 defaults or the snapshot expectations just to silence this local-only
 warning.
 
-Use the VS Code tasks in `.vscode/tasks.json`: -
-`R: Run all tests (snapshot-safe)` runs file-by-file tests via
-`Rscript dev/snapshot-diff.R --run-tests` and is the default test
-task. - `R: Run current test file (snapshot-safe)` runs the active test
-file through
+Use the VS Code tasks in `.vscode/tasks.json`. **Test tasks that include
+installation are recommended:** -
+`R: Run all tests with install (snapshot-safe)` installs the package,
+then runs file-by-file tests via
+`Rscript dev/snapshot-diff.R --run-tests`. -
+`R: Run current test file with install (snapshot-safe)` installs the
+package, then runs the active test file through
 [`testthat::test_file()`](https://testthat.r-lib.org/reference/test_file.html). -
+`R: Run and review snapshots with install (snapshot-safe)` installs the
+package, runs file-by-file tests, then opens the review helpers.
+
+Standard test tasks (without automatic install): -
+`R: Run all tests (snapshot-safe)` runs file-by-file tests via
+`Rscript dev/snapshot-diff.R --run-tests` and is the default test task.
+**Ensure the package is installed first.** -
+`R: Run current test file (snapshot-safe)` runs the active test file
+through
+[`testthat::test_file()`](https://testthat.r-lib.org/reference/test_file.html).
+**Ensure the package is installed first.** -
 `R: Run and review snapshots (snapshot-safe)` runs the file-by-file
-tests and then opens the `.md` and `.rds` review helpers. -
-`R: Review MD snapshots` reviews only changed `.md` snapshots with
+tests and then opens the `.md` and `.rds` review helpers. **Ensure the
+package is installed first.**
+
+Snapshot review tasks (no test execution): - `R: Review MD snapshots`
+reviews only changed `.md` snapshots with
 [`testthat::snapshot_review()`](https://testthat.r-lib.org/reference/snapshot_accept.html). -
 `R: Review RDS snapshots` reviews only changed `.rds` snapshots with the
 manual `waldo`-based workflow. -
@@ -278,14 +313,29 @@ not the normal developer review flow. -
 `vignettes/*.Rmd.orig` and converts generated PNG figures to WebP. Run
 it only when vignette source changes require it.
 
+Installation and build tasks: - `R: Install package (devtools::install)`
+installs the package properly into the library (required before
+testing). - `R: Load package (devtools::load_all)` loads the package in
+memory for interactive use (not sufficient for testing).
+
 Equivalent terminal commands from the repository root:
 
 ``` sh
+# Install the package first
+devtools::install()
+
+# Then run tests
 Rscript dev/snapshot-diff.R --run-tests
 Rscript dev/snapshot-diff.R --review-md
 Rscript dev/snapshot-diff.R --review-rds
 Rscript dev/snapshot-diff.R --run-tests --review-md --review-rds
 Rscript dev/snapshot-diff.R --run-tests --file tests/testthat/test-forecast-output.R
+```
+
+Or use a single command:
+
+``` sh
+Rscript -e "devtools::install(quick=FALSE); system('Rscript dev/snapshot-diff.R --run-tests')"
 ```
 
 Snapshot review is intentionally split by file extension. Changed `.md`

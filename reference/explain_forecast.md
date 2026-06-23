@@ -96,11 +96,11 @@ explain_forecast(
 - approach:
 
   Character vector of length `1` or one less than the number of
-  features. All elements should either be `"gaussian"`, `"copula"`,
-  `"empirical"`, `"ctree"`, `"vaeac"`, `"categorical"`, `"arf"`,
-  `"timeseries"`, `"independence"`, `"regression_separate"`, or
-  `"regression_surrogate"`. The two regression approaches cannot be
-  combined with any other approach. See details for more information.
+  features. All elements should either be `"arf"`, `"categorical"`,
+  `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`, `"independence"`,
+  `"regression_separate"`, `"regression_surrogate"`, `"timeseries"`, or
+  `"vaeac"`. The two regression approaches cannot be combined with any
+  other approach. See details for more information.
 
 - phi0:
 
@@ -644,7 +644,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-06-17 16:10:53 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-06-23 12:56:00 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -659,7 +659,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/Rtmp9VfSyE/shapr_obj_1b7c65ba4d94.rds
+#> • Computations (temporary) saved at: /tmp/RtmpkHWaoC/shapr_obj_1b8e60b1f0e3.rds
 #> 
 #> ── Main computation started ──
 #> 

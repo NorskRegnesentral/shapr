@@ -11,7 +11,7 @@ Python.
 > WSL - Windows Subsystem for Linux), and the below instructions assume
 > a Linux environment.
 >
-> **Requirement:** Python 3.10 or later is required to use `shaprpy`.
+> **Requirement:** Python 3.11 or later is required to use `shaprpy`.
 
 ## Changelog
 
@@ -94,7 +94,7 @@ from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
 # Load example data
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 # Fit a model
 model = RandomForestRegressor()
@@ -104,7 +104,7 @@ model.fit(dfx_train, dfy_train.values.flatten())
 explanation = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach="empirical",
     phi0=dfy_train.mean().item(),
     seed=1
@@ -150,6 +150,36 @@ For other model types, you can supply:
 
 ------------------------------------------------------------------------
 
+## Supported Approaches
+
+`shaprpy` forwards all approach-specific arguments to
+[`shapr::explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md).
+Commonly used approaches include:
+
+- `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`,
+  `"gaussian"`, `"regression_separate"`, `"regression_surrogate"`,
+  `"vaeac"`
+- `"independence"` (not recommended)
+
+`"arf"`, `"ctree"`, `"regression_separate"`, `"regression_surrogate"`
+and `"vaeac"` support mixed numerical/categorical feature sets,
+`"categorical"` supports categorical features only, and the remaining
+approaches support numerical features only.
+
+Minimal usage pattern:
+
+``` python
+explanation = explain(
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="gaussian",
+    phi0=dfy_train.mean().item(),
+)
+```
+
+------------------------------------------------------------------------
+
 ## Examples
 
 See the [examples
@@ -164,6 +194,8 @@ on GitHub for runnable examples, including:
   exploration and extraction of explanation results.
 - Plotting functionality for the Shapley values through the `shap`
   package
+- ARF and VAEAC examples for both numerical and mixed categorical
+  feature sets
 - The **regression paradigm** described in [Olsen et
   al. (2024)](https://link.springer.com/article/10.1007/s10618-024-01016-z),
   which shows:
