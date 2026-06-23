@@ -25,7 +25,7 @@
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 
 ### Python
-* The Python wrapper has been renamed from `shaprpy` to `pyshapr` (a thin `shaprpy` compatibility package remains available on PyPI for a transition period). This is a Python-side change, documented in full in the [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html). On the R side, only references to the wrapper name are updated: R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`, and the `DESCRIPTION` and documentation mention `pyshapr` accordingly. (branch: pyshapr-namechange)
+* Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy` compatibility package remains available on PyPI for a transition period. (branch: pyshapr-namechange)
 
 
 # shapr 1.0.8
