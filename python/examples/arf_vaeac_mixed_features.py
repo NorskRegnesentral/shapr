@@ -111,24 +111,20 @@ numeric_features = [
 ]
 categorical_features = ["IncomeCategory", "AgeCategory", "LocationType"]
 
-model_mixed = Pipeline(
-    steps=[
-        (
-            "pre",
-            ColumnTransformer(
-                [
-                    ("num", "passthrough", numeric_features),
-                    (
-                        "cat",
-                        OneHotEncoder(handle_unknown="ignore", sparse_output=False),
-                        categorical_features,
-                    ),
-                ]
+model_mixed = Pipeline(steps=[
+    (
+        "pre",
+        ColumnTransformer(transformers=[
+            ("num", "passthrough", numeric_features),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                categorical_features,
             ),
-        ),
-        ("rf", RandomForestRegressor(random_state=0)),
-    ]
-)
+        ]),
+    ),
+    ("rf", RandomForestRegressor(random_state=0)),
+])
 model_mixed.fit(dfx_train, dfy_train.values.flatten())
 
 ## ARF with mixed features
