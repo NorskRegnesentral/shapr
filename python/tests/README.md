@@ -1,6 +1,6 @@
 # pyshapr Test Suite
 
-This directory contains the test suite for pyshapr, organized as follows:
+This directory contains the test suite for `pyshapr`, organized as follows:
 
 ## Structure
 
