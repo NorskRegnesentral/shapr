@@ -75,7 +75,7 @@ from shaprpy import explain
 from shaprpy.datasets import load_california_housing
 
 # Load example data
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 # Fit a model
 model = RandomForestRegressor()
@@ -85,7 +85,7 @@ model.fit(dfx_train, dfy_train.values.flatten())
 explanation = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach="empirical",
     phi0=dfy_train.mean().item(),
     seed=1
@@ -137,14 +137,13 @@ to `shaprpy.explain`.
 
 `shaprpy` forwards all approach-specific arguments to `shapr::explain()`. Commonly used approaches include:
 
-- `"gaussian"`, `"copula"`, `"empirical"`, `"ctree"`, `"independence"`
-- `"categorical"`, `"regression_separate"`, `"regression_surrogate"`
-- `"arf"` and `"vaeac"` for mixed numerical/categorical feature sets
+- `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
+  `"regression_separate"`, `"regression_surrogate"`, `"vaeac"`
+- `"independence"` (not recommended)
 
-`arf` and `vaeac` depend on optional R packages:
-
-- `approach="arf"` requires the R package `arf`
-- `approach="vaeac"` requires the R package `torch` and a working torch install
+`"arf"`, `"ctree"`, `"regression_separate"`, `"regression_surrogate"` and `"vaeac"` support mixed
+numerical/categorical feature sets, `"categorical"` supports categorical features only,
+and the remaining approaches support numerical features only.
 
 Minimal usage pattern:
 
@@ -152,16 +151,11 @@ Minimal usage pattern:
 explanation = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
-    approach="arf",  # or "vaeac"
+    x_explain=dfx_explain,
+    approach="gaussian",
     phi0=dfy_train.mean().item(),
-    arf_num_trees=20,
-    arf_max_iters=5,
-    seed=1,
 )
 ```
-
-For `vaeac`, pass `vaeac_*` arguments directly, for example `vaeac_epochs=10`, `vaeac_width=16`, and `vaeac_depth=2`.
 
 ---
 
