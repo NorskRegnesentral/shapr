@@ -57,11 +57,11 @@ Issues = "https://github.com/NorskRegnesentral/shapr/issues"
 Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["pyshapr*" ]
+include = ["pyshapr*"]
 
 [tool.setuptools.dynamic]
 # (none needed now)
