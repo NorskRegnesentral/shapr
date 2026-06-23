@@ -79,7 +79,7 @@ from pyshapr import explain
 from pyshapr.datasets import load_california_housing
 
 # Load example data
-dfx_train, dfx_test, dfy_train, dfy_test = load_california_housing()
+dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 
 # Fit a model
 model = RandomForestRegressor()
@@ -89,7 +89,7 @@ model.fit(dfx_train, dfy_train.values.flatten())
 explanation = explain(
     model=model,
     x_train=dfx_train,
-    x_explain=dfx_test,
+    x_explain=dfx_explain,
     approach="empirical",
     phi0=dfy_train.mean().item(),
     seed=1
@@ -166,6 +166,32 @@ explanation = explain(
 ```
 
 For `vaeac`, pass `vaeac_*` arguments directly, for example `vaeac_epochs=10`, `vaeac_width=16`, and `vaeac_depth=2`.
+
+---
+
+## Supported Approaches
+
+`shaprpy` forwards all approach-specific arguments to `shapr::explain()`. Commonly used approaches include:
+
+- `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
+  `"regression_separate"`, `"regression_surrogate"`, `"vaeac"`
+- `"independence"` (not recommended)
+
+`"arf"`, `"ctree"`, `"regression_separate"`, `"regression_surrogate"` and `"vaeac"` support mixed
+numerical/categorical feature sets, `"categorical"` supports categorical features only,
+and the remaining approaches support numerical features only.
+
+Minimal usage pattern:
+
+```python
+explanation = explain(
+    model=model,
+    x_train=dfx_train,
+    x_explain=dfx_explain,
+    approach="gaussian",
+    phi0=dfy_train.mean().item(),
+)
+```
 
 ---
 

@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated documentation to explicitly list `arf` and `vaeac` as supported approaches.
 - Updated local `vaeac` snapshot tests to pass `vaeac_*` arguments directly to `explain()`.
+- Made the `python/` package pass `ruff check` and `ruff format`.
+
+### Fixed
+- Fixed minor `ruff` lint issues in the source code.
 
 ### Removed
 - Dropped support for Python 3.10. The minimum supported version is now Python 3.11.

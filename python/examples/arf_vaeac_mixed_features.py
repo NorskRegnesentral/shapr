@@ -116,7 +116,7 @@ model_mixed = Pipeline(
         (
             "pre",
             ColumnTransformer(
-                [
+                transformers=[
                     ("num", "passthrough", numeric_features),
                     (
                         "cat",

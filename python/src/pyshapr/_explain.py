@@ -63,9 +63,9 @@ def explain(
       Contains the data used to estimate the (conditional) distributions for the features
       needed to properly estimate the conditional expectations in the Shapley formula.
     approach: str or list[str]
-      The method(s) to estimate the conditional expectation. All elements should,
-        either be `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
-        `"independence"`, `"regression_separate"`, `"regression_surrogate"`, or `"vaeac"`.
+      The method(s) to estimate the conditional expectation. All elements should
+      either be `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
+      `"independence"`, `"regression_separate"`, `"regression_surrogate"`, or `"vaeac"`.
     phi0: float
       The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
       features. Typically we set this value equal to the mean of the response variable in our training data, but other
@@ -158,15 +158,9 @@ def explain(
             kwargs["regression.vfold_cv_para"] = ListVector(kwargs["regression.vfold_cv_para"])
 
     # Convert from None or dict to a named list in R
-    if iterative_args is None:
-        iterative_args = ro.ListVector({})
-    else:
-        iterative_args = ListVector(iterative_args)
+    iterative_args = ro.ListVector({}) if iterative_args is None else ListVector(iterative_args)
 
-    if output_args is None:
-        output_args = ro.ListVector({})
-    else:
-        output_args = ListVector(output_args)
+    output_args = ro.ListVector({}) if output_args is None else ListVector(output_args)
 
     if extra_computation_args is None:
         extra_computation_args = ro.ListVector({})
@@ -184,10 +178,7 @@ def explain(
 
     if isinstance(verbose, str):
         verbose = [verbose]
-    if isinstance(verbose, list):
-        verbose = StrVector(verbose)
-    else:
-        verbose = maybe_null(verbose)
+    verbose = StrVector(verbose) if isinstance(verbose, list) else maybe_null(verbose)
 
     rinternal = shapr.setup(
         x_train=py2r(x_train),
@@ -373,7 +364,6 @@ def batch_prepare_vS_MC(S: Any, rinternal: Any, model: Any, predict_model: Calla
     feature_names = list(rinternal.rx2("parameters").rx2("feature_names"))
     keep_samp_for_vS = rinternal.rx2("parameters").rx2("output_args").rx2("keep_samp_for_vS")[0]
     causal_sampling = rinternal.rx2("parameters").rx2("causal_sampling")[0]
-    output_size = int(rinternal.rx2("parameters").rx2("output_size")[0])
 
     dt = shapr.batch_prepare_vS_MC_auxiliary(
         S=S, internal=rinternal, causal_sampling=causal_sampling
@@ -629,7 +619,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
                 )
 
             return predict_fn
-    except:
+    except Exception:
         pass
 
     return None
