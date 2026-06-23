@@ -159,20 +159,24 @@ def trained_rf_regressor_categorical(california_housing_categorical_data):
     categorical_features = ["IncomeCategory", "AgeCategory", "LocationType"]
 
     # Create preprocessing pipeline
-    preprocessor = ColumnTransformer(transformers=[
-        ("num", "passthrough", numeric_features),
-        (
-            "cat",
-            OneHotEncoder(handle_unknown="ignore", sparse_output=False),
-            categorical_features,
-        ),
-    ])
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("num", "passthrough", numeric_features),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                categorical_features,
+            ),
+        ]
+    )
 
     # Create full pipeline with RandomForest
-    pipeline = Pipeline(steps=[
-        ("preprocessor", preprocessor),
-        ("model", RandomForestRegressor(random_state=1, n_estimators=100)),
-    ])
+    pipeline = Pipeline(
+        steps=[
+            ("preprocessor", preprocessor),
+            ("model", RandomForestRegressor(random_state=1, n_estimators=100)),
+        ]
+    )
 
     pipeline.fit(dfx_train, dfy_train.values.flatten())
     return pipeline
