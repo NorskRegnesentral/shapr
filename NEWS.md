@@ -1,12 +1,11 @@
-**Note:** For changes to the Python wrapper `shaprpy`, see the
-[shaprpy CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
+**Note:** For changes to the Python wrapper `pyshapr`, see the
+[pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
-# shapr 1.0.8.9000
+# shapr 1.0.8.9001
 
 ### New features
-* Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#494](https://github.com/NorskRegnesentral/shapr/pull/497))
-
+* Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
@@ -17,13 +16,16 @@
 
 ### Tests
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
-* Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (branch: add-arf)
+* Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 
 ### Continuous integration
 * Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 
 ### Documentation
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+
+### Python
+* Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy` compatibility package remains available on PyPI for a transition period. ([#500](https://github.com/NorskRegnesentral/shapr/pull/500))
 
 
 # shapr 1.0.8

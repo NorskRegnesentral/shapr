@@ -1,5 +1,5 @@
 """
-Shared pytest fixtures for shaprpy tests.
+Shared pytest fixtures for pyshapr tests.
 """
 
 import os
@@ -10,7 +10,7 @@ import pytest
 import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from shaprpy.datasets import load_binary_iris, load_california_housing
+from pyshapr.datasets import load_binary_iris, load_california_housing
 
 
 # Set seeds for reproducibility

@@ -4,7 +4,7 @@ Shapr explanation class for exploring Shapley value results.
 
 from typing import Any
 
-from shaprpy._rutils import _importr
+from pyshapr._rutils import _importr
 
 
 class ShaprSummary:
@@ -137,7 +137,7 @@ class Shapr:
 
         Examples
         --------
-        >>> explanation = shaprpy.explain(model, X_test, X_train)
+        >>> explanation = pyshapr.explain(model, X_test, X_train)
         >>> exp_dict = explanation.get_explanation_dict()
         >>> shapley_values = exp_dict['shapley_values_est']
         """
@@ -205,7 +205,7 @@ class Shapr:
         """
         from rpy2.robjects import StrVector
 
-        from shaprpy.utils import recurse_r_tree
+        from pyshapr.utils import recurse_r_tree
 
         shapr = _importr("shapr")
 
@@ -237,7 +237,7 @@ class Shapr:
             Summary object that displays automatically in interactive sessions or when printed.
             Elements can be accessed using dictionary-like syntax, e.g., summary['approach'].
         """
-        from shaprpy.utils import recurse_r_tree
+        from pyshapr.utils import recurse_r_tree
 
         base = _importr("base")
 
@@ -274,7 +274,7 @@ class Shapr:
         Examples
         --------
         >>> import shap
-        >>> explanation = shaprpy.explain(model, X_test, X_train)
+        >>> explanation = pyshapr.explain(model, X_test, X_train)
         >>> shap_exp = explanation.to_shap()
         >>> shap.plots.waterfall(shap_exp[0])  # Plot first observation
         """

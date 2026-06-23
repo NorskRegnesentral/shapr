@@ -70,7 +70,7 @@ sections as the detailed specification:
 
 - `R Package Conventions` for R package code, Rcpp-facing changes, documentation, output, performance, and tests.
 - `Local R Test Workflow` for snapshot-safe R testing and snapshot review.
-- `Python Wrapper (shaprpy) Conventions` for Python wrapper code.
+- `Python Wrapper (pyshapr) Conventions` for Python wrapper code.
 - `PR Readiness Checklist` for the final cross-check before publishing.
 
 Apply relevant edits instead of only reporting them when the fix is straightforward and within scope. Typical

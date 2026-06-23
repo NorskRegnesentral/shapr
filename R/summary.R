@@ -72,7 +72,7 @@ summary.shapr <- function(object, digits = 2L, ...) {
   if (results$proglang == "R") {
     func_txt <- ifelse(results$calling_function == "explain", "{.fn shapr::explain}", "{.fn shapr::explain_forecast}")
   } else { # Python
-    func_txt <- ifelse(results$calling_function == "explain", "{.fn shaprpy.explain}", "{.fn shaprpy.explain_forecast}")
+    func_txt <- ifelse(results$calling_function == "explain", "{.fn pyshapr.explain}", "{.fn pyshapr.explain_forecast}")
   }
 
   init_time <- results$timing_summary$init_time

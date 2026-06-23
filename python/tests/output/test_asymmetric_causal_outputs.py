@@ -8,7 +8,7 @@ asymmetric mode and confounding.
 
 import pytest
 
-from shaprpy import explain
+from pyshapr import explain
 
 
 class TestCausalOrderingOutputs:

@@ -46,7 +46,7 @@ including:
 - Asymmetric and causal Shapley values
 - Several other methodological, computational and user-experience
   improvements
-- Python wrapper `shaprpy` making the core functionality of `shapr`
+- Python wrapper `pyshapr` making the core functionality of `shapr`
   available in Python
 
 See the
@@ -68,11 +68,11 @@ to view a version of this README with the old syntax (v0.2.2).
 
 ### Python wrapper
 
-We provide a Python wrapper (`shaprpy`) which allows explaining Python
+We provide a Python wrapper (`pyshapr`) which allows explaining Python
 models with the methodology implemented in `shapr`, directly from
 Python. The wrapper calls R internally and therefore requires an
 installation of R. See
-[here](https://norskregnesentral.github.io/shapr/shaprpy.html) for
+[here](https://norskregnesentral.github.io/shapr/pyshapr.html) for
 installation instructions and examples.
 
 ## The package

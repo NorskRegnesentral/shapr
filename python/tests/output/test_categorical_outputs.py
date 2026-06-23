@@ -7,7 +7,7 @@ remain consistent for mixed numeric/categorical data.
 
 import pytest
 
-from shaprpy import explain
+from pyshapr import explain
 
 
 class TestCategoricalOutputs:

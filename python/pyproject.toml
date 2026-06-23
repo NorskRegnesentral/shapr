@@ -3,8 +3,8 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "shaprpy"
-version = "0.4.3"
+name = "pyshapr"
+version = "0.5.0"
 description = "Python wrapper for the R package shapr (via rpy2)"
 readme = "README.md"
 license = { file = "LICENSE.md" }
@@ -52,16 +52,16 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/NorskRegnesentral/shapr"
-Documentation = "https://norskregnesentral.github.io/shapr/shaprpy.html"
+Documentation = "https://norskregnesentral.github.io/shapr/pyshapr.html"
 Issues = "https://github.com/NorskRegnesentral/shapr/issues"
 Changelog = "https://github.com/NorskRegnesentral/shapr/blob/main/python/CHANGELOG.md"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["shaprpy*" ]
+include = ["pyshapr*"]
 
 [tool.setuptools.dynamic]
 # (none needed now)
@@ -113,7 +113,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/shaprpy/_explain.py" = [
+"src/pyshapr/_explain.py" = [
   "N802",   # Function name should be lowercase (mirrors R API names, e.g. compute_vS)
   "N803",   # Argument name should be lowercase (mirrors R API names, e.g. n_MC_samples)
   "N806",   # Variable should be lowercase (mirrors R objects, e.g. S_batch, vS_list, MSEv)

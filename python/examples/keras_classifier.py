@@ -1,7 +1,7 @@
 from keras import Sequential, layers, utils
 
-from shaprpy import explain
-from shaprpy.datasets import load_binary_iris
+from pyshapr import explain
+from pyshapr.datasets import load_binary_iris
 
 dfx_train, dfx_explain, dfy_train, dfy_explain = load_binary_iris()
 

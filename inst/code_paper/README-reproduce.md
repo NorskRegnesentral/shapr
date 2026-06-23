@@ -30,7 +30,7 @@ The folder contains the following files:
 
 ## Additional installation instructions for reproducing examples
 To run the scripts that generate the results and figures in the paper, additional libraries are required,
-in addition to the `shapr` R package and the `shaprpy` Python library and their direct dependencies.
+in addition to the `shapr` R package and the `pyshapr` Python library and their direct dependencies.
 
 ### R
 

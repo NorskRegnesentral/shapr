@@ -8,9 +8,9 @@ import rpy2.robjects as ro
 from rpy2.rinterface import NA, NULL
 from rpy2.robjects.vectors import BoolVector, ListVector, StrVector
 
-from shaprpy._rutils import _importr
-from shaprpy.explanation import Shapr
-from shaprpy.utils import py2r, r2py, recurse_r_tree
+from pyshapr._rutils import _importr
+from pyshapr.explanation import Shapr
+from pyshapr.utils import py2r, r2py, recurse_r_tree
 
 data_table = _importr("data.table")
 shapr = _importr("shapr")
@@ -55,7 +55,7 @@ def explain(
     Parameters
     ----------
     model: The model whose predictions we want to explain.
-      `shaprpy` natively supports `sklearn`, `xgboost` and `keras` models.
+      `pyshapr` natively supports `sklearn`, `xgboost` and `keras` models.
       Unsupported models can still be explained by passing `predict_model` and (optionally) `get_model_specs`.
     x_explain: pd.DataFrame
       Contains the features whose predictions ought to be explained.
@@ -508,7 +508,7 @@ def get_predict_model(x_test: pd.DataFrame, predict_model: Callable | None, mode
         predict_model = prebuilt_predict_model(model)
         if predict_model is None:
             raise ValueError(
-                f"No pre-built predict_model for model of type {type(model)}. Please pass a custom predict_model to shaprpy.explain(...)."
+                f"No pre-built predict_model for model of type {type(model)}. Please pass a custom predict_model to pyshapr.explain(...)."
             )
 
     try:

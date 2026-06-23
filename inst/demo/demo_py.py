@@ -1,4 +1,4 @@
-# %% Demo of shaprpy
+# %% Demo of pyshapr
 
 import os
 os.chdir("inst/demo")
@@ -6,7 +6,7 @@ os.chdir("inst/demo")
 
 import xgboost as xgb
 import pandas as pd
-from shaprpy import explain
+from pyshapr import explain
 
 ## %
 

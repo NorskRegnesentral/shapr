@@ -4,8 +4,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-from shaprpy import explain
-from shaprpy.datasets import load_california_housing
+from pyshapr import explain
+from pyshapr.datasets import load_california_housing
 
 dfx_train, dfx_explain, dfy_train, dfy_explain = load_california_housing()
 dfx_train = dfx_train.iloc[:600].copy()

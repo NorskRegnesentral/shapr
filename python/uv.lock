@@ -917,6 +917,53 @@ wheels = [
 ]
 
 [[package]]
+name = "pyshapr"
+version = "0.5.0"
+source = { editable = "." }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "rpy2" },
+    { name = "scikit-learn" },
+    { name = "shap", version = "0.51.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "shap", version = "0.52.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "tabulate" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "ruff" },
+    { name = "syrupy" },
+    { name = "xgboost" },
+]
+test = [
+    { name = "pytest" },
+    { name = "syrupy" },
+    { name = "xgboost" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "matplotlib", specifier = ">=3.5.0" },
+    { name = "numpy", specifier = ">=1.22.3" },
+    { name = "pandas", specifier = ">=1.4.2" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
+    { name = "rpy2", specifier = ">=3.5.1" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "scikit-learn", specifier = ">=1.0.0" },
+    { name = "shap", specifier = ">=0.40.0" },
+    { name = "syrupy", marker = "extra == 'dev'", specifier = ">=4.0.0" },
+    { name = "syrupy", marker = "extra == 'test'", specifier = ">=4.0.0" },
+    { name = "tabulate", specifier = ">=0.8.10" },
+    { name = "xgboost", marker = "extra == 'dev'", specifier = ">=1.5.0" },
+    { name = "xgboost", marker = "extra == 'test'", specifier = ">=1.5.0" },
+]
+provides-extras = ["test", "dev"]
+
+[[package]]
 name = "pytest"
 version = "9.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1245,53 +1292,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7c/7f/60c047319846fd144bb9ed1adcb1121a3ff1f36158847d0dfe9c94c7f241/shap-0.52.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:09fca6cc9d8d4b9921bf6b56d381a5df0e26cb1b3cd572b2b2f6e48cf9c5d4ad", size = 1576710, upload-time = "2026-05-28T14:17:46.051Z" },
     { url = "https://files.pythonhosted.org/packages/63/90/e676b9315bee9f6278ac6662c276710c41a3c5b8fb6c21aa89240e04356e/shap-0.52.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:59b201ef00ce38359997eb9363ff561c89a98461bd81d9fdae8b5350a176eee5", size = 1633807, upload-time = "2026-05-28T14:17:47.544Z" },
 ]
-
-[[package]]
-name = "shaprpy"
-version = "0.4.3"
-source = { editable = "." }
-dependencies = [
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "rpy2" },
-    { name = "scikit-learn" },
-    { name = "shap", version = "0.51.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "shap", version = "0.52.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "tabulate" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "ruff" },
-    { name = "syrupy" },
-    { name = "xgboost" },
-]
-test = [
-    { name = "pytest" },
-    { name = "syrupy" },
-    { name = "xgboost" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "matplotlib", specifier = ">=3.5.0" },
-    { name = "numpy", specifier = ">=1.22.3" },
-    { name = "pandas", specifier = ">=1.4.2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
-    { name = "rpy2", specifier = ">=3.5.1" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
-    { name = "scikit-learn", specifier = ">=1.0.0" },
-    { name = "shap", specifier = ">=0.40.0" },
-    { name = "syrupy", marker = "extra == 'dev'", specifier = ">=4.0.0" },
-    { name = "syrupy", marker = "extra == 'test'", specifier = ">=4.0.0" },
-    { name = "tabulate", specifier = ">=0.8.10" },
-    { name = "xgboost", marker = "extra == 'dev'", specifier = ">=1.5.0" },
-    { name = "xgboost", marker = "extra == 'test'", specifier = ">=1.5.0" },
-]
-provides-extras = ["test", "dev"]
 
 [[package]]
 name = "six"

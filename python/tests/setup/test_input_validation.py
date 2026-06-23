@@ -1,5 +1,5 @@
 """
-Unit tests for input validation and error handling in shaprpy.
+Unit tests for input validation and error handling in pyshapr.
 
 These tests ensure that the explain function properly validates inputs
 and raises appropriate errors for invalid configurations.
@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from shaprpy import explain
+from pyshapr import explain
 
 
 class TestInputValidation:
