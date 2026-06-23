@@ -5,7 +5,7 @@
 # shapr 1.0.8.9001
 
 ### New features
-* Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#494](https://github.com/NorskRegnesentral/shapr/pull/497))
+* Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
@@ -16,7 +16,7 @@
 
 ### Tests
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
-* Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. (branch: add-arf)
+* Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 
 ### Continuous integration
 * Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
