@@ -364,7 +364,6 @@ def batch_prepare_vS_MC(S: Any, rinternal: Any, model: Any, predict_model: Calla
     feature_names = list(rinternal.rx2("parameters").rx2("feature_names"))
     keep_samp_for_vS = rinternal.rx2("parameters").rx2("output_args").rx2("keep_samp_for_vS")[0]
     causal_sampling = rinternal.rx2("parameters").rx2("causal_sampling")[0]
-    output_size = int(rinternal.rx2("parameters").rx2("output_size")[0])
 
     dt = shapr.batch_prepare_vS_MC_auxiliary(
         S=S, internal=rinternal, causal_sampling=causal_sampling
@@ -620,7 +619,7 @@ def prebuilt_predict_model(model: Any) -> Callable | None:
                 )
 
             return predict_fn
-    except:
+    except Exception:
         pass
 
     return None

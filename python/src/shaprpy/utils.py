@@ -124,7 +124,7 @@ def recurse_r_tree(data: Any) -> Any:
     elif isinstance(data, (SignatureTranslatedFunction, Formula)):
         return str(data)
     elif isinstance(data, ListVector):
-        if type(data.names) == type(NULL):
+        if isinstance(data.names, type(NULL)):
             data.names = [f"element_{i + 1}" for i in range(len(data))]
         return dict(zip(data.names, [recurse_r_tree(d) for d in data]))
     elif isinstance(data, StrVector):

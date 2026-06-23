@@ -120,7 +120,16 @@ ignore = [
 ]
 "tests/**/*.py" = [
   "N802",   # Function name should be lowercase (test names can be descriptive)
+  "N803",   # Argument name should be lowercase (fixtures mirror R-style names)
   "N806",   # Variable in function should be lowercase
+  "RUF059", # Unused unpacked variable (destructuring shared fixtures is intentional)
+]
+"examples/**/*.py" = [
+  "B007",   # Unused loop control variable (demo loops)
+  "B018",   # Useless expression (examples show attribute access for illustration)
+  "E402",   # Module import not at top of file (narrative ordering in example scripts)
+  "N812",   # Lowercase imported as non-lowercase (e.g. torch.nn.functional as F)
+  "N816",   # Mixed-case variable in global scope (illustrative example variables)
 ]
 
 [tool.ruff.format]
