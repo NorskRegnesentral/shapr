@@ -113,6 +113,11 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"src/shaprpy/_explain.py" = [
+  "N802",   # Function name should be lowercase (mirrors R API names, e.g. compute_vS)
+  "N803",   # Argument name should be lowercase (mirrors R API names, e.g. n_MC_samples)
+  "N806",   # Variable should be lowercase (mirrors R objects, e.g. S_batch, vS_list, MSEv)
+]
 "tests/**/*.py" = [
   "N802",   # Function name should be lowercase (test names can be descriptive)
   "N806",   # Variable in function should be lowercase
