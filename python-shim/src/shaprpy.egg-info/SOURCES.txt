@@ -1,0 +1,10 @@
+LICENSE
+LICENSE.md
+README.md
+pyproject.toml
+src/shaprpy/__init__.py
+src/shaprpy.egg-info/PKG-INFO
+src/shaprpy.egg-info/SOURCES.txt
+src/shaprpy.egg-info/dependency_links.txt
+src/shaprpy.egg-info/requires.txt
+src/shaprpy.egg-info/top_level.txt
