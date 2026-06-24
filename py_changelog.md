@@ -9,6 +9,16 @@ The format is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.0.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## \[0.5.1\] - 2026-06-24
+
+### Fixed
+
+- Constrained `numpy<2.5` to keep `pip install pyshapr` resolvable on
+  Python 3.12 and 3.13. No `numba` release yet supports numpy 2.5, so an
+  unconstrained install (via the transitive `shap` -\> `numba`
+  dependency) backtracked to an ancient, incompatible `numba` that fails
+  to build. The cap may be lifted once `numba` supports numpy 2.5.
+
 ## \[0.5.0\] - 2026-06-23
 
 ### Changed
