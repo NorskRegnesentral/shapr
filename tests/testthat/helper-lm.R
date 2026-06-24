@@ -51,3 +51,8 @@ model_lm_mixed_ordered <- lm(lm_formula_mixed_ordered, data = data_complete)
 model_lm_interaction <- lm(lm_formula_interaction, data = data_complete)
 
 p0 <- data_train[, mean(get(y_var_numeric))]
+
+# Response vectors and baselines used by the SAGE tests (aligned with `x_train_numeric`)
+y_train_numeric <- data_train[, get(y_var_numeric)]
+y_train_binary <- data_train[, get(y_var_binary)]
+p0_binary <- data_train[, mean(get(y_var_binary))]
