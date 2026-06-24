@@ -6,6 +6,7 @@
 
 ### New features
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
+* Added support for SAGE (Shapley Additive Global importancE) values via the new `sage`, `y_explain` and `sage_args` arguments to `explain()`. SAGE explains the model's global loss (using a `loss_func` in `sage_args`, defaulting to log-loss for binary 0/1 responses and MSE otherwise) instead of individual predictions, and is plotted with `plot()` using `plot_type = "bar"` or `"waterfall"`. (branch: sage)
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
