@@ -60,6 +60,9 @@ setup <- function(x_train,
                   confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
+                  sage = FALSE,
+                  y_explain = NULL,
+                  sage_args = list(),
                   model_class,
                   ...) {
   internal <- list()
@@ -121,6 +124,8 @@ setup <- function(x_train,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    sage = sage,
+    sage_args = sage_args,
     model_class = model_class,
     ...
   )
@@ -129,7 +134,7 @@ setup <- function(x_train,
   if (type == "forecast") {
     internal$data <- get_data_forecast(y, xreg, train_idx, explain_idx, explain_y_lags, explain_xreg_lags, horizon)
   } else {
-    internal$data <- get_data(x_train, x_explain)
+    internal$data <- get_data(x_train, x_explain, y_explain)
   }
 
   internal$objects <- list(feature_specs = feature_specs)
@@ -198,6 +203,8 @@ get_parameters <- function(approach,
                            is_python,
                            output_args = list(),
                            extra_computation_args = list(),
+                           sage = FALSE,
+                           sage_args = list(),
                            testing = FALSE,
                            model_class = model_class,
                            ...) {
@@ -214,6 +221,14 @@ get_parameters <- function(approach,
   }
   if (!is.list(extra_computation_args)) {
     cli::cli_abort("`extra_computation_args` must be a list.")
+  }
+
+  # sage
+  if (!(is.logical(sage) && length(sage) == 1 && !is.na(sage))) {
+    cli::cli_abort("`sage` must be a single logical.")
+  }
+  if (!is.list(sage_args)) {
+    cli::cli_abort("`sage_args` must be a list.")
   }
 
 
@@ -329,6 +344,8 @@ get_parameters <- function(approach,
     causal_ordering = causal_ordering,
     confounding = confounding,
     model_class = model_class,
+    sage = sage,
+    sage_args = sage_args,
     testing = testing
   )
 
@@ -383,7 +400,7 @@ check_verbose <- function(verbose) {
 }
 
 #' @keywords internal
-get_data <- function(x_train, x_explain) {
+get_data <- function(x_train, x_explain, y_explain = NULL) {
   # Check data object type
   stop_message <- NULL
   if (!is.matrix(x_train) && !is.data.frame(x_train)) {
@@ -412,7 +429,8 @@ get_data <- function(x_train, x_explain) {
 
   data <- list(
     x_train = data.table::as.data.table(x_train),
-    x_explain = data.table::as.data.table(x_explain)
+    x_explain = data.table::as.data.table(x_explain),
+    y_explain = y_explain
   )
 }
 
@@ -424,6 +442,9 @@ check_data <- function(internal) {
 
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
+
+  sage <- internal$parameters$sage
+  y_explain <- internal$data$y_explain
 
   model_feature_specs <- internal$objects$feature_specs
 
@@ -479,6 +500,17 @@ check_data <- function(internal) {
   check_feature_specs(x_train_feature_specs)
   check_feature_specs(x_explain_feature_specs)
   check_feature_specs(model_feature_specs)
+
+  # Check the response vector `y_explain` when computing SAGE values
+  if (sage) {
+    if (!(is.numeric(y_explain) && is.vector(y_explain) &&
+      !anyNA(y_explain) && length(y_explain) == nrow(x_explain))) {
+      cli::cli_abort(paste0(
+        "`y_explain` must be a numeric vector without `NA`s and with the same number of elements as there ",
+        "are rows in `x_explain` when `sage = TRUE`."
+      ))
+    }
+  }
 
   # Check model vs x_train (allowing different label ordering in specs from model)
   compare_feature_specs(model_feature_specs, x_train_feature_specs, "model", "x_train", sort_labels = TRUE)
@@ -727,6 +759,9 @@ check_and_set_parameters <- function(internal, type) {
   internal <- set_exact(internal)
 
   internal <- set_extra_comp_params(internal)
+
+  # Set the SAGE-specific parameters (loss function and baseline loss) when computing SAGE values
+  if (internal$parameters$sage) internal <- set_sage_parameters(internal)
 
   # Give warnings to the user about long computation times
   check_computability(internal)
@@ -1136,6 +1171,99 @@ check_output_args <- function(output_args) {
   }
 }
 
+
+#' Set the SAGE-specific parameters in `internal`
+#'
+#' @details Merges the user-provided `sage_args` with the defaults from [get_sage_args_default()], resolves the
+#' default loss function (logistic loss for binary responses, mean squared error otherwise), validates it, and
+#' stores both the loss function and the baseline loss `zero_loss = -loss_func(y_explain, phi0)` in `internal`.
+#'
+#' @inheritParams default_doc_internal
+#' @return The (updated) `internal` list.
+#' @author Martin Jullum
+#' @keywords internal
+set_sage_parameters <- function(internal) {
+  sage_args <- internal$parameters$sage_args
+  phi0 <- internal$parameters$phi0
+  y_explain <- internal$data$y_explain
+
+  # Get defaults
+  sage_args <- utils::modifyList(get_sage_args_default(),
+    sage_args,
+    keep.null = TRUE
+  )
+
+  check_sage_args(sage_args)
+
+  loss_func <- sage_args$loss_func
+
+  # Resolve the default loss function when the user has not supplied one
+  if (is.null(loss_func)) {
+    loss_func <- if (all(y_explain %in% c(0, 1))) log_loss else mse_loss
+    sage_args$loss_func <- loss_func
+  }
+
+  internal$parameters$sage_args <- sage_args
+  internal$parameters$loss_func <- loss_func
+
+  # Baseline loss (the value of the empty coalition), used as the `none` value and the waterfall plot baseline
+  internal$parameters$zero_loss <- -loss_func(y_explain, phi0)
+
+  return(internal)
+}
+
+#' Get the Default Values for the SAGE Arguments
+#'
+#' @param loss_func Function or `NULL`.
+#' The loss function used to measure the model loss when computing the SAGE values.
+#' Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
+#' loss value.
+#' If `NULL` (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
+#' error loss otherwise.
+#'
+#' @return A list with the default values for the SAGE arguments.
+#' @export
+#' @author Martin Jullum
+get_sage_args_default <- function(loss_func = NULL) {
+  return(mget(methods::formalArgs(get_sage_args_default)))
+}
+
+#' @keywords internal
+check_sage_args <- function(sage_args) {
+  loss_func <- sage_args$loss_func
+
+  if (!is.null(loss_func) && !(is.function(loss_func) && length(formals(loss_func)) == 2)) {
+    cli::cli_abort("`sage_args$loss_func` must be `NULL` or a function of exactly two arguments.")
+  }
+}
+
+#' Logistic (Cross-Entropy) Loss
+#'
+#' @param y Numeric vector of true binary responses (values in 0/1).
+#' @param pred Numeric vector (or scalar) of predicted probabilities.
+#'
+#' @return The mean logistic loss as a single numeric value.
+#' @keywords internal
+#' @author Martin Jullum
+log_loss <- function(y, pred) {
+  # Clamp the predictions away from 0 and 1 to avoid taking log(0)
+  eps <- 1e-15
+  pred <- pmin(pmax(pred, eps), 1 - eps)
+
+  return(-mean(y * log(pred) + (1 - y) * log(1 - pred)))
+}
+
+#' Mean Squared Error Loss
+#'
+#' @param y Numeric vector of true responses.
+#' @param pred Numeric vector (or scalar) of predictions.
+#'
+#' @return The mean squared error as a single numeric value.
+#' @keywords internal
+#' @author Martin Jullum
+mse_loss <- function(y, pred) {
+  return(mean((pred - y)^2))
+}
 
 #' @author Martin Jullum and Lars Henry Berge Olsen
 #' @keywords internal
