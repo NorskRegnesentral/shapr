@@ -126,6 +126,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
+  sage <- internal$parameters$sage
 
   iter <- length(internal$iter_list)
 
@@ -160,6 +161,13 @@ compute_shapley <- function(internal, dt_vS) {
     }
 
     dt_kshap <- cbind(internal$parameters$output_labels, rbindlist(kshap_list, fill = TRUE))
+  } else if (sage) {
+    # SAGE: the value function is the negative model loss for each coalition, averaged over the explained
+    # observations. Applying the kernelSHAP weight matrix then yields a single set of global SAGE values.
+    vS_loss <- compute_vS_loss(dt_vS, internal)
+    kshap <- t(W %*% vS_loss)
+    dt_kshap <- data.table::as.data.table(kshap)
+    colnames(dt_kshap) <- c("none", shap_names)
   } else {
     kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
     dt_kshap <- data.table::as.data.table(kshap)
@@ -167,6 +175,28 @@ compute_shapley <- function(internal, dt_vS) {
   }
 
   return(dt_kshap)
+}
+
+#' Compute the SAGE Value Function
+#'
+#' @details For each coalition (row of `dt_vS`), the value function used for the SAGE values is the negative model
+#' loss `-loss_func(y_explain, v(S))`, where `v(S)` is the vector of conditional expectations across the explained
+#' observations.
+#'
+#' @inheritParams default_doc_internal
+#' @param dt_vS Data.table with the contribution function `v(S)` estimates for each coalition.
+#'
+#' @return A single-column numeric matrix with one row per coalition in `dt_vS`.
+#' @author Martin Jullum
+#' @keywords internal
+compute_vS_loss <- function(dt_vS, internal) {
+  y_explain <- internal$data$y_explain
+  loss_func <- internal$parameters$loss_func
+
+  vS_mat <- as.matrix(dt_vS[, -"id_coalition"])
+  vS_loss <- -apply(vS_mat, 1, function(pred) loss_func(y_explain, pred))
+
+  return(matrix(vS_loss, ncol = 1))
 }
 
 #' @keywords internal
@@ -221,6 +251,8 @@ bootstrap_shapley_inner <- function(X,
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
+  sage <- internal$parameters$sage
+
   if (type == "forecast") {
     # For forecast set to zero, as all coalitions except empty and grand can be sampled
     max_fixed_coal_size <- 0
@@ -231,7 +263,9 @@ bootstrap_shapley_inner <- function(X,
 
   X_org <- copy(X)
 
-  boot_sd_array <- array(NA, dim = c(n_explain, n_shapley_values + 1, n_boot_samps))
+  # SAGE produces a single set of global values, so the bootstrap array only needs a single "observation" row
+  n_boot_rows <- if (sage) 1L else n_explain
+  boot_sd_array <- array(NA, dim = c(n_boot_rows, n_shapley_values + 1, n_boot_samps))
 
   # Split X_org into the deterministic and sampled coalitions
   X_keep <- X_org[is.na(sample_freq), .(id_coalition, coalitions, coalition_size, N, shapley_weight)]
@@ -343,10 +377,15 @@ bootstrap_shapley_inner <- function(X,
       normalize_W_weights = TRUE
     )
 
-    kshap_boot <- t(W_boot %*% as.matrix(dt_vS[id_coalition %in% X_boot[
-      boot_id == i,
-      id_coalition
-    ], -"id_coalition"]))
+    boot_ids <- X_boot[boot_id == i, id_coalition]
+    dt_vS_boot <- dt_vS[id_coalition %in% boot_ids]
+
+    if (sage) {
+      vS_loss_boot <- compute_vS_loss(dt_vS_boot, internal)
+      kshap_boot <- t(W_boot %*% vS_loss_boot)
+    } else {
+      kshap_boot <- t(W_boot %*% as.matrix(dt_vS_boot[, -"id_coalition"]))
+    }
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }

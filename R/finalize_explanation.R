@@ -9,6 +9,7 @@
 finalize_explanation <- function(internal) {
   MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
   type <- internal$parameters$type
+  sage <- internal$parameters$sage
   dt_vS <- internal$output$dt_vS
 
   # Extract iter (and delete the last temporary empty list of iter_list)
@@ -42,6 +43,18 @@ finalize_explanation <- function(internal) {
 
   # Extract iterative results in a simplified format
   iterative_results <- get_iter_results(internal$iter_list)
+
+  # For SAGE, also compute and store the regular per-observation Shapley value explanations of the predictions.
+  # These are always kept (in `internal$output`) for inspection, while `shapley_values_est` holds the SAGE values.
+  if (sage) {
+    W <- internal$objects$W
+    shap_pred <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
+    dt_shap_pred <- data.table::as.data.table(shap_pred)
+    colnames(dt_shap_pred) <- c("none", internal$parameters$shap_names)
+    dt_shap_pred[, explain_id := .I]
+    data.table::setcolorder(dt_shap_pred, "explain_id")
+    internal$output$shap_values_est <- dt_shap_pred
+  }
 
   output <- list(
     shapley_values_est = dt_shapley_est,
