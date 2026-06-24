@@ -88,7 +88,10 @@ various approaches. With features like parallelized computations,
 convergence detection, progress updates, and extensive plotting options,
 shapr is a highly efficient and user-friendly tool, delivering precise
 estimates of conditional Shapley values, which are critical for
-understanding how features truly contribute to predictions.
+understanding how features truly contribute to predictions. In addition
+to local prediction explanations, `shapr` also supports global feature
+importance through SAGE (Shapley Additive Global importancE) values,
+computed by setting `sage = TRUE` in `explain()`.
 
 A basic example is provided below. Otherwise, we refer to the [pkgdown
 website](https://norskregnesentral.github.io/shapr/) and the vignettes
