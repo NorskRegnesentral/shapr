@@ -1,0 +1,80 @@
+Metadata-Version: 2.4
+Name: shaprpy
+Version: 0.4.4
+Summary: Compatibility shim: 'shaprpy' has been renamed to 'pyshapr'. Installs and forwards to 'pyshapr'.
+Author: Martin Jullum, Lars Henry Berge Olsen, Didrik Nielsen
+License: # MIT License
+        
+        Copyright (c) 2019 Norsk Regnesentral
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/NorskRegnesentral/shapr
+Project-URL: Documentation, https://norskregnesentral.github.io/shapr/pyshapr.html
+Project-URL: Issues, https://github.com/NorskRegnesentral/shapr/issues
+Project-URL: Changelog, https://github.com/NorskRegnesentral/shapr/blob/master/python/CHANGELOG.md
+Keywords: explainable-ai,shapley-values,machine-learning,model-interpretability
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Development Status :: 7 - Inactive
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: LICENSE.md
+Requires-Dist: pyshapr>=0.5.0
+Dynamic: license-file
+
+# shaprpy (renamed to pyshapr)
+
+> **This package has been renamed to [`pyshapr`](https://pypi.org/project/pyshapr/).**
+
+`shaprpy` is now a thin compatibility shim. Installing it pulls in `pyshapr` and
+forwards all imports to it, so existing code that does `import shaprpy` keeps
+working. Importing `shaprpy` emits a `DeprecationWarning`.
+
+This shim is maintained only for a transition period and contains no
+functionality of its own.
+
+## Migrate
+
+Replace your installation:
+
+```bash
+pip uninstall shaprpy
+pip install pyshapr
+```
+
+Replace your imports:
+
+```python
+# Old
+from shaprpy import explain
+from shaprpy.datasets import load_california_housing
+
+# New
+from pyshapr import explain
+from pyshapr.datasets import load_california_housing
+```
+
+See the [pyshapr documentation](https://norskregnesentral.github.io/shapr/pyshapr.html)
+for installation instructions and examples.

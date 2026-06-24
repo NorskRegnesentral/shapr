@@ -918,7 +918,7 @@ wheels = [
 
 [[package]]
 name = "pyshapr"
-version = "0.5.0"
+version = "0.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "matplotlib" },
@@ -947,7 +947,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.5.0" },
-    { name = "numpy", specifier = ">=1.22.3" },
+    { name = "numpy", specifier = ">=1.22.3,<2.5" },
     { name = "pandas", specifier = ">=1.4.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
