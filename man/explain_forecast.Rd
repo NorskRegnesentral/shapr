@@ -295,11 +295,14 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0}).
+If \code{sage = TRUE}, this instead contains a single row with the estimated SAGE values, and the column \code{none}
+gives the baseline model loss \code{-loss(y_explain, phi0)}.}
 \item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.
 These are, by definition, 0 when all coalitions are used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.
+If \code{sage = TRUE}, this contains a single row with the standard deviations of the SAGE values.}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the

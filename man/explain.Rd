@@ -25,6 +25,9 @@ explain(
   extra_computation_args = list(),
   iterative_args = list(),
   output_args = list(),
+  sage = FALSE,
+  y_explain = NULL,
+  sage_args = list(),
   ...
 )
 }
@@ -189,6 +192,28 @@ See the help file of \code{\link[=get_iterative_args_default]{get_iterative_args
 Specifies certain arguments related to the output of the function.
 See the help file of \code{\link[=get_output_args_default]{get_output_args_default()}} for description of the arguments and their default values.}
 
+\item{sage}{Logical.
+If \code{FALSE} (default), \code{explain} computes Shapley value explanations of individual predictions.
+If \code{TRUE}, \code{explain} instead computes SAGE values (Shapley Additive Global importancE), which explain the
+global model loss over the observations in \code{x_explain} rather than individual predictions.
+See the details section and \code{vignette("general_usage", package = "shapr")} for more information.}
+
+\item{y_explain}{Numeric vector.
+Only used (and required) when \code{sage = TRUE}.
+The true response/outcome values corresponding to the observations in \code{x_explain}, used to evaluate the model loss
+when computing the SAGE values.
+Must be numeric and have the same number of elements as there are rows in \code{x_explain}.}
+
+\item{sage_args}{Named list.
+Only used when \code{sage = TRUE}.
+A list of arguments controlling the SAGE computation. The list elements are set via \code{\link[=get_sage_args_default]{get_sage_args_default()}}:
+\describe{
+\item{\code{loss_func}}{Function used to measure the model loss when computing the SAGE values. Must take two
+arguments, the true response and the model prediction (in that order), and return a single numeric loss.
+If \code{NULL} (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean
+squared error loss otherwise.}
+}}
+
 \item{...}{
   Arguments passed on to \code{\link{setup_approach}}
   \describe{
@@ -348,11 +373,14 @@ Object of class \code{c("shapr", "list")}. Contains the following items:
 \describe{
 \item{\code{shapley_values_est}}{data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0})}
+The column \code{none} is the prediction not devoted to any of the features (given by the argument \code{phi0}).
+If \code{sage = TRUE}, this instead contains a single row with the estimated SAGE values, and the column \code{none}
+gives the baseline model loss \code{-loss(y_explain, phi0)}.}
 \item{\code{shapley_values_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.
 These are, by definition, 0 when all coalitions are used.
-Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.}
+Only present when \code{extra_computation_args$compute_sd=TRUE}, which is the default when \code{iterative = TRUE}.
+If \code{sage = TRUE}, this contains a single row with the standard deviations of the SAGE values.}
 \item{\code{internal}}{List with the different parameters, data, functions and other output used internally.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv}}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -413,6 +441,19 @@ Causal Shapley values were proposed by
 \href{https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf}{
 Heskes et al. (2020)} as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in \code{shapr}.
+
+When \code{sage = TRUE}, \code{explain} computes SAGE values (Shapley Additive Global importancE) as introduced by
+\href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+Covert et al. (2020)}.
+Rather than explaining individual predictions, SAGE values explain the global model loss by attributing the
+reduction in loss (relative to always predicting the baseline \code{phi0}) to each feature.
+\code{shapr} reuses the exact same machinery as for regular Shapley values, but replaces the value function
+\code{v(S)} with the negative expected loss \code{-E[loss(y, E[f(x) | x_S])]}, averaged over the observations in
+\code{x_explain}. The conditional expectations are estimated with the chosen \code{approach}, so unlike the marginal
+sampling used by Covert et al. (2020), \code{shapr} accounts for feature dependence.
+A single set of SAGE values is returned in \code{shapley_values_est}, with the corresponding standard deviations in
+\code{shapley_values_sd}. The regular per-observation Shapley value explanations of the predictions are always also
+computed and stored in \code{internal$output$shap_values_est} for inspection by advanced users.
 
 The package allows parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.

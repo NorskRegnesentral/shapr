@@ -1228,7 +1228,13 @@ get_sage_args_default <- function(loss_func = NULL) {
   return(mget(methods::formalArgs(get_sage_args_default)))
 }
 
+#' Check the SAGE Arguments
+#'
+#' @param sage_args List of SAGE arguments, see [get_sage_args_default()].
+#'
+#' @return Nothing. Called for its side effect of aborting on invalid input.
 #' @keywords internal
+#' @author Martin Jullum
 check_sage_args <- function(sage_args) {
   loss_func <- sage_args$loss_func
 
