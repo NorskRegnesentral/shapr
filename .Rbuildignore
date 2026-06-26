@@ -36,6 +36,7 @@
 ^inst/extdata/*$
 ^inst/devel/*$
 ^dev$
+^benchmarks$
 ^\.venv$
 ^\.vscode$
 ^AGENTS\.md$

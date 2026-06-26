@@ -1,0 +1,135 @@
+# ============================================================================
+# common.yml — shared settings for ALL benchmark studies
+#
+# Every study config (oat_quick.yml, factorial_weekend.yml, ...) is merged on
+# top of this file. Anything you set in a study config OVERRIDES the value here.
+# Edit this file to change machine-wide defaults (model, datasets, baseline).
+# ============================================================================
+
+# Global RNG seed. Each run derives a per-run seed from this + the config id, so
+# runs are reproducible and replicates of the same config are identical.
+seed: 2025
+
+# Number of MEASURED replicates per configuration (median/IQR reported).
+# Usually overridden per study (quick = 1, weekend = 3).
+replicates: 1
+
+# Run one extra UNMEASURED warm-up replicate per config and drop it in
+# aggregation. Smooths out first-call JIT / allocation effects.
+warmup: true
+
+# Randomise the order in which configs are executed (seeded). Protects against
+# thermal drift on this box (schedutil governor) correlating with any one
+# dimension.
+randomize_order: true
+
+# Seconds to idle between runs (lets the CPU cool a little between configs).
+cooldown_sec: 0.5
+
+# ---------------------------------------------------------------------------
+# Output locations (relative to the benchmarks/ folder).
+# ---------------------------------------------------------------------------
+paths:
+  data_dir: data        # cached datasets + trained models
+  results_dir: results  # one JSON per run + grid.csv + results.csv
+  logs_dir: logs        # per-run stdout/stderr
+
+# ---------------------------------------------------------------------------
+# Thread / BLAS controls.
+#
+# IMPORTANT: orchestrate.sh exports OMP_NUM_THREADS / OPENBLAS_NUM_THREADS /
+# MKL_NUM_THREADS = 1 so that BLAS is single-threaded. This guarantees the ONLY
+# source of parallelism is the `future` worker count we sweep ("workers"). Do
+# not raise these unless you specifically want to study BLAS threading.
+# ---------------------------------------------------------------------------
+controls:
+  blas_threads: 1
+  dt_threads: 1         # data.table::setDTthreads() inside each run
+
+# ---------------------------------------------------------------------------
+# Peak-RAM measurement.
+#   method: poll   -> external /proc process-tree RSS sampler (captures all
+#                     future workers). Portable, ~poll_interval_ms resolution.
+#           cgroup -> run under `systemd-run --user --scope` and read cgroup-v2
+#                     memory.peak (exact, catches transient spikes).
+#           both   -> wrap in a scope AND poll the tree; record both numbers.
+# ---------------------------------------------------------------------------
+ram:
+  method: both
+  poll_interval_ms: 15
+
+# ---------------------------------------------------------------------------
+# Models. One model is trained per dataset (and re-trained/cached per distinct
+# n_features / n_train, since those change the feature matrix). Model training
+# time is NOT included in the measured explain() time.
+#
+# xgboost is used for the all-numeric dataset; ranger handles factor features
+# natively so it is used for the mixed and categorical datasets.
+# ---------------------------------------------------------------------------
+models:
+  numeric:
+    type: xgboost
+    nrounds: 50
+    max_depth: 3
+    eta: 0.3
+  mixed:
+    type: ranger
+    num_trees: 100
+    max_depth: 6
+  categorical:
+    type: ranger
+    num_trees: 100
+    max_depth: 6
+
+# ---------------------------------------------------------------------------
+# Synthetic datasets. Each is generated once into a large pool and cached; each
+# run subsamples rows (n_train / n_explain) and, for the numeric data, columns
+# (n_features) from the pool.
+#   rho = AR(1) correlation between consecutive numeric features.
+# ---------------------------------------------------------------------------
+datasets:
+  numeric:
+    n_features_max: 12
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed:
+    n_numeric: 6
+    n_factor: 4
+    factor_levels: 3
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  categorical:
+    n_factor: 8
+    factor_levels: 3
+    n_train_max: 20000
+    n_explain_max: 100
+
+# ---------------------------------------------------------------------------
+# Baseline reference configuration.
+#
+# In the OAT design, every run starts from this baseline and changes ONE
+# dimension at a time. In the factorial design, dimensions not listed under
+# `factors` fall back to these values (unless overridden in `fixed`).
+#
+# max_batch_size = Inf means the number of batches is governed solely by
+# min_n_batches (so the "batches" sweep is clean).
+# ---------------------------------------------------------------------------
+baseline:
+  approach: gaussian
+  dataset: numeric
+  # 12 features (2^12 = 4096 possible coalitions) keeps the baseline in the
+  # SAMPLING regime. With fewer features, shapr collapses a sampled request to
+  # the EXACT 2^n_features coalitions, so the coalition/MC sweeps would not vary.
+  # The actual count used is always recorded as `used_n_coalitions`.
+  n_features: 12
+  max_n_coalitions: 128
+  n_MC_samples: 250
+  min_n_batches: 10
+  max_batch_size: Inf
+  workers: 1
+  backend: multisession
+  n_train: 1000
+  n_explain: 25
+  iterative: false

@@ -1,0 +1,57 @@
+# ============================================================================
+# oat_quick.yml — One-Factor-At-A-Time study, ~1 hour "smoke" scale
+#
+# Starts from `baseline` (see common.yml) and varies ONE dimension at a time.
+# Coarse sweep points + 1 replicate keep this short. Use it to sanity-check the
+# pipeline and get a first picture before committing to the weekend run.
+#
+# Merged on top of common.yml. Anything here overrides common.yml.
+# ============================================================================
+design: oat
+scale: quick
+
+replicates: 1
+warmup: false      # smoke run: skip the extra warm-up replicate to stay ~1 h
+
+# --- One-factor-at-a-time sweeps -------------------------------------------
+# For each dimension below, one run is created per value (with all other
+# dimensions held at the baseline). The baseline value is de-duplicated so it
+# is only run once.
+#
+# The `approach` sweep is special: it is crossed with `approach_sweep_datasets`
+# and filtered by the capability matrix (incompatible approach/dataset combos
+# are skipped automatically).
+sweeps:
+  approach: [independence, gaussian, copula, empirical, ctree, arf, categorical]
+  n_features: [3, 5, 8]
+  max_n_coalitions: [32, 128, 256]
+  n_MC_samples: [50, 250, 1000]
+  min_n_batches: [1, 10, 50]
+  n_train: [100, 1000, 5000]
+  n_explain: [1, 25, 100]
+
+approach_sweep_datasets: [numeric, mixed, categorical]
+
+# --- Targeted 2-D interaction grids ----------------------------------------
+# Full cross-product within each named grid only. Everything not listed stays
+# at baseline.
+grids_2d:
+  - name: threads_backend
+    workers: [1, 2, 4]
+    backend: [multisession, multicore]
+  - name: coalitions_mc
+    max_n_coalitions: [64, 256]
+    n_MC_samples: [100, 1000]
+
+# --- Light approach-specific parameter sweeps ------------------------------
+# Each entry varies a single approach-specific argument around its default,
+# with the approach + a compatible dataset, everything else at baseline.
+approach_param_sweeps:
+  - approach: empirical
+    dataset: numeric
+    param: empirical.type
+    values: ["fixed_sigma", "AICc_full"]
+  - approach: ctree
+    dataset: mixed
+    param: ctree.sample
+    values: [true, false]

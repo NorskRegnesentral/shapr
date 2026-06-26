@@ -1,0 +1,4 @@
+# Generated benchmark artefacts (datasets, trained models, per-run results, logs)
+data/
+results/
+logs/

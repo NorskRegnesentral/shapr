@@ -1,0 +1,59 @@
+# ============================================================================
+# oat_weekend.yml — One-Factor-At-A-Time study, full "weekend" scale
+#
+# Same design as oat_quick.yml but with the full set of approaches (incl. the
+# slow vaeac / regression methods), denser sweep points, and 3 replicates.
+# Expect a long (many-hours / overnight) run.
+#
+# Merged on top of common.yml.
+# ============================================================================
+design: oat
+scale: weekend
+
+replicates: 3
+
+sweeps:
+  approach:
+    - independence
+    - gaussian
+    - copula
+    - empirical
+    - ctree
+    - arf
+    - categorical
+    - vaeac
+    - regression_separate
+    - regression_surrogate
+  n_features: [3, 5, 8, 10, 12]
+  max_n_coalitions: [16, 32, 64, 128, 256, 512]
+  n_MC_samples: [10, 50, 100, 250, 500, 1000]
+  min_n_batches: [1, 2, 5, 10, 25, 50]
+  n_train: [100, 500, 1000, 5000, 20000]
+  n_explain: [1, 10, 25, 50, 100]
+
+approach_sweep_datasets: [numeric, mixed, categorical]
+
+grids_2d:
+  - name: threads_backend
+    workers: [1, 2, 4, 8, 16]
+    backend: [multisession, multicore]
+  - name: coalitions_mc
+    max_n_coalitions: [32, 128, 512]
+    n_MC_samples: [50, 250, 1000]
+  - name: train_approach
+    n_train: [100, 1000, 5000, 20000]
+    approach: [gaussian, empirical, ctree, arf]
+
+approach_param_sweeps:
+  - approach: empirical
+    dataset: numeric
+    param: empirical.type
+    values: ["fixed_sigma", "AICc_each_k", "AICc_full"]
+  - approach: ctree
+    dataset: mixed
+    param: ctree.sample
+    values: [true, false]
+  - approach: arf
+    dataset: mixed
+    param: arf.num_trees
+    values: [30, 100, 300]
