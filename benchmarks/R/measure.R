@@ -33,6 +33,15 @@ used_n_coalitions <- function(expl) {
   )
 }
 
+# Number of iterations the iterative procedure ran (1 for non-iterative). Equal
+# to the length of the internal iter_list.
+used_n_iterations <- function(expl) {
+  tryCatch(
+    as.integer(length(expl$internal$iter_list)),
+    error = function(e) NA_integer_
+  )
+}
+
 # gc() peak since the last reset, in bytes (parent process only).
 gc_peak_bytes <- function() {
   g <- gc(reset = FALSE)

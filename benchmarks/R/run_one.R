@@ -1,9 +1,17 @@
 #!/usr/bin/env Rscript
 # run_one.R — execute ONE benchmark configuration in a fresh R process and write
-# results/<study>/<id>.json. One run = one explain() call with everything else
-# (data, model) prepared but excluded from the measured time.
+# results/<study>/<id>.json. One run = one explain() call.
+#
+# Timing model: the orchestrator measures the WHOLE-Rscript wall time at the
+# bash level (that is the headline number). Here we additionally record, inside
+# R, the time to load the pre-processed (cached) data + model (`data_load_secs`)
+# and shapr's own internal $timing breakdown, so the bash wall can be decomposed
+# into "load" vs "explain" vs "R startup". Model FITTING is done up front by
+# prebuild.R and is therefore excluded from the measured process (run_one only
+# reads the cached model).
 #
 # Usage: Rscript R/run_one.R --config config/oat_quick.yml --id 42
+#        [--max-n-coalitions N]   (override; used for iterative `dependent` runs)
 
 suppressMessages({
   library(data.table)
@@ -14,6 +22,7 @@ local({
   if (is.na(here) || !nzchar(here)) here <- "R"
   source(file.path(here, "config.R"))
   source(file.path(here, "capability.R"))
+  source(file.path(here, "registry.R"))
   source(file.path(here, "data.R"))
   source(file.path(here, "measure.R"))
 })
@@ -24,12 +33,17 @@ parse_args <- function() {
     i <- which(args == flag)
     if (length(i) == 0) NA_character_ else args[i + 1]
   }
-  list(config = get("--config"), id = as.integer(get("--id")))
+  list(
+    config = get("--config"),
+    id = as.integer(get("--id")),
+    max_n_coalitions = suppressWarnings(as.integer(get("--max-n-coalitions")))
+  )
 }
 
-# Configure threading so the ONLY parallelism is the future workers.
-setup_threads <- function(cfg, backend, workers) {
-  data.table::setDTthreads(cfg$controls$dt_threads)
+# Configure threading so the ONLY parallelism is the future workers + the swept
+# data.table thread count.
+setup_threads <- function(dt_threads, backend, workers) {
+  data.table::setDTthreads(dt_threads)
   if (workers > 1) {
     plan <- switch(backend,
       multisession = future::multisession,
@@ -64,16 +78,38 @@ parse_approach_args <- function(s) {
   return(out)
 }
 
-# Build the explain() argument list for a grid row.
-build_explain_args <- function(cfg, row, run_data, model) {
+# Build the explain() argument list for a grid row. `coalitions_override` (if
+# > 0) replaces max_n_coalitions (used for the iterative `dependent` run).
+build_explain_args <- function(cfg, row, run_data, model, coalitions_override = NA_integer_) {
   approach_args <- parse_approach_args(row$approach_args)
+
+  # Named regression variant -> merge its (complex) explain args from registry.
+  variant_args <- list()
+  if (!is.null(approach_args$variant)) {
+    v <- get_variant(approach_args$variant)
+    if (is.null(v)) stop(sprintf("Unknown variant '%s'", approach_args$variant))
+    variant_args <- v$args
+    approach_args$variant <- NULL
+  }
+
+  # Resolve max_n_coalitions: command-line override wins (dependent pair run),
+  # otherwise use the grid value.
+  max_nc <- row$max_n_coalitions
+  if (!is.na(coalitions_override) && coalitions_override > 0) {
+    max_nc <- coalitions_override
+  }
+  if (is.na(max_nc) || max_nc < 0) {
+    stop("max_n_coalitions is the dependent-pair sentinel (-1) but no valid ",
+      "--max-n-coalitions override was supplied")
+  }
+
   base_args <- list(
     model = model,
     x_explain = run_data$x_explain,
     x_train = run_data$x_train,
     approach = row$approach,
     phi0 = mean(run_data$y_train),
-    max_n_coalitions = row$max_n_coalitions,
+    max_n_coalitions = max_nc,
     n_MC_samples = row$n_MC_samples,
     iterative = as.logical(row$iterative),
     extra_computation_args = list(
@@ -83,8 +119,17 @@ build_explain_args <- function(cfg, row, run_data, model) {
     verbose = NULL,
     seed = cfg$seed + row$id
   )
-  return(c(base_args, approach_args))
+
+  # Feature grouping (group sweep): partition features into fixed-size groups.
+  if (isTRUE(as.logical(row$group))) {
+    base_args$group <- build_groups(colnames(run_data$x_train),
+      group_size = cfg$group_size %||% 2L)
+  }
+
+  return(c(base_args, variant_args, approach_args))
 }
+
+`%||%` <- function(x, y) if (is.null(x) || length(x) == 0 || (length(x) == 1 && is.na(x))) y else x
 
 main <- function() {
   a <- parse_args()
@@ -98,12 +143,16 @@ main <- function() {
 
   result <- c(
     list(id = a$id, study = cfg$study),
-    row[c("sweep", "rep", "is_warmup", grid_dimensions(), "approach_args")],
+    row[c("sweep", "rep", "is_warmup", grid_dimensions(), "approach_args",
+      "pair_role", "coalitions_from")],
+    list(coalitions_override = if (is.na(a$max_n_coalitions)) NA_integer_ else a$max_n_coalitions),
     run_metadata()
   )
 
-  # Skip approaches whose extra dependencies are unavailable.
-  miss <- missing_dependency(row$approach)
+  # Skip approaches / variants whose extra dependencies are unavailable.
+  variant_name <- parse_approach_args(row$approach_args)$variant
+  variant_deps <- if (!is.null(variant_name)) (get_variant(variant_name)$deps %||% character(0)) else character(0)
+  miss <- missing_dependency(row$approach, variant_deps)
   if (!is.na(miss)) {
     result$status <- "skipped_missing_dep"
     result$error <- paste0("missing: ", miss)
@@ -112,15 +161,19 @@ main <- function() {
     return(invisible())
   }
 
-  setup_threads(cfg, row$backend, row$workers)
+  setup_threads(row$dt_threads, row$backend, row$workers)
 
   res <- tryCatch(
     {
+      # Load pre-processed data + cached model (timed separately).
+      load0 <- Sys.time()
       run_data <- build_run_data(cfg, row$dataset, row$n_features, row$n_train, row$n_explain)
       model <- get_model(cfg, row$dataset, run_data$x_train, run_data$y_train)
-      explain_args <- build_explain_args(cfg, row, run_data, model)
+      load_secs <- as.numeric(difftime(Sys.time(), load0, units = "secs"))
 
-      # Free intermediates and reset gc peak just before the measured section.
+      explain_args <- build_explain_args(cfg, row, run_data, model, a$max_n_coalitions)
+
+      # Reset gc peak just before the measured section.
       invisible(gc(reset = TRUE))
 
       wall0 <- Sys.time()
@@ -129,7 +182,8 @@ main <- function() {
       cpu1 <- proc.time()
       wall1 <- Sys.time()
 
-      list(expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1)
+      list(expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
+        load_secs = load_secs)
     },
     error = function(e) e
   )
@@ -140,6 +194,7 @@ main <- function() {
   } else {
     cpu <- res$cpu1 - res$cpu0
     result$status <- "ok"
+    result$data_load_secs <- res$load_secs
     result$wall_secs <- as.numeric(difftime(res$wall1, res$wall0, units = "secs"))
     result$cpu_user_secs <- as.numeric(cpu[["user.self"]])
     result$cpu_sys_secs <- as.numeric(cpu[["sys.self"]])
@@ -147,6 +202,7 @@ main <- function() {
     result$cpu_sys_child_secs <- as.numeric(cpu[["sys.child"]])
     result$gc_peak_bytes <- gc_peak_bytes()
     result$used_n_coalitions <- used_n_coalitions(res$expl)
+    result$n_iterations <- used_n_iterations(res$expl)
     result$timing <- flatten_timing(res$expl)
   }
 

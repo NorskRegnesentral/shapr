@@ -1,11 +1,24 @@
 # capability.R — which approaches work on which datasets, and which extra
 # packages each approach needs. Used to skip invalid / unavailable runs.
-
-# Datasets:
+#
+# Dataset FAMILIES (the capability/model/generation logic keys off the family):
 #   numeric     -> all features numeric
 #   mixed       -> numeric + factor features
 #   categorical -> all features factor
 #
+# There are several concrete `mixed` datasets (mixed_fc_fl, mixed_fc_ml,
+# mixed_mc_fl, mixed_mc_ml — few/many categorical features x few/many levels),
+# all of which belong to the `mixed` family. `dataset_family()` maps a concrete
+# dataset name to its family.
+
+# Map a concrete dataset name to its family.
+dataset_family <- function(dataset) {
+  if (startsWith(dataset, "mixed")) {
+    return("mixed")
+  }
+  return(dataset)
+}
+
 # Factor-supporting approaches (from shapr::get_factor_approaches()):
 #   arf, categorical, ctree, regression_separate, regression_surrogate, vaeac,
 #   independence.
@@ -27,13 +40,30 @@ approach_capability <- function() {
   )
 }
 
-# TRUE if `approach` can run on `dataset`.
+# TRUE if `approach` can run on `dataset` (concrete name; family is resolved).
 approach_supports <- function(approach, dataset) {
   caps <- approach_capability()
   if (is.null(caps[[approach]])) {
     return(FALSE)
   }
-  return(dataset %in% caps[[approach]])
+  return(dataset_family(dataset) %in% caps[[approach]])
+}
+
+# The representative dataset used for an approach's per-approach OAT sweeps.
+# Prefer numeric (so results line up with the gaussian/numeric baseline); fall
+# back to a mixed setting, then categorical.
+primary_dataset <- function(approach, mixed_default = "mixed_fc_fl") {
+  caps <- approach_capability()[[approach]]
+  if (is.null(caps)) {
+    return(NA_character_)
+  }
+  if ("numeric" %in% caps) {
+    return("numeric")
+  }
+  if ("mixed" %in% caps) {
+    return(mixed_default)
+  }
+  return("categorical")
 }
 
 # Extra R packages required by each approach beyond shapr's base deps.
@@ -49,9 +79,11 @@ approach_dependencies <- function() {
 
 # Returns NA_character_ if all deps for `approach` are available, otherwise a
 # short string naming the first missing requirement (used to mark runs skipped).
-missing_dependency <- function(approach) {
-  deps <- approach_dependencies()[[approach]]
-  if (is.null(deps)) {
+# `extra_pkgs` lets a caller add variant-specific deps (e.g. glmnet for a
+# regression variant).
+missing_dependency <- function(approach, extra_pkgs = character(0)) {
+  deps <- c(approach_dependencies()[[approach]], extra_pkgs)
+  if (length(deps) == 0) {
     return(NA_character_)
   }
   for (pkg in deps) {

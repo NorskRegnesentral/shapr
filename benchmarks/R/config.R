@@ -77,7 +77,12 @@ load_config <- function(config_path) {
 grid_dimensions <- function() {
   c(
     "dataset", "approach", "n_features", "max_n_coalitions", "n_MC_samples",
-    "min_n_batches", "max_batch_size", "workers", "backend", "n_train",
-    "n_explain", "iterative"
+    "min_n_batches", "max_batch_size", "workers", "backend", "dt_threads",
+    "n_train", "n_explain", "iterative", "group"
   )
+}
+
+# Bookkeeping columns carried alongside the dimensions in grid.csv.
+grid_bookkeeping <- function() {
+  c("sweep", "approach_args", "pair_key", "pair_role", "coalitions_from")
 }

@@ -1,9 +1,13 @@
 # ============================================================================
-# oat_quick.yml — One-Factor-At-A-Time study, ~1 hour "smoke" scale
+# oat_quick.yml — One-Factor-At-A-Time study, "smoke" scale
 #
-# Starts from `baseline` (see common.yml) and varies ONE dimension at a time.
-# Coarse sweep points + 1 replicate keep this short. Use it to sanity-check the
-# pipeline and get a first picture before committing to the weekend run.
+# Starts from `baseline` (see common.yml) and, FOR EACH approach, varies ONE
+# dimension at a time on that approach's primary dataset. A few approach-
+# agnostic infrastructure levers (batching, dt_threads, the workers x backend
+# parallel grid) are swept once at the gaussian/numeric baseline.
+#
+# Reduced approach list + coarse sweep points + 1 replicate keep this short.
+# Use it to sanity-check the pipeline before the weekend run.
 #
 # Merged on top of common.yml. Anything here overrides common.yml.
 # ============================================================================
@@ -11,47 +15,65 @@ design: oat
 scale: quick
 
 replicates: 1
-warmup: false      # smoke run: skip the extra warm-up replicate to stay ~1 h
+warmup: false      # smoke run: skip the extra warm-up replicate
 
-# --- One-factor-at-a-time sweeps -------------------------------------------
-# For each dimension below, one run is created per value (with all other
-# dimensions held at the baseline). The baseline value is de-duplicated so it
-# is only run once.
-#
-# The `approach` sweep is special: it is crossed with `approach_sweep_datasets`
-# and filtered by the capability matrix (incompatible approach/dataset combos
-# are skipped automatically).
-sweeps:
-  approach: [independence, gaussian, copula, empirical, ctree, arf, categorical]
-  n_features: [3, 5, 8]
+# Reduced set of approaches for the per-approach sweeps.
+approaches: [gaussian, empirical, ctree, regression_separate, vaeac]
+
+# --- Per-approach one-factor-at-a-time sweeps ------------------------------
+# Each scalar list and each boolean below is applied to EVERY approach above,
+# on that approach's primary dataset (the `dataset` sweep additionally runs the
+# approach across every dataset family it supports). The baseline point is
+# de-duplicated.
+per_approach_sweeps:
+  dataset: true
   max_n_coalitions: [32, 128, 256]
   n_MC_samples: [50, 250, 1000]
-  min_n_batches: [1, 10, 50]
   n_train: [100, 1000, 5000]
   n_explain: [1, 25, 100]
+  n_features: [5, 10, 20]   # numeric only; 20 triggers the high_dim cap
+  iterative: true           # emits a source (iterative) + dependent pair
+  group: true
 
-approach_sweep_datasets: [numeric, mixed, categorical]
+# High-dimensional point: when n_features hits 20, cap the coalition budget.
+high_dim:
+  n_features: 20
+  max_n_coalitions: 4000
 
-# --- Targeted 2-D interaction grids ----------------------------------------
-# Full cross-product within each named grid only. Everything not listed stays
-# at baseline.
-grids_2d:
-  - name: threads_backend
-    workers: [1, 2, 4]
-    backend: [multisession, multicore]
-  - name: coalitions_mc
-    max_n_coalitions: [64, 256]
-    n_MC_samples: [100, 1000]
+# --- Baseline-only infrastructure sweeps -----------------------------------
+infra_sweeps:
+  min_n_batches: [1, 10, 50]
+  dt_threads: [1, 2, 4]
 
-# --- Light approach-specific parameter sweeps ------------------------------
-# Each entry varies a single approach-specific argument around its default,
-# with the approach + a compatible dataset, everything else at baseline.
+# workers x backend, combined with heavier batching so the workers have work.
+parallel_grid:
+  workers: [1, 2, 4, 8]
+  backend: [multisession, multicore]
+  min_n_batches: 32
+
+# --- Approach-specific scalar parameter sweeps -----------------------------
+# Each entry varies a single approach argument; everything else at baseline.
+# `variant` (optional) pulls complex regression args from the R-side registry.
 approach_param_sweeps:
   - approach: empirical
     dataset: numeric
     param: empirical.type
-    values: ["fixed_sigma", "AICc_full"]
-  - approach: ctree
-    dataset: mixed
-    param: ctree.sample
-    values: [true, false]
+    values: ["fixed_sigma", "AICc_full", "independence"]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.epochs
+    values: [3, 10]
+  - approach: regression_surrogate
+    dataset: numeric
+    param: regression.surrogate_n_comb
+    values: [16, 64]
+    variant: surrogate_none
+
+# --- Named regression variant sweeps ---------------------------------------
+regression_variant_sweeps:
+  - approach: regression_separate
+    dataset: numeric
+    variants: [smooth_none, smooth_light, xgb_none]
+  - approach: regression_surrogate
+    dataset: numeric
+    variants: [surrogate_none]

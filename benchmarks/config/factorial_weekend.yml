@@ -11,18 +11,21 @@ design: factorial
 scale: weekend
 
 replicates: 3
+warmup: true
 
 factors:
   approach: [gaussian, copula, empirical, ctree, arf]
   n_train: [100, 1000, 5000, 20000]
   n_MC_samples: [50, 250, 1000]
   max_n_coalitions: [32, 128, 512]
-  workers: [1, 4]
+  workers: [1, 4, 16]
 
 fixed:
   dataset: numeric     # all five approaches support all-numeric data
   n_features: 8
   min_n_batches: 10
   backend: multisession
+  dt_threads: 1
   n_explain: 25
   iterative: false
+  group: false

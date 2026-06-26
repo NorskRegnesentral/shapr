@@ -38,15 +38,16 @@ suppressMessages(library(data.table))
   return(as.data.table(facs))
 }
 
-# Generate one pool (`n` rows) for a dataset spec. Returns list(x = data.table,
-# y = numeric).
-.generate_pool_part <- function(dataset, spec, n, seed) {
-  if (dataset == "numeric") {
+# Generate one pool (`n` rows) for a dataset spec. `family` is the dataset
+# family (numeric / mixed / categorical); `spec` is the concrete dataset spec.
+# Returns list(x = data.table, y = numeric).
+.generate_pool_part <- function(family, spec, n, seed) {
+  if (family == "numeric") {
     x <- .ar1_features(n, spec$n_features_max, spec$rho, seed)
     y <- .numeric_response(x)
     return(list(x = as.data.table(x), y = y))
   }
-  if (dataset == "mixed") {
+  if (family == "mixed") {
     xnum <- .ar1_features(n, spec$n_numeric, spec$rho, seed)
     y_num <- .numeric_response(xnum)
     facs <- .make_factors(n, spec$n_factor, spec$factor_levels, seed + 1L)
@@ -54,33 +55,39 @@ suppressMessages(library(data.table))
     y <- y_num + 0.5 * fac_effect
     return(list(x = cbind(as.data.table(xnum), facs), y = y))
   }
-  if (dataset == "categorical") {
+  if (family == "categorical") {
     facs <- .make_factors(n, spec$n_factor, spec$factor_levels, seed)
     fac_effect <- rowSums(sapply(facs, function(f) as.integer(f) - 1L))
     y <- fac_effect + rnorm(n, 0, 0.5)
     return(list(x = facs, y = y))
   }
-  stop("Unknown dataset: ", dataset)
+  stop("Unknown dataset family: ", family)
 }
 
-# Load (or build + cache) the full pool for a dataset. Train and explain rows
-# are generated with different seeds so explicands are out-of-sample.
+# Load (or build + cache) the full pool for a concrete dataset. Train and
+# explain rows are generated with different seeds so explicands are
+# out-of-sample. The cache file is keyed by the concrete dataset name so the
+# several `mixed_*` settings each get their own pool.
 get_pool <- function(cfg, dataset) {
   cache <- file.path(cfg$dir$data, paste0("pool_", dataset, ".rds"))
   if (file.exists(cache)) {
     return(readRDS(cache))
   }
   spec <- cfg$datasets[[dataset]]
-  train <- .generate_pool_part(dataset, spec, spec$n_train_max, cfg$seed)
-  explain <- .generate_pool_part(dataset, spec, spec$n_explain_max, cfg$seed + 9973L)
-  pool <- list(train = train, explain = explain, dataset = dataset)
+  if (is.null(spec)) {
+    stop("No dataset spec for '", dataset, "' in config$datasets")
+  }
+  family <- dataset_family(dataset)
+  train <- .generate_pool_part(family, spec, spec$n_train_max, cfg$seed)
+  explain <- .generate_pool_part(family, spec, spec$n_explain_max, cfg$seed + 9973L)
+  pool <- list(train = train, explain = explain, dataset = dataset, family = family)
   dir.create(dirname(cache), recursive = TRUE, showWarnings = FALSE)
   saveRDS(pool, cache)
   return(pool)
 }
 
 # Build x_train/x_explain/y_train for a specific run by subsetting the pool.
-# n_features only subsets columns for the numeric dataset; for mixed/categorical
+# n_features only subsets columns for the numeric family; for mixed/categorical
 # all features are used.
 build_run_data <- function(cfg, dataset, n_features, n_train, n_explain) {
   pool <- get_pool(cfg, dataset)
@@ -89,7 +96,7 @@ build_run_data <- function(cfg, dataset, n_features, n_train, n_explain) {
   y_train <- pool$train$y[seq_len(n_train)]
   y_explain <- pool$explain$y[seq_len(n_explain)]
 
-  if (dataset == "numeric") {
+  if (dataset_family(dataset) == "numeric") {
     cols <- paste0("num_", seq_len(n_features))
     x_train <- x_train[, ..cols]
     x_explain <- x_explain[, ..cols]
@@ -100,9 +107,21 @@ build_run_data <- function(cfg, dataset, n_features, n_train, n_explain) {
   ))
 }
 
-# Train (or load from cache) the prediction model for a run.
+# Partition feature names into groups of `group_size` consecutive features.
+# Returns a named list suitable for explain(group = ...). The last group may be
+# smaller if the feature count is not a multiple of group_size.
+build_groups <- function(feature_names, group_size = 2L) {
+  n <- length(feature_names)
+  idx <- split(seq_len(n), ceiling(seq_len(n) / group_size))
+  groups <- lapply(idx, function(ii) feature_names[ii])
+  names(groups) <- paste0("grp_", seq_along(groups))
+  return(groups)
+}
+
+# Train (or load from cache) the prediction model for a run. The model type is
+# chosen by dataset FAMILY (xgboost for numeric, ranger for mixed/categorical).
 get_model <- function(cfg, dataset, x_train, y_train) {
-  model_cfg <- cfg$models[[dataset]]
+  model_cfg <- cfg$models[[dataset_family(dataset)]]
   key <- digest_key(list(
     dataset = dataset, model = model_cfg, cols = colnames(x_train),
     n_train = nrow(x_train), seed = cfg$seed

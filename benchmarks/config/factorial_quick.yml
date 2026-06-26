@@ -23,10 +23,12 @@ factors:
   workers: [1, 4]
 
 fixed:
-  dataset: mixed       # ctree/arf support factors; gaussian skipped on mixed
+  dataset: mixed_fc_fl   # ctree/arf support factors; gaussian skipped on mixed
   n_features: 6
   max_n_coalitions: 128
   min_n_batches: 10
   backend: multisession
+  dt_threads: 1
   n_explain: 25
   iterative: false
+  group: false

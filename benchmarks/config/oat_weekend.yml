@@ -1,9 +1,10 @@
 # ============================================================================
 # oat_weekend.yml — One-Factor-At-A-Time study, full "weekend" scale
 #
-# Same design as oat_quick.yml but with the full set of approaches (incl. the
-# slow vaeac / regression methods), denser sweep points, and 3 replicates.
-# Expect a long (many-hours / overnight) run.
+# Same design as oat_quick.yml but with the FULL set of approaches (incl. the
+# slow vaeac / regression methods), denser sweep points, the full parallel
+# ceiling (up to 32 workers), and 3 replicates. Expect a long (overnight /
+# weekend) run.
 #
 # Merged on top of common.yml.
 # ============================================================================
@@ -11,49 +12,81 @@ design: oat
 scale: weekend
 
 replicates: 3
+warmup: true
 
-sweeps:
-  approach:
-    - independence
-    - gaussian
-    - copula
-    - empirical
-    - ctree
-    - arf
-    - categorical
-    - vaeac
-    - regression_separate
-    - regression_surrogate
-  n_features: [3, 5, 8, 10, 12]
+# Full set of approaches for the per-approach sweeps.
+approaches:
+  - independence
+  - gaussian
+  - copula
+  - empirical
+  - timeseries
+  - ctree
+  - arf
+  - categorical
+  - vaeac
+  - regression_separate
+  - regression_surrogate
+
+per_approach_sweeps:
+  dataset: true
   max_n_coalitions: [16, 32, 64, 128, 256, 512]
   n_MC_samples: [10, 50, 100, 250, 500, 1000]
-  min_n_batches: [1, 2, 5, 10, 25, 50]
   n_train: [100, 500, 1000, 5000, 20000]
   n_explain: [1, 10, 25, 50, 100]
+  n_features: [3, 5, 8, 10, 12, 20]   # 20 triggers the high_dim cap
+  iterative: true
+  group: true
 
-approach_sweep_datasets: [numeric, mixed, categorical]
+high_dim:
+  n_features: 20
+  max_n_coalitions: 4000
 
-grids_2d:
-  - name: threads_backend
-    workers: [1, 2, 4, 8, 16]
-    backend: [multisession, multicore]
-  - name: coalitions_mc
-    max_n_coalitions: [32, 128, 512]
-    n_MC_samples: [50, 250, 1000]
-  - name: train_approach
-    n_train: [100, 1000, 5000, 20000]
-    approach: [gaussian, empirical, ctree, arf]
+infra_sweeps:
+  min_n_batches: [1, 2, 5, 10, 25, 50]
+  dt_threads: [1, 2, 4, 8]
+
+# Full parallel ceiling for this machine (32 cores), with heavy batching.
+parallel_grid:
+  workers: [1, 2, 4, 8, 16, 32]
+  backend: [multisession, multicore]
+  min_n_batches: 32
 
 approach_param_sweeps:
   - approach: empirical
     dataset: numeric
     param: empirical.type
-    values: ["fixed_sigma", "AICc_each_k", "AICc_full"]
-  - approach: ctree
-    dataset: mixed
-    param: ctree.sample
-    values: [true, false]
-  - approach: arf
-    dataset: mixed
-    param: arf.num_trees
-    values: [30, 100, 300]
+    values: ["fixed_sigma", "AICc_each_k", "AICc_full", "independence"]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.depth
+    values: [2, 3, 4]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.width
+    values: [16, 32, 64]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.epochs
+    values: [3, 10, 30]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.latent_dim
+    values: [4, 8, 16]
+  - approach: vaeac
+    dataset: numeric
+    param: vaeac.n_vaeacs_initialize
+    values: [1, 2, 4]
+  - approach: regression_surrogate
+    dataset: numeric
+    param: regression.surrogate_n_comb
+    values: [8, 16, 32, 64]
+    variant: surrogate_none
+
+regression_variant_sweeps:
+  - approach: regression_separate
+    dataset: numeric
+    variants: [smooth_none, smooth_light, smooth_cv, xgb_none, xgb_light, xgb_cv]
+  - approach: regression_surrogate
+    dataset: numeric
+    variants: [surrogate_none]

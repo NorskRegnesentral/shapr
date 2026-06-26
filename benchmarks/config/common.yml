@@ -26,6 +26,22 @@ randomize_order: true
 # Seconds to idle between runs (lets the CPU cool a little between configs).
 cooldown_sec: 0.5
 
+# Hard wall-clock limit (seconds) for a single run, enforced at the bash level
+# by orchestrate.sh. A run exceeding this is killed and recorded with
+# status="timeout". Re-attempt timed-out runs with `--retry-timeouts`.
+timeout_sec: 600
+
+# Default dataset used when an approach does not support the all-numeric data
+# (factor-only / categorical approaches fall back here for OAT sweeps).
+mixed_default: mixed_fc_fl
+
+# Feature group size for the `group` sweep (features are chunked into groups of
+# this many consecutive columns).
+group_size: 2
+
+# max_n_coalitions budget for the iterative `source` run of an iterative pair.
+iterative_cap: 500
+
 # ---------------------------------------------------------------------------
 # Output locations (relative to the benchmarks/ folder).
 # ---------------------------------------------------------------------------
@@ -89,14 +105,38 @@ models:
 # ---------------------------------------------------------------------------
 datasets:
   numeric:
-    n_features_max: 12
+    n_features_max: 20
     n_train_max: 20000
     n_explain_max: 100
     rho: 0.5
-  mixed:
-    n_numeric: 6
-    n_factor: 4
-    factor_levels: 3
+  # Four mixed datasets spanning few/many factor COLUMNS x few/many factor
+  # LEVELS, all with 4 numeric columns. dataset_family() maps every mixed_*
+  # name to the "mixed" model family.
+  mixed_fc_fl:        # few factor columns, few levels
+    n_numeric: 4
+    n_factor: 2
+    factor_levels: 2
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_fc_ml:        # few factor columns, many levels
+    n_numeric: 4
+    n_factor: 2
+    factor_levels: 8
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_mc_fl:        # many factor columns, few levels
+    n_numeric: 4
+    n_factor: 8
+    factor_levels: 2
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_mc_ml:        # many factor columns, many levels
+    n_numeric: 4
+    n_factor: 8
+    factor_levels: 8
     n_train_max: 20000
     n_explain_max: 100
     rho: 0.5
@@ -130,6 +170,8 @@ baseline:
   max_batch_size: Inf
   workers: 1
   backend: multisession
+  dt_threads: 1
   n_train: 1000
   n_explain: 25
   iterative: false
+  group: false
