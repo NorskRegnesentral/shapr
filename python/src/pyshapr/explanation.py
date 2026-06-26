@@ -4,6 +4,8 @@ Shapr explanation class for exploring Shapley value results.
 
 from typing import Any
 
+import numpy as np
+
 from pyshapr._rutils import _importr
 
 
@@ -143,6 +145,36 @@ class Shapr:
         """
         return self._explanation_dict
 
+    @property
+    def _is_sage(self) -> bool:
+        """Whether this explanation holds SAGE values."""
+        sage = self._explanation_dict["internal"]["parameters"].get("sage", False)
+        return bool(np.ravel(sage)[0]) if sage is not None else False
+
+    def get_shap_values_est(self) -> Any:
+        """
+        Get the per-observation Shapley values computed alongside the SAGE values.
+
+        When `sage = True` in `explain()`, the regular per-observation Shapley value explanations of the
+        predictions are also computed and stored for inspection, while `shapley_values_est` holds the single
+        set of global SAGE values. This accessor returns those per-observation Shapley values.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The per-observation Shapley values, with one row per explained observation.
+
+        Raises
+        ------
+        ValueError
+            If the explanation was not computed with `sage = True`.
+        """
+        if not self._is_sage:
+            raise ValueError(
+                "`get_shap_values_est()` is only available for explanations computed with `sage=True`."
+            )
+        return self._explanation_dict["internal"]["output"]["shap_values_est"]
+
     def get_r_object(self) -> Any:
         """
         Get the original R shapr object.
@@ -264,6 +296,7 @@ class Shapr:
         idx : int, slice, or None, optional
             Indices of observations to include. If None, includes all observations.
             If int, includes only that observation. If slice, includes the range.
+            Ignored when the explanation holds SAGE values, since SAGE produces a single global explanation.
 
         Returns
         -------
@@ -283,6 +316,15 @@ class Shapr:
 
         shap_values_df = self._explanation_dict["shapley_values_est"]
         feature_names = shap_values_df.columns.drop(["explain_id", "none"])
+
+        # SAGE produces a single global loss explanation, so there is no per-observation data to attach
+        if self._is_sage:
+            return Explanation(
+                values=shap_values_df[feature_names].values,
+                base_values=shap_values_df["none"].values,
+                feature_names=feature_names.tolist(),
+            )
+
         data = self._explanation_dict["internal"]["data"]["x_explain"]
 
         if isinstance(idx, int):

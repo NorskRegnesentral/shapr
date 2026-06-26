@@ -4,9 +4,10 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import rpy2.rinterface as ri
 import rpy2.robjects as ro
 from rpy2.rinterface import NA, NULL
-from rpy2.robjects.vectors import BoolVector, ListVector, StrVector
+from rpy2.robjects.vectors import BoolVector, FloatVector, ListVector, StrVector
 
 from pyshapr._rutils import _importr
 from pyshapr.explanation import Shapr
@@ -18,10 +19,72 @@ utils = _importr("utils")
 base = _importr("base")
 stats = _importr("stats")
 
+# R closure factory that gives a Python loss function explicit two-argument formals,
+# so it passes shapr's `check_sage_args()` validation (which requires exactly two arguments).
+_make_loss_wrapper = ro.r("function(py_fn) function(y, pred) py_fn(y, pred)")
+
 
 def maybe_null(val: Any) -> Any:
     """Convert Python None to R NULL, otherwise return value as-is."""
     return val if val is not None else NULL
+
+
+def _wrap_loss_func(loss_func: Callable) -> tuple[Any, Any]:
+    """
+    Wrap a Python loss function so it can be called from R during the SAGE computation.
+
+    The function is first turned into an R-callable object via ``rpy2.rinterface.rternalize`` and then
+    embedded in an R closure with explicit ``y`` and ``pred`` arguments. The explicit two-argument signature
+    is required by shapr's ``check_sage_args()`` validation.
+
+    Parameters
+    ----------
+    loss_func : Callable
+        A Python callable taking two arguments (the true response and the model prediction) and returning a
+        single numeric loss value.
+
+    Returns
+    -------
+    tuple of (Any, Any)
+        The R function suitable for passing as ``sage_args$loss_func`` and the underlying rternalized object.
+        The caller must keep a reference to the latter alive for the whole computation, otherwise rpy2 may
+        garbage-collect the Python callable while R still holds a reference to it.
+    """
+
+    @ri.rternalize
+    def r_loss(y: Any, pred: Any) -> FloatVector:
+        return FloatVector([float(loss_func(np.asarray(y), np.asarray(pred)))])
+
+    return _make_loss_wrapper(r_loss), r_loss
+
+
+def _build_sage_args(sage_args: dict[str, Any] | None) -> tuple[Any, list[Any]]:
+    """
+    Convert the Python ``sage_args`` dict into an R list, wrapping a Python ``loss_func`` if provided.
+
+    Parameters
+    ----------
+    sage_args : dict or None
+        The user-supplied SAGE arguments. May contain the key ``"loss_func"`` with a Python callable.
+
+    Returns
+    -------
+    tuple of (Any, list)
+        An R ``ListVector`` mirroring ``sage_args``, and a list of Python-side objects that must be kept alive
+        for the duration of the computation (the rternalized loss callback, if any).
+    """
+    if sage_args is None:
+        return ro.ListVector({}), []
+
+    converted = dict(sage_args)
+    keepalive: list[Any] = []
+    loss_func = converted.get("loss_func")
+    if callable(loss_func):
+        wrapped, raw = _wrap_loss_func(loss_func)
+        converted["loss_func"] = wrapped
+        keepalive.append(raw)
+
+    return ListVector(converted), keepalive
 
 
 def explain(
@@ -44,6 +107,9 @@ def explain(
     extra_computation_args: dict[str, Any] | None = None,
     iterative_args: dict[str, Any] | None = None,
     output_args: dict[str, Any] | None = None,
+    sage: bool = False,
+    y_explain: np.ndarray | pd.Series | None = None,
+    sage_args: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> Shapr:
     """
@@ -108,6 +174,19 @@ def explain(
       Specifies the arguments for the iterative procedure.
     output_args: dict or None, optional
       Specifies certain arguments related to the output of the function.
+    sage: bool, optional
+      If `False` (default), `explain` computes Shapley value explanations of individual predictions. If `True`,
+      `explain` instead computes SAGE values (Shapley Additive Global importancE), which explain the global model
+      loss over the observations in `x_explain` rather than individual predictions.
+    y_explain: numpy.ndarray or pandas.Series or None, optional
+      Only used (and required) when `sage = True`. The true response/outcome values corresponding to the observations
+      in `x_explain`, used to evaluate the model loss when computing the SAGE values. Must be numeric and have the
+      same number of elements as there are rows in `x_explain`.
+    sage_args: dict or None, optional
+      Only used when `sage = True`. A dict of arguments controlling the SAGE computation. Currently supports the key
+      `"loss_func"`: a Python callable taking two arguments (the true response and the model prediction, in that
+      order) and returning a single numeric loss. If `None` (default) or omitted, logistic (cross-entropy) loss is
+      used for binary responses (values in 0/1) and mean squared error loss otherwise.
     **kwargs: Further arguments passed to specific approaches.
 
     Returns
@@ -167,6 +246,12 @@ def explain(
     else:
         extra_computation_args = ListVector(extra_computation_args)
 
+    # Convert the SAGE inputs to R: the response vector and the (optionally wrapped) loss function
+    r_y_explain = (
+        NULL if y_explain is None else FloatVector(np.asarray(y_explain, dtype=float).ravel())
+    )
+    r_sage_args, _sage_keepalive = _build_sage_args(sage_args)
+
     model_class = f"{type(model).__module__}.{type(model).__name__}"
 
     # Sets up and organizes input parameters
@@ -198,6 +283,9 @@ def explain(
         confounding=r_confounding,
         output_args=output_args,
         extra_computation_args=extra_computation_args,
+        sage=sage,
+        y_explain=r_y_explain,
+        sage_args=r_sage_args,
         init_time=init_time,
         is_python=True,
         model_class=model_class,
