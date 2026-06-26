@@ -61,7 +61,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION') }}
+          key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}
           restore-keys: |
             ${{ runner.os }}-r-release-shapr-
 
@@ -86,7 +86,16 @@ jobs:
 
       - name: Install R shapr package
         run: |
-          remotes::install_local(".", dependencies = FALSE, build_vignettes = FALSE)
+          if ("shapr" %in% rownames(installed.packages())) {
+            remove.packages("shapr")
+          }
+          remotes::install_local(
+            ".",
+            dependencies = FALSE,
+            build_vignettes = FALSE,
+            force = TRUE,
+            upgrade = "never"
+          )
         shell: Rscript {0}
 
       - name: Install Python pyshapr package for testing
