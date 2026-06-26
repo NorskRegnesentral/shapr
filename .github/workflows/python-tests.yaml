@@ -44,6 +44,11 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
+      - name: Configure R shared library path for rpy2
+        run: |
+          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
