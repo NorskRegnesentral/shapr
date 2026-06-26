@@ -191,7 +191,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-20 14:38:04 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-06-26 11:44:22 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -215,7 +215,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
+#> '/tmp/RtmpRUz5hs/shapr_obj_2411d2422e39ce.rds'
 #> 
 #> 
 #> 
@@ -240,7 +240,7 @@ print(explanation)
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 2.2 seconds, started 2026-01-20 14:38:04
+#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-06-26 11:44:22
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -250,7 +250,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
+#> '/tmp/RtmpRUz5hs/shapr_obj_2411d2422e39ce.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -269,6 +269,72 @@ plot(explanation)
 ```
 
 <img src="man/figures/README-basic_example-1.png" alt="" width="100%" />
+
+In addition to explaining individual predictions, `shapr` can compute
+global feature importance through SAGE (Shapley Additive Global
+importancE) values by setting `sage = TRUE` and providing the observed
+responses via `y_explain`. The loss defaults to log-loss for binary 0/1
+responses and the mean squared error otherwise, and a custom loss can be
+supplied through `sage_args`.
+
+``` r
+# Compute SAGE values explaining the model's global loss (MSE by default)
+sage_explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p0,
+  sage = TRUE,
+  y_explain = data[ind_x_explain, get(y_var)],
+  seed = 1
+)
+#> 
+#> ── Starting `shapr::explain()` at 2026-06-26 11:44:27 ──────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> 
+#> ── Explanation overview ──
+#> 
+#> 
+#> 
+#> • Model class: <xgboost>
+#> 
+#> • v(S) estimation class: Monte Carlo integration
+#> 
+#> • Approach: empirical
+#> 
+#> • Procedure: Non-iterative
+#> 
+#> • Number of Monte Carlo integration samples: 1000
+#> 
+#> • Number of feature-wise Shapley values: 4
+#> 
+#> • Number of observations to explain: 6
+#> 
+#> • Computations (temporary) saved at:
+#> '/tmp/RtmpRUz5hs/shapr_obj_2411d259f7219.rds'
+#> 
+#> 
+#> 
+#> ── Main computation started ──
+#> 
+#> 
+#> 
+#> ℹ Using 16 of 16 coalitions.
+
+# Print the SAGE values
+print(sage_explanation)
+#>    explain_id  none Solar.R  Wind  Temp Month
+#>         <int> <num>   <num> <num> <num> <num>
+#> 1:          1  -439   -49.3   174   166  58.4
+
+# Plot the SAGE values as a bar chart
+plot(sage_explanation, plot_type = "bar")
+```
+
+<img src="man/figures/README-sage_example-1.png" alt="" width="100%" />
 
 See Jullum et al. ([2025](#ref-jullum2025shapr)) (preprint available
 [here](https://arxiv.org/abs/2504.01842)) for a software paper with an

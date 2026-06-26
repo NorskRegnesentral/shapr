@@ -184,6 +184,31 @@ summary(explanation)
 plot(explanation)
 ```
 
+In addition to explaining individual predictions, `shapr` can compute global feature importance through SAGE
+(Shapley Additive Global importancE) values by setting `sage = TRUE` and providing the observed responses via
+`y_explain`. The loss defaults to log-loss for binary 0/1 responses and the mean squared error otherwise, and a
+custom loss can be supplied through `sage_args`.
+
+```{r sage_example, warning = FALSE}
+# Compute SAGE values explaining the model's global loss (MSE by default)
+sage_explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p0,
+  sage = TRUE,
+  y_explain = data[ind_x_explain, get(y_var)],
+  seed = 1
+)
+
+# Print the SAGE values
+print(sage_explanation)
+
+# Plot the SAGE values as a bar chart
+plot(sage_explanation, plot_type = "bar")
+```
+
 See @jullum2025shapr (preprint available [here](https://arxiv.org/abs/2504.01842)) for a software paper with an overview of the methodology and capabilities of the
 package (as of v1.0.8).
 See the [general usage vignette](https://norskregnesentral.github.io/shapr/articles/general_usage.html) for further
