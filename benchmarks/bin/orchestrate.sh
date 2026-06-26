@@ -76,8 +76,10 @@ RAM_METHOD="$(read_meta ram_method)"
 POLL_MS="$(read_meta poll_interval_ms)"
 COOLDOWN="$(read_meta cooldown_sec)"
 TIMEOUT="$(read_meta timeout_sec)"
+AGG_EVERY="$(read_meta aggregate_every)"
 RUN_ORDER="$(read_meta run_order)"
 [[ -n "$TIMEOUT" && "$TIMEOUT" != "0" ]] || TIMEOUT=600
+[[ "$AGG_EVERY" =~ ^[0-9]+$ ]] || AGG_EVERY=0
 
 # cgroup measurement needs systemd-run --user; fall back to poll if missing.
 if [[ "$RAM_METHOD" != "poll" ]] && ! command -v systemd-run >/dev/null 2>&1; then
@@ -85,7 +87,7 @@ if [[ "$RAM_METHOD" != "poll" ]] && ! command -v systemd-run >/dev/null 2>&1; th
   RAM_METHOD="poll"
 fi
 
-echo "Study '$STUDY': RAM='$RAM_METHOD', poll=${POLL_MS}ms, cooldown=${COOLDOWN}s, timeout=${TIMEOUT}s"
+echo "Study '$STUDY': RAM='$RAM_METHOD', poll=${POLL_MS}ms, cooldown=${COOLDOWN}s, timeout=${TIMEOUT}s, aggregate_every=${AGG_EVERY}"
 echo "Run order has $(wc -w <<<"$RUN_ORDER") runs."
 
 # --- Optionally clear previous timeout markers so they get retried ----------
@@ -211,8 +213,19 @@ EOF
 }
 
 # --- 3. Execute runs --------------------------------------------------------
+completed=0
 for id in $RUN_ORDER; do
   run_id "$id"
+  completed=$((completed + 1))
+
+  # Periodic re-aggregation so results.csv / summary.csv stay current during a
+  # long study (aggregate_every = 0 disables this).
+  if [[ "$AGG_EVERY" -gt 0 && $((completed % AGG_EVERY)) -eq 0 ]]; then
+    echo "[checkpoint] re-aggregating after $completed runs..."
+    "$RSCRIPT" "$RDIR/aggregate.R" --config "$CONFIG" >/dev/null 2>&1 \
+      || echo "[checkpoint] aggregate failed (continuing)."
+  fi
+
   if [[ -n "$COOLDOWN" && "$COOLDOWN" != "0" ]]; then
     sleep "$COOLDOWN"
   fi

@@ -258,6 +258,7 @@ main <- function() {
     poll_interval_ms = cfg$ram$poll_interval_ms,
     cooldown_sec = cfg$cooldown_sec,
     timeout_sec = cfg$timeout_sec %||% 600,
+    aggregate_every = cfg$aggregate_every %||% 0,
     run_order = run_order
   )
   jsonlite::write_json(meta, file.path(cfg$dir$results, "run_meta.json"),

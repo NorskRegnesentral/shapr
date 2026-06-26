@@ -26,10 +26,15 @@ randomize_order: true
 # Seconds to idle between runs (lets the CPU cool a little between configs).
 cooldown_sec: 0.5
 
+# Re-aggregate results.csv / summary.csv after every Nth completed run (so a
+# long study keeps an up-to-date combined CSV on disk). 0 disables periodic
+# aggregation (the final aggregate at the end always runs).
+aggregate_every: 10
+
 # Hard wall-clock limit (seconds) for a single run, enforced at the bash level
 # by orchestrate.sh. A run exceeding this is killed and recorded with
 # status="timeout". Re-attempt timed-out runs with `--retry-timeouts`.
-timeout_sec: 600
+timeout_sec: 300 #600
 
 # Default dataset used when an approach does not support the all-numeric data
 # (factor-only / categorical approaches fall back here for OAT sweeps).
