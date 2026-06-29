@@ -22,11 +22,14 @@
 #
 # Timeout handling: a run exceeding `timeout_sec` (from run_meta.json) is killed
 # and gets an <id>.json marker with status="timeout" so resume skips it. Use
-# `--retry-timeouts` to delete previous timeout markers and re-attempt them.
+# `--retry-timeouts` to delete previous timeout markers (and any dependents that
+# were skipped because their source timed out) and re-attempt them.
 #
 # Iterative pairs: a `dependent` run reuses the coalition budget the matching
 # `source` run actually consumed (read from the source's <id>.json) via
-# `--max-n-coalitions`.
+# `--max-n-coalitions`. If the source is missing or never recorded a usable
+# coalition budget (e.g. it timed out or errored), the dependent is marked
+# status="skipped_missing_dep" instead of being run with the invalid sentinel.
 # ============================================================================
 set -uo pipefail
 
@@ -90,12 +93,21 @@ fi
 echo "Study '$STUDY': RAM='$RAM_METHOD', poll=${POLL_MS}ms, cooldown=${COOLDOWN}s, timeout=${TIMEOUT}s, aggregate_every=${AGG_EVERY}"
 echo "Run order has $(wc -w <<<"$RUN_ORDER") runs."
 
-# --- Optionally clear previous timeout markers so they get retried ----------
+# --- Optionally clear timeout / cascade markers so they get retried ----------
+# Besides genuine timeouts we also clear dependents that were skipped because
+# their source timed out, and legacy sentinel `error` markers from the same
+# cause, so that retrying a source lets its dependent re-run too.
 if [[ "$RETRY_TIMEOUTS" == "true" ]]; then
   for j in "$RESULTS"/*.json; do
     [[ -f "$j" ]] || continue
     if grep -q '"status"[: ]*"timeout"' "$j"; then
       echo "Retrying previously timed-out run: $(basename "$j")"
+      rm -f "$j"
+    elif grep -q '"status"[: ]*"skipped_missing_dep"' "$j"; then
+      echo "Retrying previously skipped dependent: $(basename "$j")"
+      rm -f "$j"
+    elif grep -q 'dependent-pair sentinel' "$j"; then
+      echo "Retrying legacy sentinel-cascade error: $(basename "$j")"
       rm -f "$j"
     fi
   done
@@ -128,23 +140,43 @@ run_id() {
     return 0
   fi
 
-  # Iterative dependent: reuse the source run's used coalition budget.
+  # Iterative dependent: reuse the source run's used coalition budget. If the
+  # source result is missing or never recorded a usable coalition budget (it
+  # timed out / errored), the dependent cannot run with a meaningful budget, so
+  # mark it skipped rather than letting run_one error on the sentinel value.
   local extra_args=()
   local role cfrom
   role="$(grid_pair_role "$id")"
   cfrom="$(grid_coalitions_from "$id")"
   if [[ "$role" == "dependent" && -n "$cfrom" && "$cfrom" != "NA" ]]; then
     local src_json="$RESULTS/$cfrom.json"
+    local mnc=""
     if [[ -f "$src_json" ]]; then
-      local mnc
       mnc="$(sed -n 's/.*"used_n_coalitions"[: ]*\([0-9][0-9]*\).*/\1/p' "$src_json" | head -1)"
-      if [[ -n "$mnc" ]]; then
-        extra_args+=(--max-n-coalitions "$mnc")
-      else
-        echo "[id $id] WARN: source $cfrom has no used_n_coalitions; using grid value."
-      fi
+    fi
+    if [[ -n "$mnc" ]]; then
+      extra_args+=(--max-n-coalitions "$mnc")
     else
-      echo "[id $id] WARN: source result $src_json missing; using grid value."
+      local appr ds reason
+      appr="$(grid_approach "$id")"
+      ds="$(grid_dataset "$id")"
+      if [[ -f "$src_json" ]]; then
+        reason="source $cfrom has no used_n_coalitions (it timed out or errored)"
+      else
+        reason="source result $cfrom.json is missing"
+      fi
+      cat >"$out" <<EOF
+{
+  "id": $id,
+  "study": "$STUDY",
+  "approach": "$appr",
+  "dataset": "$ds",
+  "status": "skipped_missing_dep",
+  "message": "$reason"
+}
+EOF
+      echo "[id $id] SKIPPED: $reason"
+      return 0
     fi
   fi
 
