@@ -13,7 +13,8 @@ get_extra_comp_args_default(
   n_boot_samps = 100,
   vS_batching_method = "future",
   max_batch_size = 10,
-  min_n_batches = 10
+  min_n_batches = 10,
+  max_batch_cube_size = 1e+06
 )
 }
 \arguments{
@@ -66,6 +67,13 @@ A larger number requires more memory, but may have a slight computational advant
 \item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
 Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.}
+
+\item{max_batch_cube_size}{Numeric. The largest number of elements allowed in the dense per-batch sampling array
+built by the \code{gaussian} and \code{copula} approaches (with size \code{n_MC_samples * n_explain * coalitions_per_batch * n_features}). When a batch would exceed this, the batch size is automatically reduced (i.e. more batches are used)
+and a message is given. The default \code{1e6} keeps peak memory modest and tends to reduce
+runtime in high-dimensional settings, while staying far below the 32-bit indexing limit of the underlying
+\code{RcppArmadillo} arrays (which fails with \verb{Cube::init(): requested size is too large}). Raise it to allow larger
+batches, or lower it to use even smaller ones.}
 }
 \value{
 A list with the default values for the extra computation arguments.

@@ -6,6 +6,7 @@
 
 ### New features
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
+* Added the `extra_computation_args$max_batch_cube_size` argument, which caps the dense per-batch sampling array of the `gaussian` and `copula` approaches by automatically using more batches in high-dimensional settings, avoiding the `RcppArmadillo` `Cube::init(): requested size is too large` failure and often reducing runtime. Defaults to `1e6` elements. (branch: robustify-high-dim)
 * Added support for SAGE (Shapley Additive Global importancE) values via the new `sage`, `y_explain` and `sage_args` arguments to `explain()`. SAGE explains the model's global loss (using a `loss_func` in `sage_args`, defaulting to log-loss for binary 0/1 responses and MSE otherwise) instead of individual predictions, and is plotted with `plot()` using `plot_type = "bar"` or `"waterfall"`. (branch: sage)
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).

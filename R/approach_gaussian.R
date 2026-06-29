@@ -42,6 +42,9 @@ setup_approach.gaussian <- function(internal,
     internal$parameters$gaussian.cov_mat <- get_cov_mat(x_train)
   }
 
+  # Limit the per-batch sampling array size (uses more batches in high dimensions, see cap_dense_batch_size)
+  internal <- cap_dense_batch_size(internal)
+
   return(internal)
 }
 
