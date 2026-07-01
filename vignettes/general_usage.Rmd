@@ -1661,8 +1661,8 @@ are estimated with the same `approach` machinery as for ordinary Shapley values,
 iterative estimation are available for SAGE too. The resulting SAGE values are a single set of feature importances
 that sum to the difference between the loss of the full model and the loss of the baseline prediction `phi0`.
 
-To compute SAGE values, set `sage = TRUE` and provide the response vector `y_explain` corresponding to the rows of
-`x_explain`. The loss function is controlled through `sage_args$loss_func`; if not supplied, `shapr` uses logistic
+To compute SAGE values, set `scope = "global"` and provide the response vector `y_explain` corresponding to the rows of
+`x_explain`. The loss function is controlled through `extra_computation_args$global_loss_func`; if not supplied, `shapr` uses logistic
 (cross-entropy) loss for binary 0/1 responses and mean squared error otherwise.
 
 
@@ -1675,7 +1675,7 @@ sage_explanation <- explain(
   approach = "gaussian",
   phi0 = p0,
   y_explain = y_train,
-  sage = TRUE,
+  scope = "global",
   seed = 1
 )
 #> 

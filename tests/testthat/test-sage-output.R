@@ -14,7 +14,7 @@ test_that("output_sage_independence_lm", {
         phi0 = p0,
         seed = 1,
         iterative = FALSE,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric
       )
     },
@@ -45,7 +45,7 @@ test_that("output_sage_gaussian_xgboost", {
         phi0 = p0,
         seed = 1,
         iterative = FALSE,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric
       )
     },
@@ -67,7 +67,7 @@ test_that("output_sage_empirical_lm", {
         phi0 = p0,
         seed = 1,
         iterative = FALSE,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
         max_n_coalitions = 10
       )
@@ -90,7 +90,7 @@ test_that("output_sage_copula_lm_iter", {
         phi0 = p0,
         seed = 1,
         iterative = TRUE,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric
       )
     },
@@ -113,7 +113,7 @@ test_that("output_sage_groups_lm_copula", {
         approach = "copula",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
         group = groups
       )
@@ -139,9 +139,9 @@ test_that("output_sage_loss_mae", {
         approach = "copula",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
-        sage_args = list(loss_func = loss_mae)
+        extra_computation_args = list(global_loss_func = loss_mae)
       )
     },
     "output_sage_loss_mae"
@@ -167,9 +167,9 @@ test_that("output_sage_loss_mape", {
         approach = "copula",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
-        sage_args = list(loss_func = loss_mape)
+        extra_computation_args = list(global_loss_func = loss_mape)
       )
     },
     "output_sage_loss_mape"
@@ -198,7 +198,7 @@ test_that("output_sage_xgboost_binary", {
         approach = "gaussian",
         phi0 = p0_binary,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_binary
       )
     },

@@ -126,7 +126,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
-  sage <- internal$parameters$sage
+  sage <- internal$parameters$scope == "global"
 
   iter <- length(internal$iter_list)
 
@@ -251,7 +251,7 @@ bootstrap_shapley_inner <- function(X,
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
-  sage <- internal$parameters$sage
+  sage <- internal$parameters$scope == "global"
 
   if (type == "forecast") {
     # For forecast set to zero, as all coalitions except empty and grand can be sampled

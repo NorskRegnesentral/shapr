@@ -14,7 +14,7 @@
 #'  `"beeswarm"` summarizes the distribution of the Shapley values along the x-axis for all the features.
 #'  Each point gives the Shapley value of a given instance, where the points are colored by the feature value
 #'  of that instance.
-#'  For SAGE values (`sage = TRUE` in [explain()]), only `"bar"` and `"waterfall"` are supported, as SAGE
+#'  For SAGE values (`scope = "global"` in [explain()]), only `"bar"` and `"waterfall"` are supported, as SAGE
 #'  produces a single global loss-based explanation rather than per-observation prediction explanations.
 #' @param digits Integer.
 #' Number of significant digits to use in the feature description.
@@ -221,7 +221,7 @@ plot.shapr <- function(x,
   }
 
   # SAGE values are global loss explanations, for which only `bar` and `waterfall` plots make sense
-  sage <- isTRUE(x$internal$parameters$sage)
+  sage <- isTRUE(x$internal$parameters$scope == "global")
   if (sage && !plot_type %in% c("bar", "waterfall")) {
     cli::cli_abort(paste0(
       plot_type, " is an invalid plot type for SAGE values. Try plot_type='bar' or plot_type='waterfall'."
