@@ -245,7 +245,9 @@ def explain(
     if extra_computation_args is None:
         extra_computation_args = ro.ListVector({})
     else:
-        extra_computation_args, _loss_keepalive = _build_extra_computation_args(extra_computation_args)
+        extra_computation_args, _loss_keepalive = _build_extra_computation_args(
+            extra_computation_args
+        )
 
     # Convert the SAGE response vector to R
     r_y_explain = (

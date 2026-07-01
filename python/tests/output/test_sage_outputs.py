@@ -84,7 +84,12 @@ class TestSageOutputs:
 
     @pytest.mark.snapshot
     def test_sage_regressor_grouped_default_loss(
-        self, california_housing_data, trained_rf_regressor, regression_group_config, extract_shapley_outputs, snapshot
+        self,
+        california_housing_data,
+        trained_rf_regressor,
+        regression_group_config,
+        extract_shapley_outputs,
+        snapshot,
     ):
         """Test group-wise SAGE values for a regressor with the default (MSE) loss."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
