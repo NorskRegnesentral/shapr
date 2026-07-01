@@ -83,6 +83,29 @@ class TestSageOutputs:
         assert result == snapshot
 
     @pytest.mark.snapshot
+    def test_sage_regressor_grouped_default_loss(
+        self, california_housing_data, trained_rf_regressor, regression_group_config, extract_shapley_outputs, snapshot
+    ):
+        """Test group-wise SAGE values for a regressor with the default (MSE) loss."""
+        dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
+
+        explanation = explain(
+            model=trained_rf_regressor,
+            x_train=dfx_train,
+            x_explain=dfx_explain,
+            approach="independence",
+            phi0=dfy_train.mean().item(),
+            group=regression_group_config,
+            scope="global",
+            y_explain=dfy_explain.values.flatten(),
+            seed=1,
+        )
+
+        result = extract_shapley_outputs(explanation)
+
+        assert result == snapshot
+
+    @pytest.mark.snapshot
     def test_sage_classifier_default_loss(
         self, binary_iris_data, trained_rf_classifier, extract_shapley_outputs, snapshot
     ):
