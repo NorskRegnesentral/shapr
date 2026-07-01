@@ -168,7 +168,8 @@
 #'
 #' @param scope String.
 #' Either `"local"` (default) or `"global"`.
-#' If `"local"`, `explain` computes Shapley value explanations of individual predictions.
+#' If `"local"`, `explain` computes standard (local) Shapley values that explain individual predictions, i.e.
+#' SHAP (Shapley Additive exPlanations)-style explanations.
 #' If `"global"`, `explain` instead computes SAGE values (Shapley Additive Global importancE), which explain the
 #' global model loss over the observations in `x_explain` rather than individual predictions.
 #' See the details section and `vignette("general_usage", package = "shapr")` for more information.
@@ -232,10 +233,11 @@
 #' `shapr` reuses the exact same machinery as for regular Shapley values, but replaces the value function
 #' `v(S)` with the negative expected loss `-E[loss(y, E[f(x) | x_S])]`, averaged over the observations in
 #' `x_explain`. The conditional expectations are estimated with the chosen `approach`, so unlike the marginal
-#' sampling used by Covert et al. (2020), `shapr` accounts for feature dependence.
+#' sampling used by Covert et al. (2020), `shapr` can account for feature dependence.
 #' A single set of SAGE values is returned in `shapley_values_est`, with the corresponding standard deviations in
 #' `shapley_values_sd`. The regular per-observation Shapley value explanations of the predictions are always also
-#' computed and stored in `internal$output$shap_values_est` for inspection by advanced users.
+#' computed and can be accessed with `get_results(x, "shap_values_est")`, while `get_results(x, "sage_values_est")`
+#' returns the SAGE values.
 #'
 #' The package allows parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.

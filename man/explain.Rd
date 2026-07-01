@@ -193,7 +193,8 @@ See the help file of \code{\link[=get_output_args_default]{get_output_args_defau
 
 \item{scope}{String.
 Either \code{"local"} (default) or \code{"global"}.
-If \code{"local"}, \code{explain} computes Shapley value explanations of individual predictions.
+If \code{"local"}, \code{explain} computes standard (local) Shapley values that explain individual predictions, i.e.
+SHAP (Shapley Additive exPlanations)-style explanations.
 If \code{"global"}, \code{explain} instead computes SAGE values (Shapley Additive Global importancE), which explain the
 global model loss over the observations in \code{x_explain} rather than individual predictions.
 See the details section and \code{vignette("general_usage", package = "shapr")} for more information.}
@@ -441,10 +442,11 @@ The loss function is controlled via \code{extra_computation_args$global_loss_fun
 \code{shapr} reuses the exact same machinery as for regular Shapley values, but replaces the value function
 \code{v(S)} with the negative expected loss \code{-E[loss(y, E[f(x) | x_S])]}, averaged over the observations in
 \code{x_explain}. The conditional expectations are estimated with the chosen \code{approach}, so unlike the marginal
-sampling used by Covert et al. (2020), \code{shapr} accounts for feature dependence.
+sampling used by Covert et al. (2020), \code{shapr} can account for feature dependence.
 A single set of SAGE values is returned in \code{shapley_values_est}, with the corresponding standard deviations in
 \code{shapley_values_sd}. The regular per-observation Shapley value explanations of the predictions are always also
-computed and stored in \code{internal$output$shap_values_est} for inspection by advanced users.
+computed and can be accessed with \code{get_results(x, "shap_values_est")}, while \code{get_results(x, "sage_values_est")}
+returns the SAGE values.
 
 The package allows parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
