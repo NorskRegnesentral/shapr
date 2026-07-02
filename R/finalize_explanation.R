@@ -9,7 +9,7 @@
 finalize_explanation <- function(internal) {
   MSEv_uniform_comb_weights <- internal$parameters$output_args$MSEv_uniform_comb_weights
   type <- internal$parameters$type
-  sage <- internal$parameters$sage
+  sage <- internal$parameters$scope == "global"
   dt_vS <- internal$output$dt_vS
 
   # Extract iter (and delete the last temporary empty list of iter_list)

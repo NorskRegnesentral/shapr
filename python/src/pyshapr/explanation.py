@@ -148,14 +148,16 @@ class Shapr:
     @property
     def _is_sage(self) -> bool:
         """Whether this explanation holds SAGE values."""
-        sage = self._explanation_dict["internal"]["parameters"].get("sage", False)
-        return bool(np.ravel(sage)[0]) if sage is not None else False
+        scope = self._explanation_dict["internal"]["parameters"].get("scope")
+        if scope is None:
+            return False
+        return str(np.ravel(scope)[0]) == "global"
 
     def get_shap_values_est(self) -> Any:
         """
         Get the per-observation Shapley values computed alongside the SAGE values.
 
-        When `sage = True` in `explain()`, the regular per-observation Shapley value explanations of the
+        When `scope = "global"` in `explain()`, the regular per-observation Shapley value explanations of the
         predictions are also computed and stored for inspection, while `shapley_values_est` holds the single
         set of global SAGE values. This accessor returns those per-observation Shapley values.
 
@@ -167,11 +169,11 @@ class Shapr:
         Raises
         ------
         ValueError
-            If the explanation was not computed with `sage = True`.
+            If the explanation was not computed with `scope = "global"`.
         """
         if not self._is_sage:
             raise ValueError(
-                "`get_shap_values_est()` is only available for explanations computed with `sage=True`."
+                "`get_shap_values_est()` is only available for explanations computed with `scope='global'`."
             )
         return self._explanation_dict["internal"]["output"]["shap_values_est"]
 

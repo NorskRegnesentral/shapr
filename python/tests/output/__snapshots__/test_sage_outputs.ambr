@@ -41,3 +41,17 @@
     ''',
   })
 # ---
+# name: TestSageOutputs.test_sage_regressor_grouped_default_loss
+  dict({
+    'shapley_values_est': '''
+      |    |   explain_id |     none |      A |       B |       C |
+      |---:|-------------:|---------:|-------:|--------:|--------:|
+      |  1 |            1 | -2.83626 | 1.5561 | 0.83349 | 0.15251 |
+    ''',
+    'shapley_values_sd': '''
+      |    |   explain_id |   none |   A |   B |   C |
+      |---:|-------------:|-------:|----:|----:|----:|
+      |  1 |            1 |     -0 |   0 |   0 |   0 |
+    ''',
+  })
+# ---

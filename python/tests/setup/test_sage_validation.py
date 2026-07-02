@@ -2,7 +2,7 @@
 Unit tests for SAGE-specific input validation in pyshapr.
 
 These tests ensure that the explain function properly validates the SAGE-related
-inputs (`y_explain` and `sage_args`) and raises appropriate errors.
+inputs (`y_explain` and `extra_computation_args["global_loss_func"]`) and raises appropriate errors.
 """
 
 import numpy as np
@@ -15,7 +15,7 @@ class TestSageValidation:
     """Unit tests for SAGE input validation."""
 
     def test_sage_requires_y_explain(self, california_housing_data, trained_rf_regressor):
-        """Test that `sage=True` without `y_explain` raises an error."""
+        """Test that `scope="global"` without `y_explain` raises an error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         with pytest.raises((ValueError, Exception)):
@@ -25,7 +25,7 @@ class TestSageValidation:
                 x_explain=dfx_explain,
                 approach="independence",
                 phi0=dfy_train.mean().item(),
-                sage=True,
+                scope="global",
                 seed=1,
             )
 
@@ -42,13 +42,13 @@ class TestSageValidation:
                 x_explain=dfx_explain,
                 approach="independence",
                 phi0=dfy_train.mean().item(),
-                sage=True,
+                scope="global",
                 y_explain=y_explain_bad,
                 seed=1,
             )
 
     def test_sage_invalid_loss_func(self, california_housing_data, trained_rf_regressor):
-        """Test that a `loss_func` with the wrong number of arguments raises an error."""
+        """Test that a `global_loss_func` with the wrong number of arguments raises an error."""
         dfx_train, dfx_explain, dfy_train, dfy_explain = california_housing_data
 
         def bad_loss(y):  # only one argument; R requires exactly two
@@ -61,8 +61,8 @@ class TestSageValidation:
                 x_explain=dfx_explain,
                 approach="independence",
                 phi0=dfy_train.mean().item(),
-                sage=True,
+                scope="global",
                 y_explain=dfy_explain.values.flatten(),
-                sage_args={"loss_func": bad_loss},
+                extra_computation_args={"global_loss_func": bad_loss},
                 seed=1,
             )

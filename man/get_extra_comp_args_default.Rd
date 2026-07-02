@@ -14,7 +14,8 @@ get_extra_comp_args_default(
   vS_batching_method = "future",
   max_batch_size = 10,
   min_n_batches = 10,
-  max_batch_cube_size = 1e+06
+  max_batch_cube_size = 1e+06,
+  global_loss_func = NULL
 )
 }
 \arguments{
@@ -74,6 +75,14 @@ and a message is given. The default \code{1e6} keeps peak memory modest and tend
 runtime in high-dimensional settings, while staying far below the 32-bit indexing limit of the underlying
 \code{RcppArmadillo} arrays (which fails with \verb{Cube::init(): requested size is too large}). Raise it to allow larger
 batches, or lower it to use even smaller ones.}
+
+\item{global_loss_func}{Function or \code{NULL}.
+Only used when \code{scope = "global"} (i.e. when computing SAGE values).
+The loss function used to measure the model loss when computing the SAGE values.
+Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
+loss value.
+If \code{NULL} (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
+error loss otherwise.}
 }
 \value{
 A list with the default values for the extra computation arguments.

@@ -154,9 +154,9 @@ while `"copula"`, `"empirical"`, `"gaussian"`  and `"independence"` support nume
 ## SAGE Values
 
 `pyshapr` can also compute **SAGE** (Shapley Additive Global importancE) values, which explain the model's
-global loss rather than individual predictions. Pass `sage=True` together with the observed responses
+global loss rather than individual predictions. Pass `scope="global"` together with the observed responses
 `y_explain`. By default the loss is log-loss for binary 0/1 responses and MSE otherwise; a custom Python
-loss can be supplied via `sage_args={"loss_func": my_loss}`, where `my_loss(y, pred)` returns a single
+loss can be supplied via `extra_computation_args={"global_loss_func": my_loss}`, where `my_loss(y, pred)` returns a single
 number. The per-observation Shapley values computed alongside the SAGE values are available through
 `explanation.get_shap_values_est()`.
 
@@ -167,7 +167,7 @@ explanation = pyshapr.explain(
     x_explain=x_explain,
     approach="gaussian",
     phi0=y_train.mean().item(),
-    sage=True,
+    scope="global",
     y_explain=y_explain,
 )
 ```
