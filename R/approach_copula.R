@@ -39,7 +39,9 @@ setup_approach.copula <- function(internal, ...) {
   internal$data$copula.x_explain_gaussian <- as.data.table(x_explain_gaussian)
 
   # Limit the per-batch sampling array size (uses more batches in high dimensions, see cap_dense_batch_size)
-  internal <- cap_dense_batch_size(internal)
+  per_coalition_size <- as.numeric(internal$parameters$n_MC_samples) *
+    internal$parameters$n_explain * internal$parameters$n_features
+  internal <- cap_dense_batch_size(internal, per_coalition_size)
 
   return(internal)
 }

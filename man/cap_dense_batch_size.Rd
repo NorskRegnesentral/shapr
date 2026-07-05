@@ -4,21 +4,26 @@
 \alias{cap_dense_batch_size}
 \title{Cap the batch size to keep the dense per-batch sampling array within limits}
 \usage{
-cap_dense_batch_size(internal)
+cap_dense_batch_size(internal, per_coalition_size)
 }
 \arguments{
 \item{internal}{List.
 Holds all parameters, data, functions and computed objects used within \code{\link[=explain]{explain()}}
 The list contains one or more of the elements \code{parameters}, \code{data}, \code{objects}, \code{iter_list}, \code{timing_list},
 \code{main_timing_list}, \code{output}, and \code{iter_timing_list}.}
+
+\item{per_coalition_size}{Numeric. The number of dense array elements contributed by a single coalition for the
+current approach (i.e. the per-batch array size divided by \code{coalitions_per_batch}).}
 }
 \value{
 The (possibly modified) \code{internal} list.
 }
 \description{
-The \code{gaussian} and \code{copula} approaches build a dense per-batch array of size
-\code{n_MC_samples * n_explain * coalitions_per_batch * n_features}. With many features, explicands or coalitions, this
-can exceed the 32-bit indexing limit of the underlying \code{RcppArmadillo} arrays (failing with
+Some approaches build a dense per-batch array (an \code{RcppArmadillo} cube) whose size grows with the number of
+coalitions in the batch. For the \code{gaussian} and \code{copula} approaches this array has size
+\code{n_MC_samples * n_explain * coalitions_per_batch * n_features}, while the \code{empirical} approach builds a distance
+array of size \code{n_train * n_explain * coalitions_per_batch}. With many features, explicands, training observations
+or coalitions, this can exceed the 32-bit indexing limit of the underlying \code{RcppArmadillo} arrays (failing with
 \verb{Cube::init(): requested size is too large}) or simply demand excessive memory. This helper reduces
 \code{max_batch_size} (i.e. uses more batches) so that no single batch exceeds \code{max_batch_cube_size} elements. Note that
 parallelization (\code{workers > 1}) increases total memory because several batches are held at once, but each individual
