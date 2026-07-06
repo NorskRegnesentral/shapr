@@ -22,9 +22,9 @@ The (possibly modified) \code{internal} list.
 Some approaches build a dense per-batch array (an \code{RcppArmadillo} cube) whose number of elements grows with the
 number of coalitions in the batch. For the \code{gaussian} and \code{copula} approaches this array has a total of
 \code{n_MC_samples * n_explain * coalitions_per_batch * n_features} elements, while the \code{empirical} approach builds a
-distance array with \code{n_train * n_explain * coalitions_per_batch} elements. With many features, explicands, training observations
-or coalitions, this can exceed the 32-bit indexing limit of the underlying \code{RcppArmadillo} arrays (failing with
-\verb{Cube::init(): requested size is too large}) or simply demand excessive memory. This helper reduces
+distance array with \code{n_train * n_explain * coalitions_per_batch} elements. With many features, explicands, training
+observations or coalitions, this can exceed the 32-bit indexing limit of the underlying \code{RcppArmadillo} arrays
+(failing with \verb{Cube::init(): requested size is too large}) or simply demand excessive memory. This helper reduces
 \code{max_batch_size} (i.e. uses more batches) so that no single batch exceeds \code{max_batch_cube_size} elements. Note that
 parallelization (\code{workers > 1}) increases total memory because several batches are held at once, but each individual
 array still fits, so the limit is enforced per batch and is unaffected by the number of workers.
