@@ -821,12 +821,14 @@ make_waterfall_plot <- function(dt_plot,
     cli::cli_abort("'col' must be of length 2 when making waterfall plot.")
   }
 
-  plot_title <- if (sage) "Shapley value global loss explanation" else "Shapley value prediction explanation"
-  y_axis_label <- if (sage) "Loss" else "Prediction"
-
   if (sage) {
+    plot_title <- "Shapley value global loss explanation"
+    y_axis_label <- "Loss"
     # SAGE has no per-observation prediction, so reconstruct the total loss from the SAGE values
     dt_plot[, pred := expected + sum(phi), by = id]
+  } else {
+    plot_title <- "Shapley value prediction explanation"
+    y_axis_label <- "Prediction"
   }
 
   # waterfall plotting helpers
@@ -867,15 +869,12 @@ make_waterfall_plot <- function(dt_plot,
   n_obs <- length(dt_plot[, unique(id)])
   if (sage) {
     dt_plot[, pred_label := paste0("italic(L(f)) == ", format(pred, digits = digits + 1))]
-  } else {
-    dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
-  }
-  dt_plot[, pred_x := N_features + 0.8]
-  if (sage) {
     dt_plot[, phi0_label := paste0("italic(L(phi[0])) == ", format(expected, digits = digits + 1))]
   } else {
+    dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
     dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
   }
+  dt_plot[, pred_x := N_features + 0.8]
   dt_plot[, phi0_x := 0]
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +
