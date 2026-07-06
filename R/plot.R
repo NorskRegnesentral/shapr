@@ -221,8 +221,8 @@ plot.shapr <- function(x,
   }
 
   # SAGE values are global loss explanations, for which only `bar` and `waterfall` plots make sense
-  sage <- isTRUE(x$internal$parameters$scope == "global")
-  if (sage && !plot_type %in% c("bar", "waterfall")) {
+  is_global <- isTRUE(x$internal$parameters$scope == "global")
+  if (is_global && !plot_type %in% c("bar", "waterfall")) {
     cli::cli_abort(paste0(
       plot_type, " is an invalid plot type for SAGE values. Try plot_type='bar' or plot_type='waterfall'."
     ))
@@ -232,7 +232,7 @@ plot.shapr <- function(x,
   x$shapley_values_est <- x$shapley_values_est[, -"explain_id"]
 
   # Set default index_x_explain based on plot type
-  if (is.null(index_x_explain) && sage) {
+  if (is.null(index_x_explain) && is_global) {
     # SAGE produces a single global explanation, so there is only one "observation" to plot
     index_x_explain <- 1L
   }
@@ -308,7 +308,7 @@ plot.shapr <- function(x,
 
   # Converting and melting x_explain
   # For SAGE there is no single observation to describe, so we only show the feature names (no values)
-  if ((!is_groupwise || include_group_feature_means) && !sage) {
+  if ((!is_groupwise || include_group_feature_means) && !is_global) {
     desc_mat <- trimws(format(x$internal$data$x_explain, digits = digits))
     for (i in seq_len(ncol(desc_mat))) {
       desc_mat[, i] <- paste0(shap_names[i], " = ", desc_mat[, i])
@@ -326,7 +326,7 @@ plot.shapr <- function(x,
   # Data table for plotting
   dt_plot <- merge(dt_shap_long, dt_desc_long)
 
-  if (!sage) {
+  if (!is_global) {
     # Adding the predictions
     dt_pred <- data.table::data.table(id = dt_shap$id, pred = x$pred_explain)
     dt_plot <- merge(dt_plot, dt_pred, by = "id")
@@ -389,7 +389,7 @@ plot.shapr <- function(x,
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
     dt_plot[, end := cumsum(phi), by = id]
-    expected <- if (sage) x$internal$parameters$zero_loss else x$internal$parameters$phi0
+    expected <- if (is_global) x$internal$parameters$zero_loss else x$internal$parameters$phi0
     dt_plot[, start := c(expected, head(end, -1)), by = id]
     dt_plot[, phi_significant := format(phi, digits = digits), by = id]
 
@@ -415,9 +415,9 @@ plot.shapr <- function(x,
     breaks <- levels(droplevels(dt_plot[, unique_label])) # removes -1 if no rest and 0 if no none in plot
 
     if (plot_type == "bar") {
-      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage)
+      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, is_global)
     } else if (plot_type == "waterfall") {
-      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, sage)
+      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, is_global)
     }
   }
 
@@ -821,12 +821,14 @@ make_waterfall_plot <- function(dt_plot,
     cli::cli_abort("'col' must be of length 2 when making waterfall plot.")
   }
 
-  plot_title <- if (sage) "Shapley value global loss explanation" else "Shapley value prediction explanation"
-  y_axis_label <- if (sage) "Loss" else "Prediction"
-
   if (sage) {
+    plot_title <- "Shapley value global loss explanation"
+    y_axis_label <- "Loss"
     # SAGE has no per-observation prediction, so reconstruct the total loss from the SAGE values
     dt_plot[, pred := expected + sum(phi), by = id]
+  } else {
+    plot_title <- "Shapley value prediction explanation"
+    y_axis_label <- "Prediction"
   }
 
   # waterfall plotting helpers
@@ -867,15 +869,12 @@ make_waterfall_plot <- function(dt_plot,
   n_obs <- length(dt_plot[, unique(id)])
   if (sage) {
     dt_plot[, pred_label := paste0("italic(L(f)) == ", format(pred, digits = digits + 1))]
-  } else {
-    dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
-  }
-  dt_plot[, pred_x := N_features + 0.8]
-  if (sage) {
     dt_plot[, phi0_label := paste0("italic(L(phi[0])) == ", format(expected, digits = digits + 1))]
   } else {
+    dt_plot[, pred_label := paste0("italic(f(x)) == ", format(pred, digits = digits + 1))]
     dt_plot[, phi0_label := paste0("~phi[0]==", format(expected, digits = digits + 1))]
   }
+  dt_plot[, pred_x := N_features + 0.8]
   dt_plot[, phi0_x := 0]
 
   gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = unique_label, fill = sign)) +

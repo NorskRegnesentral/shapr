@@ -91,7 +91,7 @@ estimates of conditional Shapley values, which are critical for
 understanding how features truly contribute to predictions. In addition
 to local prediction explanations, `shapr` also supports global feature
 importance through SAGE (Shapley Additive Global importancE) values,
-computed by setting `sage = TRUE` in `explain()`.
+computed by setting `scope = "global"` in `explain()`.
 
 A basic example is provided below. Otherwise, we refer to the [pkgdown
 website](https://norskregnesentral.github.io/shapr/) and the vignettes
@@ -191,7 +191,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-26 11:44:22 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -215,7 +215,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpRUz5hs/shapr_obj_2411d2422e39ce.rds'
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
 #> 
 #> 
 #> 
@@ -240,7 +240,7 @@ print(explanation)
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-06-26 11:44:22
+#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -250,7 +250,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpRUz5hs/shapr_obj_2411d2422e39ce.rds'
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -272,10 +272,10 @@ plot(explanation)
 
 In addition to explaining individual predictions, `shapr` can compute
 global feature importance through SAGE (Shapley Additive Global
-importancE) values by setting `sage = TRUE` and providing the observed
-responses via `y_explain`. The loss defaults to log-loss for binary 0/1
-responses and the mean squared error otherwise, and a custom loss can be
-supplied through `sage_args`.
+importancE) values by setting `scope = "global"` and providing the
+observed responses via `y_explain`. The loss defaults to log-loss for
+binary 0/1 responses and the mean squared error otherwise, and a custom
+loss can be supplied through `extra_computation_args$global_loss_func`.
 
 ``` r
 # Compute SAGE values explaining the model's global loss (MSE by default)
@@ -285,12 +285,12 @@ sage_explanation <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
-  sage = TRUE,
+  scope = "global",
   y_explain = data[ind_x_explain, get(y_var)],
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-26 11:44:27 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -314,7 +314,7 @@ sage_explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpRUz5hs/shapr_obj_2411d259f7219.rds'
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'
 #> 
 #> 
 #> 

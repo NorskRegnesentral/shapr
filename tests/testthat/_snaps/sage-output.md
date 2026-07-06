@@ -34,13 +34,6 @@
       print({
         out <- code
       }, digits = digits)
-    Condition
-      Warning in `throw_err_or_depr_msg()`:
-      Passed unrecognized parameters: verbose. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'data' has been renamed to 'x'. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'label' has been renamed to 'y'. This warning will become an error in a future version.
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
@@ -245,13 +238,6 @@
       print({
         out <- code
       }, digits = digits)
-    Condition
-      Warning in `throw_err_or_depr_msg()`:
-      Passed unrecognized parameters: verbose. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'data' has been renamed to 'x'. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'label' has been renamed to 'y'. This warning will become an error in a future version.
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
@@ -278,4 +264,98 @@
          explain_id    none Solar.R    Wind   Temp     Month    Day
               <int>   <num>   <num>   <num>  <num>     <num>  <num>
       1:          1 -0.6916  0.1091 0.09325 0.3832 -0.006405 0.1034
+
+# output_sage_causal_lm_gaussian
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
+      * Approach: gaussian
+      * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 108
+      * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
+      * Components with confounding: {Solar.R, Wind}, {Temp}, {Month, Day}
+      
+      -- Main computation started --
+      
+      i Using 32 of 32 coalitions. 
+    Output
+         explain_id  none Solar.R  Wind  Temp  Month    Day
+              <int> <num>   <num> <num> <num>  <num>  <num>
+      1:          1 -1119   77.13 316.3 395.4 -43.55 -47.74
+
+# output_sage_asymmetric_conditional_lm_gaussian
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
+      * Approach: gaussian
+      * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 108
+      * Number of asymmetric coalitions: 8
+      * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
+      
+      -- Main computation started --
+      
+      i Using 8 of 8 coalitions. 
+    Output
+         explain_id  none Solar.R  Wind  Temp Month   Day
+              <int> <num>   <num> <num> <num> <num> <num>
+      1:          1 -1119  -22.11 423.6 273.5 18.65 3.925
+
+# output_sage_asymmetric_causal_lm_gaussian
+
+    Code
+      print({
+        out <- code
+      }, digits = digits)
+    Message
+      
+      -- Starting `shapr::explain()` -------------------------------------------------
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      
+      -- Explanation overview --
+      
+      * Model class: <lm>
+      * v(S) estimation class: Monte Carlo integration
+      * Approach: gaussian
+      * Procedure: Non-iterative
+      * Number of Monte Carlo integration samples: 5
+      * Number of feature-wise Shapley values: 5
+      * Number of observations to explain: 108
+      * Number of asymmetric coalitions: 8
+      * Causal ordering: {Solar.R, Wind}, {Temp}, {Month, Day}
+      * Components with confounding: {Solar.R, Wind}, {Temp}, {Month, Day}
+      
+      -- Main computation started --
+      
+      i Using 8 of 8 coalitions. 
+    Output
+         explain_id  none Solar.R  Wind  Temp Month   Day
+              <int> <num>   <num> <num> <num> <num> <num>
+      1:          1 -1119     156 356.5 162.4 18.68 3.923
 

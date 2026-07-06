@@ -448,6 +448,10 @@ A single set of SAGE values is returned in \code{shapley_values_est}, with the c
 computed and can be accessed with \code{get_results(x, "shap_values_est")}, while \code{get_results(x, "sage_values_est")}
 returns the SAGE values.
 
+Because SAGE reuses the regular Shapley value machinery (only the value function is replaced), \code{scope = "global"}
+also works together with grouping (\code{group}), causal Shapley values (\code{causal_ordering}/\code{confounding}), and asymmetric
+Shapley values (\code{asymmetric}). See \code{vignette("general_usage", package = "shapr")} for details.
+
 The package allows parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
 See the examples below.
