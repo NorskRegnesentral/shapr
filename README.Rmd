@@ -85,7 +85,7 @@ With features like parallelized computations, convergence detection, progress up
 shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values,
 which are critical for understanding how features truly contribute to predictions.
 In addition to local prediction explanations, `shapr` also supports global feature importance through SAGE
-(Shapley Additive Global importancE) values, computed by setting `sage = TRUE` in `explain()`.
+(Shapley Additive Global importancE) values, computed by setting `scope = "global"` in `explain()`.
 
 A basic example is provided below.
 Otherwise, we refer to the [pkgdown website](https://norskregnesentral.github.io/shapr/) and the vignettes there for details and further examples.
@@ -185,9 +185,9 @@ plot(explanation)
 ```
 
 In addition to explaining individual predictions, `shapr` can compute global feature importance through SAGE
-(Shapley Additive Global importancE) values by setting `sage = TRUE` and providing the observed responses via
+(Shapley Additive Global importancE) values by setting `scope = "global"` and providing the observed responses via
 `y_explain`. The loss defaults to log-loss for binary 0/1 responses and the mean squared error otherwise, and a
-custom loss can be supplied through `sage_args`.
+custom loss can be supplied through `extra_computation_args$global_loss_func`.
 
 ```{r sage_example, warning = FALSE}
 # Compute SAGE values explaining the model's global loss (MSE by default)
@@ -197,7 +197,7 @@ sage_explanation <- explain(
   x_train = x_train,
   approach = "empirical",
   phi0 = p0,
-  sage = TRUE,
+  scope = "global",
   y_explain = data[ind_x_explain, get(y_var)],
   seed = 1
 )
