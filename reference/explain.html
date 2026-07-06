@@ -92,6 +92,8 @@ For an overview of the methodology and capabilities of the package, see the soft
 <span>  extra_computation_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  output_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"local"</span>,</span>
+<span>  y_explain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -302,6 +304,24 @@ See the help file of <code><a href="get_iterative_args_default.html">get_iterati
 <dd><p>Named list.
 Specifies certain arguments related to the output of the function.
 See the help file of <code><a href="get_output_args_default.html">get_output_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg-scope">scope<a class="anchor" aria-label="anchor" href="#arg-scope"></a></dt>
+<dd><p>String.
+Either <code>"local"</code> (default) or <code>"global"</code>.
+If <code>"local"</code>, <code>explain</code> computes standard (local) Shapley values that explain individual predictions, i.e.
+SHAP (Shapley Additive exPlanations)-style explanations.
+If <code>"global"</code>, <code>explain</code> instead computes SAGE values (Shapley Additive Global importancE), which explain the
+global model loss over the observations in <code>x_explain</code> rather than individual predictions.
+See the details section and <code><a href="../articles/general_usage.html">vignette("general_usage", package = "shapr")</a></code> for more information.</p></dd>
+
+
+<dt id="arg-y-explain">y_explain<a class="anchor" aria-label="anchor" href="#arg-y-explain"></a></dt>
+<dd><p>Numeric vector.
+Only used (and required) when <code>scope = "global"</code>.
+The true response/outcome values corresponding to the observations in <code>x_explain</code>, used to evaluate the model loss
+when computing the SAGE values.
+Must be numeric and have the same number of elements as there are rows in <code>x_explain</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -539,13 +559,16 @@ This includes <code>vaeac.extra_parameters$epochs_initiation_phase</code>, where
     <p>Object of class <code>c("shapr", "list")</code>. Contains the following items:</p><dl><dt><code>shapley_values_est</code></dt>
 <dd><p>data.table with the estimated Shapley values with explained observation in the rows and
 features along the columns.
-The column <code>none</code> is the prediction not devoted to any of the features (given by the argument <code>phi0</code>)</p></dd>
+The column <code>none</code> is the prediction not devoted to any of the features (given by the argument <code>phi0</code>).
+If <code>scope = "global"</code>, this instead contains a single row with the estimated SAGE values, and the column <code>none</code>
+gives the baseline model loss <code>-loss(y_explain, phi0)</code>.</p></dd>
 
 <dt><code>shapley_values_sd</code></dt>
 <dd><p>data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.
 These are, by definition, 0 when all coalitions are used.
-Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is the default when <code>iterative = TRUE</code>.</p></dd>
+Only present when <code>extra_computation_args$compute_sd=TRUE</code>, which is the default when <code>iterative = TRUE</code>.
+If <code>scope = "global"</code>, this contains a single row with the standard deviations of the SAGE values.</p></dd>
 
 <dt><code>internal</code></dt>
 <dd><p>List with the different parameters, data, functions and other output used internally.</p></dd>
@@ -605,6 +628,23 @@ Causal Shapley values were proposed by
 <a href="https://proceedings.neurips.cc/paper/2020/file/32e54441e6382a7fbacbbbaf3c450059-Paper.pdf" class="external-link">
 Heskes et al. (2020)</a> as a way to explain the total effect of features
 on the prediction, taking into account their causal relationships, by adapting the sampling procedure in <code>shapr</code>.</p>
+<p>When <code>scope = "global"</code>, <code>explain</code> computes SAGE values (Shapley Additive Global importancE) as introduced by
+<a href="https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf" class="external-link">
+Covert et al. (2020)</a>.
+Rather than explaining individual predictions, SAGE values explain the global model loss by attributing the
+reduction in loss (relative to always predicting the baseline <code>phi0</code>) to each feature.
+The loss function is controlled via <code>extra_computation_args$global_loss_func</code>.
+<code>shapr</code> reuses the exact same machinery as for regular Shapley values, but replaces the value function
+<code>v(S)</code> with the negative expected loss <code>-E[loss(y, E[f(x) | x_S])]</code>, averaged over the observations in
+<code>x_explain</code>. The conditional expectations are estimated with the chosen <code>approach</code>, so unlike the marginal
+sampling used by Covert et al. (2020), <code>shapr</code> can account for feature dependence.
+A single set of SAGE values is returned in <code>shapley_values_est</code>, with the corresponding standard deviations in
+<code>shapley_values_sd</code>. The regular per-observation Shapley value explanations of the predictions are always also
+computed and can be accessed with <code>get_results(x, "shap_values_est")</code>, while <code>get_results(x, "sage_values_est")</code>
+returns the SAGE values.</p>
+<p>Because SAGE reuses the regular Shapley value machinery (only the value function is replaced), <code>scope = "global"</code>
+also works together with grouping (<code>group</code>), causal Shapley values (<code>causal_ordering</code>/<code>confounding</code>), and asymmetric
+Shapley values (<code>asymmetric</code>). See <code><a href="../articles/general_usage.html">vignette("general_usage", package = "shapr")</a></code> for details.</p>
 <p>The package allows parallelized computation with progress updates through the tightly connected
 <a href="https://future.futureverse.org/reference/future.html" class="external-link">future::future</a> and <a href="https://progressr.futureverse.org/reference/progressr.html" class="external-link">progressr::progressr</a> packages.
 See the examples below.
@@ -702,7 +742,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:42:48</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:09</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -715,7 +755,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae4312c0c0.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_624319c68484.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -731,7 +771,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:42:51</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:11</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -744,7 +784,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae340ad063.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_624338c92ec7.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -760,7 +800,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:42:53</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:12</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -773,7 +813,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae258c2a7e.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_624345a108c6.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -791,7 +831,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:42:54</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:13</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -804,7 +844,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae421825de.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_624315360deb.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -821,7 +861,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:42:57</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:15</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -834,7 +874,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">100</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae4271615c.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_62431ca6feaf.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -862,18 +902,18 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain2</span>, what <span class="op">=</span> <span class="st">"MSEv"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     MSEv MSEv_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   252    95.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   269    98.3</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain3</span>, what <span class="op">=</span> <span class="st">"MSEv"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     MSEv MSEv_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   236      79</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   219    74.1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Summary</span></span></span>
 <span class="r-in"><span><span class="va">summary1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explain1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">summary1</span> <span class="co"># Provides a nicely formatted summary of the explanation</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Summary of Shapley value explanation</span> <span style="color: #00BBBB;">────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computed with `shapr::explain()` in <span style="color: #00BB00;">3.3 seconds</span>, started <span style="color: #0000BB;">2026-06-24 10:42:48</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computed with `shapr::explain()` in <span style="color: #00BB00;">2.1 seconds</span>, started <span style="color: #0000BB;">2026-07-06 15:53:09</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Model class: <span style="color: #0000BB;">&lt;lm&gt;</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • v(S) estimation class: <span style="color: #0000BB;">Monte Carlo integration</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Approach: <span style="color: #0000BB;">empirical</span></span>
@@ -882,7 +922,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of coalitions used: <span style="color: #0000BB;">16</span> (of total <span style="color: #0000BB;">16</span>)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae4312c0c0.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_624319c68484.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── Estimated Shapley values </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    explain_id   none Solar.R   Wind   Temp  Month</span>
@@ -930,7 +970,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:43:01</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:18</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_groups = 4`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -944,7 +984,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">group-wise</span> Shapley values: <span style="color: #0000BB;">2</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Feature groups: <span style="font-style: italic;">A</span>: {<span style="color: #0000BB;">"Temp"</span>, <span style="color: #0000BB;">"Month"</span>}; <span style="font-style: italic;">B</span>: {<span style="color: #0000BB;">"Wind"</span>, <span style="color: #0000BB;">"Solar.R"</span>}</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae433becc1.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_62431058d3cc.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -979,7 +1019,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:43:05</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:19</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -991,13 +1031,13 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae541d896f.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_62437f371d48.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Using <span style="color: #0000BB;">16</span> of <span style="color: #0000BB;">16</span> coalitions. </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:43:08</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:21</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   therefore set to `2^n_features = 16`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -1009,7 +1049,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Procedure: <span style="color: #0000BB;">Non-iterative</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae3e2fccf9.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_6243f078b7f.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Main computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -1030,7 +1070,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span>  max_n_coalitions <span class="op">=</span> <span class="fl">12</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-06-24 10:43:09</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Starting `shapr::explain()` at </span><span style="color: #0000BB; font-weight: bold;">2026-07-06 15:53:22</span> <span style="color: #00BBBB;">──────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Explanation overview</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -1041,7 +1081,7 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of Monte Carlo integration samples: <span style="color: #0000BB;">1000</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of <span style="font-style: italic;">feature-wise</span> Shapley values: <span style="color: #0000BB;">4</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> • Number of observations to explain: <span style="color: #0000BB;">3</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmptBljQ0/shapr_obj_19ae34d6c75.rds</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • Computations (temporary) saved at: <span style="color: #0000BB;">/tmp/RtmpvaKfu3/shapr_obj_6243306daba0.rds</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB; font-weight: bold;">Iterative computation started</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -1059,9 +1099,9 @@ In World Conference on Explainable Artificial Intelligence (pp. 194-218). Spring
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explain_iterative</span>, what <span class="op">=</span> <span class="st">"shapley_sd"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    explain_id  none Solar.R  Wind  Temp Month</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          1     0   0.237  1.67  1.83 0.511</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          2     0   0.289  2.47  2.40 0.652</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          3     0   0.307  2.87  2.78 0.742</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          1     0   0.258  1.58  1.68 0.434</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          2     0   0.293  2.48  2.42 0.553</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          3     0   0.270  2.87  2.79 0.606</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Summary</span></span></span>
 <span class="r-in"><span><span class="co"># For iterative estimation, convergence info is also provided</span></span></span>

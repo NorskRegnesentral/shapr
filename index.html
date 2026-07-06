@@ -101,7 +101,7 @@
 <div class="section level2">
 <h2 id="the-package">The package<a class="anchor" aria-label="anchor" href="#the-package"></a>
 </h2>
-<p>The <code>shapr</code> R package implements an enhanced version of the Kernel SHAP method for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions.</p>
+<p>The <code>shapr</code> R package implements an enhanced version of the Kernel SHAP method for approximating Shapley values, with a strong focus on conditional Shapley values. The core idea is to remain completely model-agnostic while offering a variety of methods for estimating contribution functions, enabling accurate computation of conditional Shapley values across different feature types, dependencies, and distributions. The package also includes evaluation metrics to compare various approaches. With features like parallelized computations, convergence detection, progress updates, and extensive plotting options, shapr is a highly efficient and user-friendly tool, delivering precise estimates of conditional Shapley values, which are critical for understanding how features truly contribute to predictions. In addition to local prediction explanations, <code>shapr</code> also supports global feature importance through SAGE (Shapley Additive Global importancE) values, computed by setting <code>scope = "global"</code> in <code><a href="reference/explain.html">explain()</a></code>.</p>
 <p>A basic example is provided below. Otherwise, we refer to the <a href="https://norskregnesentral.github.io/shapr/">pkgdown website</a> and the vignettes there for details and further examples.</p>
 </div>
 <div class="section level2">
@@ -179,7 +179,7 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-01-20 14:38:04 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span></span>
 <span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -203,7 +203,7 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -228,7 +228,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Summary of Shapley value explanation ────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with `shapr::explain()` in 2.2 seconds, started 2026-01-20 14:38:04</span></span>
+<span><span class="co">#&gt; • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
@@ -238,7 +238,7 @@
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 16 (of total 16)</span></span>
 <span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Estimated Shapley values </span></span>
 <span><span class="co">#&gt;    explain_id   none Solar.R   Wind   Temp  Month</span></span>
@@ -255,6 +255,63 @@
 <span><span class="co"># Finally, we plot the resulting explanations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-basic_example-1.png" alt="" width="100%"></p>
+<p>In addition to explaining individual predictions, <code>shapr</code> can compute global feature importance through SAGE (Shapley Additive Global importancE) values by setting <code>scope = "global"</code> and providing the observed responses via <code>y_explain</code>. The loss defaults to log-loss for binary 0/1 responses and the mean squared error otherwise, and a custom loss can be supplied through <code>extra_computation_args$global_loss_func</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Compute SAGE values explaining the model's global loss (MSE by default)</span></span>
+<span><span class="va">sage_explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"empirical"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"global"</span>,</span>
+<span>  y_explain <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="va">ind_x_explain</span>, <span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">y_var</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span></span>
+<span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Explanation overview ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Approach: empirical</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
+<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span></span>
+<span><span class="co"># Print the SAGE values</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sage_explanation</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp Month</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1  -439   -49.3   174   166  58.4</span></span>
+<span></span>
+<span><span class="co"># Plot the SAGE values as a bar chart</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sage_explanation</span>, plot_type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-sage_example-1.png" alt="" width="100%"></p>
 <p>See Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>) (preprint available <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>) for a software paper with an overview of the methodology and capabilities of the package (as of v1.0.8). See the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html">general usage vignette</a> for further basic usage examples and brief introductions to the methodology. For more thorough information about the underlying methodology, see methodological papers Aas, Jullum, and Løland (<a href="#ref-aas2019explaining">2021</a>), Redelmeier, Jullum, and Aas (<a href="#ref-redelmeier2020explaining">2020</a>), Jullum, Redelmeier, and Aas (<a href="#ref-jullum2021efficient">2021</a>), Olsen et al. (<a href="#ref-olsen2022using">2022</a>), Olsen et al. (<a href="#ref-olsen2024comparative">2024</a>) and Olsen and Jullum (<a href="#ref-olsen2025improving">2025</a>). See also Sellereite and Jullum (<a href="#ref-sellereite2019shapr">2019</a>) for a very brief paper about a previous version (v0.1.1) of the package (with a different structure, syntax, and significantly less functionality).</p>
 </div>
 <div class="section level2">

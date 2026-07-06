@@ -163,6 +163,19 @@
 </ul><p><code>"arf"</code>, <code>"ctree"</code>, <code>"regression_separate"</code>, <code>"regression_surrogate"</code> and <code>"vaeac"</code> support mixed numerical/categorical feature sets, <code>"categorical"</code> supports categorical features only, while <code>"copula"</code>, <code>"empirical"</code>, <code>"gaussian"</code> and <code>"independence"</code> support numerical features only.</p>
 <hr></div>
 <div class="section level2">
+<h2 id="sage-values">SAGE Values<a class="anchor" aria-label="anchor" href="#sage-values"></a></h2>
+<p><code>pyshapr</code> can also compute <strong>SAGE</strong> (Shapley Additive Global importancE) values, which explain the model’s global loss rather than individual predictions. Pass <code>scope="global"</code> together with the observed responses <code>y_explain</code>. By default the loss is log-loss for binary 0/1 responses and MSE otherwise; a custom Python loss can be supplied via <code>extra_computation_args={"global_loss_func": my_loss}</code>, where <code>my_loss(y, pred)</code> returns a single number. The per-observation Shapley values computed alongside the SAGE values are available through <code>explanation.get_shap_values_est()</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>explanation <span class="op">=</span> pyshapr.explain(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    x_train<span class="op">=</span>x_train,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    x_explain<span class="op">=</span>x_explain,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    phi0<span class="op">=</span>y_train.mean().item(),</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    scope<span class="op">=</span><span class="st">"global"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    y_explain<span class="op">=</span>y_explain,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>)</span></code></pre></div>
+<hr></div>
+<div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
 <p>See the <a href="https://github.com/NorskRegnesentral/shapr/tree/master/python/examples" class="external-link">examples folder</a> on GitHub for runnable examples, including:</p>
 <ul><li>Basic usage with <code>scikit-learn</code> models</li>

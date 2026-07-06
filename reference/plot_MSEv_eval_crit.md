@@ -257,7 +257,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:45 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:53 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -270,13 +270,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae674d51fd.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_624337a1218b.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:45 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:54 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -289,13 +289,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 10
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19aee64571c.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_6243493ea610.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:46 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:54 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -308,13 +308,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae539563cb.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_6243356bb8e7.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:46 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:54 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -327,13 +327,13 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae2062549c.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_62437de23376.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:48 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:56 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -346,7 +346,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae7565f646.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_624332eaca73.rds
 #> 
 #> ── Main computation started ──
 #> 

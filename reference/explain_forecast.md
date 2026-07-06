@@ -498,7 +498,9 @@ Object of class `c("shapr", "list")`. Contains the following items:
   data.table with the estimated Shapley values with explained
   observation in the rows and features along the columns. The column
   `none` is the prediction not devoted to any of the features (given by
-  the argument `phi0`)
+  the argument `phi0`). If `scope = "global"`, this instead contains a
+  single row with the estimated SAGE values, and the column `none` gives
+  the baseline model loss `-loss(y_explain, phi0)`.
 
 - `shapley_values_sd`:
 
@@ -506,7 +508,9 @@ Object of class `c("shapr", "list")`. Contains the following items:
   reflecting the uncertainty in the coalition sampling part of the
   kernelSHAP procedure. These are, by definition, 0 when all coalitions
   are used. Only present when `extra_computation_args$compute_sd=TRUE`,
-  which is the default when `iterative = TRUE`.
+  which is the default when `iterative = TRUE`. If `scope = "global"`,
+  this contains a single row with the standard deviations of the SAGE
+  values.
 
 - `internal`:
 
@@ -644,7 +648,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-06-24 10:43:21 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-07-06 15:53:30 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -659,7 +663,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae73d45a.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_62434f173557.rds
 #> 
 #> ── Main computation started ──
 #> 

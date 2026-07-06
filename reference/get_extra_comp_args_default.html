@@ -62,7 +62,8 @@
 <span>  n_boot_samps <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  vS_batching_method <span class="op">=</span> <span class="st">"future"</span>,</span>
 <span>  max_batch_size <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  min_n_batches <span class="op">=</span> <span class="fl">10</span></span>
+<span>  min_n_batches <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  global_loss_func <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,6 +137,16 @@ A larger number requires more memory, but may have a slight computational advant
 <dd><p>Integer. The minimum number of batches to split the computation into within each iteration.
 Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.</p></dd>
+
+
+<dt id="arg-global-loss-func">global_loss_func<a class="anchor" aria-label="anchor" href="#arg-global-loss-func"></a></dt>
+<dd><p>Function or <code>NULL</code>.
+Only used when <code>scope = "global"</code> (i.e. when computing SAGE values).
+The loss function used to measure the model loss when computing the SAGE values.
+Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
+loss value.
+If <code>NULL</code> (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
+error loss otherwise.</p></dd>
 
 </dl></div>
     <div class="section level2">

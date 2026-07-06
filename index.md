@@ -77,7 +77,11 @@ various approaches. With features like parallelized computations,
 convergence detection, progress updates, and extensive plotting options,
 shapr is a highly efficient and user-friendly tool, delivering precise
 estimates of conditional Shapley values, which are critical for
-understanding how features truly contribute to predictions.
+understanding how features truly contribute to predictions. In addition
+to local prediction explanations, `shapr` also supports global feature
+importance through SAGE (Shapley Additive Global importancE) values,
+computed by setting `scope = "global"` in
+[`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md).
 
 A basic example is provided below. Otherwise, we refer to the [pkgdown
 website](https://norskregnesentral.github.io/shapr/) and the vignettes
@@ -182,7 +186,7 @@ explanation <- explain(
   seed = 1
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-01-20 14:38:04 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -206,7 +210,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #> 
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
 #> 
 #> 
 #> 
@@ -231,7 +235,7 @@ print(explanation)
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 2.2 seconds, started 2026-01-20 14:38:04
+#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -241,7 +245,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpUe11kD/shapr_obj_4794843bd8c8.rds'
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -260,6 +264,73 @@ plot(explanation)
 ```
 
 ![](reference/figures/README-basic_example-1.png)
+
+In addition to explaining individual predictions, `shapr` can compute
+global feature importance through SAGE (Shapley Additive Global
+importancE) values by setting `scope = "global"` and providing the
+observed responses via `y_explain`. The loss defaults to log-loss for
+binary 0/1 responses and the mean squared error otherwise, and a custom
+loss can be supplied through `extra_computation_args$global_loss_func`.
+
+``` r
+
+# Compute SAGE values explaining the model's global loss (MSE by default)
+sage_explanation <- explain(
+  model = model,
+  x_explain = x_explain,
+  x_train = x_train,
+  approach = "empirical",
+  phi0 = p0,
+  scope = "global",
+  y_explain = data[ind_x_explain, get(y_var)],
+  seed = 1
+)
+#> 
+#> ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+#>   therefore set to `2^n_features = 16`.
+#> 
+#> 
+#> ── Explanation overview ──
+#> 
+#> 
+#> 
+#> • Model class: <xgboost>
+#> 
+#> • v(S) estimation class: Monte Carlo integration
+#> 
+#> • Approach: empirical
+#> 
+#> • Procedure: Non-iterative
+#> 
+#> • Number of Monte Carlo integration samples: 1000
+#> 
+#> • Number of feature-wise Shapley values: 4
+#> 
+#> • Number of observations to explain: 6
+#> 
+#> • Computations (temporary) saved at:
+#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'
+#> 
+#> 
+#> 
+#> ── Main computation started ──
+#> 
+#> 
+#> 
+#> ℹ Using 16 of 16 coalitions.
+
+# Print the SAGE values
+print(sage_explanation)
+#>    explain_id  none Solar.R  Wind  Temp Month
+#>         <int> <num>   <num> <num> <num> <num>
+#> 1:          1  -439   -49.3   174   166  58.4
+
+# Plot the SAGE values as a bar chart
+plot(sage_explanation, plot_type = "bar")
+```
+
+![](reference/figures/README-sage_example-1.png)
 
 See Jullum et al. ([2025](#ref-jullum2025shapr)) (preprint available
 [here](https://arxiv.org/abs/2504.01842)) for a software paper with an

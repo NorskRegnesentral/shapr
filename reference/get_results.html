@@ -53,15 +53,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_results</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  what <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"calling_function"</span>, <span class="st">"proglang"</span>, <span class="st">"approach"</span>, <span class="st">"shapley_est"</span>, <span class="st">"shapley_sd"</span>,</span>
-<span>    <span class="st">"pred_explain"</span>, <span class="st">"MSEv"</span>, <span class="st">"MSEv_explicand"</span>, <span class="st">"MSEv_coalition"</span>, <span class="st">"iterative_info"</span>,</span>
-<span>    <span class="st">"iterative_shapley_est"</span>, <span class="st">"iterative_shapley_sd"</span>, <span class="st">"saving_path"</span>, <span class="st">"timing_summary"</span>,</span>
-<span>    <span class="st">"timing_details"</span>, <span class="st">"parameters"</span>, <span class="st">"x_train"</span>, <span class="st">"x_explain"</span>, <span class="st">"dt_vS"</span>, <span class="st">"dt_samp_for_vS"</span>,</span>
-<span>    <span class="st">"dt_used_coalitions"</span>, <span class="st">"dt_valid_causal_coalitions"</span>, <span class="st">"dt_coal_samp_info"</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_results</span><span class="op">(</span><span class="va">x</span>, what <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -75,15 +67,19 @@
 <dt id="arg-what">what<a class="anchor" aria-label="anchor" href="#arg-what"></a></dt>
 <dd><p>Character vector specifying one or more components to extract.
 Options:
-"calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
-"MSEv", "MSEv_explicand", "MSEv_coalition",
+"calling_function", "proglang", "approach", "scope", "shapley_est", "shapley_sd", "shap_values_est",
+"sage_values_est", "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 "saving_path",
 "timing_summary", "timing_details",
 "parameters", "x_train", "x_explain",
 "dt_vS", "dt_samp_for_vS",
 "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
-The default is to return all components. See details for what each component contains.</p></dd>
+The default returns the standard set of components. <code>sage_values_est</code> is never part of the default, since it is
+<code>NULL</code> for local explanations and identical to <code>shapley_est</code> for global (SAGE) ones. <code>shap_values_est</code> is
+included only for global explanations, where it holds the distinct per-observation decomposition; for local
+explanations it would duplicate <code>shapley_est</code> and is omitted. All components remain available on explicit
+request regardless of scope. See details for what each component contains.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -109,12 +105,25 @@ The allowed characters in <code>what</code> provides information as follows:</p>
 <dt><code>approach</code></dt>
 <dd><p>Approach used to estimate the conditional expectations.</p></dd>
 
+<dt><code>scope</code></dt>
+<dd><p>Explanation scope: <code>"local"</code> for standard per-observation Shapley values or <code>"global"</code> for
+SAGE values.</p></dd>
+
 <dt><code>shapley_est</code></dt>
 <dd><p>data.table with the estimated Shapley values.</p></dd>
 
 <dt><code>shapley_sd</code></dt>
 <dd><p>data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.</p></dd>
+
+<dt><code>shap_values_est</code></dt>
+<dd><p>data.table with the per-observation (local) Shapley value explanations of the
+predictions. Always available: when <code>scope = "local"</code> this equals <code>shapley_est</code>; when <code>scope = "global"</code>
+(SAGE) it holds the per-observation decomposition while <code>shapley_est</code> holds the SAGE values.</p></dd>
+
+<dt><code>sage_values_est</code></dt>
+<dd><p>data.table with the SAGE values (global feature importance). Only available when
+<code>scope = "global"</code> (identical to <code>shapley_est</code> in that case); <code>NULL</code> otherwise.</p></dd>
 
 <dt><code>pred_explain</code></dt>
 <dd><p>Numeric vector with the predictions for the explained observations.</p></dd>

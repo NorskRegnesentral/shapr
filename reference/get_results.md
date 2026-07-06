@@ -5,15 +5,7 @@ Extract Components from a Shapr Object
 ## Usage
 
 ``` r
-get_results(
-  x,
-  what = c("calling_function", "proglang", "approach", "shapley_est", "shapley_sd",
-    "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
-    "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary",
-    "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
-    "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"),
-  ...
-)
+get_results(x, what = NULL, ...)
 ```
 
 ## Arguments
@@ -25,14 +17,21 @@ get_results(
 - what:
 
   Character vector specifying one or more components to extract.
-  Options: "calling_function", "proglang", "approach", "shapley_est",
-  "shapley_sd", "pred_explain", "MSEv", "MSEv_explicand",
-  "MSEv_coalition", "iterative_info", "iterative_shapley_est",
-  "iterative_shapley_sd", "saving_path", "timing_summary",
-  "timing_details", "parameters", "x_train", "x_explain", "dt_vS",
-  "dt_samp_for_vS", "dt_used_coalitions", "dt_valid_causal_coalitions",
-  "dt_coal_samp_info". The default is to return all components. See
-  details for what each component contains.
+  Options: "calling_function", "proglang", "approach", "scope",
+  "shapley_est", "shapley_sd", "shap_values_est", "sage_values_est",
+  "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition",
+  "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
+  "saving_path", "timing_summary", "timing_details", "parameters",
+  "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
+  "dt_used_coalitions", "dt_valid_causal_coalitions",
+  "dt_coal_samp_info". The default returns the standard set of
+  components. `sage_values_est` is never part of the default, since it
+  is `NULL` for local explanations and identical to `shapley_est` for
+  global (SAGE) ones. `shap_values_est` is included only for global
+  explanations, where it holds the distinct per-observation
+  decomposition; for local explanations it would duplicate `shapley_est`
+  and is omitted. All components remain available on explicit request
+  regardless of scope. See details for what each component contains.
 
 - ...:
 
@@ -65,6 +64,11 @@ characters in `what` provides information as follows:
 
   Approach used to estimate the conditional expectations.
 
+- `scope`:
+
+  Explanation scope: `"local"` for standard per-observation Shapley
+  values or `"global"` for SAGE values.
+
 - `shapley_est`:
 
   data.table with the estimated Shapley values.
@@ -74,6 +78,20 @@ characters in `what` provides information as follows:
   data.table with the standard deviation of the Shapley values
   reflecting the uncertainty in the coalition sampling part of the
   kernelSHAP procedure.
+
+- `shap_values_est`:
+
+  data.table with the per-observation (local) Shapley value explanations
+  of the predictions. Always available: when `scope = "local"` this
+  equals `shapley_est`; when `scope = "global"` (SAGE) it holds the
+  per-observation decomposition while `shapley_est` holds the SAGE
+  values.
+
+- `sage_values_est`:
+
+  data.table with the SAGE values (global feature importance). Only
+  available when `scope = "global"` (identical to `shapley_est` in that
+  case); `NULL` otherwise.
 
 - `pred_explain`:
 

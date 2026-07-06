@@ -37,6 +37,8 @@ setup(
   confounding = NULL,
   output_args = list(),
   extra_computation_args = list(),
+  scope = "local",
+  y_explain = NULL,
   model_class,
   ...
 )
@@ -330,6 +332,26 @@ setup(
   the Shapley values. See the help file of
   [`get_extra_comp_args_default()`](https://norskregnesentral.github.io/shapr/reference/get_extra_comp_args_default.md)
   for description of the arguments and their default values.
+
+- scope:
+
+  String. Either `"local"` (default) or `"global"`. If `"local"`,
+  `explain` computes standard (local) Shapley values that explain
+  individual predictions, i.e. SHAP (Shapley Additive
+  exPlanations)-style explanations. If `"global"`, `explain` instead
+  computes SAGE values (Shapley Additive Global importancE), which
+  explain the global model loss over the observations in `x_explain`
+  rather than individual predictions. See the details section and
+  [`vignette("general_usage", package = "shapr")`](https://norskregnesentral.github.io/shapr/articles/general_usage.md)
+  for more information.
+
+- y_explain:
+
+  Numeric vector. Only used (and required) when `scope = "global"`. The
+  true response/outcome values corresponding to the observations in
+  `x_explain`, used to evaluate the model loss when computing the SAGE
+  values. Must be numeric and have the same number of elements as there
+  are rows in `x_explain`.
 
 - model_class:
 

@@ -43,7 +43,11 @@ plot(
   `"beeswarm"` summarizes the distribution of the Shapley values along
   the x-axis for all the features. Each point gives the Shapley value of
   a given instance, where the points are colored by the feature value of
-  that instance.
+  that instance. For SAGE values (`scope = "global"` in
+  [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)),
+  only `"bar"` and `"waterfall"` are supported, as SAGE produces a
+  single global loss-based explanation rather than per-observation
+  prediction explanations.
 
 - digits:
 
@@ -273,7 +277,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:28 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:37 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -286,7 +290,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae73f4b6b8.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_62434de67793.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -300,7 +304,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 
 
 #> 
-#> ── Starting `shapr::explain()` at 2026-06-24 10:43:38 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 15:53:46 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -313,7 +317,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/RtmptBljQ0/shapr_obj_19ae2571ebd8.rds
+#> • Computations (temporary) saved at: /tmp/RtmpvaKfu3/shapr_obj_62436108392e.rds
 #> 
 #> ── Main computation started ──
 #> 

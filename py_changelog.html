@@ -51,6 +51,13 @@
 <p>All notable changes to the Python <code>pyshapr</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
+<h2 id="unreleased">[Unreleased]<a class="anchor" aria-label="anchor" href="#unreleased"></a></h2>
+<div class="section level3">
+<h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<ul><li>Added support for computing SAGE values (Shapley Additive Global importancE) via the new <code><a href="reference/explain.html">explain()</a></code> arguments <code>scope</code> and <code>y_explain</code>. Set <code>scope="global"</code> to compute SAGE values. A custom Python loss function can be passed through <code>extra_computation_args={"global_loss_func": my_loss}</code> and is bridged into the R computation. Added the <code>Shapr.get_shap_values_est()</code> accessor for the per-observation Shapley values computed alongside the SAGE values, and made <code>Shapr.to_shap()</code> SAGE-aware (returns the single global loss explanation). (branch: sage)</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="id_051---2026-06-24">[0.5.1] - 2026-06-24<a class="anchor" aria-label="anchor" href="#id_051---2026-06-24"></a></h2>
 <div class="section level3">
 <h3 id="fixed">Fixed<a class="anchor" aria-label="anchor" href="#fixed"></a></h3>
@@ -68,7 +75,7 @@
 <div class="section level2">
 <h2 id="id_044---2026-06-23">[0.4.4] - 2026-06-23<a class="anchor" aria-label="anchor" href="#id_044---2026-06-23"></a></h2>
 <div class="section level3">
-<h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
+<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
 <ul><li>Added basic snapshot tests for <code>approach="arf"</code> on both numerical and mixed categorical feature sets.</li>
 <li>Added an <code>arf</code>/<code>vaeac</code> end-to-end example script for numerical and mixed categorical feature sets.</li>
 </ul></div>
@@ -105,7 +112,7 @@
 <div class="section level2">
 <h2 id="id_041---2025-12-22">[0.4.1] - 2025-12-22<a class="anchor" aria-label="anchor" href="#id_041---2025-12-22"></a></h2>
 <div class="section level3">
-<h3 id="added-1">Added<a class="anchor" aria-label="anchor" href="#added-1"></a></h3>
+<h3 id="added-2">Added<a class="anchor" aria-label="anchor" href="#added-2"></a></h3>
 <ul><li>
 <strong>NEW</strong>: <code>ShaprSummary</code> class for enhanced summary functionality
 <ul><li>Dedicated class for handling summary results with improved display and access methods</li>
@@ -121,7 +128,7 @@
 <div class="section level2">
 <h2 id="id_040---2025-11-28">[0.4.0] - 2025-11-28<a class="anchor" aria-label="anchor" href="#id_040---2025-11-28"></a></h2>
 <div class="section level3">
-<h3 id="added-2">Added<a class="anchor" aria-label="anchor" href="#added-2"></a></h3>
+<h3 id="added-3">Added<a class="anchor" aria-label="anchor" href="#added-3"></a></h3>
 <ul><li>
 <strong>NEW</strong>: <code>Shapr</code> class for exploration and analysis of explanation results
 <ul><li>Object-oriented interface for working with Shapley value explanations</li>
@@ -153,7 +160,7 @@
 <div class="section level2">
 <h2 id="id_030---2025-08-27">[0.3.0] - 2025-08-27<a class="anchor" aria-label="anchor" href="#id_030---2025-08-27"></a></h2>
 <div class="section level3">
-<h3 id="added-3">Added<a class="anchor" aria-label="anchor" href="#added-3"></a></h3>
+<h3 id="added-4">Added<a class="anchor" aria-label="anchor" href="#added-4"></a></h3>
 <ul><li>Publish <code>shaprpy</code> on PyPI</li>
 <li>Restructured the <code>shaprpy</code> package for improved modularity and maintainability</li>
 <li>Test suite with snapshot testing for output validation using syrupy</li>

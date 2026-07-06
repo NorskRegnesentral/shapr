@@ -36,6 +36,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/compute_shapley.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/compute_time.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/compute_vS.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/compute_vS_loss.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/convert_feature_name_to_idx.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/correction_matrix_cpp.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/create_coalition_table.html</loc></url>
@@ -83,10 +84,12 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/index.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/inv_gaussian_transform_cpp.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/lag_data.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/log_loss.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/mahalanobis_distance_cpp.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/mcar_mask_generator.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/memory_layer.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/model_checker.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/mse_loss.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/num_str.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/observation_impute.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/observation_impute_cpp.html</loc></url>
@@ -130,6 +133,7 @@
 <url><loc>https://norskregnesentral.github.io/shapr/reference/sample_combinations.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/sample_ctree.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/save_results.html</loc></url>
+<url><loc>https://norskregnesentral.github.io/shapr/reference/set_global_parameters.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/setup.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/setup_approach.html</loc></url>
 <url><loc>https://norskregnesentral.github.io/shapr/reference/shapley_setup.html</loc></url>

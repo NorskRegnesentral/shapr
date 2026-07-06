@@ -14,7 +14,8 @@ get_extra_comp_args_default(
   n_boot_samps = 100,
   vS_batching_method = "future",
   max_batch_size = 10,
-  min_n_batches = 10
+  min_n_batches = 10,
+  global_loss_func = NULL
 )
 ```
 
@@ -100,6 +101,16 @@ get_extra_comp_args_default(
   within each iteration. Larger numbers give more frequent progress
   updates. If parallelization is applied, this should be set no smaller
   than the number of parallel workers.
+
+- global_loss_func:
+
+  Function or `NULL`. Only used when `scope = "global"` (i.e. when
+  computing SAGE values). The loss function used to measure the model
+  loss when computing the SAGE values. Must take two arguments, the true
+  response and the model prediction (in that order), and return a single
+  numeric loss value. If `NULL` (default), logistic (cross-entropy) loss
+  is used for binary responses (values in 0/1) and mean squared error
+  loss otherwise.
 
 ## Value
 

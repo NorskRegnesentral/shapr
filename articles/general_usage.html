@@ -1875,6 +1875,111 @@ explanation object <code>ex</code> computed above.</p>
 <span><span class="co">#&gt; 14:           14   24.201   17.970   20.338   24.695   24.498   16.445</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="sage">SAGE: global feature importance<a class="anchor" aria-label="anchor" href="#sage"></a>
+</h2>
+<p>The Shapley value explanations described above are <em>local</em>:
+they explain a single prediction at a time. Sometimes we are instead
+interested in a <em>global</em> measure of how much each feature
+contributes to the overall predictive performance of the model. SAGE
+(Shapley Additive Global importancE, <a href="https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf" class="external-link">Covert
+et al. (2020)</a>) provides exactly this, by applying the Shapley value
+framework to a model <em>loss</em> rather than to the prediction
+itself.</p>
+<p>Concretely, the value of a coalition
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+becomes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>−</mi><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><mi>L</mi><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo>,</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">v(S) = -\mathbb{E}[L(y, f(x_S))]</annotation></semantics></math>,
+the (negative) expected loss of the model when only the features in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+are known. The conditional expectations
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false" form="prefix">[</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><msub><mi>x</mi><mi>S</mi></msub><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">f(x_S) = E[f(x)\mid x_S]</annotation></semantics></math>
+are estimated with the same <code>approach</code> machinery as for
+ordinary Shapley values, so all approaches, groups and iterative
+estimation are available for SAGE too. The resulting SAGE values are a
+single set of feature importances that sum to the difference between the
+loss of the full model and the loss of the baseline prediction
+<code>phi0</code>.</p>
+<p>To compute SAGE values, set <code>scope = "global"</code> and provide
+the response vector <code>y_explain</code> corresponding to the rows of
+<code>x_explain</code>. The loss function is controlled through
+<code>extra_computation_args$global_loss_func</code>; if not supplied,
+<code>shapr</code> uses logistic (cross-entropy) loss for binary 0/1
+responses and mean squared error otherwise.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Compute SAGE values explaining the model's global mean squared error over the training data</span></span>
+<span><span class="va">sage_explanation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
+<span>  model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>  x_explain <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  x_train <span class="op">=</span> <span class="va">x_train</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
+<span>  phi0 <span class="op">=</span> <span class="va">p0</span>,</span>
+<span>  y_explain <span class="op">=</span> <span class="va">y_train</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"global"</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-24 14:45:26 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Explanation overview ──</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Approach: gaussian</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Number of observations to explain: 105</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpbjHlWY/shapr_obj_1670a1272246d5.rds'</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Main computation started ──</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Using 32 of 32 coalitions.</span></span>
+<span></span>
+<span><span class="co"># The estimated SAGE values (a single, global explanation)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sage_explanation</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp  Month   Day</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1 -1136     120   490   496 -0.798  28.2</span></span>
+<span></span>
+<span><span class="co"># SAGE values are visualized with bar and waterfall plots</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sage_explanation</span>, plot_type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure_general_usage/sage-1.webp"></p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sage_explanation</span>, plot_type <span class="op">=</span> <span class="st">"waterfall"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure_general_usage/sage-2.webp"></p>
+<p>The ordinary per-observation Shapley value explanations of the
+predictions are still computed and stored alongside the SAGE values in
+<code>sage_explanation$internal$output$shap_values_est</code>, in case
+they are of interest.</p>
+<p>Since SAGE reuses the regular Shapley value machinery and only swaps
+out the value function, <code>scope = "global"</code> also works
+together with the grouping, causal and asymmetric functionality
+described elsewhere in this vignette and in the <a href="asymmetric_causal.html">asymmetric and causal Shapley values</a>
+vignette. Passing <code>group</code> gives one global SAGE value per
+group, while passing <code>causal_ordering</code> (optionally with
+<code>confounding</code>) and/or <code>asymmetric = TRUE</code>
+attributes the global loss reduction according to the specified
+(partial) causal ordering. These causal and asymmetric SAGE combinations
+are a natural extension of the SAGE methodology rather than variants
+described in the original SAGE paper.</p>
+</div>
+<div class="section level2">
 <h2 id="para">Parallelization<a class="anchor" aria-label="anchor" href="#para"></a>
 </h2>
 <p>The <code>shapr</code> package supports parallelization of the
@@ -1922,7 +2027,7 @@ parallel sessions/workers. Parallelization also increases the memory
 consumption proportionally, so you may want to limit the number of
 workers for that reason too. Below is a basic example of a
 parallelization with two workers.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="va">old_future_plan</span> <span class="op">&lt;-</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">old_future_plan</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -2024,7 +2129,7 @@ options available with <code>progressr</code>, see the
 <code>progressr</code> <a href="https://progressr.futureverse.org/articles/progressr-01-intro.html" class="external-link">vignette</a>.
 A full code example of using <code>progressr</code> with
 <code>shapr</code> is shown below:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span><span class="fu">progressr</span><span class="fu">::</span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span>global <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://progressr.futureverse.org/reference/handlers.html" class="external-link">handlers</a></span><span class="op">(</span><span class="st">"cli"</span><span class="op">)</span></span>
@@ -2077,7 +2182,7 @@ and should thus not be part of the vector.</p>
 four features, using <code>"empirical", "copula"</code> and
 <code>"gaussian"</code> when conditioning on respectively 1, 2 and 3
 features.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
@@ -2156,7 +2261,7 @@ features.</p>
 <p>As a second example using <code>"ctree"</code> to condition on 1 and
 2 features, and <code>"empirical"</code> when conditioning on 3
 features:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -2208,7 +2313,7 @@ features instead of single features, see (<span class="citation">Jullum
 et al. (2021)</span>) for intuition and real-world examples. Explaining
 predictions in terms of groups of features is very easy using
 <code>shapr</code>:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the feature groups</span></span>
 <span><span class="va">group_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  A <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Temp"</span>, <span class="st">"Month"</span><span class="op">)</span>,</span>
@@ -2328,7 +2433,7 @@ these functions and a minimal version which skips the
 <code>get_model_specs</code> function. We do this for the
 <code>gbm</code> model class from the <code>gbm</code> package, fitted
 to the same airquality data set as used above.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm" class="external-link">gbm</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loaded gbm 2.2.3</span></span>
 <span><span class="co">#&gt; This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3</span></span>
@@ -2417,7 +2522,7 @@ to the same airquality data set as used above.</p>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_general_usage/custom-1.webp"></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="co">#### Minimal version of the custom model setup ####</span></span>
@@ -2479,7 +2584,7 @@ below. Note that we can replace <code>xgboost</code> (i.e.,
 <code><a href="https://parsnip.tidymodels.org/reference/boost_tree.html" class="external-link">parsnip::boost_tree</a></code>) with any other fitted
 <code>tidymodels</code> model in the <code>workflows</code> procedure
 outlined below.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Fitting a basic xgboost model to the training data using tidymodels</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co"># Set the same seed as above</span></span>
 <span><span class="va">all_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="va">x_var</span><span class="op">)</span></span>
@@ -2579,7 +2684,7 @@ the possible extra parameters to the <code>vaeac</code> approach. The
 main parameters are directly entered to the <code><a href="../reference/explain.html">explain()</a></code>
 function, while the extra parameters are included in a named list called
 <code>vaeac.extra_parameters</code>.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_vaeac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -2629,7 +2734,7 @@ function, while the extra parameters are included in a named list called
 <code>vaeac</code> model and see that <code>vaeac.epochs = 3</code> is
 likely too few epochs, as it still seems like the <code>vaeac</code>
 model is learning.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span><span class="op">)</span>, plot_type <span class="op">=</span> <span class="st">"method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_general_usage/vaeac-plot-1-1.webp"></p>
@@ -2651,7 +2756,7 @@ and progress updates simultaneously, then the estimated timer remaining
 will obviously be incorrect if early stopping is applied. Furthermore, a
 value of <code>2</code> is too low for real world applications, but we
 set it so low here to make the vignette faster to build.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_vaeac_early_stop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  x_explain <span class="op">=</span> <span class="va">x_explain</span>,</span>
@@ -2700,7 +2805,7 @@ set it so low here to make the vignette faster to build.</p>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
 <p>Can compare with the previous version and see that the results are
 more stable now.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Look at the training and validation errors.</span></span>
 <span><span class="fu"><a href="../reference/plot_vaeac_eval_crit.html">plot_vaeac_eval_crit</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span>,</span>
@@ -2710,7 +2815,7 @@ more stable now.</p>
 <p>Can also compare the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">MSE_{v}</annotation></semantics></math>
 evaluation scores.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_MSEv_eval_crit.html">plot_MSEv_eval_crit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Vaeac 3 epochs"</span> <span class="op">=</span> <span class="va">explanation_vaeac</span>, <span class="st">"Vaeac early stopping"</span> <span class="op">=</span> <span class="va">explanation_vaeac_early_stop</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_general_usage/vaeac-plot-3-1.webp"></p>
 </div>
@@ -2727,7 +2832,7 @@ the path to the intermediately saved results. The latter is found at
 <code>SHAPR_OBJ$saving_path</code>, defaults to a temporary folder, and
 is updated after each iteration. This can be particularly handy for
 long-running computations.</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First we run the computation with the iterative estimation procedure for a limited</span></span>
 <span><span class="co"># number of coalition samples</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
@@ -2928,7 +3033,7 @@ application.</p>
 it may be more interesting to explain the impact of each variable,
 rather than each lag of each variable. This can be done by setting
 <code>group_lags = TRUE</code>.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate time series data with AR(1)-structure.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">data_ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/arima.sim.html" class="external-link">arima.sim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, ar <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span></span>
@@ -3015,7 +3120,7 @@ also have an impact on that of the day after tomorrow.</p>
 <code>model_ar_temp</code>. This model is then used to make a forecast
 of the temperature of the day that comes after the last day in the data,
 this forecast starts from index 153.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_ts2</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">model_ar_temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ar.html" class="external-link">ar</a></span><span class="op">(</span><span class="va">data_ts2</span><span class="op">$</span><span class="va">Temp</span>, order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -3048,7 +3153,7 @@ setting <code>group_lags</code> to <code>FALSE</code>. This means that
 lag 1 and 2 will be explained separately. Grouping lags may be more
 interesting to do in a model with multiple variables, as it is then
 possible to explain each variable separately.</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_forecast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
 <span>  y <span class="op">=</span> <span class="va">data_ts2</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>
@@ -3113,7 +3218,7 @@ Since the exogenous regressor must be available for the predicted time
 points, the model is just fit on the 151 first observations, leaving two
 observations of <code>Wind</code> to be used as exogenous values during
 the prediction phase.</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_ts3</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">data_fit</span> <span class="op">&lt;-</span> <span class="va">data_ts3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">151</span><span class="op">)</span>, <span class="op">]</span></span>
@@ -3137,7 +3242,7 @@ argument <code>xreg</code>, and <code>explain_xreg_lags</code> is set to
 possible for <code>shapr</code> to not only explain the effect of the
 first lag of the exogenous variable, but also the contemporary effect
 during the forecasting period.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">explanation_forecast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain_forecast.html">explain_forecast</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model_ar_temp</span>,</span>
 <span>  y <span class="op">=</span> <span class="va">data_fit</span><span class="op">[</span>, <span class="st">"Temp"</span><span class="op">]</span>,</span>

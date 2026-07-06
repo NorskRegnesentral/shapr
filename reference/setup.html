@@ -85,6 +85,8 @@
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  extra_computation_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  scope <span class="op">=</span> <span class="st">"local"</span>,</span>
+<span>  y_explain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">model_class</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -352,6 +354,24 @@ See the help file of <code><a href="get_output_args_default.html">get_output_arg
 <dd><p>Named list.
 Specifies extra arguments related to the computation of the Shapley values.
 See the help file of <code><a href="get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code> for description of the arguments and their default values.</p></dd>
+
+
+<dt id="arg-scope">scope<a class="anchor" aria-label="anchor" href="#arg-scope"></a></dt>
+<dd><p>String.
+Either <code>"local"</code> (default) or <code>"global"</code>.
+If <code>"local"</code>, <code>explain</code> computes standard (local) Shapley values that explain individual predictions, i.e.
+SHAP (Shapley Additive exPlanations)-style explanations.
+If <code>"global"</code>, <code>explain</code> instead computes SAGE values (Shapley Additive Global importancE), which explain the
+global model loss over the observations in <code>x_explain</code> rather than individual predictions.
+See the details section and <code><a href="../articles/general_usage.html">vignette("general_usage", package = "shapr")</a></code> for more information.</p></dd>
+
+
+<dt id="arg-y-explain">y_explain<a class="anchor" aria-label="anchor" href="#arg-y-explain"></a></dt>
+<dd><p>Numeric vector.
+Only used (and required) when <code>scope = "global"</code>.
+The true response/outcome values corresponding to the observations in <code>x_explain</code>, used to evaluate the model loss
+when computing the SAGE values.
+Must be numeric and have the same number of elements as there are rows in <code>x_explain</code>.</p></dd>
 
 
 <dt id="arg-model-class">model_class<a class="anchor" aria-label="anchor" href="#arg-model-class"></a></dt>
