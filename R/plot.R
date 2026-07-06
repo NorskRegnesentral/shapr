@@ -415,9 +415,9 @@ plot.shapr <- function(x,
     breaks <- levels(droplevels(dt_plot[, unique_label])) # removes -1 if no rest and 0 if no none in plot
 
     if (plot_type == "bar") {
-      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, sage)
+      gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, is_global)
     } else if (plot_type == "waterfall") {
-      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, sage)
+      gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, is_global)
     }
   }
 
