@@ -161,15 +161,12 @@ compute_shapley <- function(internal, dt_vS) {
     }
 
     dt_kshap <- cbind(internal$parameters$output_labels, rbindlist(kshap_list, fill = TRUE))
-  } else if (sage) {
+  } else {
     # SAGE: the value function is the negative model loss for each coalition, averaged over the explained
     # observations. Applying the kernelSHAP weight matrix then yields a single set of global SAGE values.
-    vS_loss <- compute_vS_loss(dt_vS, internal)
-    kshap <- t(W %*% vS_loss)
-    dt_kshap <- data.table::as.data.table(kshap)
-    colnames(dt_kshap) <- c("none", shap_names)
-  } else {
-    kshap <- t(W %*% as.matrix(dt_vS[, -"id_coalition"]))
+    # Otherwise, apply the weight matrix directly to the raw v(S) matrix.
+    vS_mat <- if (sage) compute_vS_loss(dt_vS, internal) else as.matrix(dt_vS[, -"id_coalition"])
+    kshap <- t(W %*% vS_mat)
     dt_kshap <- data.table::as.data.table(kshap)
     colnames(dt_kshap) <- c("none", shap_names)
   }
@@ -380,12 +377,8 @@ bootstrap_shapley_inner <- function(X,
     boot_ids <- X_boot[boot_id == i, id_coalition]
     dt_vS_boot <- dt_vS[id_coalition %in% boot_ids]
 
-    if (sage) {
-      vS_loss_boot <- compute_vS_loss(dt_vS_boot, internal)
-      kshap_boot <- t(W_boot %*% vS_loss_boot)
-    } else {
-      kshap_boot <- t(W_boot %*% as.matrix(dt_vS_boot[, -"id_coalition"]))
-    }
+    vS_mat_boot <- if (sage) compute_vS_loss(dt_vS_boot, internal) else as.matrix(dt_vS_boot[, -"id_coalition"])
+    kshap_boot <- t(W_boot %*% vS_mat_boot)
 
     boot_sd_array[, , i] <- copy(kshap_boot)
   }
