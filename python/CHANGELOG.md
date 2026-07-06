@@ -7,6 +7,16 @@ Changes to the underlying `shapr` R package is documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added support for computing SAGE values (Shapley Additive Global importancE) via the new `explain()`
+  arguments `scope` and `y_explain`. Set `scope="global"` to compute SAGE values. A custom Python loss
+  function can be passed through `extra_computation_args={"global_loss_func": my_loss}` and is bridged into
+  the R computation. Added the `Shapr.get_shap_values_est()` accessor for the per-observation Shapley values
+  computed alongside the SAGE values, and made `Shapr.to_shap()` SAGE-aware (returns the single global loss
+  explanation). (branch: sage)
+
 ## [0.5.1] - 2026-06-24
 
 ### Fixed

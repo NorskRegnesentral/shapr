@@ -1,0 +1,57 @@
+# serializer version: 1
+# name: TestSageOutputs.test_sage_classifier_default_loss
+  dict({
+    'shapley_values_est': '''
+      |    |   explain_id |     none |   sepal length (cm) |   sepal width (cm) |   petal length (cm) |   petal width (cm) |
+      |---:|-------------:|---------:|--------------------:|-------------------:|--------------------:|-------------------:|
+      |  1 |            1 | -0.69531 |             0.01197 |            0.01577 |             0.33821 |            0.32326 |
+    ''',
+    'shapley_values_sd': '''
+      |    |   explain_id |   none |   sepal length (cm) |   sepal width (cm) |   petal length (cm) |   petal width (cm) |
+      |---:|-------------:|-------:|--------------------:|-------------------:|--------------------:|-------------------:|
+      |  1 |            1 |     -0 |                   0 |                  0 |                   0 |                  0 |
+    ''',
+  })
+# ---
+# name: TestSageOutputs.test_sage_regressor_custom_loss
+  dict({
+    'shapley_values_est': '''
+      |    |   explain_id |     none |   MedInc |   HouseAge |   AveRooms |   AveBedrms |   Population |   AveOccup |   Latitude |   Longitude |
+      |---:|-------------:|---------:|---------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|------------:|
+      |  1 |            1 | -2.83626 |  0.81659 |    0.56083 |    0.14724 |     -0.0219 |      0.01838 |    0.85854 |    0.04023 |     0.12219 |
+    ''',
+    'shapley_values_sd': '''
+      |    |   explain_id |   none |   MedInc |   HouseAge |   AveRooms |   AveBedrms |   Population |   AveOccup |   Latitude |   Longitude |
+      |---:|-------------:|-------:|---------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|------------:|
+      |  1 |            1 |      0 |  0.01064 |    0.01143 |    0.01488 |     0.01025 |      0.00997 |    0.01385 |    0.01377 |     0.01351 |
+    ''',
+  })
+# ---
+# name: TestSageOutputs.test_sage_regressor_default_loss
+  dict({
+    'shapley_values_est': '''
+      |    |   explain_id |     none |   MedInc |   HouseAge |   AveRooms |   AveBedrms |   Population |   AveOccup |   Latitude |   Longitude |
+      |---:|-------------:|---------:|---------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|------------:|
+      |  1 |            1 | -2.83626 |  0.81659 |    0.56083 |    0.14724 |     -0.0219 |      0.01838 |    0.85854 |    0.04023 |     0.12219 |
+    ''',
+    'shapley_values_sd': '''
+      |    |   explain_id |   none |   MedInc |   HouseAge |   AveRooms |   AveBedrms |   Population |   AveOccup |   Latitude |   Longitude |
+      |---:|-------------:|-------:|---------:|-----------:|-----------:|------------:|-------------:|-----------:|-----------:|------------:|
+      |  1 |            1 |      0 |  0.01064 |    0.01143 |    0.01488 |     0.01025 |      0.00997 |    0.01385 |    0.01377 |     0.01351 |
+    ''',
+  })
+# ---
+# name: TestSageOutputs.test_sage_regressor_grouped_default_loss
+  dict({
+    'shapley_values_est': '''
+      |    |   explain_id |     none |      A |       B |       C |
+      |---:|-------------:|---------:|-------:|--------:|--------:|
+      |  1 |            1 | -2.83626 | 1.5561 | 0.83349 | 0.15251 |
+    ''',
+    'shapley_values_sd': '''
+      |    |   explain_id |   none |   A |   B |   C |
+      |---:|-------------:|-------:|----:|----:|----:|
+      |  1 |            1 |     -0 |   0 |   0 |   0 |
+    ''',
+  })
+# ---

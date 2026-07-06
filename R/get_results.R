@@ -3,15 +3,19 @@
 #' @param x A `shapr` object
 #' @param what Character vector specifying one or more components to extract.
 #' Options:
-#' "calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
-#' "MSEv", "MSEv_explicand", "MSEv_coalition",
+#' "calling_function", "proglang", "approach", "scope", "shapley_est", "shapley_sd", "shap_values_est",
+#' "sage_values_est", "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition",
 #' "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 #' "saving_path",
 #' "timing_summary", "timing_details",
 #' "parameters", "x_train", "x_explain",
 #' "dt_vS", "dt_samp_for_vS",
 #' "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
-#' The default is to return all components. See details for what each component contains.
+#' The default returns the standard set of components. `sage_values_est` is never part of the default, since it is
+#' `NULL` for local explanations and identical to `shapley_est` for global (SAGE) ones. `shap_values_est` is
+#' included only for global explanations, where it holds the distinct per-observation decomposition; for local
+#' explanations it would duplicate `shapley_est` and is omitted. All components remain available on explicit
+#' request regardless of scope. See details for what each component contains.
 #' @param ... Not used
 #' @details The function extracts a full suite of information related to the computation of the Shapley values from
 #' a `shapr` object.
@@ -21,9 +25,16 @@
 #'   (`explain()` or `explain_forecast()`).}
 #'   \item{`proglang`}{Programming language used to initiate the computations (`R` or `Python`).}
 #'   \item{`approach`}{Approach used to estimate the conditional expectations.}
+#'   \item{`scope`}{Explanation scope: `"local"` for standard per-observation Shapley values or `"global"` for
+#'   SAGE values.}
 #'   \item{`shapley_est`}{data.table with the estimated Shapley values.}
 #'   \item{`shapley_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 #'   in the coalition sampling part of the kernelSHAP procedure.}
+#'   \item{`shap_values_est`}{data.table with the per-observation (local) Shapley value explanations of the
+#'   predictions. Always available: when `scope = "local"` this equals `shapley_est`; when `scope = "global"`
+#'   (SAGE) it holds the per-observation decomposition while `shapley_est` holds the SAGE values.}
+#'   \item{`sage_values_est`}{data.table with the SAGE values (global feature importance). Only available when
+#'   `scope = "global"` (identical to `shapley_est` in that case); `NULL` otherwise.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations.}
 #'   \item{`MSEv/MSEv_explicand/MSEv_coalition`}{Data.tables with MSEv evaluation criterion values overall/
 #'   per explicand/per coalition.
@@ -61,23 +72,12 @@
 #' If multiple are requested, returns a named list.
 #'
 #' @export
-get_results <- function(x, what = c(
-                          "calling_function", "proglang", "approach",
-                          "shapley_est", "shapley_sd",
-                          "pred_explain",
-                          "MSEv", "MSEv_explicand", "MSEv_coalition",
-                          "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
-                          "saving_path",
-                          "timing_summary", "timing_details",
-                          "parameters", "x_train", "x_explain",
-                          "dt_vS", "dt_samp_for_vS",
-                          "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"
-                        ), ...) {
+get_results <- function(x, what = NULL, ...) {
   stopifnot(inherits(x, "shapr"))
 
   allowed <- c(
-    "calling_function", "proglang", "approach",
-    "shapley_est", "shapley_sd",
+    "calling_function", "proglang", "approach", "scope",
+    "shapley_est", "shapley_sd", "shap_values_est", "sage_values_est",
     "pred_explain",
     "MSEv", "MSEv_explicand", "MSEv_coalition",
     "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
@@ -87,6 +87,27 @@ get_results <- function(x, what = c(
     "dt_vS", "dt_samp_for_vS",
     "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"
   )
+
+  # Build the default set of components when `what` is not supplied. `sage_values_est` is never part of the
+  # default (it is `NULL` for local explanations and identical to `shapley_est` for global ones). The
+  # per-observation Shapley values (`shap_values_est`) are only added for global (SAGE) explanations, where
+  # they carry distinct information; for local explanations they would duplicate `shapley_est` and are omitted.
+  if (is.null(what)) {
+    global <- identical(x$internal$parameters$scope, "global")
+    what <- c(
+      "calling_function", "proglang", "approach", "scope",
+      "shapley_est", "shapley_sd",
+      if (global) "shap_values_est",
+      "pred_explain",
+      "MSEv", "MSEv_explicand", "MSEv_coalition",
+      "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
+      "saving_path",
+      "timing_summary", "timing_details",
+      "parameters", "x_train", "x_explain",
+      "dt_vS", "dt_samp_for_vS",
+      "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"
+    )
+  }
 
   unknown <- setdiff(what, allowed)
   if (length(unknown) > 0) {
@@ -101,8 +122,15 @@ get_results <- function(x, what = c(
       calling_function = ifelse(x$internal$parameters$type == "regular", "explain", "explain_forecast"),
       proglang = ifelse(x$internal$parameters$is_python, "Python", "R"),
       approach = x$internal$parameters$approach,
+      scope = x$internal$parameters$scope,
       shapley_est = x$shapley_values_est,
       shapley_sd = x$shapley_values_sd,
+      shap_values_est = if (identical(x$internal$parameters$scope, "global")) {
+        x$internal$output$shap_values_est
+      } else {
+        x$shapley_values_est
+      },
+      sage_values_est = if (identical(x$internal$parameters$scope, "global")) x$shapley_values_est else NULL,
       pred_explain = x$pred_explain,
       MSEv = x$MSEv$MSEv,
       MSEv_explicand = x$MSEv$MSEv_explicand,

@@ -1647,6 +1647,99 @@ get_results(ex, what = "dt_vS")
 #> 14:           14   24.201   17.970   20.338   24.695   24.498   16.445
 ```
 
+# SAGE: global feature importance {#sage}
+
+The Shapley value explanations described above are *local*: they explain a single prediction at a time.
+Sometimes we are instead interested in a *global* measure of how much each feature contributes to the overall
+predictive performance of the model. SAGE (Shapley Additive Global importancE,
+[Covert et al. (2020)](https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf))
+provides exactly this, by applying the Shapley value framework to a model *loss* rather than to the prediction itself.
+
+Concretely, the value of a coalition \( S \) becomes \( v(S) = -\mathbb{E}[L(y, f(x_S))] \), the (negative) expected
+loss of the model when only the features in \( S \) are known. The conditional expectations \( f(x_S) = E[f(x)\mid x_S] \)
+are estimated with the same `approach` machinery as for ordinary Shapley values, so all approaches, groups and
+iterative estimation are available for SAGE too. The resulting SAGE values are a single set of feature importances
+that sum to the difference between the loss of the full model and the loss of the baseline prediction `phi0`.
+
+To compute SAGE values, set `scope = "global"` and provide the response vector `y_explain` corresponding to the rows of
+`x_explain`. The loss function is controlled through `extra_computation_args$global_loss_func`; if not supplied, `shapr` uses logistic
+(cross-entropy) loss for binary 0/1 responses and mean squared error otherwise.
+
+
+``` r
+# Compute SAGE values explaining the model's global mean squared error over the training data
+sage_explanation <- explain(
+  model = model,
+  x_explain = x_train,
+  x_train = x_train,
+  approach = "gaussian",
+  phi0 = p0,
+  y_explain = y_train,
+  scope = "global",
+  seed = 1
+)
+#>
+#> ── Starting `shapr::explain()` at 2026-06-24 14:45:26 ───────────────────────────────
+#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore
+#>   set to `2^n_features = 32`.
+#>
+#>
+#> ── Explanation overview ──
+#>
+#>
+#>
+#> • Model class: <xgboost>
+#>
+#> • v(S) estimation class: Monte Carlo integration
+#>
+#> • Approach: gaussian
+#>
+#> • Procedure: Non-iterative
+#>
+#> • Number of Monte Carlo integration samples: 1000
+#>
+#> • Number of feature-wise Shapley values: 5
+#>
+#> • Number of observations to explain: 105
+#>
+#> • Computations (temporary) saved at: '/tmp/RtmpbjHlWY/shapr_obj_1670a1272246d5.rds'
+#>
+#>
+#>
+#> ── Main computation started ──
+#>
+#>
+#>
+#> ℹ Using 32 of 32 coalitions.
+
+# The estimated SAGE values (a single, global explanation)
+print(sage_explanation)
+#>    explain_id  none Solar.R  Wind  Temp  Month   Day
+#>         <int> <num>   <num> <num> <num>  <num> <num>
+#> 1:          1 -1136     120   490   496 -0.798  28.2
+
+# SAGE values are visualized with bar and waterfall plots
+plot(sage_explanation, plot_type = "bar")
+```
+
+![](figure_general_usage/sage-1.webp)
+
+``` r
+plot(sage_explanation, plot_type = "waterfall")
+```
+
+![](figure_general_usage/sage-2.webp)
+
+The ordinary per-observation Shapley value explanations of the predictions are still computed and stored alongside
+the SAGE values in `sage_explanation$internal$output$shap_values_est`, in case they are of interest.
+
+Since SAGE reuses the regular Shapley value machinery and only swaps out the value function, `scope = "global"` also
+works together with the grouping, causal and asymmetric functionality described elsewhere in this vignette and in the
+[asymmetric and causal Shapley values](asymmetric_causal.html) vignette. Passing `group` gives one global SAGE value
+per group, while passing `causal_ordering` (optionally with `confounding`) and/or `asymmetric = TRUE` attributes the
+global loss reduction according to the specified (partial) causal ordering. These causal and asymmetric SAGE
+combinations are a natural extension of the SAGE methodology rather than variants described in the original SAGE paper.
+
 # Parallelization {#para}
 
 The `shapr` package supports parallelization of the Shapley value estimation process through the

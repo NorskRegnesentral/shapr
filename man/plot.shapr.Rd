@@ -34,7 +34,9 @@ contribution (their Shapley values).
 (optionally) a background scatter_hist showing the distribution of the feature data.
 \code{"beeswarm"} summarizes the distribution of the Shapley values along the x-axis for all the features.
 Each point gives the Shapley value of a given instance, where the points are colored by the feature value
-of that instance.}
+of that instance.
+For SAGE values (\code{scope = "global"} in \code{\link[=explain]{explain()}}), only \code{"bar"} and \code{"waterfall"} are supported, as SAGE
+produces a single global loss-based explanation rather than per-observation prediction explanations.}
 
 \item{digits}{Integer.
 Number of significant digits to use in the feature description.

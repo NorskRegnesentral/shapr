@@ -166,6 +166,20 @@
 #' The `approach` cannot be `regression_separate` or `regression_surrogate`, as the
 #' regression-based approaches are not applicable to the causal Shapley methodology.
 #'
+#' @param scope String.
+#' Either `"local"` (default) or `"global"`.
+#' If `"local"`, `explain` computes standard (local) Shapley values that explain individual predictions, i.e.
+#' SHAP (Shapley Additive exPlanations)-style explanations.
+#' If `"global"`, `explain` instead computes SAGE values (Shapley Additive Global importancE), which explain the
+#' global model loss over the observations in `x_explain` rather than individual predictions.
+#' See the details section and `vignette("general_usage", package = "shapr")` for more information.
+#'
+#' @param y_explain Numeric vector.
+#' Only used (and required) when `scope = "global"`.
+#' The true response/outcome values corresponding to the observations in `x_explain`, used to evaluate the model loss
+#' when computing the SAGE values.
+#' Must be numeric and have the same number of elements as there are rows in `x_explain`.
+#'
 #' @param ... Further arguments passed to specific approaches, see below.
 #'
 #'
@@ -210,6 +224,25 @@
 #' Heskes et al. (2020)} as a way to explain the total effect of features
 #' on the prediction, taking into account their causal relationships, by adapting the sampling procedure in `shapr`.
 #'
+#' When `scope = "global"`, `explain` computes SAGE values (Shapley Additive Global importancE) as introduced by
+#' \href{https://proceedings.neurips.cc/paper/2020/file/c7bf0b7c1a86d5eb3be2c722cf2cf746-Paper.pdf}{
+#' Covert et al. (2020)}.
+#' Rather than explaining individual predictions, SAGE values explain the global model loss by attributing the
+#' reduction in loss (relative to always predicting the baseline `phi0`) to each feature.
+#' The loss function is controlled via `extra_computation_args$global_loss_func`.
+#' `shapr` reuses the exact same machinery as for regular Shapley values, but replaces the value function
+#' `v(S)` with the negative expected loss `-E[loss(y, E[f(x) | x_S])]`, averaged over the observations in
+#' `x_explain`. The conditional expectations are estimated with the chosen `approach`, so unlike the marginal
+#' sampling used by Covert et al. (2020), `shapr` can account for feature dependence.
+#' A single set of SAGE values is returned in `shapley_values_est`, with the corresponding standard deviations in
+#' `shapley_values_sd`. The regular per-observation Shapley value explanations of the predictions are always also
+#' computed and can be accessed with `get_results(x, "shap_values_est")`, while `get_results(x, "sage_values_est")`
+#' returns the SAGE values.
+#'
+#' Because SAGE reuses the regular Shapley value machinery (only the value function is replaced), `scope = "global"`
+#' also works together with grouping (`group`), causal Shapley values (`causal_ordering`/`confounding`), and asymmetric
+#' Shapley values (`asymmetric`). See `vignette("general_usage", package = "shapr")` for details.
+#'
 #' The package allows parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
 #' See the examples below.
@@ -223,11 +256,14 @@
 #' \describe{
 #'   \item{`shapley_values_est`}{data.table with the estimated Shapley values with explained observation in the rows and
 #'   features along the columns.
-#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`)}
+#'   The column `none` is the prediction not devoted to any of the features (given by the argument `phi0`).
+#'   If `scope = "global"`, this instead contains a single row with the estimated SAGE values, and the column `none`
+#'   gives the baseline model loss `-loss(y_explain, phi0)`.}
 #'   \item{`shapley_values_sd`}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 #'   in the coalition sampling part of the kernelSHAP procedure.
 #'   These are, by definition, 0 when all coalitions are used.
-#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.}
+#'   Only present when `extra_computation_args$compute_sd=TRUE`, which is the default when `iterative = TRUE`.
+#'   If `scope = "global"`, this contains a single row with the standard deviations of the SAGE values.}
 #'   \item{`internal`}{List with the different parameters, data, functions and other output used internally.}
 #'   \item{`pred_explain`}{Numeric vector with the predictions for the explained observations.}
 #'   \item{`MSEv`}{List with the values of the MSEv evaluation criterion for the approach. See the
@@ -480,6 +516,8 @@ explain <- function(model,
                     extra_computation_args = list(),
                     iterative_args = list(),
                     output_args = list(),
+                    scope = "local",
+                    y_explain = NULL,
                     ...) { # ... is further arguments passed to specific approaches
 
 
@@ -514,6 +552,8 @@ explain <- function(model,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
+    scope = scope,
+    y_explain = y_explain,
     model_class = class(model)[1],
     ...
   )
@@ -641,6 +681,12 @@ testing_cleanup <- function(output) {
   # in both fit-times and model object structure
   if ("regression_surrogate" %in% output$internal$parameters$approach) {
     output$internal$objects$regression.surrogate_model <- NULL
+  }
+
+  # Removing the SAGE loss function, as user-supplied closures may carry non-reproducible environments
+  if (identical(output$internal$parameters$scope, "global")) {
+    output$internal$parameters$extra_computation_args$global_loss_func <- NULL
+    output$internal$parameters$loss_func <- NULL
   }
 
   # Delete the saving_path
