@@ -126,7 +126,7 @@ postprocess_vS_list <- function(vS_list, internal) {
 compute_shapley <- function(internal, dt_vS) {
   is_groupwise <- internal$parameters$is_groupwise
   type <- internal$parameters$type
-  sage <- internal$parameters$scope == "global"
+  is_global <- internal$parameters$scope == "global"
 
   iter <- length(internal$iter_list)
 
@@ -165,7 +165,7 @@ compute_shapley <- function(internal, dt_vS) {
     # SAGE: the value function is the negative model loss for each coalition, averaged over the explained
     # observations. Applying the kernelSHAP weight matrix then yields a single set of global SAGE values.
     # Otherwise, apply the weight matrix directly to the raw v(S) matrix.
-    vS_mat <- if (sage) compute_vS_loss(dt_vS, internal) else as.matrix(dt_vS[, -"id_coalition"])
+    vS_mat <- if (is_global) compute_vS_loss(dt_vS, internal) else as.matrix(dt_vS[, -"id_coalition"])
     kshap <- t(W %*% vS_mat)
     dt_kshap <- data.table::as.data.table(kshap)
     colnames(dt_kshap) <- c("none", shap_names)
@@ -248,7 +248,7 @@ bootstrap_shapley_inner <- function(X,
   semi_deterministic_sampling <- internal$parameters$extra_computation_args$semi_deterministic_sampling
   shapley_reweight <- internal$parameters$extra_computation_args$kernelSHAP_reweighting
 
-  sage <- internal$parameters$scope == "global"
+  is_global <- internal$parameters$scope == "global"
 
   if (type == "forecast") {
     # For forecast set to zero, as all coalitions except empty and grand can be sampled
@@ -261,7 +261,7 @@ bootstrap_shapley_inner <- function(X,
   X_org <- copy(X)
 
   # SAGE produces a single set of global values, so the bootstrap array only needs a single "observation" row
-  n_boot_rows <- if (sage) 1L else n_explain
+  n_boot_rows <- if (is_global) 1L else n_explain
   boot_sd_array <- array(NA, dim = c(n_boot_rows, n_shapley_values + 1, n_boot_samps))
 
   # Split X_org into the deterministic and sampled coalitions
@@ -377,7 +377,7 @@ bootstrap_shapley_inner <- function(X,
     boot_ids <- X_boot[boot_id == i, id_coalition]
     dt_vS_boot <- dt_vS[id_coalition %in% boot_ids]
 
-    vS_mat_boot <- if (sage) compute_vS_loss(dt_vS_boot, internal) else as.matrix(dt_vS_boot[, -"id_coalition"])
+    vS_mat_boot <- if (is_global) compute_vS_loss(dt_vS_boot, internal) else as.matrix(dt_vS_boot[, -"id_coalition"])
     kshap_boot <- t(W_boot %*% vS_mat_boot)
 
     boot_sd_array[, , i] <- copy(kshap_boot)

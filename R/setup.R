@@ -436,7 +436,7 @@ check_data <- function(internal) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  sage <- internal$parameters$scope == "global"
+  is_global <- internal$parameters$scope == "global"
   y_explain <- internal$data$y_explain
 
   model_feature_specs <- internal$objects$feature_specs
@@ -495,7 +495,7 @@ check_data <- function(internal) {
   check_feature_specs(model_feature_specs)
 
   # Check the response vector `y_explain` when computing SAGE values
-  if (sage) {
+  if (is_global) {
     if (!(is.numeric(y_explain) && is.vector(y_explain) &&
       !anyNA(y_explain) && length(y_explain) == nrow(x_explain))) {
       cli::cli_abort(paste0(
