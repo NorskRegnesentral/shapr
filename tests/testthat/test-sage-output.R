@@ -206,6 +206,80 @@ test_that("output_sage_xgboost_binary", {
   )
 })
 
+test_that("output_sage_causal_lm_gaussian", {
+  set.seed(123)
+
+  expect_snapshot_rds(
+    {
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_train_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        phi0 = p0,
+        seed = 1,
+        scope = "global",
+        y_explain = y_train_numeric,
+        causal_ordering = list(1:2, 3, 4:5),
+        confounding = TRUE,
+        n_MC_samples = 5 # Just for speed
+      )
+    },
+    "output_sage_causal_lm_gaussian"
+  )
+})
+
+test_that("output_sage_asymmetric_conditional_lm_gaussian", {
+  set.seed(123)
+
+  expect_snapshot_rds(
+    {
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_train_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        phi0 = p0,
+        seed = 1,
+        scope = "global",
+        y_explain = y_train_numeric,
+        asymmetric = TRUE,
+        causal_ordering = list(1:2, 3, 4:5),
+        confounding = NULL,
+        n_MC_samples = 5 # Just for speed
+      )
+    },
+    "output_sage_asymmetric_conditional_lm_gaussian"
+  )
+})
+
+test_that("output_sage_asymmetric_causal_lm_gaussian", {
+  set.seed(123)
+
+  expect_snapshot_rds(
+    {
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_train_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        phi0 = p0,
+        seed = 1,
+        scope = "global",
+        y_explain = y_train_numeric,
+        asymmetric = TRUE,
+        causal_ordering = list(1:2, 3, 4:5),
+        confounding = TRUE,
+        n_MC_samples = 5 # Just for speed
+      )
+    },
+    "output_sage_asymmetric_causal_lm_gaussian"
+  )
+})
+
 test_that("get_results accessors expose shap and sage values symmetrically", {
   set.seed(123)
 

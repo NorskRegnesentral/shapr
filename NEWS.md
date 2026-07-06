@@ -6,7 +6,7 @@
 
 ### New features
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
-* Added support for SAGE (Shapley Additive Global importancE) values via the new `scope` and `y_explain` arguments to `explain()`. Set `scope = "global"` to explain the model's global loss (using `extra_computation_args$global_loss_func`, defaulting to log-loss for binary 0/1 responses and MSE otherwise) instead of individual predictions, and plot the result with `plot()` using `plot_type = "bar"` or `"waterfall"`. (branch: sage)
+* Added support for SAGE (Shapley Additive Global importancE) values via the new `scope` and `y_explain` arguments to `explain()`. Set `scope = "global"` to explain the model's global loss (using `extra_computation_args$global_loss_func`, defaulting to log-loss for binary 0/1 responses and MSE otherwise) instead of individual predictions, and plot the result with `plot()` using `plot_type = "bar"` or `"waterfall"`. `scope = "global"` also works together with grouping (`group`), causal Shapley values (`causal_ordering`/`confounding`), and asymmetric Shapley values (`asymmetric`). (branch: sage)
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))

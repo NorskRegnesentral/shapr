@@ -1127,6 +1127,13 @@ plot(sage_explanation, plot_type = "waterfall")
 The ordinary per-observation Shapley value explanations of the predictions are still computed and stored alongside
 the SAGE values in `sage_explanation$internal$output$shap_values_est`, in case they are of interest.
 
+Since SAGE reuses the regular Shapley value machinery and only swaps out the value function, `scope = "global"` also
+works together with the grouping, causal and asymmetric functionality described elsewhere in this vignette and in the
+[asymmetric and causal Shapley values](asymmetric_causal.html) vignette. Passing `group` gives one global SAGE value
+per group, while passing `causal_ordering` (optionally with `confounding`) and/or `asymmetric = TRUE` attributes the
+global loss reduction according to the specified (partial) causal ordering. These causal and asymmetric SAGE
+combinations are a natural extension of the SAGE methodology rather than variants described in the original SAGE paper.
+
 # Parallelization {#para}
 
 The `shapr` package supports parallelization of the Shapley value estimation process through the

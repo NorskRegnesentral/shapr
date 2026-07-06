@@ -239,6 +239,10 @@
 #' computed and can be accessed with `get_results(x, "shap_values_est")`, while `get_results(x, "sage_values_est")`
 #' returns the SAGE values.
 #'
+#' Because SAGE reuses the regular Shapley value machinery (only the value function is replaced), `scope = "global"`
+#' also works together with grouping (`group`), causal Shapley values (`causal_ordering`/`confounding`), and asymmetric
+#' Shapley values (`asymmetric`). See `vignette("general_usage", package = "shapr")` for details.
+#'
 #' The package allows parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
 #' See the examples below.
