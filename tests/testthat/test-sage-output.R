@@ -30,10 +30,10 @@ test_that("output_sage_gaussian_xgboost", {
   expect_snapshot_rds(
     {
       model_xgboost <- xgboost::xgboost(
-        data = as.matrix(x_train_numeric),
-        label = y_train_numeric,
+        x = as.matrix(x_train_numeric),
+        y = y_train_numeric,
         nround = 20,
-        verbose = FALSE
+        verbosity = 0
       )
 
       explain(
@@ -184,10 +184,10 @@ test_that("output_sage_xgboost_binary", {
   expect_snapshot_rds(
     {
       model_xgboost_binary <- xgboost::xgboost(
-        data = as.matrix(x_train_numeric),
-        label = y_train_binary,
+        x = as.matrix(x_train_numeric),
+        y = y_train_binary,
         nround = 20,
-        verbose = FALSE
+        verbosity = 0
       )
 
       explain(

@@ -33,13 +33,6 @@
       print({
         out <- code
       }, digits = digits)
-    Condition
-      Warning in `throw_err_or_depr_msg()`:
-      Passed unrecognized parameters: verbose. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'data' has been renamed to 'x'. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'label' has been renamed to 'y'. This warning will become an error in a future version.
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
@@ -229,13 +222,6 @@
       print({
         out <- code
       }, digits = digits)
-    Condition
-      Warning in `throw_err_or_depr_msg()`:
-      Passed unrecognized parameters: verbose. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'data' has been renamed to 'x'. This warning will become an error in a future version.
-      Warning in `throw_err_or_depr_msg()`:
-      Parameter 'label' has been renamed to 'y'. This warning will become an error in a future version.
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
