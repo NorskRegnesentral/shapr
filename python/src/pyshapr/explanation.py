@@ -2,9 +2,9 @@
 Shapr explanation class for exploring Shapley value results.
 """
 
-import numpy as np
-
 from typing import Any
+
+import numpy as np
 
 from pyshapr._rutils import _importr
 
