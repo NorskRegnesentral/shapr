@@ -34,15 +34,20 @@ aggregate_every: 10
 # Hard wall-clock limit (seconds) for a single run, enforced at the bash level
 # by orchestrate.sh. A run exceeding this is killed and recorded with
 # status="timeout". Re-attempt timed-out runs with `--retry-timeouts`.
-timeout_sec: 1200 #600
+#
+# Two-pass strategy: start with a SHORT limit (10 min) so pathological argument
+# combinations are killed quickly (their partial time + peak RAM are still
+# recorded). Later, raise this (e.g. to 3600 = 1 h) and re-run with
+# `--retry-timeouts` to pick up the long runs that were stopped.
+timeout_sec: 600
+
+# Per-study (per-approach) wall-clock budget in seconds. orchestrate.sh stops
+# launching NEW runs once exceeded; resume to continue. 24 h per approach.
+time_budget_sec: 86400
 
 # Default dataset used when an approach does not support the all-numeric data
 # (factor-only / categorical approaches fall back here for OAT sweeps).
 mixed_default: mixed_fc_fl
-
-# Feature group size for the `group` sweep (features are chunked into groups of
-# this many consecutive columns).
-group_size: 2
 
 # max_n_coalitions budget for the iterative `source` run of an iterative pair.
 iterative_cap: 500
@@ -110,7 +115,7 @@ models:
 # ---------------------------------------------------------------------------
 datasets:
   numeric:
-    n_features_max: 20
+    n_features_max: 30
     n_train_max: 20000
     n_explain_max: 100
     rho: 0.5
@@ -187,3 +192,6 @@ baseline:
   n_explain: 25
   iterative: false
   group: false
+  # group_size only applies when group = true; features are chunked into groups
+  # of this many consecutive columns. Swept in the gaussian grouping study.
+  group_size: 2

@@ -1,0 +1,87 @@
+# ============================================================================
+# vaeac.yml — per-approach cost study for the `vaeac` approach.
+#
+# vaeac is BY FAR the most expensive approach (~150–1170 s per run at the quick
+# scale; training the variational autoencoder dominates). It therefore gets
+# COARSE grids, only 2 replicates, NO warm-up (each run is already long), and a
+# real wall-clock budget so it cannot overrun the week. One study = one approach
+# = a list of `blocks`. Anything set here overrides common.yml.
+#
+# Run with:  bin/orchestrate.sh config/vaeac.yml
+# ============================================================================
+approach: vaeac
+dataset: numeric
+
+replicates: 2
+warmup: false            # each run is minutes; skip the extra warm-up replicate.
+
+# timeout_sec (10 min) and time_budget_sec (24 h) are inherited from common.yml.
+# Many vaeac runs will hit the 10-min limit on the first pass and be recorded as
+# timeouts (with partial time + peak RAM); re-run with a raised timeout and
+# `--retry-timeouts` to pick up the long ones.
+
+blocks:
+  # ---- Core OAT battery (coarse levels, since vaeac is expensive) -----------
+  - name: scale_train_mc
+    grid:
+      n_train: [1000, 5000]
+      n_MC_samples: [50, 250]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [32, 128, 256]
+
+  - name: features            # numeric-family only (column subsetting)
+    grid:
+      n_features: [4, 8, 12]
+
+  - name: explain
+    grid:
+      n_explain: [1, 25, 100]
+
+  - name: grouping
+    grid:
+      n_features: [8, 12]
+      group: [false, true]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 4]
+
+  # Parallel scaling combined with batching (workers need batches to be useful).
+  - name: parallel
+    grid:
+      workers: [1, 4, 16]
+      min_n_batches: [16, 64]
+
+  # Mixed / categorical data settings (vaeac supports factors): few/many factor
+  # columns x few/many levels, plus the all-categorical dataset.
+  - name: dataset
+    grid:
+      dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [128]
+
+  # ---- vaeac-specific: vary each hyperparameter SEPARATELY (1-D sweeps) ------
+  - name: vaeac_depth
+    approach_args:
+      vaeac.depth: [2, 3, 4]
+
+  - name: vaeac_width
+    approach_args:
+      vaeac.width: [16, 32, 64]
+
+  - name: vaeac_epochs
+    approach_args:
+      vaeac.epochs: [3, 10, 30]
+
+  - name: vaeac_latent_dim
+    approach_args:
+      vaeac.latent_dim: [4, 8, 16]
+
+  - name: vaeac_n_vaeacs_initialize
+    approach_args:
+      vaeac.n_vaeacs_initialize: [1, 2, 4]

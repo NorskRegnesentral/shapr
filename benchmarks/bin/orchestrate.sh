@@ -79,10 +79,12 @@ RAM_METHOD="$(read_meta ram_method)"
 POLL_MS="$(read_meta poll_interval_ms)"
 COOLDOWN="$(read_meta cooldown_sec)"
 TIMEOUT="$(read_meta timeout_sec)"
+TIME_BUDGET="$(read_meta time_budget_sec)"
 AGG_EVERY="$(read_meta aggregate_every)"
 RUN_ORDER="$(read_meta run_order)"
 [[ -n "$TIMEOUT" && "$TIMEOUT" != "0" ]] || TIMEOUT=600
 [[ "$AGG_EVERY" =~ ^[0-9]+$ ]] || AGG_EVERY=0
+[[ "$TIME_BUDGET" =~ ^[0-9]+$ ]] || TIME_BUDGET=0
 
 # cgroup measurement needs systemd-run --user; fall back to poll if missing.
 if [[ "$RAM_METHOD" != "poll" ]] && ! command -v systemd-run >/dev/null 2>&1; then
@@ -91,6 +93,9 @@ if [[ "$RAM_METHOD" != "poll" ]] && ! command -v systemd-run >/dev/null 2>&1; th
 fi
 
 echo "Study '$STUDY': RAM='$RAM_METHOD', poll=${POLL_MS}ms, cooldown=${COOLDOWN}s, timeout=${TIMEOUT}s, aggregate_every=${AGG_EVERY}"
+if [[ "$TIME_BUDGET" -gt 0 ]]; then
+  echo "Wall-clock budget for this study: ${TIME_BUDGET}s (new runs stop once exceeded; already-done runs still count)."
+fi
 echo "Run order has $(wc -w <<<"$RUN_ORDER") runs."
 
 # --- Optionally clear timeout / cascade markers so they get retried ----------
@@ -246,7 +251,20 @@ EOF
 
 # --- 3. Execute runs --------------------------------------------------------
 completed=0
+STUDY_START="$(date +%s)"
 for id in $RUN_ORDER; do
+  # Stop launching new runs once the wall-clock budget is exhausted (0 = none).
+  # Runs already recorded on disk are skipped cheaply below, so a resumed study
+  # picks up where it left off within the next budget window.
+  if [[ "$TIME_BUDGET" -gt 0 ]]; then
+    now="$(date +%s)"
+    elapsed_budget=$((now - STUDY_START))
+    if [[ "$elapsed_budget" -ge "$TIME_BUDGET" ]]; then
+      echo "[budget] wall-clock budget ${TIME_BUDGET}s reached after ${elapsed_budget}s; stopping (resume to continue)."
+      break
+    fi
+  fi
+
   run_id "$id"
   completed=$((completed + 1))
 

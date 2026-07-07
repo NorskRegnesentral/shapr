@@ -1,0 +1,107 @@
+# ============================================================================
+# gaussian.yml — PRIMARY, comprehensive cost study for the `gaussian` approach.
+#
+# gaussian is the cheapest general approach and the reference method, so it is
+# the main testbed: it gets the BROADEST set of blocks (dense scaling grids, a
+# full feature sweep up to 30, grouping on/off + a group-size sweep, the
+# batching / cube-size levers, parallel scaling, and an iterative pair). Other
+# approaches get lighter, targeted coverage of their own cost drivers.
+#
+# COST NOTE: for the sampling approaches, run time scales roughly with
+# max_n_coalitions * n_MC_samples * n_explain * n_features. The high-coalition
+# corner (e.g. 4000 coalitions at many features) is minutes-to-tens-of-minutes
+# per run, so the grids below keep max_n_coalitions moderate; the cube-size cap
+# study probes high dimensions at moderate coalition counts instead.
+#
+# One study = one approach = a list of `blocks`, each a small mini-design around
+# the shared baseline (see common.yml). Anything here overrides common.yml.
+#
+# Run with:  bin/orchestrate.sh config/gaussian.yml
+# ============================================================================
+approach: gaussian
+dataset: numeric        # gaussian supports the all-numeric data
+
+replicates: 3
+warmup: true
+
+# timeout_sec (10 min) and time_budget_sec (24 h) are inherited from common.yml.
+
+blocks:
+  # 1. Core cost surface: training rows x MC samples (dense).
+  - name: scale_train_mc
+    grid:
+      n_train: [250, 1000, 2500, 5000, 10000, 20000]
+      n_MC_samples: [25, 100, 250, 500, 1000]
+
+  # 2. Dimensionality: a dense feature sweep in the sampling regime (up to the
+  #    numeric ceiling of 30 features).
+  - name: features
+    grid:
+      n_features: [2, 4, 6, 8, 10, 12, 16, 20, 25, 30]
+
+  # 3. Coalition-budget sweep (kept <= 1024 to stay well inside the timeout).
+  - name: coalitions
+    grid:
+      max_n_coalitions: [16, 32, 64, 128, 256, 512, 1024]
+
+  # 4. High-dimensional batching study: n_features x coalitions with the dense
+  #    per-batch cap ON (1e6, shapr default) vs OFF (Inf). Isolates the effect
+  #    of max_batch_cube_size auto-batching on time and peak RAM. Moderate
+  #    coalition counts keep each run bounded even with 30 features.
+  - name: highdim_cap
+    grid:
+      n_features: [12, 20, 30]
+      max_n_coalitions: [128, 512]
+      max_batch_cube_size: [1e6, Inf]
+
+  # 5. Grouping vs not, across feature counts (grouped Shapley reduces the
+  #    effective dimensionality, so cost differs a lot).
+  - name: grouping
+    grid:
+      n_features: [8, 12, 20, 30]
+      group: [false, true]
+
+  # 6. Group granularity: sweep group_size (coarser groups = fewer groups) at
+  #    high dimension, grouped only.
+  - name: group_size
+    grid:
+      n_features: [20, 30]
+      group: [true]
+      group_size: [2, 3, 5, 10]
+
+  # 7. Explicand-count sweep.
+  - name: explain
+    grid:
+      n_explain: [1, 5, 10, 25, 50, 100]
+
+  # 8. Parallel scaling COMBINED WITH BATCHING: shapr parallelizes over batches,
+  #    so workers only help when there are enough batches. Cross workers with
+  #    min_n_batches up to the full core count of this machine (32).
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  # 9. multisession vs multicore at a couple of worker counts.
+  - name: backend
+    grid:
+      workers: [4, 16]
+      backend: [multisession, multicore]
+
+  # 10. data.table thread count (the other parallelism lever), swept alone.
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  # 11. Batching lever, isolated: sweep min_n_batches with the cube-size cap OFF
+  #     (Inf) and max_batch_size Inf so min_n_batches alone governs the count.
+  - name: batches
+    grid:
+      min_n_batches: [1, 2, 5, 10, 25, 50]
+      max_batch_cube_size: [Inf]
+
+  # 12. Iterative vs fixed at an EQUAL coalition budget (dependent pair).
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]

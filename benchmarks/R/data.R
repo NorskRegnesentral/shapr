@@ -69,13 +69,16 @@ suppressMessages(library(data.table))
 # out-of-sample. The cache file is keyed by the concrete dataset name so the
 # several `mixed_*` settings each get their own pool.
 get_pool <- function(cfg, dataset) {
-  cache <- file.path(cfg$dir$data, paste0("pool_", dataset, ".rds"))
-  if (file.exists(cache)) {
-    return(readRDS(cache))
-  }
   spec <- cfg$datasets[[dataset]]
   if (is.null(spec)) {
     stop("No dataset spec for '", dataset, "' in config$datasets")
+  }
+  # Key the cache by the dataset spec + seed so changing e.g. n_features_max or
+  # rho automatically regenerates the pool instead of reusing a stale one.
+  key <- digest_key(list(spec = spec, seed = cfg$seed))
+  cache <- file.path(cfg$dir$data, paste0("pool_", dataset, "_", key, ".rds"))
+  if (file.exists(cache)) {
+    return(readRDS(cache))
   }
   family <- dataset_family(dataset)
   train <- .generate_pool_part(family, spec, spec$n_train_max, cfg$seed)

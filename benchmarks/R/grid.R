@@ -2,23 +2,20 @@
 # grid.R — expand a study config into a grid of runs (results/<study>/grid.csv)
 # and a small run_meta.json that orchestrate.sh reads.
 #
-# Usage: Rscript R/grid.R --config config/oat_quick.yml
+# Usage: Rscript R/grid.R --config config/gaussian.yml
 #
-# OAT design (tiered):
-#   * PER-APPROACH sweeps  — repeated for EACH approach in `approaches`, on the
-#     approach's primary dataset (or all supported datasets for the `dataset`
-#     sweep), because the cost behaviour differs a lot per approach:
-#       dataset, max_n_coalitions, n_MC_samples, n_train, n_explain, n_features,
-#       iterative (TRUE/FALSE pair), group.
-#   * BASELINE-ONLY (infra) sweeps — run once at the gaussian/numeric baseline,
-#     because they are approach-agnostic infrastructure levers:
-#       min_n_batches, dt_threads, and the workers x backend parallel grid.
-#   * APPROACH-SPECIFIC sweeps — scalar approach params (empirical.type,
-#     vaeac.*, regression.surrogate_n_comb) and named regression variants.
+# Block design (per approach):
+#   A study is ONE approach (`approach:`) plus a list of named `blocks`. Each
+#   block is a small mini-design (a 1-D sweep, a 2-D/3-D grid, an approach-arg
+#   grid, or an iterative pair) that varies a few dimensions around the shared
+#   baseline (see common.yml) while everything else is held fixed. Because cost
+#   behaviour differs enormously per approach, each approach gets its own config
+#   with grids sized to its cost (coarser for the slow approaches).
 #
-# The iterative sweep emits a dependent PAIR: a `source` run (iterative = TRUE)
-# and a `dependent` run (iterative = FALSE) whose max_n_coalitions is resolved
-# at run time from the number of coalitions the source actually used.
+#   An iterative block (`pair: iterative`) emits a dependent PAIR per grid point:
+#   a `source` run (iterative = TRUE) and a `dependent` run (iterative = FALSE)
+#   whose max_n_coalitions is resolved at run time from the number of coalitions
+#   the source actually used, so the two are compared at an equal budget.
 
 suppressMessages({
   library(data.table)
@@ -70,112 +67,78 @@ supported_datasets <- function(appr, cfg) {
   Filter(function(ds) approach_supports(appr, ds), names(cfg$datasets))
 }
 
-build_oat <- function(cfg) {
-  base <- cfg$baseline
-  rows <- list(make_row(base, sweep = "baseline"))
-  add <- function(r) rows[[length(rows) + 1]] <<- r
+# ---------------------------------------------------------------------------
+# Block-based grid builder.
+#
+# A study is ONE approach (`approach:`) described by a list of `blocks`. Each
+# block is a named mini-design that varies a handful of dimensions around the
+# baseline while everything else is held at the baseline value:
+#
+#   blocks:
+#     - name: scale_train_mc          # a 2-D grid over standard dimensions
+#       grid: {n_train: [500, 5000], n_MC_samples: [50, 250]}
+#     - name: empirical_type          # an approach-argument grid
+#       approach_args: {empirical.type: [fixed_sigma, independence]}
+#     - name: iterative_budget        # iterative-vs-fixed at equal budget
+#       pair: iterative
+#       grid: {max_n_coalitions: [512]}
+#
+# `grid:` cross-multiplies standard grid_dimensions() (a single entry = a 1-D
+# sweep); `approach_args:` cross-multiplies approach-specific arguments (encoded
+# into the approach_args column, incl. the named regression `variant`). If both
+# are present they cross-multiply. `pair: iterative` emits, per combination, a
+# source (iterative = TRUE) and a dependent (iterative = FALSE, sentinel -1)
+# whose coalition budget is resolved from the source at run time.
+# ---------------------------------------------------------------------------
 
-  ps <- cfg$per_approach_sweeps
-  mixed_default <- cfg$mixed_default %||% "mixed_fc_fl"
-  high_dim <- cfg$high_dim
-  iter_cap <- cfg$iterative_cap %||% base$max_n_coalitions
-
-  # ---- Per-approach sweeps -------------------------------------------------
-  for (appr in cfg$approaches) {
-    pdata <- primary_dataset(appr, mixed_default = mixed_default)
-    abase <- modifyList(base, list(approach = appr, dataset = pdata))
-
-    # dataset sweep: the approach across every dataset it supports.
-    if (isTRUE(ps$dataset)) {
-      for (ds in supported_datasets(appr, cfg)) {
-        add(make_row(base, list(approach = appr, dataset = ds), sweep = "dataset"))
-      }
-    }
-
-    # scalar numeric sweeps held on the approach's primary dataset.
-    for (dim in c("max_n_coalitions", "n_MC_samples", "n_train", "n_explain")) {
-      for (v in (ps[[dim]] %||% list())) {
-        add(make_row(abase, setNames(list(v), dim), sweep = dim))
-      }
-    }
-
-    # n_features sweep is meaningful only for the numeric family (column
-    # subsetting). The high-dim point pairs a large n_features with a
-    # restrictive coalition cap.
-    if (!is.null(ps$n_features) && dataset_family(pdata) == "numeric") {
-      for (v in ps$n_features) {
-        ov <- list(n_features = v)
-        if (!is.null(high_dim) && v == high_dim$n_features) {
-          ov$max_n_coalitions <- high_dim$max_n_coalitions
-        }
-        add(make_row(abase, ov, sweep = "n_features"))
-      }
-    }
-
-    # group sweep: same config but with features grouped.
-    if (isTRUE(ps$group)) {
-      add(make_row(abase, list(group = TRUE), sweep = "group"))
-    }
-
-    # iterative PAIR: source (iterative TRUE) + dependent (iterative FALSE with
-    # max_n_coalitions resolved from the source at run time, sentinel -1).
-    if (isTRUE(ps$iterative)) {
-      pk <- paste0("iter_", appr)
-      add(make_row(abase, list(iterative = TRUE, max_n_coalitions = iter_cap),
-        sweep = "iterative", pair_key = pk, pair_role = "source"))
-      add(make_row(abase, list(iterative = FALSE, max_n_coalitions = -1L),
-        sweep = "iterative", pair_key = pk, pair_role = "dependent"))
-    }
+# Cross-product of a named list of value-vectors into a list of override lists.
+# Empty / NULL yields a single empty override (i.e. pure baseline).
+grid_combos <- function(spec) {
+  if (is.null(spec) || length(spec) == 0) {
+    return(list(list()))
   }
-
-  # ---- Baseline-only (infrastructure) sweeps -------------------------------
-  for (dim in names(cfg$infra_sweeps %||% list())) {
-    for (v in cfg$infra_sweeps[[dim]]) {
-      add(make_row(base, setNames(list(v), dim), sweep = paste0("infra:", dim)))
-    }
-  }
-
-  # workers x backend parallel grid, combined with batching.
-  pg <- cfg$parallel_grid
-  if (!is.null(pg)) {
-    combos <- expand.grid(workers = pg$workers, backend = pg$backend,
-      stringsAsFactors = FALSE)
-    for (i in seq_len(nrow(combos))) {
-      ov <- list(workers = combos$workers[i], backend = combos$backend[i])
-      if (!is.null(pg$min_n_batches)) ov$min_n_batches <- pg$min_n_batches
-      add(make_row(base, ov, sweep = "grid:parallel"))
-    }
-  }
-
-  # ---- Approach-specific scalar parameter sweeps ---------------------------
-  for (psw in (cfg$approach_param_sweeps %||% list())) {
-    for (v in psw$values) {
-      args <- setNames(list(v), psw$param)
-      if (!is.null(psw$variant)) args <- c(list(variant = psw$variant), args)
-      add(make_row(base, list(approach = psw$approach, dataset = psw$dataset),
-        sweep = paste0("param:", psw$param), approach_args = args))
-    }
-  }
-
-  # ---- Named regression variant sweeps -------------------------------------
-  for (rv in (cfg$regression_variant_sweeps %||% list())) {
-    for (vn in rv$variants) {
-      add(make_row(base, list(approach = rv$approach, dataset = rv$dataset),
-        sweep = "variant", approach_args = list(variant = vn)))
-    }
-  }
-
-  return(rbindlist(rows, use.names = TRUE))
+  # unlist() each entry so mixed numeric/Inf sequences (read as a list) collapse
+  # to a plain vector while preserving type (numeric / character / logical).
+  spec <- lapply(spec, function(v) if (is.list(v)) unlist(v) else v)
+  df <- do.call(expand.grid, c(spec, list(stringsAsFactors = FALSE, KEEP.OUT.ATTRS = FALSE)))
+  lapply(seq_len(nrow(df)), function(i) as.list(df[i, , drop = FALSE]))
 }
 
-build_factorial <- function(cfg) {
-  base <- modifyList(cfg$baseline, cfg$fixed)
-  combos <- do.call(expand.grid, c(cfg$factors, stringsAsFactors = FALSE))
+build_blocks <- function(cfg) {
+  if (is.null(cfg$approach)) stop("A block config must set a single `approach:`.")
+  if (is.null(cfg$blocks) || length(cfg$blocks) == 0) stop("A block config must define `blocks:`.")
+
+  base <- modifyList(cfg$baseline, list(approach = cfg$approach))
+  if (!is.null(cfg$dataset)) base$dataset <- cfg$dataset
+
   rows <- list()
-  for (i in seq_len(nrow(combos))) {
-    ov <- as.list(combos[i, names(cfg$factors), drop = FALSE])
-    rows[[length(rows) + 1]] <- make_row(base, ov, sweep = "factorial")
+  add <- function(r) rows[[length(rows) + 1]] <<- r
+
+  for (blk in cfg$blocks) {
+    name <- blk$name %||% "block"
+    dim_combos <- grid_combos(blk$grid)
+    arg_combos <- grid_combos(blk$approach_args)
+    is_pair <- identical(blk$pair, "iterative")
+    combo_idx <- 0L
+
+    for (ov in dim_combos) {
+      for (aa in arg_combos) {
+        if (is_pair) {
+          combo_idx <- combo_idx + 1L
+          pk <- paste0("iter_", cfg$approach, "_", name, "_", combo_idx)
+          src_ov <- modifyList(ov, list(iterative = TRUE))
+          dep_ov <- modifyList(ov, list(iterative = FALSE, max_n_coalitions = -1L))
+          add(make_row(base, src_ov, sweep = name, approach_args = aa,
+            pair_key = pk, pair_role = "source"))
+          add(make_row(base, dep_ov, sweep = name, approach_args = aa,
+            pair_key = pk, pair_role = "dependent"))
+        } else {
+          add(make_row(base, ov, sweep = name, approach_args = aa))
+        }
+      }
+    }
   }
+
   return(rbindlist(rows, use.names = TRUE))
 }
 
@@ -221,13 +184,13 @@ main <- function() {
   a <- parse_args()
   cfg <- load_config(a$config)
 
-  grid <- if (identical(cfg$design, "oat")) build_oat(cfg) else build_factorial(cfg)
+  grid <- build_blocks(cfg)
 
   # Drop approach/dataset combinations that are not supported.
   grid <- grid[mapply(approach_supports, approach, dataset)]
 
-  # De-duplicate identical rows (the baseline appears in many sweeps). Pair and
-  # variant rows differ on dimensions / approach_args so they are preserved.
+  # De-duplicate identical rows (a baseline point may recur across blocks). Pair
+  # and approach-arg rows differ on dimensions / approach_args so are preserved.
   key_cols <- c(grid_dimensions(), "approach_args", "pair_key", "pair_role")
   grid <- grid[!duplicated(grid[, ..key_cols])]
 
@@ -251,21 +214,21 @@ main <- function() {
   run_order <- make_run_order(grid, cfg$seed, cfg$randomize_order)
   meta <- list(
     study = cfg$study,
-    design = cfg$design,
-    scale = cfg$scale,
+    approach = cfg$approach,
     n_runs = nrow(grid),
     ram_method = cfg$ram$method,
     poll_interval_ms = cfg$ram$poll_interval_ms,
     cooldown_sec = cfg$cooldown_sec,
     timeout_sec = cfg$timeout_sec %||% 600,
+    time_budget_sec = cfg$time_budget_sec %||% 0,
     aggregate_every = cfg$aggregate_every %||% 0,
     run_order = run_order
   )
   jsonlite::write_json(meta, file.path(cfg$dir$results, "run_meta.json"),
     auto_unbox = TRUE, pretty = TRUE)
 
-  cat(sprintf("Study '%s' (%s/%s): %d runs -> %s\n",
-    cfg$study, cfg$design, cfg$scale, nrow(grid), grid_path))
+  cat(sprintf("Study '%s' (approach %s): %d runs -> %s\n",
+    cfg$study, cfg$approach, nrow(grid), grid_path))
 }
 
 main()

@@ -130,10 +130,16 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     seed = cfg$seed + row$id
   )
 
-  # Feature grouping (group sweep): partition features into fixed-size groups.
+  # Feature grouping (group sweep): partition features into groups of
+  # `group_size` consecutive columns. group_size is a swept grid dimension;
+  # fall back to the config-level / default value for older grids.
   if (isTRUE(as.logical(row$group))) {
-    base_args$group <- build_groups(colnames(run_data$x_train),
-      group_size = cfg$group_size %||% 2L)
+    gsize <- if (!is.null(row$group_size) && !is.na(row$group_size)) {
+      as.integer(row$group_size)
+    } else {
+      cfg$group_size %||% 2L
+    }
+    base_args$group <- build_groups(colnames(run_data$x_train), group_size = gsize)
   }
 
   return(c(base_args, variant_args, approach_args))
