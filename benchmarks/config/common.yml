@@ -158,8 +158,14 @@ datasets:
 # dimension at a time. In the factorial design, dimensions not listed under
 # `factors` fall back to these values (unless overridden in `fixed`).
 #
-# max_batch_size = Inf means the number of batches is governed solely by
-# min_n_batches (so the "batches" sweep is clean).
+# max_batch_size = Inf means the batch count is governed by min_n_batches, but
+# only until shapr's max_batch_cube_size cap engages: in high dimensions that
+# cap lowers max_batch_size (raising the batch count) so no single dense
+# per-batch array exceeds max_batch_cube_size elements. Keep max_batch_cube_size
+# at the shapr default (1e6) for realistic runs; set it to Inf in a sweep to
+# disable the cap and control the batch count precisely via min_n_batches /
+# max_batch_size. The batch count actually used is recorded as used_n_batches
+# (and used_n_batches_max over iterations), alongside effective_max_batch_size.
 # ---------------------------------------------------------------------------
 baseline:
   approach: gaussian
@@ -173,6 +179,7 @@ baseline:
   n_MC_samples: 250
   min_n_batches: 10
   max_batch_size: Inf
+  max_batch_cube_size: 1e6
   workers: 1
   backend: multisession
   dt_threads: 1

@@ -103,6 +103,19 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
       "--max-n-coalitions override was supplied")
   }
 
+  # Batching controls. `max_batch_cube_size` (default 1e6 in shapr) caps
+  # `max_batch_size` in high dimensions; set it to Inf in a config to disable
+  # the cap and control the batch count precisely via min_n_batches /
+  # max_batch_size. Older grids without the column fall back to the shapr
+  # default by omitting it here.
+  eca <- list(
+    min_n_batches = row$min_n_batches,
+    max_batch_size = row$max_batch_size
+  )
+  if (!is.null(row$max_batch_cube_size) && !is.na(row$max_batch_cube_size)) {
+    eca$max_batch_cube_size <- row$max_batch_cube_size
+  }
+
   base_args <- list(
     model = model,
     x_explain = run_data$x_explain,
@@ -112,10 +125,7 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     max_n_coalitions = max_nc,
     n_MC_samples = row$n_MC_samples,
     iterative = as.logical(row$iterative),
-    extra_computation_args = list(
-      min_n_batches = row$min_n_batches,
-      max_batch_size = row$max_batch_size
-    ),
+    extra_computation_args = eca,
     verbose = NULL,
     seed = cfg$seed + row$id
   )
@@ -203,6 +213,10 @@ main <- function() {
     result$gc_peak_bytes <- gc_peak_bytes()
     result$used_n_coalitions <- used_n_coalitions(res$expl)
     result$n_iterations <- used_n_iterations(res$expl)
+    nb_vec <- iter_n_batches(res$expl)
+    result$used_n_batches <- if (all(is.na(nb_vec))) NA_integer_ else as.integer(nb_vec[length(nb_vec)])
+    result$used_n_batches_max <- if (all(is.na(nb_vec))) NA_integer_ else as.integer(max(nb_vec, na.rm = TRUE))
+    result$effective_max_batch_size <- effective_max_batch_size(res$expl)
     result$timing <- flatten_timing(res$expl)
   }
 

@@ -42,6 +42,42 @@ used_n_iterations <- function(expl) {
   )
 }
 
+# Number of batches actually used in each iteration. The `max_batch_cube_size`
+# cap (default 1e6) can silently raise this above `min_n_batches` / the number
+# implied by `max_batch_size` in high-dimensional settings, so it is recorded
+# explicitly. Returns an integer vector (one element per iteration); the actual
+# batch count is the length of that iteration's S_batch list, falling back to
+# the stored n_batches when S_batch is unavailable.
+iter_n_batches <- function(expl) {
+  tryCatch(
+    {
+      il <- expl$internal$iter_list
+      vapply(il, function(it) {
+        nb <- length(it$S_batch)
+        if (nb == 0) {
+          nb <- if (is.null(it$n_batches)) NA_integer_ else it$n_batches
+        }
+        as.integer(nb)
+      }, integer(1))
+    },
+    error = function(e) NA_integer_
+  )
+}
+
+# The effective (post-cap) `max_batch_size`. shapr's cap_dense_batch_size()
+# lowers this from the requested value when the dense per-batch array would
+# exceed `max_batch_cube_size`; comparing it to the requested max_batch_size
+# reveals whether (and how hard) the cap engaged.
+effective_max_batch_size <- function(expl) {
+  tryCatch(
+    {
+      v <- expl$internal$parameters$extra_computation_args$max_batch_size
+      if (is.null(v)) NA_real_ else as.numeric(v)
+    },
+    error = function(e) NA_real_
+  )
+}
+
 # gc() peak since the last reset, in bytes (parent process only).
 gc_peak_bytes <- function() {
   g <- gc(reset = FALSE)
