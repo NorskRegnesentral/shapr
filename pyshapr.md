@@ -164,14 +164,14 @@ Commonly used approaches include:
 
 - `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`,
   `"gaussian"`, `"regression_separate"`, `"regression_surrogate"`,
-  `"vaeac"`
+  `"timeseries"`, `"vaeac"`
 - `"independence"` (not recommended)
 
 `"arf"`, `"ctree"`, `"regression_separate"`, `"regression_surrogate"`
 and `"vaeac"` support mixed numerical/categorical feature sets,
 `"categorical"` supports categorical features only, while `"copula"`,
-`"empirical"`, `"gaussian"` and `"independence"` support numerical
-features only.
+`"empirical"`, `"gaussian"`, `"timeseries"` and `"independence"` support
+numerical features only.
 
 ------------------------------------------------------------------------
 

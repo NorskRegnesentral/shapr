@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,11 @@
 <div class="section level2">
 <h2 id="unreleased">[Unreleased]<a class="anchor" aria-label="anchor" href="#unreleased"></a></h2>
 <div class="section level3">
+<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>Expanded the <code>extra_computation_args</code>, <code>iterative_args</code> and <code>output_args</code> docstrings in <code><a href="reference/explain.html">explain()</a></code> to list the keys forwarded to shapr’s <code><a href="reference/get_extra_comp_args_default.html">get_extra_comp_args_default()</a></code>, <code><a href="reference/get_iterative_args_default.html">get_iterative_args_default()</a></code> and <code><a href="reference/get_output_args_default.html">get_output_args_default()</a></code> (e.g. <code>semi_deterministic_sampling</code>, <code>max_batch_cube_size</code>, <code>convergence_tol</code>, <code>saving_path</code>). No functional change; these keys were already accepted via the generic dict. (branch: robustify-high-dim)</li>
+<li>Documented the <code>"timeseries"</code> approach as supported in the <code>approach</code> docstring and README (verified to work through the wrapper). No functional change. (branch: robustify-high-dim)</li>
+</ul></div>
+<div class="section level3">
 <h3 id="added">Added<a class="anchor" aria-label="anchor" href="#added"></a></h3>
 <ul><li>Added support for computing SAGE values (Shapley Additive Global importancE) via the new <code><a href="reference/explain.html">explain()</a></code> arguments <code>scope</code> and <code>y_explain</code>. Set <code>scope="global"</code> to compute SAGE values. A custom Python loss function can be passed through <code>extra_computation_args={"global_loss_func": my_loss}</code> and is bridged into the R computation. Added the <code>Shapr.get_shap_values_est()</code> accessor for the per-observation Shapley values computed alongside the SAGE values, and made <code>Shapr.to_shap()</code> SAGE-aware (returns the single global loss explanation). (branch: sage)</li>
 </ul></div>
@@ -67,7 +72,7 @@
 <div class="section level2">
 <h2 id="id_050---2026-06-23">[0.5.0] - 2026-06-23<a class="anchor" aria-label="anchor" href="#id_050---2026-06-23"></a></h2>
 <div class="section level3">
-<h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>
 <strong>Renamed the package from <code>shaprpy</code> to <code>pyshapr</code></strong> (both the PyPI distribution name and the import name). Update installs to <code>pip install pyshapr</code> and imports to <code>import pyshapr</code>. This is the first release published under the <code>pyshapr</code> name. The previous <code>shaprpy</code> package remains available on PyPI for a transition period as a thin compatibility shim (released as <code>shaprpy 0.4.4</code>) that depends on and forwards to <code>pyshapr</code>.</li>
 </ul></div>
@@ -80,7 +85,7 @@
 <li>Added an <code>arf</code>/<code>vaeac</code> end-to-end example script for numerical and mixed categorical feature sets.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
 <ul><li>Updated documentation to explicitly list <code>arf</code> and <code>vaeac</code> as supported approaches.</li>
 <li>Updated local <code>vaeac</code> snapshot tests to pass <code>vaeac_*</code> arguments directly to <code><a href="reference/explain.html">explain()</a></code>.</li>
 <li>Made the <code>python/</code> package pass <code>ruff check</code> and <code>ruff format</code>.</li>
@@ -121,7 +126,7 @@
 <li>Adjusted the unit tests to cover the new <code>ShaprSummary</code> class functionality</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
+<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
 <ul><li>Update <code>class_exploration.py</code> example to demonstrate the new <code>ShaprSummary</code> class</li>
 </ul></div>
 </div>
@@ -142,7 +147,7 @@
 <li>Added comprehensive unit and snapshot tests covering all approaches and full functionality, including categorical features and causal ordering</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
+<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: <code><a href="reference/explain.html">explain()</a></code> function now returns a <code>Shapr</code> object instead of a plain dictionary</li>
 <li>Restructured internal module organization with private <code>_explain.py</code> and <code>_rutils.py</code> modules</li>
@@ -168,7 +173,7 @@
 <li>Input validation tests for error handling</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
+<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: Minimum Python version requirement increased from 3.8+ to 3.10+</li>
 <li>Updated package classifiers to reflect Python 3.10+ requirement</li>

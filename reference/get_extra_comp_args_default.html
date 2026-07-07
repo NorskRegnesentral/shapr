@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9002</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,7 @@
 <span>  vS_batching_method <span class="op">=</span> <span class="st">"future"</span>,</span>
 <span>  max_batch_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  min_n_batches <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  max_batch_cube_size <span class="op">=</span> <span class="fl">1e+06</span>,</span>
 <span>  global_loss_func <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -137,6 +138,17 @@ A larger number requires more memory, but may have a slight computational advant
 <dd><p>Integer. The minimum number of batches to split the computation into within each iteration.
 Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.</p></dd>
+
+
+<dt id="arg-max-batch-cube-size">max_batch_cube_size<a class="anchor" aria-label="anchor" href="#arg-max-batch-cube-size"></a></dt>
+<dd><p>Numeric. The largest number of elements allowed in the dense per-batch array
+built by the <code>gaussian</code>, <code>copula</code> and <code>empirical</code> approaches. For <code>gaussian</code> and <code>copula</code> this array has a total of
+<code>n_MC_samples * n_explain * coalitions_per_batch * n_features</code> elements, while for <code>empirical</code> it is the distance
+array with <code>n_train * n_explain * coalitions_per_batch</code> elements. When a batch would exceed this, the batch size is
+automatically reduced (i.e. more batches are used) and a message is given. The default <code>1e6</code> keeps peak memory
+modest and tends to reduce runtime in high-dimensional settings, while staying far below the 32-bit indexing limit
+of the underlying <code>RcppArmadillo</code> arrays (which fails with <code>Cube::init(): requested size is too large</code>). Raise it
+to allow larger batches, or lower it to use even smaller ones.</p></dd>
 
 
 <dt id="arg-global-loss-func">global_loss_func<a class="anchor" aria-label="anchor" href="#arg-global-loss-func"></a></dt>
