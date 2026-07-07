@@ -142,12 +142,12 @@ to `pyshapr.explain`.
 `pyshapr` forwards all approach-specific arguments to `shapr::explain()`. Commonly used approaches include:
 
 - `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
-  `"regression_separate"`, `"regression_surrogate"`, `"vaeac"`
+  `"regression_separate"`, `"regression_surrogate"`, `"timeseries"`, `"vaeac"`
 - `"independence"` (not recommended)
 
 `"arf"`, `"ctree"`, `"regression_separate"`, `"regression_surrogate"` and `"vaeac"` support mixed
 numerical/categorical feature sets, `"categorical"` supports categorical features only,
-while `"copula"`, `"empirical"`, `"gaussian"`  and `"independence"` support numerical features only.
+while `"copula"`, `"empirical"`, `"gaussian"`, `"timeseries"` and `"independence"` support numerical features only.
 
 ---
 
