@@ -9,12 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Expanded the `extra_computation_args`, `iterative_args` and `output_args` docstrings in `explain()` to list
+  the keys forwarded to shapr's `get_extra_comp_args_default()`, `get_iterative_args_default()` and
+  `get_output_args_default()` (e.g. `semi_deterministic_sampling`, `max_batch_cube_size`, `convergence_tol`,
+  `saving_path`). No functional change; these keys were already accepted via the generic dict. (branch: robustify-high-dim)
+- Documented the `"timeseries"` approach as supported in the `approach` docstring and README (verified to work
+  through the wrapper). No functional change. (branch: robustify-high-dim)
+
 ### Added
 - Added support for computing SAGE values (Shapley Additive Global importancE) via the new `explain()`
-  arguments `sage`, `y_explain`, and `sage_args`. A custom Python `loss_func` can be passed through
-  `sage_args` and is bridged into the R computation. Added the `Shapr.get_shap_values_est()` accessor for
-  the per-observation Shapley values computed alongside the SAGE values, and made `Shapr.to_shap()`
-  SAGE-aware (returns the single global loss explanation). (branch: sage)
+  arguments `scope` and `y_explain`. Set `scope="global"` to compute SAGE values. A custom Python loss
+  function can be passed through `extra_computation_args={"global_loss_func": my_loss}` and is bridged into
+  the R computation. Added the `Shapr.get_shap_values_est()` accessor for the per-observation Shapley values
+  computed alongside the SAGE values, and made `Shapr.to_shap()` SAGE-aware (returns the single global loss
+  explanation). (branch: sage)
 
 ## [0.5.1] - 2026-06-24
 

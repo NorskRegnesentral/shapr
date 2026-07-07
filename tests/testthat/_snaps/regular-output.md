@@ -22,6 +22,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -53,6 +54,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -84,6 +86,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp    Month    Day
               <int> <num>   <num>   <num>  <num>    <num>  <num>
@@ -114,6 +117,7 @@
       -- Main computation started --
       
       i Using 20 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
@@ -144,6 +148,7 @@
       -- Main computation started --
       
       i Using 20 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -180,6 +185,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
       i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
       i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
       i Setting `empirical.eta` to 1 because `empirical.type = 'independence'`.
@@ -220,6 +226,7 @@
       -- Main computation started --
       
       i Using 8 of 32 coalitions. 
+      i Coalitions split into 6 batches (mean 1.3 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month      Day
               <int> <num>   <num>   <num>  <num>   <num>    <num>
@@ -250,6 +257,7 @@
       -- Main computation started --
       
       i Using 8 of 32 coalitions. 
+      i Coalitions split into 6 batches (mean 1.3 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month      Day
               <int> <num>   <num>   <num>  <num>   <num>    <num>
@@ -281,6 +289,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind     Temp  Month     Day
               <int> <num>   <num>   <num>    <num>  <num>   <num>
@@ -312,6 +321,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind    Temp   Month    Day
               <int> <num>   <num>   <num>   <num>   <num>  <num>
@@ -343,6 +353,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
@@ -387,6 +398,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R   Wind  Temp  Month    Day
               <int> <num>   <num>  <num> <num>  <num>  <num>
@@ -418,6 +430,7 @@
       -- Main computation started --
       
       i Using 16 of 16 coalitions. 
+      i Coalitions split into 10 batches (mean 1.6 per batch). 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -462,6 +475,7 @@
       -- Main computation started --
       
       i Using 16 of 16 coalitions. 
+      i Coalitions split into 10 batches (mean 1.6 per batch). 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -493,6 +507,7 @@
       -- Main computation started --
       
       i Using 16 of 16 coalitions. 
+      i Coalitions split into 10 batches (mean 1.6 per batch). 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -524,6 +539,7 @@
       -- Main computation started --
       
       i Using 16 of 16 coalitions. 
+      i Coalitions split into 10 batches (mean 1.6 per batch). 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -560,6 +576,7 @@
       -- Main computation started --
       
       i Using 16 of 16 coalitions. 
+      i Coalitions split into 10 batches (mean 1.6 per batch). 
     Output
          explain_id  none      S1     S2       S3      S4
               <int> <num>   <num>  <num>    <num>   <num>
@@ -590,6 +607,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month     Day
               <int> <num>   <num>   <num>  <num>   <num>   <num>
@@ -621,6 +639,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind    Temp  Month     Day
               <int> <num>   <num>   <num>   <num>  <num>   <num>
@@ -652,6 +671,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month      Day
               <int> <num>   <num>   <num>  <num>  <num>    <num>
@@ -683,6 +703,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -714,6 +735,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -745,6 +767,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R   Wind  Temp    Day Month_factor
               <int> <num>   <num>  <num> <num>  <num>        <num>
@@ -776,6 +799,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -807,6 +831,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -840,6 +865,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R   Wind   Temp     Day Month_factor
               <int> <num>   <num>  <num>  <num>   <num>        <num>
@@ -871,6 +897,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
+      i Coalitions split into 2 batches (mean 2 per batch). 
     Output
          explain_id  none Solar.R    Wind
               <int> <num>   <num>   <num>
@@ -902,6 +929,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>
@@ -933,6 +961,7 @@
       -- Main computation started --
       
       i Using 32 of 32 coalitions. 
+      i Coalitions split into 10 batches (mean 3.2 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp    Month    Day
               <int> <num>   <num>   <num>  <num>    <num>  <num>

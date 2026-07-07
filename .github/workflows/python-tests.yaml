@@ -44,6 +44,11 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
+      - name: Configure R shared library path for rpy2
+        run: |
+          echo "R_HOME=$(R RHOME)" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -56,7 +61,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION') }}
+          key: ${{ runner.os }}-r-release-shapr-${{ hashFiles('DESCRIPTION', 'NAMESPACE', 'R/**/*.R') }}
           restore-keys: |
             ${{ runner.os }}-r-release-shapr-
 
@@ -81,7 +86,16 @@ jobs:
 
       - name: Install R shapr package
         run: |
-          remotes::install_local(".", dependencies = FALSE, build_vignettes = FALSE)
+          if ("shapr" %in% rownames(installed.packages())) {
+            remove.packages("shapr")
+          }
+          remotes::install_local(
+            ".",
+            dependencies = FALSE,
+            build_vignettes = FALSE,
+            force = TRUE,
+            upgrade = "never"
+          )
         shell: Rscript {0}
 
       - name: Install Python pyshapr package for testing

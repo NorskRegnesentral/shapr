@@ -4,30 +4,26 @@
 \alias{get_results}
 \title{Extract Components from a Shapr Object}
 \usage{
-get_results(
-  x,
-  what = c("calling_function", "proglang", "approach", "shapley_est", "shapley_sd",
-    "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition", "iterative_info",
-    "iterative_shapley_est", "iterative_shapley_sd", "saving_path", "timing_summary",
-    "timing_details", "parameters", "x_train", "x_explain", "dt_vS", "dt_samp_for_vS",
-    "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info"),
-  ...
-)
+get_results(x, what = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{shapr} object}
 
 \item{what}{Character vector specifying one or more components to extract.
 Options:
-"calling_function", "proglang", "approach", "shapley_est", "shapley_sd", "pred_explain",
-"MSEv", "MSEv_explicand", "MSEv_coalition",
+"calling_function", "proglang", "approach", "scope", "shapley_est", "shapley_sd", "shap_values_est",
+"sage_values_est", "pred_explain", "MSEv", "MSEv_explicand", "MSEv_coalition",
 "iterative_info", "iterative_shapley_est", "iterative_shapley_sd",
 "saving_path",
 "timing_summary", "timing_details",
 "parameters", "x_train", "x_explain",
 "dt_vS", "dt_samp_for_vS",
 "dt_used_coalitions", "dt_valid_causal_coalitions", "dt_coal_samp_info".
-The default is to return all components. See details for what each component contains.}
+The default returns the standard set of components. \code{sage_values_est} is never part of the default, since it is
+\code{NULL} for local explanations and identical to \code{shapley_est} for global (SAGE) ones. \code{shap_values_est} is
+included only for global explanations, where it holds the distinct per-observation decomposition; for local
+explanations it would duplicate \code{shapley_est} and is omitted. All components remain available on explicit
+request regardless of scope. See details for what each component contains.}
 
 \item{...}{Not used}
 }
@@ -47,9 +43,16 @@ The allowed characters in \code{what} provides information as follows:
 (\code{explain()} or \code{explain_forecast()}).}
 \item{\code{proglang}}{Programming language used to initiate the computations (\code{R} or \code{Python}).}
 \item{\code{approach}}{Approach used to estimate the conditional expectations.}
+\item{\code{scope}}{Explanation scope: \code{"local"} for standard per-observation Shapley values or \code{"global"} for
+SAGE values.}
 \item{\code{shapley_est}}{data.table with the estimated Shapley values.}
 \item{\code{shapley_sd}}{data.table with the standard deviation of the Shapley values reflecting the uncertainty
 in the coalition sampling part of the kernelSHAP procedure.}
+\item{\code{shap_values_est}}{data.table with the per-observation (local) Shapley value explanations of the
+predictions. Always available: when \code{scope = "local"} this equals \code{shapley_est}; when \code{scope = "global"}
+(SAGE) it holds the per-observation decomposition while \code{shapley_est} holds the SAGE values.}
+\item{\code{sage_values_est}}{data.table with the SAGE values (global feature importance). Only available when
+\code{scope = "global"} (identical to \code{shapley_est} in that case); \code{NULL} otherwise.}
 \item{\code{pred_explain}}{Numeric vector with the predictions for the explained observations.}
 \item{\code{MSEv/MSEv_explicand/MSEv_coalition}}{Data.tables with MSEv evaluation criterion values overall/
 per explicand/per coalition.

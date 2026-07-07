@@ -14,7 +14,7 @@ test_that("erroneous input: `y_explain`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE
+        scope = "global"
       )
     },
     error = TRUE
@@ -33,7 +33,7 @@ test_that("erroneous input: `y_explain`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_non_numeric
       )
     },
@@ -53,7 +53,7 @@ test_that("erroneous input: `y_explain`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_NA
       )
     },
@@ -73,7 +73,7 @@ test_that("erroneous input: `y_explain`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_short
       )
     },
@@ -81,13 +81,13 @@ test_that("erroneous input: `y_explain`", {
   )
 })
 
-test_that("erroneous input: `sage`", {
+test_that("erroneous input: `scope`", {
   set.seed(123)
 
-  # Non logical
+  # Non character
   expect_snapshot(
     {
-      sage_numeric <- 3
+      scope_numeric <- 3
 
       explain(
         testing = TRUE,
@@ -97,7 +97,27 @@ test_that("erroneous input: `sage`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = sage_numeric,
+        scope = scope_numeric,
+        y_explain = y_train_numeric
+      )
+    },
+    error = TRUE
+  )
+
+  # Invalid string
+  expect_snapshot(
+    {
+      scope_invalid <- "both"
+
+      explain(
+        testing = TRUE,
+        model = model_lm_numeric,
+        x_explain = x_train_numeric,
+        x_train = x_train_numeric,
+        approach = "gaussian",
+        phi0 = p0,
+        seed = 1,
+        scope = scope_invalid,
         y_explain = y_train_numeric
       )
     },
@@ -107,7 +127,7 @@ test_that("erroneous input: `sage`", {
   # Vector
   expect_snapshot(
     {
-      sage_vec <- c(TRUE, TRUE)
+      scope_vec <- c("local", "global")
 
       explain(
         testing = TRUE,
@@ -117,27 +137,7 @@ test_that("erroneous input: `sage`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = sage_vec,
-        y_explain = y_train_numeric
-      )
-    },
-    error = TRUE
-  )
-
-  # NULL
-  expect_snapshot(
-    {
-      sage_null <- NULL
-
-      explain(
-        testing = TRUE,
-        model = model_lm_numeric,
-        x_explain = x_train_numeric,
-        x_train = x_train_numeric,
-        approach = "gaussian",
-        phi0 = p0,
-        seed = 1,
-        sage = sage_null,
+        scope = scope_vec,
         y_explain = y_train_numeric
       )
     },
@@ -146,7 +146,7 @@ test_that("erroneous input: `sage`", {
 })
 
 
-test_that("erroneous input: `sage_args$loss_func`", {
+test_that("erroneous input: `extra_computation_args$global_loss_func`", {
   set.seed(123)
 
   # Not a function
@@ -162,9 +162,9 @@ test_that("erroneous input: `sage_args$loss_func`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
-        sage_args = list(loss_func = loss_non_func)
+        extra_computation_args = list(global_loss_func = loss_non_func)
       )
     },
     error = TRUE
@@ -187,9 +187,9 @@ test_that("erroneous input: `sage_args$loss_func`", {
         approach = "gaussian",
         phi0 = p0,
         seed = 1,
-        sage = TRUE,
+        scope = "global",
         y_explain = y_train_numeric,
-        sage_args = list(loss_func = loss_wrong_n_param)
+        extra_computation_args = list(global_loss_func = loss_wrong_n_param)
       )
     },
     error = TRUE

@@ -25,6 +25,7 @@ docs
 .idea
 .DS_Store
 /revdep
+benchmarks/
 
 vignettes/cache_general_usage/
 vignettes/cache_vaeac/

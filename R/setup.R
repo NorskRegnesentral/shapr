@@ -60,9 +60,8 @@ setup <- function(x_train,
                   confounding = NULL,
                   output_args = list(),
                   extra_computation_args = list(),
-                  sage = FALSE,
+                  scope = "local",
                   y_explain = NULL,
-                  sage_args = list(),
                   model_class,
                   ...) {
   internal <- list()
@@ -124,8 +123,7 @@ setup <- function(x_train,
     confounding = confounding,
     output_args = output_args,
     extra_computation_args = extra_computation_args,
-    sage = sage,
-    sage_args = sage_args,
+    scope = scope,
     model_class = model_class,
     ...
   )
@@ -203,8 +201,7 @@ get_parameters <- function(approach,
                            is_python,
                            output_args = list(),
                            extra_computation_args = list(),
-                           sage = FALSE,
-                           sage_args = list(),
+                           scope = "local",
                            testing = FALSE,
                            model_class = model_class,
                            ...) {
@@ -223,12 +220,9 @@ get_parameters <- function(approach,
     cli::cli_abort("`extra_computation_args` must be a list.")
   }
 
-  # sage
-  if (!(is.logical(sage) && length(sage) == 1 && !is.na(sage))) {
-    cli::cli_abort("`sage` must be a single logical.")
-  }
-  if (!is.list(sage_args)) {
-    cli::cli_abort("`sage_args` must be a list.")
+  # scope
+  if (!(is.character(scope) && length(scope) == 1 && !is.na(scope) && scope %in% c("local", "global"))) {
+    cli::cli_abort("`scope` must be either `local` or `global`.")
   }
 
 
@@ -344,8 +338,7 @@ get_parameters <- function(approach,
     causal_ordering = causal_ordering,
     confounding = confounding,
     model_class = model_class,
-    sage = sage,
-    sage_args = sage_args,
+    scope = scope,
     testing = testing
   )
 
@@ -443,7 +436,7 @@ check_data <- function(internal) {
   x_train <- internal$data$x_train
   x_explain <- internal$data$x_explain
 
-  sage <- internal$parameters$sage
+  is_global <- internal$parameters$scope == "global"
   y_explain <- internal$data$y_explain
 
   model_feature_specs <- internal$objects$feature_specs
@@ -502,12 +495,12 @@ check_data <- function(internal) {
   check_feature_specs(model_feature_specs)
 
   # Check the response vector `y_explain` when computing SAGE values
-  if (sage) {
+  if (is_global) {
     if (!(is.numeric(y_explain) && is.vector(y_explain) &&
       !anyNA(y_explain) && length(y_explain) == nrow(x_explain))) {
       cli::cli_abort(paste0(
         "`y_explain` must be a numeric vector without `NA`s and with the same number of elements as there ",
-        "are rows in `x_explain` when `sage = TRUE`."
+        "are rows in `x_explain` when `scope = \"global\"`."
       ))
     }
   }
@@ -712,6 +705,7 @@ check_and_set_parameters <- function(internal, type) {
   confounding <- internal$parameters$confounding
   asymmetric <- internal$parameters$asymmetric
   regression <- internal$parameters$regression
+  is_global <- internal$parameters$scope == "global"
   m <- internal$parameters$n_shapley_values
 
   if (type == "forecast") {
@@ -761,7 +755,7 @@ check_and_set_parameters <- function(internal, type) {
   internal <- set_extra_comp_params(internal)
 
   # Set the SAGE-specific parameters (loss function and baseline loss) when computing SAGE values
-  if (internal$parameters$sage) internal <- set_sage_parameters(internal)
+  if (is_global) internal <- set_global_parameters(internal)
 
   # Give warnings to the user about long computation times
   check_computability(internal)
@@ -1172,75 +1166,34 @@ check_output_args <- function(output_args) {
 }
 
 
-#' Set the SAGE-specific parameters in `internal`
+#' Set the global (SAGE) parameters in `internal`
 #'
-#' @details Merges the user-provided `sage_args` with the defaults from [get_sage_args_default()], resolves the
-#' default loss function (logistic loss for binary responses, mean squared error otherwise), validates it, and
+#' @details Reads the loss function from `extra_computation_args$global_loss_func`, resolves the default loss
+#' function (logistic loss for binary responses, mean squared error otherwise) when none is supplied, and
 #' stores both the loss function and the baseline loss `zero_loss = -loss_func(y_explain, phi0)` in `internal`.
 #'
 #' @inheritParams default_doc_internal
 #' @return The (updated) `internal` list.
 #' @author Martin Jullum
 #' @keywords internal
-set_sage_parameters <- function(internal) {
-  sage_args <- internal$parameters$sage_args
+set_global_parameters <- function(internal) {
   phi0 <- internal$parameters$phi0
   y_explain <- internal$data$y_explain
 
-  # Get defaults
-  sage_args <- utils::modifyList(get_sage_args_default(),
-    sage_args,
-    keep.null = TRUE
-  )
-
-  check_sage_args(sage_args)
-
-  loss_func <- sage_args$loss_func
+  loss_func <- internal$parameters$extra_computation_args$global_loss_func
 
   # Resolve the default loss function when the user has not supplied one
   if (is.null(loss_func)) {
     loss_func <- if (all(y_explain %in% c(0, 1))) log_loss else mse_loss
-    sage_args$loss_func <- loss_func
   }
 
-  internal$parameters$sage_args <- sage_args
+  internal$parameters$extra_computation_args$global_loss_func <- loss_func
   internal$parameters$loss_func <- loss_func
 
   # Baseline loss (the value of the empty coalition), used as the `none` value and the waterfall plot baseline
   internal$parameters$zero_loss <- -loss_func(y_explain, phi0)
 
   return(internal)
-}
-
-#' Get the Default Values for the SAGE Arguments
-#'
-#' @param loss_func Function or `NULL`.
-#' The loss function used to measure the model loss when computing the SAGE values.
-#' Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
-#' loss value.
-#' If `NULL` (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
-#' error loss otherwise.
-#'
-#' @return A list with the default values for the SAGE arguments.
-#' @export
-#' @author Martin Jullum
-get_sage_args_default <- function(loss_func = NULL) {
-  return(mget(methods::formalArgs(get_sage_args_default)))
-}
-
-#' Check the SAGE Arguments
-#'
-#' @param sage_args List of SAGE arguments, see [get_sage_args_default()].
-#'
-#' @return Nothing. Called for its side effect of aborting on invalid input.
-#' @keywords internal
-#' @author Martin Jullum
-check_sage_args <- function(sage_args) {
-  loss_func <- sage_args$loss_func
-
-  if (!is.null(loss_func) && !(is.function(loss_func) && length(formals(loss_func)) == 2)) {
-    cli::cli_abort("`sage_args$loss_func` must be `NULL` or a function of exactly two arguments.")
-  }
 }
 
 #' Logistic (Cross-Entropy) Loss
@@ -1381,6 +1334,21 @@ check_and_set_sampling_info <- function(internal) {
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
+#' @param max_batch_cube_size Numeric. The largest number of elements allowed in the dense per-batch array
+#' built by the `gaussian`, `copula` and `empirical` approaches. For `gaussian` and `copula` this array has a total of
+#' `n_MC_samples * n_explain * coalitions_per_batch * n_features` elements, while for `empirical` it is the distance
+#' array with `n_train * n_explain * coalitions_per_batch` elements. When a batch would exceed this, the batch size is
+#' automatically reduced (i.e. more batches are used) and a message is given. The default `1e6` keeps peak memory
+#' modest and tends to reduce runtime in high-dimensional settings, while staying far below the 32-bit indexing limit
+#' of the underlying `RcppArmadillo` arrays (which fails with `Cube::init(): requested size is too large`). Raise it
+#' to allow larger batches, or lower it to use even smaller ones.
+#' @param global_loss_func Function or `NULL`.
+#' Only used when `scope = "global"` (i.e. when computing SAGE values).
+#' The loss function used to measure the model loss when computing the SAGE values.
+#' Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
+#' loss value.
+#' If `NULL` (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
+#' error loss otherwise.
 #' @inheritParams default_doc_export
 #' @export
 #'
@@ -1399,7 +1367,9 @@ get_extra_comp_args_default <- function(internal, # Only used to get the default
                                         n_boot_samps = 100,
                                         vS_batching_method = "future",
                                         max_batch_size = 10,
-                                        min_n_batches = 10) {
+                                        min_n_batches = 10,
+                                        max_batch_cube_size = 1e6,
+                                        global_loss_func = NULL) {
   return(mget(methods::formalArgs(get_extra_comp_args_default)[-1])) # [-1] to exclude internal
 }
 
@@ -1410,6 +1380,11 @@ check_extra_computation_args <- function(extra_computation_args) {
   # paired_shap_sampling
   if (!is.logical(paired_shap_sampling) && length(paired_shap_sampling) == 1) {
     cli::cli_abort("`paired_shap_sampling` must be a single logical.")
+  }
+
+  # global_loss_func
+  if (!is.null(global_loss_func) && !(is.function(global_loss_func) && length(formals(global_loss_func)) == 2)) {
+    cli::cli_abort("`extra_computation_args$global_loss_func` must be `NULL` or a function of exactly two arguments.")
   }
 
   # semi_deterministic_sampling
@@ -1460,6 +1435,15 @@ check_extra_computation_args <- function(extra_computation_args) {
       min_n_batches > 0)) {
     cli::cli_abort("`extra_computation_args$min_n_batches` must be NULL or a single positive integer.")
   }
+
+  # max_batch_cube_size
+  if (!is.null(max_batch_cube_size) &&
+    !(is.numeric(max_batch_cube_size) &&
+      length(max_batch_cube_size) == 1 &&
+      !is.na(max_batch_cube_size) &&
+      max_batch_cube_size > 0)) {
+    cli::cli_abort("`extra_computation_args$max_batch_cube_size` must be NULL or a single positive number.")
+  }
 }
 
 #' @keywords internal
@@ -1469,6 +1453,9 @@ trans_null_extra_est_args <- function(extra_computation_args) {
   # Translating NULL to always return n_batches = 1 (if just one approach)
   extra_computation_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
   extra_computation_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  extra_computation_args$max_batch_cube_size <- ifelse(is.null(max_batch_cube_size), 1e6,
+    max_batch_cube_size
+  )
 
   return(extra_computation_args)
 }
@@ -1895,6 +1882,50 @@ trans_null_iterative_args <- function(iterative_args) {
   return(iterative_args)
 }
 
+
+#' Cap the batch size to keep the dense per-batch sampling array within limits
+#'
+#' Some approaches build a dense per-batch array (an `RcppArmadillo` cube) whose number of elements grows with the
+#' number of coalitions in the batch. For the `gaussian` and `copula` approaches this array has a total of
+#' `n_MC_samples * n_explain * coalitions_per_batch * n_features` elements, while the `empirical` approach builds a
+#' distance array with `n_train * n_explain * coalitions_per_batch` elements. With many features, explicands, training
+#' observations or coalitions, this can exceed the 32-bit indexing limit of the underlying `RcppArmadillo` arrays
+#' (failing with `Cube::init(): requested size is too large`) or simply demand excessive memory. This helper reduces
+#' `max_batch_size` (i.e. uses more batches) so that no single batch exceeds `max_batch_cube_size` elements. Note that
+#' parallelization (`workers > 1`) increases total memory because several batches are held at once, but each individual
+#' array still fits, so the limit is enforced per batch and is unaffected by the number of workers.
+#'
+#' @param per_coalition_size Numeric. The number of dense array elements contributed by a single coalition for the
+#' current approach (i.e. the per-batch array size divided by `coalitions_per_batch`).
+#' @inheritParams default_doc_internal
+#' @return The (possibly modified) `internal` list.
+#' @keywords internal
+cap_dense_batch_size <- function(internal, per_coalition_size) {
+  max_batch_cube_size <- internal$parameters$extra_computation_args$max_batch_cube_size
+  max_batch_size <- internal$parameters$extra_computation_args$max_batch_size
+  verbose <- internal$parameters$verbose
+
+  # Largest number of coalitions whose dense array stays within the element limit.
+  max_coalitions_per_batch <- max(1, floor(max_batch_cube_size / per_coalition_size))
+
+  if (max_coalitions_per_batch < max_batch_size) {
+    if (!is.null(verbose) && "basic" %in% verbose) {
+      cli::cli_inform(c(
+        "i" = paste0(
+          "Capped {.arg max_batch_size} from {.val {max_batch_size}} to {.val {max_coalitions_per_batch}} so each ",
+          "batch array stays under {.arg max_batch_cube_size} = {.val {max_batch_cube_size}} elements."
+        )
+      ))
+    }
+    internal$parameters$extra_computation_args$max_batch_size <- max_coalitions_per_batch
+
+    # Recompute the current iteration's batch count, as it was set before this cap was known.
+    iter <- length(internal$iter_list)
+    internal$iter_list[[iter]]$n_batches <- set_n_batches(internal$iter_list[[iter]]$n_coalitions, internal)
+  }
+
+  return(internal)
+}
 
 #' @keywords internal
 set_n_batches <- function(n_coalitions, internal) {

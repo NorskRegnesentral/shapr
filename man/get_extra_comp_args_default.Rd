@@ -13,7 +13,9 @@ get_extra_comp_args_default(
   n_boot_samps = 100,
   vS_batching_method = "future",
   max_batch_size = 10,
-  min_n_batches = 10
+  min_n_batches = 10,
+  max_batch_cube_size = 1e+06,
+  global_loss_func = NULL
 )
 }
 \arguments{
@@ -66,6 +68,23 @@ A larger number requires more memory, but may have a slight computational advant
 \item{min_n_batches}{Integer. The minimum number of batches to split the computation into within each iteration.
 Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 than the number of parallel workers.}
+
+\item{max_batch_cube_size}{Numeric. The largest number of elements allowed in the dense per-batch array
+built by the \code{gaussian}, \code{copula} and \code{empirical} approaches. For \code{gaussian} and \code{copula} this array has a total of
+\code{n_MC_samples * n_explain * coalitions_per_batch * n_features} elements, while for \code{empirical} it is the distance
+array with \code{n_train * n_explain * coalitions_per_batch} elements. When a batch would exceed this, the batch size is
+automatically reduced (i.e. more batches are used) and a message is given. The default \code{1e6} keeps peak memory
+modest and tends to reduce runtime in high-dimensional settings, while staying far below the 32-bit indexing limit
+of the underlying \code{RcppArmadillo} arrays (which fails with \verb{Cube::init(): requested size is too large}). Raise it
+to allow larger batches, or lower it to use even smaller ones.}
+
+\item{global_loss_func}{Function or \code{NULL}.
+Only used when \code{scope = "global"} (i.e. when computing SAGE values).
+The loss function used to measure the model loss when computing the SAGE values.
+Must take two arguments, the true response and the model prediction (in that order), and return a single numeric
+loss value.
+If \code{NULL} (default), logistic (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared
+error loss otherwise.}
 }
 \value{
 A list with the default values for the extra computation arguments.
