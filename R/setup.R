@@ -1334,6 +1334,14 @@ check_and_set_sampling_info <- function(internal) {
 #' @param min_n_batches Integer. The minimum number of batches to split the computation into within each iteration.
 #' Larger numbers give more frequent progress updates. If parallelization is applied, this should be set no smaller
 #' than the number of parallel workers.
+#' @param max_batch_cube_size Numeric. The largest number of elements allowed in the dense per-batch array
+#' built by the `gaussian`, `copula` and `empirical` approaches. For `gaussian` and `copula` this array has a total of
+#' `n_MC_samples * n_explain * coalitions_per_batch * n_features` elements, while for `empirical` it is the distance
+#' array with `n_train * n_explain * coalitions_per_batch` elements. When a batch would exceed this, the batch size is
+#' automatically reduced (i.e. more batches are used) and a message is given. The default `1e6` keeps peak memory
+#' modest and tends to reduce runtime in high-dimensional settings, while staying far below the 32-bit indexing limit
+#' of the underlying `RcppArmadillo` arrays (which fails with `Cube::init(): requested size is too large`). Raise it
+#' to allow larger batches, or lower it to use even smaller ones.
 #' @param global_loss_func Function or `NULL`.
 #' Only used when `scope = "global"` (i.e. when computing SAGE values).
 #' The loss function used to measure the model loss when computing the SAGE values.
@@ -1360,6 +1368,7 @@ get_extra_comp_args_default <- function(internal, # Only used to get the default
                                         vS_batching_method = "future",
                                         max_batch_size = 10,
                                         min_n_batches = 10,
+                                        max_batch_cube_size = 1e6,
                                         global_loss_func = NULL) {
   return(mget(methods::formalArgs(get_extra_comp_args_default)[-1])) # [-1] to exclude internal
 }
@@ -1426,6 +1435,15 @@ check_extra_computation_args <- function(extra_computation_args) {
       min_n_batches > 0)) {
     cli::cli_abort("`extra_computation_args$min_n_batches` must be NULL or a single positive integer.")
   }
+
+  # max_batch_cube_size
+  if (!is.null(max_batch_cube_size) &&
+    !(is.numeric(max_batch_cube_size) &&
+      length(max_batch_cube_size) == 1 &&
+      !is.na(max_batch_cube_size) &&
+      max_batch_cube_size > 0)) {
+    cli::cli_abort("`extra_computation_args$max_batch_cube_size` must be NULL or a single positive number.")
+  }
 }
 
 #' @keywords internal
@@ -1435,6 +1453,9 @@ trans_null_extra_est_args <- function(extra_computation_args) {
   # Translating NULL to always return n_batches = 1 (if just one approach)
   extra_computation_args$min_n_batches <- ifelse(is.null(min_n_batches), 1, min_n_batches)
   extra_computation_args$max_batch_size <- ifelse(is.null(max_batch_size), Inf, max_batch_size)
+  extra_computation_args$max_batch_cube_size <- ifelse(is.null(max_batch_cube_size), 1e6,
+    max_batch_cube_size
+  )
 
   return(extra_computation_args)
 }
@@ -1861,6 +1882,50 @@ trans_null_iterative_args <- function(iterative_args) {
   return(iterative_args)
 }
 
+
+#' Cap the batch size to keep the dense per-batch sampling array within limits
+#'
+#' Some approaches build a dense per-batch array (an `RcppArmadillo` cube) whose number of elements grows with the
+#' number of coalitions in the batch. For the `gaussian` and `copula` approaches this array has a total of
+#' `n_MC_samples * n_explain * coalitions_per_batch * n_features` elements, while the `empirical` approach builds a
+#' distance array with `n_train * n_explain * coalitions_per_batch` elements. With many features, explicands, training
+#' observations or coalitions, this can exceed the 32-bit indexing limit of the underlying `RcppArmadillo` arrays
+#' (failing with `Cube::init(): requested size is too large`) or simply demand excessive memory. This helper reduces
+#' `max_batch_size` (i.e. uses more batches) so that no single batch exceeds `max_batch_cube_size` elements. Note that
+#' parallelization (`workers > 1`) increases total memory because several batches are held at once, but each individual
+#' array still fits, so the limit is enforced per batch and is unaffected by the number of workers.
+#'
+#' @param per_coalition_size Numeric. The number of dense array elements contributed by a single coalition for the
+#' current approach (i.e. the per-batch array size divided by `coalitions_per_batch`).
+#' @inheritParams default_doc_internal
+#' @return The (possibly modified) `internal` list.
+#' @keywords internal
+cap_dense_batch_size <- function(internal, per_coalition_size) {
+  max_batch_cube_size <- internal$parameters$extra_computation_args$max_batch_cube_size
+  max_batch_size <- internal$parameters$extra_computation_args$max_batch_size
+  verbose <- internal$parameters$verbose
+
+  # Largest number of coalitions whose dense array stays within the element limit.
+  max_coalitions_per_batch <- max(1, floor(max_batch_cube_size / per_coalition_size))
+
+  if (max_coalitions_per_batch < max_batch_size) {
+    if (!is.null(verbose) && "basic" %in% verbose) {
+      cli::cli_inform(c(
+        "i" = paste0(
+          "Capped {.arg max_batch_size} from {.val {max_batch_size}} to {.val {max_coalitions_per_batch}} so each ",
+          "batch array stays under {.arg max_batch_cube_size} = {.val {max_batch_cube_size}} elements."
+        )
+      ))
+    }
+    internal$parameters$extra_computation_args$max_batch_size <- max_coalitions_per_batch
+
+    # Recompute the current iteration's batch count, as it was set before this cap was known.
+    iter <- length(internal$iter_list)
+    internal$iter_list[[iter]]$n_batches <- set_n_batches(internal$iter_list[[iter]]$n_coalitions, internal)
+  }
+
+  return(internal)
+}
 
 #' @keywords internal
 set_n_batches <- function(n_coalitions, internal) {

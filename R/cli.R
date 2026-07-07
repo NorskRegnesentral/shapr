@@ -155,7 +155,14 @@ format_info_extra <- function(internal) {
 cli_compute_vS <- function(internal) {
   verbose <- internal$parameters$verbose
   approach <- internal$parameters$approach
+  iter <- length(internal$iter_list)
 
+  if ("basic" %in% verbose) {
+    n_batches <- length(internal$iter_list[[iter]]$S_batch)
+    n_coalitions <- internal$iter_list[[iter]]$n_coalitions
+    mean_batch_size <- round(n_coalitions / n_batches, 1)
+    cli::cli_alert_info("Coalitions split into {.val {n_batches}} batches (mean {.val {mean_batch_size}} per batch). ")
+  }
   if ("progress" %in% verbose) {
     cli::cli_progress_step("Computing v(S)", .envir = parent.frame())
   }

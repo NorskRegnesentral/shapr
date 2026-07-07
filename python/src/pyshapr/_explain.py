@@ -133,7 +133,7 @@ def explain(
     approach: str or list[str]
       The method(s) to estimate the conditional expectation. All elements should
       either be `"arf"`, `"categorical"`, `"copula"`, `"ctree"`, `"empirical"`, `"gaussian"`,
-      `"independence"`, `"regression_separate"`, `"regression_surrogate"`, or `"vaeac"`.
+      `"independence"`, `"regression_separate"`, `"regression_surrogate"`, `"timeseries"`, or `"vaeac"`.
     phi0: float
       The prediction value for unseen data, i.e. an estimate of the expected prediction without conditioning on any
       features. Typically we set this value equal to the mean of the response variable in our training data, but other
@@ -171,14 +171,23 @@ def explain(
     confounding: bool or None, optional
       A vector of logicals specifying whether confounding is assumed or not for each component in the `causal_ordering`.
     extra_computation_args: dict or None, optional
-      Specifies extra arguments related to the computation of the Shapley values. When `scope = "global"`, the
-      key `"global_loss_func"` may be supplied with a Python callable taking two arguments (the true response
-      and the model prediction, in that order) and returning a single numeric loss. If omitted, logistic
-      (cross-entropy) loss is used for binary responses (values in 0/1) and mean squared error loss otherwise.
+      Specifies extra arguments related to the computation of the Shapley values. Any argument accepted by
+      shapr's `get_extra_comp_args_default()` may be passed as a dict key, e.g. `"paired_shap_sampling"`,
+      `"semi_deterministic_sampling"`, `"kernelSHAP_reweighting"`, `"compute_sd"`, `"n_boot_samps"`,
+      `"vS_batching_method"`, `"max_batch_size"`, `"min_n_batches"` and `"max_batch_cube_size"`; see the R help
+      file for descriptions and default values. When `scope = "global"`, the key `"global_loss_func"` may be
+      supplied with a Python callable taking two arguments (the true response and the model prediction, in that
+      order) and returning a single numeric loss. If omitted, logistic (cross-entropy) loss is used for binary
+      responses (values in 0/1) and mean squared error loss otherwise.
     iterative_args: dict or None, optional
-      Specifies the arguments for the iterative procedure.
+      Specifies the arguments for the iterative procedure. Any argument accepted by shapr's
+      `get_iterative_args_default()` may be passed as a dict key, i.e. `"initial_n_coalitions"`,
+      `"fixed_n_coalitions_per_iter"`, `"max_iter"`, `"convergence_tol"` and
+      `"n_coal_next_iter_factor_vec"`; see the R help file for descriptions and default values.
     output_args: dict or None, optional
-      Specifies certain arguments related to the output of the function.
+      Specifies certain arguments related to the output of the function. Any argument accepted by shapr's
+      `get_output_args_default()` may be passed as a dict key, i.e. `"keep_samp_for_vS"`,
+      `"MSEv_uniform_comb_weights"` and `"saving_path"`; see the R help file for descriptions and default values.
     scope: str, optional
       Either `"local"` (default) or `"global"`. If `"local"`, `explain` computes Shapley value explanations of
       individual predictions. If `"global"`, `explain` instead computes SAGE values (Shapley Additive Global
