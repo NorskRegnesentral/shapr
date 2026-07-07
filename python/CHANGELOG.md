@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded the `extra_computation_args`, `iterative_args` and `output_args` docstrings in `explain()` to list
   the keys forwarded to shapr's `get_extra_comp_args_default()`, `get_iterative_args_default()` and
   `get_output_args_default()` (e.g. `semi_deterministic_sampling`, `max_batch_cube_size`, `convergence_tol`,
-  `saving_path`). No functional change; these keys were already accepted via the generic dict. (branch: sage)
+  `saving_path`). No functional change; these keys were already accepted via the generic dict. (branch: robustify-high-dim)
 - Documented the `"timeseries"` approach as supported in the `approach` docstring and README (verified to work
-  through the wrapper). No functional change. (branch: sage)
+  through the wrapper). No functional change. (branch: robustify-high-dim)
 
 ### Added
 - Added support for computing SAGE values (Shapley Additive Global importancE) via the new `explain()`
