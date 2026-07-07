@@ -62,11 +62,6 @@ make_row <- function(base, overrides = list(), sweep = "baseline",
   return(dt)
 }
 
-# Concrete datasets (from config$datasets) that an approach supports.
-supported_datasets <- function(appr, cfg) {
-  Filter(function(ds) approach_supports(appr, ds), names(cfg$datasets))
-}
-
 # ---------------------------------------------------------------------------
 # Block-based grid builder.
 #

@@ -39,11 +39,6 @@ blocks:
     grid:
       n_explain: [1, 25, 100]
 
-  - name: grouping
-    grid:
-      n_features: [8, 12]
-      group: [false, true]
-
   - name: dt_threads
     grid:
       dt_threads: [1, 4]
@@ -53,6 +48,12 @@ blocks:
     grid:
       workers: [1, 4, 16]
       min_n_batches: [16, 64]
+
+  # Batching lever, isolated (cap off so min_n_batches alone governs the count).
+  - name: batches
+    grid:
+      min_n_batches: [1, 4, 16, 64]
+      max_batch_cube_size: [Inf]
 
   # Mixed / categorical data settings (vaeac supports factors): few/many factor
   # columns x few/many levels, plus the all-categorical dataset.

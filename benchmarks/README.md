@@ -16,23 +16,25 @@ Everything is driven by editable YAML config files in [`config/`](config/).
 ```bash
 cd benchmarks
 
-# smoke run, per-approach one-factor-at-a-time design
-bin/orchestrate.sh config/oat_quick.yml
+# run ONE approach's study (grid -> prebuild -> timed runs -> aggregate)
+bin/orchestrate.sh config/gaussian.yml
 
-# the big weekend run (all approaches, dense sweeps, 3 replicates)
-bin/orchestrate.sh config/oat_weekend.yml
+# run the WHOLE suite, one approach at a time (cheapest first, vaeac last)
+bin/run_week.sh
 
-# partial-factorial designs (interactions)
-bin/orchestrate.sh config/factorial_quick.yml
-bin/orchestrate.sh config/factorial_weekend.yml
+# run just a few approaches
+bin/run_week.sh gaussian empirical ctree
 
-# re-attempt only the runs that previously hit the wall-clock timeout
-bin/orchestrate.sh config/oat_weekend.yml --retry-timeouts
+# re-attempt only the runs previously killed by the per-run timeout
+# (raise timeout_sec in common.yml first to give them more time)
+bin/run_week.sh --retry-timeouts
+bin/orchestrate.sh config/vaeac.yml --retry-timeouts
 ```
 
-Results land in `results/<study>/results.csv` (one row per run) and
-`results/<study>/summary.csv` (median/IQR per configuration). Runs are
-**resumable** — re-running skips configs that already have a result file.
+Results land in `results/<approach>/results.csv` (one row per run) and
+`results/<approach>/summary.csv` (median/IQR per configuration). Runs are
+**resumable** — re-running skips configs that already have a result file, and
+each study stops launching new runs once its `time_budget_sec` is used up.
 
 The orchestrator first builds the grid, then **pre-builds every dataset pool
 and prediction model** (`R/prebuild.R`) so that model fitting is excluded from
@@ -53,6 +55,7 @@ Per run (one `explain()` call in a fresh R process):
 | CPU time | `proc.time()` (self + child) | child time covers `multicore` forks only |
 | Phase breakdown | shapr's own `$timing` | where time goes (setup vs `compute_vS` …) |
 | Iterations | `length(internal$iter_list)` | 1 for non-iterative; >1 for iterative |
+| Batches used | `length(iter_list[[i]]$S_batch)` | `used_n_batches` (final iter) + `used_n_batches_max`; `effective_max_batch_size` shows the post-cap batch size |
 | Peak RAM (tree) | external `/proc` sampler | sums RSS of the whole process tree incl. workers |
 | Peak RAM (cgroup) | cgroup-v2 `memory.peak` | exact, catches transient spikes (Linux + systemd) |
 | gc peak | `gc()` max in the parent | in-process cross-check (sequential runs) |
@@ -69,40 +72,46 @@ host, timestamp). A run exceeding `timeout_sec` is killed and recorded as
 
 ## What gets varied
 
-All driven from the config files. The OAT design is **tiered** — most sweeps are
-repeated *per approach* (because cost behaviour differs a lot per approach),
-while approach-agnostic infrastructure levers are swept once at the baseline.
+Each **approach** is its own study: `config/<approach>.yml` lists a set of named
+**blocks**, and each block is a small mini-design that varies a few dimensions
+around the shared `baseline` (in `common.yml`) while everything else is held
+fixed. Because cost behaviour differs enormously per approach, every approach
+runs its own copy of the core battery (sized to its cost — coarser for the slow
+ones), and `gaussian` is the broadest, most detailed testbed.
 
-**Per-approach sweeps** (each repeated for every approach in `approaches`, on
-that approach's primary dataset):
+A block is one of:
 
-- **dataset** — the approach across every dataset family it supports
-- **max_n_coalitions**, **n_MC_samples**, **n_train**, **n_explain**
-- **n_features** (numeric family only; the largest point, 20, triggers a
-  high-dimensional coalition cap via `high_dim:`)
-- **group** — features chunked into groups (`group_size`) instead of individual
-- **iterative** — emits a dependent **pair**: a `source` run with
-  `iterative = TRUE` and a `dependent` run with `iterative = FALSE` whose
-  `max_n_coalitions` is set to *exactly* the number of coalitions the source
-  consumed, so iterative vs non-iterative are compared at equal budget.
+- **`grid:`** — a cross-product over standard run dimensions. A single entry is
+  a 1-D sweep; two or three entries form a 2-D/3-D grid. Dimensions:
+  `n_train`, `n_MC_samples`, `max_n_coalitions`, `n_features` (numeric only),
+  `n_explain`, `min_n_batches`, `max_batch_size`, `max_batch_cube_size`,
+  `workers`, `backend`, `dt_threads`, `group`, `group_size`, `dataset`.
+- **`approach_args:`** — a cross-product over approach-specific arguments
+  (`empirical.type`, `vaeac.depth/width/epochs/latent_dim/n_vaeacs_initialize`,
+  `regression.surrogate_n_comb`, or a named regression `variant` from
+  [`R/registry.R`](R/registry.R)). Encoded into the `approach_args` column.
+- **`pair: iterative`** — emits a dependent **pair** per grid point: a `source`
+  run (`iterative = TRUE`, which records the number of iterations and the
+  coalitions actually used) and a `dependent` run (`iterative = FALSE`) then run
+  at *exactly* that coalition count, so iterative vs fixed compare at an equal
+  budget.
 
-**Baseline-only (infrastructure) sweeps:**
-
-- **min_n_batches** (the batching lever; `max_batch_size = Inf` keeps it clean)
-- **dt_threads** (`data.table::setDTthreads()`)
-- the **workers x backend** parallel grid (up to 32 workers, `multisession` vs
-  `multicore`), combined with heavier batching so workers have work.
-
-**Approach-specific sweeps:**
-
-- scalar params (`empirical.type`, `vaeac.*`, `regression.surrogate_n_comb`)
-- named **regression variants** (smoothing / penalisation / tuning recipes) —
-  see [`R/registry.R`](R/registry.R).
+The core battery present in (almost) every approach: `scale_train_mc`
+(n_train × n_MC), `features` (numeric only), `coalitions`, `explain`,
+`iterative_budget`, `dt_threads`, `parallel` (workers × batching, up to 32
+cores), `batches` (the `min_n_batches` lever), and — for factor-supporting
+approaches — a `dataset` sweep over the four mixed settings + categorical.
+`gaussian` additionally carries the `grouping` / `group_size` studies, the
+`highdim_cap` cube-size study, and a `parallel_backend` (multisession vs
+multicore) study. Approach-specific blocks add `empirical.type`, the six
+regression `variants` (GAM-like & xgboost × none/light/cv),
+`regression.surrogate_n_comb`, and the five vaeac hyperparameters.
 
 Approaches: `independence`, `gaussian`, `copula`, `empirical`, `timeseries`,
 `ctree`, `arf`, `categorical`, `vaeac`, `regression_separate`,
 `regression_surrogate`. Incompatible approach/dataset pairs and approaches with
 missing deps are skipped automatically (see [`R/capability.R`](R/capability.R)).
+Only `gaussian`/`copula`/`empirical` use the dense-array cube-size cap.
 
 ### Datasets (numeric, four mixed, categorical)
 
@@ -119,65 +128,58 @@ and cached by `R/prebuild.R` and **excluded** from the measured time.
 
 ---
 
-## Designs
+## Design
 
-Two interchangeable designs share the same runner and measurement layer:
-
-- **OAT** (`oat_*.yml`) — start from a `baseline` and vary **one dimension at a
-  time**, tiered per-approach (see above). Best for clean "change this lever →
-  this happens" guidance.
-- **Factorial** (`factorial_*.yml`) — full cross-product over a chosen subset of
-  dimensions (everything else fixed). Captures interactions OAT misses; cost is
-  the **product** of the factor lengths, so keep it small.
-
-Two scales per design: **quick** (smoke) and **weekend** (full).
+Every study is **one approach** described by a list of `blocks` (see above).
+There is a single design — no separate OAT vs factorial files — because a block
+is flexible enough to express both a 1-D one-at-a-time sweep and a small
+factorial grid. Slow approaches simply use coarser block levels, and set
+fewer/lighter blocks.
 
 ---
 
 ## Configuration
 
 - [`config/common.yml`](config/common.yml) — machine-wide defaults: seed,
-  replicates, warm-up, RAM method, models, datasets, the `baseline`
-  configuration, and thread controls. **Every study inherits from this.**
-- `config/oat_quick.yml`, `config/oat_weekend.yml` — OAT sweeps.
-- `config/factorial_quick.yml`, `config/factorial_weekend.yml` — factorial grids.
+  replicates, warm-up, RAM method, models, the four `mixed_*` dataset specs, the
+  `baseline` configuration, thread controls, the per-run `timeout_sec` (1 h) and
+  the per-approach `time_budget_sec` (24 h). **Every study inherits from this.**
+- `config/<approach>.yml` — one file per approach (`gaussian.yml`, `vaeac.yml`,
+  …), each a list of `blocks`.
 
-A study file is deep-merged on top of `common.yml` (study wins). To tweak the
-study, just edit the YAML — no code changes needed.
+A study file is deep-merged on top of `common.yml` (study wins). To tweak a
+study, just edit its YAML — no code changes needed.
 
-Key OAT study keys:
+Example block config:
 
 ```yaml
-approaches: [gaussian, empirical, ctree, regression_separate, vaeac]
-per_approach_sweeps:        # repeated for every approach above
-  dataset: true
-  max_n_coalitions: [32, 128, 256]
-  n_MC_samples: [50, 250, 1000]
-  n_train: [100, 1000, 5000]
-  n_explain: [1, 25, 100]
-  n_features: [5, 10, 20]   # numeric only; 20 -> high_dim cap
-  iterative: true           # source/dependent pair
-  group: true
-high_dim: {n_features: 20, max_n_coalitions: 4000}
-infra_sweeps:               # baseline-only
-  min_n_batches: [1, 10, 50]
-  dt_threads: [1, 2, 4]
-parallel_grid:              # baseline-only
-  workers: [1, 2, 4, 8, 16, 32]
-  backend: [multisession, multicore]
-  min_n_batches: 32
-approach_param_sweeps:      # scalar approach args; optional `variant`
-  - {approach: empirical, dataset: numeric, param: empirical.type,
-     values: [fixed_sigma, AICc_full, independence]}
-regression_variant_sweeps:  # named recipes from R/registry.R
-  - {approach: regression_separate, dataset: numeric,
-     variants: [smooth_none, smooth_light, xgb_none]}
+approach: gaussian
+dataset: numeric
+replicates: 3
+warmup: true
+blocks:
+  - name: scale_train_mc                 # a 2-D grid
+    grid: {n_train: [500, 5000, 20000], n_MC_samples: [50, 250, 1000]}
+  - name: highdim_cap                    # 3-D: cube-size cap ON vs OFF
+    grid:
+      n_features: [12, 20, 30]
+      max_n_coalitions: [128, 512]
+      max_batch_cube_size: [1e6, Inf]
+  - name: empirical_type                 # an approach-argument sweep
+    approach_args: {empirical.type: [fixed_sigma, AICc_each_k, AICc_full]}
+  - name: iterative_budget               # source/dependent pair
+    pair: iterative
+    grid: {max_n_coalitions: [256, 1024]}
 ```
 
-Machine-wide knobs in `common.yml`: `timeout_sec` (wall-clock kill),
-`iterative_cap` (budget for the iterative source), `mixed_default` (fallback
-dataset for factor-only approaches), `group_size`, the four `mixed_*` dataset
-specs, and the `baseline` (which now also carries `dt_threads` and `group`).
+Set `max_batch_cube_size: Inf` in a block to disable shapr's dense-array cap and
+control the batch count precisely via `min_n_batches` / `max_batch_size`; the
+batch count actually used is recorded as `used_n_batches`.
+
+Machine-wide knobs in `common.yml`: `timeout_sec` (per-run wall-clock kill, 1 h),
+`time_budget_sec` (per-approach budget, 24 h), the four `mixed_*` dataset specs,
+and the `baseline` (which carries every run dimension, incl. `dt_threads`,
+`group`, `group_size` and `max_batch_cube_size`).
 
 ---
 
@@ -210,14 +212,15 @@ benchmarks/
     capability.R   approach x dataset(family) matrix + dependency checks
     registry.R     named regression "variant" recipes (model specs + tuning)
     data.R         synthetic datasets (4 mixed) + cached xgboost/ranger models
-    grid.R         expand a config -> results/<study>/grid.csv (tiered OAT, pairs)
+    grid.R         expand a config -> results/<study>/grid.csv (blocks, pairs)
     prebuild.R     pre-generate all pools + pre-fit all models (excluded from timing)
-    measure.R      timing / gc / iterations / metadata helpers
+    measure.R      timing / gc / iterations / batches / metadata helpers
     run_one.R      run ONE config in isolation -> results/<study>/<id>.json
     sampler.R      external peak-RAM sampler (poll + cgroup)
     aggregate.R    merge results (+ *.time.json, *.mem.json) -> results.csv + summary.csv
   bin/
-    orchestrate.sh main driver (grid -> prebuild -> timed runs -> aggregate)
+    orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
+    run_week.sh    run the whole suite, one approach at a time (cheapest first)
   data/  results/  logs/   (generated; git-ignored)
 ```
 
@@ -241,20 +244,26 @@ to `poll` automatically if `systemd-run` is absent).
 
 ## Re-running / extending
 
-- **Resume**: just re-run `orchestrate.sh`; existing `results/<study>/<id>.json`
-  files are skipped. Delete a study's `results/<study>/` folder to start over.
-- **Retry timeouts**: `bin/orchestrate.sh config/<study>.yml --retry-timeouts`
-  deletes previous `timeout` markers and re-attempts only those runs (e.g. after
-  raising `timeout_sec`).
-- **Re-aggregate only**: `Rscript R/aggregate.R --config config/<study>.yml`.
-- **New per-approach sweep point**: add a value under `per_approach_sweeps`.
-- **New approach-specific sweep**: add an entry under `approach_param_sweeps`
-  — `{approach, dataset, param, values}` (optionally `variant`).
+- **Whole suite**: `bin/run_week.sh` runs every approach in turn (cheapest
+  first). Add approach names to run only some: `bin/run_week.sh gaussian ctree`.
+- **Resume**: just re-run `orchestrate.sh` / `run_week.sh`; existing
+  `results/<study>/<id>.json` files are skipped. Delete a study's
+  `results/<study>/` folder to start it over.
+- **Retry timeouts**: `bin/orchestrate.sh config/<approach>.yml --retry-timeouts`
+  (or `bin/run_week.sh --retry-timeouts`) deletes previous `timeout` markers and
+  re-attempts only those runs — typically after raising `timeout_sec`.
+- **Re-aggregate only**: `Rscript R/aggregate.R --config config/<approach>.yml`.
+- **New sweep / grid point**: add or extend a block's `grid:` (or
+  `approach_args:`) in the approach's config.
+- **New block**: append `{name, grid|approach_args, [pair: iterative]}` to the
+  approach's `blocks:` list.
+- **New approach**: add `config/<approach>.yml` with `approach:` + `blocks:`
+  (and, if it needs extra packages, an entry in `approach_dependencies()`).
 - **New regression variant**: add a named recipe to `regression_variants()` in
-  [`R/registry.R`](R/registry.R), then reference it under
-  `regression_variant_sweeps` or as a `variant:` on an `approach_param_sweeps`
-  entry.
+  [`R/registry.R`](R/registry.R), then reference it via
+  `approach_args: {variant: […]}` in a block.
 
-Note: changing dataset specs (e.g. `n_features_max`) or model settings in
-`common.yml` invalidates the `data/` caches — delete `data/pool_*.rds` and
-`data/model_*.rds` so they regenerate.
+Note: changing a dataset spec (e.g. `n_features_max`) or the seed in
+`common.yml` automatically regenerates the affected `data/pool_*.rds` cache
+(the cache key includes the spec); trained models are keyed by their inputs and
+regenerate as needed too.

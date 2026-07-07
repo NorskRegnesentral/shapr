@@ -49,23 +49,6 @@ approach_supports <- function(approach, dataset) {
   return(dataset_family(dataset) %in% caps[[approach]])
 }
 
-# The representative dataset used for an approach's per-approach OAT sweeps.
-# Prefer numeric (so results line up with the gaussian/numeric baseline); fall
-# back to a mixed setting, then categorical.
-primary_dataset <- function(approach, mixed_default = "mixed_fc_fl") {
-  caps <- approach_capability()[[approach]]
-  if (is.null(caps)) {
-    return(NA_character_)
-  }
-  if ("numeric" %in% caps) {
-    return("numeric")
-  }
-  if ("mixed" %in% caps) {
-    return(mixed_default)
-  }
-  return("categorical")
-}
-
 # Extra R packages required by each approach beyond shapr's base deps.
 approach_dependencies <- function() {
   list(

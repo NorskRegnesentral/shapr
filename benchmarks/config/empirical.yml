@@ -1,0 +1,67 @@
+# ============================================================================
+# empirical.yml — cost study for the `empirical` approach (numeric-only).
+#
+# empirical uses the dense per-batch DISTANCE array subject to
+# max_batch_cube_size, so it gets the cube-size cap study. Its key
+# approach-specific knob is `empirical.type`, swept one-by-one. Same OAT battery
+# as gaussian minus grouping. Inherits timeout (1 h) + 24 h budget.
+#
+# Run with:  bin/orchestrate.sh config/empirical.yml
+# ============================================================================
+approach: empirical
+dataset: numeric
+
+replicates: 3
+warmup: true
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 2500, 10000, 20000]
+      n_MC_samples: [50, 250, 1000]
+
+  - name: features
+    grid:
+      n_features: [4, 8, 12, 16, 20, 30]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [16, 64, 128, 256, 512, 1024]
+
+  # empirical builds a dense n_train x n_explain x coalitions distance array ->
+  # study the cube-size cap ON vs OFF (also crossing n_train, which drives it).
+  - name: highdim_cap
+    grid:
+      n_train: [1000, 10000]
+      n_features: [12, 30]
+      max_n_coalitions: [128, 512]
+      max_batch_cube_size: [1e6, Inf]
+
+  - name: explain
+    grid:
+      n_explain: [1, 10, 25, 50, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 2, 5, 10, 25, 50]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]
+
+  # empirical-specific: the three non-deprecated distance types, one-by-one.
+  # ("independence" is deprecated for empirical — use approach = "independence".)
+  - name: empirical_type
+    approach_args:
+      empirical.type: [fixed_sigma, AICc_each_k, AICc_full]

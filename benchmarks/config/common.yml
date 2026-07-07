@@ -35,22 +35,18 @@ aggregate_every: 10
 # by orchestrate.sh. A run exceeding this is killed and recorded with
 # status="timeout". Re-attempt timed-out runs with `--retry-timeouts`.
 #
-# Two-pass strategy: start with a SHORT limit (10 min) so pathological argument
-# combinations are killed quickly (their partial time + peak RAM are still
-# recorded). Later, raise this (e.g. to 3600 = 1 h) and re-run with
-# `--retry-timeouts` to pick up the long runs that were stopped.
-timeout_sec: 600
+# Every single run is capped at 1 h: a pathological argument combination is
+# killed at this limit (its partial time + peak RAM are still recorded as a
+# `timeout` row) so it cannot stall the whole study. Runs that need even longer
+# can be re-attempted later with a raised limit + `--retry-timeouts`.
+timeout_sec: 3600
 
 # Per-study (per-approach) wall-clock budget in seconds. orchestrate.sh stops
 # launching NEW runs once exceeded; resume to continue. 24 h per approach.
 time_budget_sec: 86400
 
-# Default dataset used when an approach does not support the all-numeric data
-# (factor-only / categorical approaches fall back here for OAT sweeps).
-mixed_default: mixed_fc_fl
-
-# max_n_coalitions budget for the iterative `source` run of an iterative pair.
-iterative_cap: 500
+# Feature group size for the `group` sweep is set per run via the group_size
+# grid dimension (see the baseline below).
 
 # ---------------------------------------------------------------------------
 # Output locations (relative to the benchmarks/ folder).

@@ -74,19 +74,21 @@ blocks:
     grid:
       n_explain: [1, 5, 10, 25, 50, 100]
 
-  # 8. Parallel scaling COMBINED WITH BATCHING: shapr parallelizes over batches,
-  #    so workers only help when there are enough batches. Cross workers with
-  #    min_n_batches up to the full core count of this machine (32).
-  - name: parallel
+  # 8. Parallel scaling COMBINED WITH BATCHING (regular multisession backend):
+  #    shapr parallelizes over batches, so workers only help with enough
+  #    batches. Cross workers with min_n_batches up to this machine's 32 cores.
+  - name: parallel_batching
     grid:
       workers: [1, 2, 4, 8, 16, 32]
       min_n_batches: [8, 32, 128]
 
-  # 9. multisession vs multicore at a couple of worker counts.
-  - name: backend
+  # 9. Parallelization VARIANTS: regular (multisession) vs forking (multicore)
+  #    across the full worker range, at a fixed high batch count.
+  - name: parallel_backend
     grid:
-      workers: [4, 16]
+      workers: [1, 2, 4, 8, 16, 32]
       backend: [multisession, multicore]
+      min_n_batches: [32]
 
   # 10. data.table thread count (the other parallelism lever), swept alone.
   - name: dt_threads

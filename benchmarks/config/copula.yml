@@ -1,0 +1,60 @@
+# ============================================================================
+# copula.yml — cost study for the `copula` approach (numeric-only).
+#
+# copula is a sampling approach with cost similar to gaussian and, like gaussian
+# and empirical, it uses the dense per-batch array subject to max_batch_cube_size
+# — so it gets the cube-size cap study too. Same OAT battery as gaussian minus
+# the grouping study (gaussian covers grouping). Inherits timeout (1 h) and the
+# 24 h budget from common.yml.
+#
+# Run with:  bin/orchestrate.sh config/copula.yml
+# ============================================================================
+approach: copula
+dataset: numeric
+
+replicates: 3
+warmup: true
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 2500, 10000, 20000]
+      n_MC_samples: [50, 250, 1000]
+
+  - name: features
+    grid:
+      n_features: [4, 8, 12, 16, 20, 30]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [16, 64, 128, 256, 512, 1024]
+
+  # copula uses the dense per-batch array -> study the cube-size cap ON vs OFF.
+  - name: highdim_cap
+    grid:
+      n_features: [12, 20, 30]
+      max_n_coalitions: [128, 512]
+      max_batch_cube_size: [1e6, Inf]
+
+  - name: explain
+    grid:
+      n_explain: [1, 10, 25, 50, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 2, 5, 10, 25, 50]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]

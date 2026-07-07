@@ -1,0 +1,49 @@
+# ============================================================================
+# categorical.yml — cost study for the `categorical` approach.
+#
+# The categorical approach requires ALL features to be factors, so it runs ONLY
+# on the all-categorical dataset (baseline overridden accordingly). There is no
+# numeric `features` sweep (feature count is fixed by the dataset) and no
+# `dataset` sweep. Standard OAT battery otherwise. Inherits timeout (1 h) + 24 h
+# budget.
+#
+# Run with:  bin/orchestrate.sh config/categorical.yml
+# ============================================================================
+approach: categorical
+dataset: categorical      # the only family this approach supports
+
+replicates: 3
+warmup: true
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 5000, 20000]
+      n_MC_samples: [50, 250, 1000]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [16, 64, 128, 256]
+
+  - name: explain
+    grid:
+      n_explain: [1, 10, 25, 50, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 2, 5, 10, 25, 50]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [128, 256]
