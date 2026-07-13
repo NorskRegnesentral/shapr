@@ -60,10 +60,12 @@ blocks:
     grid:
       dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
 
-  # Increase the training-augmentation count (default is n_coalitions - 2).
+  # Increase the training-augmentation count. Held at the baseline
+  # max_n_coalitions = 128, so the value must stay <= n_coalitions - 2 = 126;
+  # 126 is the maximum (= the default full-augmentation behaviour).
   - name: surrogate_n_comb
     approach_args:
-      regression.surrogate_n_comb: [8, 16, 32, 64, 128]
+      regression.surrogate_n_comb: [8, 16, 32, 64, 126]
 
   # The xgboost surrogate model (vs the default linear surrogate).
   - name: variant

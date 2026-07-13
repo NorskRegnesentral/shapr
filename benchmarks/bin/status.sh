@@ -28,12 +28,21 @@ for d in "$RESULTS"/*/; do
   name="$(basename "$d")"
   meta="$d/run_meta.json"
   [[ -f "$meta" ]] || continue
+  # Only show current studies (those with a matching config); this hides stale
+  # output dirs from superseded studies.
+  [[ -f "$ROOT/config/$name.yml" ]] || continue
 
   total="$(grep -oE '"n_runs"[[:space:]]*:[[:space:]]*[0-9]+' "$meta" | grep -oE '[0-9]+$' | head -1)"
   total="${total:-0}"
 
-  # Result files for this study (empty array if none yet; nullglob is set).
-  files=( "$d"[0-9]*.json )
+  # Result files for this study: <id>.json only (exclude the <id>.time.json and
+  # <id>.mem.json sidecars, which also start with a digit). nullglob is set, so
+  # an empty study yields an empty array.
+  files=()
+  for f in "$d"[0-9]*.json; do
+    [[ "$f" == *.time.json || "$f" == *.mem.json ]] && continue
+    files+=( "$f" )
+  done
   done="${#files[@]}"
   ok=0; tmo=0; err=0; skip=0; last=""
   if [[ "$done" -gt 0 ]]; then
