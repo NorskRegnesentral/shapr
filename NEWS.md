@@ -14,7 +14,7 @@
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 
 ### Bug fixes
-* Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features could ignore `max_n_coalitions` and enumerate all `2^n_features` coalitions (an incorrect exact-computation threshold of `n_shapley_values^2` instead of `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo` `Cube::init()` failures in high dimensions. (branch: bugfix/exact-coalition-threshold)
+* Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features could ignore `max_n_coalitions` and enumerate all `2^n_features` coalitions (an incorrect exact-computation threshold of `n_shapley_values^2` instead of `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo` `Cube::init()` failures in high dimensions. ([#505](https://github.com/NorskRegnesentral/shapr/pull/505))
 * Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. ([#495](https://github.com/NorskRegnesentral/shapr/pull/495))
 * Fixed `cli::cli_progress_step()` reporting artificially short timings for the v(S) computation step by passing `.envir = parent.frame()` to bind the progress bar's lifetime to the correct calling environment. ([#496](https://github.com/NorskRegnesentral/shapr/pull/496))
 
