@@ -2,7 +2,7 @@
 [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
-# shapr 1.0.8.9002
+# shapr 1.0.8.9003
 
 ### New features
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
@@ -14,7 +14,7 @@
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 
 ### Bug fixes
-* Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features silently ignored `max_n_coalitions` and enumerated all `2^n_features` coalitions. When deciding whether to switch to exact computation, `set_iterative_parameters()` compared `initial_n_coalitions` against `n_shapley_values^2` (`m^2`) instead of the correct `2^n_shapley_values` (`2^m`); for moderate `n_features` (roughly 6-25) this forced exact enumeration even when far fewer coalitions were requested, causing severe slowdowns and, in high dimensions, `RcppArmadillo` `Cube::init(): requested size is too large` failures. (branch: bugfix/exact-coalition-threshold)
+* Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features could ignore `max_n_coalitions` and enumerate all `2^n_features` coalitions (an incorrect exact-computation threshold of `n_shapley_values^2` instead of `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo` `Cube::init()` failures in high dimensions. (branch: bugfix/exact-coalition-threshold)
 * Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. ([#495](https://github.com/NorskRegnesentral/shapr/pull/495))
 * Fixed `cli::cli_progress_step()` reporting artificially short timings for the v(S) computation step by passing `.envir = parent.frame()` to bind the progress bar's lifetime to the correct calling environment. ([#496](https://github.com/NorskRegnesentral/shapr/pull/496))
 
