@@ -26,6 +26,31 @@ test_that("iterative_args are respected", {
 })
 
 
+test_that("non-iterative estimation does not force exact for moderate n_features", {
+  # Regression test: set_iterative_parameters() previously flipped to exact when
+  # initial_n_coalitions >= n_shapley_values^2 (m^2) instead of the correct
+  # >= 2^n_shapley_values (2^m). With m = 5 features that wrongly forced exact
+  # (all 2^5 = 32 coalitions) whenever max_n_coalitions >= 25, even though fewer
+  # were requested. Here 25 <= 30 < 32, so the bug would enumerate all 32.
+  ex <- explain(
+    testing = TRUE,
+    model = model_lm_numeric,
+    x_explain = x_explain_numeric,
+    x_train = x_train_numeric,
+    approach = "gaussian",
+    phi0 = p0,
+    seed = 1,
+    max_n_coalitions = 30,
+    iterative = FALSE
+  )
+
+  # 30 < 2^5 = 32, so estimation must stay in sampling mode (not exact) and use
+  # at most the requested number of coalitions.
+  expect_false(ex$internal$parameters$exact)
+  expect_lte(ex$internal$iter_list[[length(ex$internal$iter_list)]]$X[, .N], 30)
+})
+
+
 test_that("iterative feature wise and groupwise computations identical", {
   groups <- list(
     Solar.R = "Solar.R",
