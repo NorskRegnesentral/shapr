@@ -257,7 +257,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
     )
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-07-07 08:28:43 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-15 21:26:03 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -270,14 +270,14 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpOD5nUp/shapr_obj_2192174e2fa2.rds
+#> • Computations (temporary) saved at: /tmp/Rtmplxfwsh/shapr_obj_246939ca8a0c.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
 #> 
-#> ── Starting `shapr::explain()` at 2026-07-07 08:28:44 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-15 21:26:04 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -290,14 +290,14 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 10
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpOD5nUp/shapr_obj_21921513dd24.rds
+#> • Computations (temporary) saved at: /tmp/Rtmplxfwsh/shapr_obj_2469318c58de.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
 #> 
-#> ── Starting `shapr::explain()` at 2026-07-07 08:28:44 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-15 21:26:04 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -310,14 +310,14 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpOD5nUp/shapr_obj_21923f2d3cd.rds
+#> • Computations (temporary) saved at: /tmp/Rtmplxfwsh/shapr_obj_24694b9fcd7e.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
 #> 
-#> ── Starting `shapr::explain()` at 2026-07-07 08:28:44 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-15 21:26:05 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -330,14 +330,14 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpOD5nUp/shapr_obj_219219af2dc3.rds
+#> • Computations (temporary) saved at: /tmp/Rtmplxfwsh/shapr_obj_246970bbbe4e.rds
 #> 
 #> ── Main computation started ──
 #> 
 #> ℹ Using 16 of 16 coalitions. 
 #> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
 #> 
-#> ── Starting `shapr::explain()` at 2026-07-07 08:28:46 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-15 21:26:07 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -350,7 +350,7 @@ if (requireNamespace("xgboost", quietly = TRUE) && requireNamespace("ggplot2", q
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 25
-#> • Computations (temporary) saved at: /tmp/RtmpOD5nUp/shapr_obj_21926955d153.rds
+#> • Computations (temporary) saved at: /tmp/Rtmplxfwsh/shapr_obj_2469496d1424.rds
 #> 
 #> ── Main computation started ──
 #> 

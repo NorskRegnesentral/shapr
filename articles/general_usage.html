@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -2434,14 +2434,14 @@ these functions and a minimal version which skips the
 <code>gbm</code> model class from the <code>gbm</code> package, fitted
 to the same airquality data set as used above.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm" class="external-link">gbm</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gbm-developers.github.io/gbm/" class="external-link">gbm</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loaded gbm 2.2.3</span></span>
 <span><span class="co">#&gt; This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3</span></span>
 <span></span>
 <span><span class="va">formula_gbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fitting a gbm model</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">825</span><span class="op">)</span></span>
-<span><span class="va">model_gbm</span> <span class="op">&lt;-</span> <span class="fu">gbm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gbm/man/gbm.html" class="external-link">gbm</a></span><span class="op">(</span></span>
+<span><span class="va">model_gbm</span> <span class="op">&lt;-</span> <span class="fu">gbm</span><span class="fu">::</span><span class="fu"><a href="https://gbm-developers.github.io/gbm/reference/gbm.html" class="external-link">gbm</a></span><span class="op">(</span></span>
 <span>  <span class="va">formula_gbm</span>,</span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">x_train</span>, Ozone <span class="op">=</span> <span class="va">y_train</span><span class="op">)</span>,</span>
 <span>  distribution <span class="op">=</span> <span class="st">"gaussian"</span></span>
@@ -3424,7 +3424,7 @@ Theory of Games</span></em> 2: 307–17.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

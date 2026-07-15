@@ -1,6 +1,6 @@
 # Changelog
 
-## shapr 1.0.8.9002
+## shapr 1.0.8.9003
 
 #### New features
 
@@ -46,6 +46,13 @@
 
 #### Bug fixes
 
+- Fixed a bug where non-iterative estimation (`iterative = FALSE`) with
+  a moderate number of features could ignore `max_n_coalitions` and
+  enumerate all `2^n_features` coalitions (an incorrect
+  exact-computation threshold of `n_shapley_values^2` instead of
+  `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo`
+  `Cube::init()` failures in high dimensions.
+  ([\#505](https://github.com/NorskRegnesentral/shapr/pull/505))
 - Fixed handling of ordered factor features by treating them as factors
   in feature specifications and adding stricter checks for malformed
   feature specification lists.
