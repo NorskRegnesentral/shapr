@@ -44,10 +44,14 @@ blocks:
       dt_threads: [1, 4]
 
   # Parallel scaling combined with batching (workers need batches to be useful).
+  # Parallel scaling combined with batching. vaeac uses torch, whose objects are
+  # external pointers that cannot be serialized to `multisession` workers ("external
+  # pointer is not valid"); it must use forking (`multicore`) or run sequentially.
   - name: parallel
     grid:
       workers: [1, 4, 16]
       min_n_batches: [16, 64]
+      backend: [multicore]
 
   # Batching lever, isolated (cap off so min_n_batches alone governs the count).
   - name: batches
