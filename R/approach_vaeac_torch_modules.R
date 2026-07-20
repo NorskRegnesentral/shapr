@@ -867,9 +867,6 @@ vaeac_preprocess_data <- function(data, log_exp_cont_feat = FALSE,
   feature_list <- list()
   feature_list$labels <- colnames(data)
   feature_list$classes <- sapply(data, class)
-  # Use lapply (not sapply) so the result is always a list with one entry per feature. With sapply,
-  # an all-categorical data set whose features share the same number of levels simplifies to a matrix,
-  # which corrupts the downstream one_hot_max_sizes (see vaeac_preprocess_data below).
   feature_list$factor_levels <- lapply(data, levels)
 
   # Create an return_list object to store information about the data
