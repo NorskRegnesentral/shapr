@@ -22,13 +22,13 @@ test_that("check_computability warns when vaeac is combined with a serializing f
 
   # Sequential plan: no warning even for vaeac.
   future::plan("sequential")
-  expect_no_warning(shapr:::check_computability(make_internal("vaeac")))
+  expect_no_warning(check_computability(make_internal("vaeac")))
 
   # multisession (serializing) with >1 worker: warn for vaeac, since torch objects are external
   # pointers that cannot be exported to separate R processes.
   future::plan(future::multisession, workers = 2)
-  expect_warning(shapr:::check_computability(make_internal("vaeac")), regexp = "external pointer")
+  expect_warning(check_computability(make_internal("vaeac")), regexp = "external pointer")
 
   # ...but not for a non-torch approach under the same plan.
-  expect_no_warning(shapr:::check_computability(make_internal("gaussian")))
+  expect_no_warning(check_computability(make_internal("gaussian")))
 })
