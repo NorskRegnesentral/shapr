@@ -1521,6 +1521,7 @@ check_computability <- function(internal) {
   n_features <- internal$parameters$n_features
   n_groups <- internal$parameters$n_groups
   exact <- internal$parameters$exact
+  approach <- internal$parameters$approach
   causal_sampling <- internal$parameters$causal_sampling # NULL if regular/symmetric Shapley values
   asymmetric <- internal$parameters$asymmetric # NULL if regular/symmetric Shapley values
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if regular/symmetric Shapley values
@@ -1586,6 +1587,27 @@ check_computability <- function(internal) {
       )
       cli::cli_warn(c("!" = msg), immediate. = TRUE)
     }
+  }
+
+  # The `vaeac` approach uses `torch`, whose model/tensor objects are external pointers that cannot be
+  # exported to separate R processes. Warn early if a serializing multi-worker `future` plan
+  # (multisession/cluster) is active, as it fails with "external pointer is not valid" during v(S)
+  # computation. Forking (multicore) or sequential estimation work.
+  if (any(grepl("vaeac", approach, fixed = TRUE)) &&
+    future::nbrOfWorkers() > 1L &&
+    inherits(future::plan(), c("multisession", "cluster"))) {
+    cli::cli_warn(
+      c(
+        "!" = paste0(
+          "The {.val vaeac} approach uses {.pkg torch} models, whose objects are external pointers that ",
+          "cannot be exported to {.pkg future} {.val multisession}/{.val cluster} workers."
+        ),
+        "x" = "This will fail with an 'external pointer is not valid' error during the v(S) computation.",
+        "i" = "Use a forking plan instead ({.code future::plan(future::multicore)}) or run sequentially.",
+        " " = "Forking is unavailable on Windows and within RStudio; run {.val vaeac} sequentially there."
+      ),
+      immediate. = TRUE
+    )
   }
 }
 
