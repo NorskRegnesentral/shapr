@@ -21,7 +21,7 @@ test_that("vaeac one_hot_max_sizes is correct for all-categorical data with unif
     )
   )
 
-  pp <- shapr:::vaeac_preprocess_data(data = dt, normalize = FALSE)
+  pp <- vaeac_preprocess_data(data = dt, normalize = FALSE)
 
   # One entry per feature (not n_features * n_levels), each equal to the number of levels.
   expect_length(pp$one_hot_max_sizes, n_features)
