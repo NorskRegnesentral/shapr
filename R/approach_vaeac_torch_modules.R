@@ -212,7 +212,7 @@ vaeac <- function(one_hot_max_sizes,
         self$masking_probs <- masking_ratio
       } else if (mask_generator_name == "specified_masks_mask_generator") {
         # Small check that they have been provided.
-        if (is.null(mask_gen_coalitions) | is.null(mask_gen_coalitions_prob)) {
+        if (is.null(mask_gen_coalitions) || is.null(mask_gen_coalitions_prob)) {
           cli::cli_abort(paste0(
             "Both 'mask_gen_coalitions' and 'mask_gen_coalitions_prob' ",
             "must be provided when using 'specified_masks_mask_generator'."
@@ -867,7 +867,7 @@ vaeac_preprocess_data <- function(data, log_exp_cont_feat = FALSE,
   feature_list <- list()
   feature_list$labels <- colnames(data)
   feature_list$classes <- sapply(data, class)
-  feature_list$factor_levels <- sapply(data, levels)
+  feature_list$factor_levels <- lapply(data, levels)
 
   # Create an return_list object to store information about the data
   return_list <- list()
