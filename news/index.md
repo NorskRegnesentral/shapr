@@ -1,6 +1,6 @@
 # Changelog
 
-## shapr 1.0.8.9003
+## shapr 1.0.8.9004
 
 #### New features
 
@@ -46,6 +46,14 @@
 
 #### Bug fixes
 
+- Fixed a bug in the `vaeac` approach where an all-categorical data set
+  whose features all have the same number of levels was encoded
+  incorrectly, causing a torch `index ... is out of bounds` error.
+  [`vaeac_preprocess_data()`](https://norskregnesentral.github.io/shapr/reference/vaeac_preprocess_data.md)
+  used `sapply(data, levels)`, which simplifies to a matrix (instead of
+  a per-feature list) when every feature is a factor with the same
+  number of levels, corrupting `one_hot_max_sizes`.
+  ([\#506](https://github.com/NorskRegnesentral/shapr/pull/506))
 - Fixed a bug where non-iterative estimation (`iterative = FALSE`) with
   a moderate number of features could ignore `max_n_coalitions` and
   enumerate all `2^n_features` coalitions (an incorrect
