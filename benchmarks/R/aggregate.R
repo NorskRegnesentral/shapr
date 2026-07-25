@@ -87,6 +87,12 @@ main <- function() {
   )]
   results[, peak_ram_mb := round(peak_ram_bytes / 1024^2, 1)]
 
+  # Torch stack traces include machine-specific library roots. Keep the useful
+  # library and symbol details without publishing local filesystem paths.
+  if ("error" %in% names(results)) {
+    results[, error := gsub(" in /[^ )]*/torch/", " in <torch-library>/", error)]
+  }
+
   out_csv <- file.path(rdir, "results.csv")
   fwrite(results, out_csv)
 

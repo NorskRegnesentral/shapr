@@ -1,4 +1,16 @@
-# Generated benchmark artefacts (datasets, trained models, per-run results, logs)
+# Generated benchmark artefacts that are too large or granular for Git
 data/
-results/
 logs/
+
+# Keep the compact study inputs and aggregates, but not per-run JSON artefacts.
+results/*
+!results/README.md
+!results/*/
+results/*/*
+!results/*/grid.csv
+!results/*/results.csv
+!results/*/summary.csv
+
+# Obsolete experiments from the earlier OAT/factorial study design.
+results/oat_*/
+results/factorial_*/

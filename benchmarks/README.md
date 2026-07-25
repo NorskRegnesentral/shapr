@@ -32,7 +32,9 @@ bin/orchestrate.sh config/vaeac.yml --retry-timeouts
 ```
 
 Results land in `results/<approach>/results.csv` (one row per run) and
-`results/<approach>/summary.csv` (median/IQR per configuration). Runs are
+`results/<approach>/summary.csv` (median/IQR per configuration). The compact
+`grid.csv`, `results.csv`, and `summary.csv` files are committed as the study
+record. Per-run JSON artefacts remain local and git-ignored. Runs are
 **resumable** — re-running skips configs that already have a result file, and
 each study stops launching new runs once its `time_budget_sec` is used up.
 
@@ -221,7 +223,13 @@ benchmarks/
   bin/
     orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
     run_week.sh    run the whole suite, one approach at a time (cheapest first)
-  data/  results/  logs/   (generated; git-ignored)
+  data/                   generated datasets/models (git-ignored)
+  results/<study>/
+    grid.csv              generated study grid (committed)
+    results.csv           generated per-run aggregate (committed)
+    summary.csv           generated configuration summary (committed)
+    *.json                generated per-run artefacts (git-ignored)
+  logs/                   generated run logs (git-ignored)
 ```
 
 Per run the orchestrator writes `results/<study>/<id>.json` (R-side result),
