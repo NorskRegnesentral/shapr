@@ -53,9 +53,9 @@ test_that("check_computability warns when vaeac is combined with a serializing f
   expect_no_warning(check_computability(make_internal("vaeac")))
 
   # multisession (serializing) with >1 worker: warn for vaeac, since torch objects are external
-  # pointers that cannot be exported to separate R processes.
+  # pointers that cannot be exported to separate R processes. Snapshot the exact warning message.
   future::plan(future::multisession, workers = 2)
-  expect_warning(check_computability(make_internal("vaeac")), regexp = "external pointer")
+  expect_snapshot(check_computability(make_internal("vaeac")))
 
   # ...but not for a non-torch approach under the same plan.
   expect_no_warning(check_computability(make_internal("gaussian")))
