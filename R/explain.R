@@ -245,6 +245,9 @@
 #'
 #' The package allows parallelized computation with progress updates through the tightly connected
 #' [future::future] and [progressr::progressr] packages.
+#' The `vaeac` approach cannot use serializing `future` backends such as `multisession` or `cluster` with more than one
+#' worker because its `torch` objects cannot be exported to separate R processes. Use
+#' `future::plan(future::multicore)` where forking is available (not Windows or RStudio), or run `vaeac` sequentially.
 #' See the examples below.
 #' For iterative estimation (`iterative=TRUE`), intermediate results may be printed to the console
 #' (according to the `verbose` argument).
@@ -301,6 +304,7 @@
 #'
 #' # (Optionally) enable parallelization via the future package
 #' if (requireNamespace("future", quietly = TRUE)) {
+#'   # For vaeac, use future::multicore where available (not Windows or RStudio), or run sequentially.
 #'   future::plan("multisession", workers = 2)
 #' }
 #'
