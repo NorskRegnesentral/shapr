@@ -1783,6 +1783,12 @@ preferable to run `shapr::explain()` in parallel, at least not with
 many parallel sessions/workers.
 Parallelization also increases the memory consumption proportionally, so you may want to limit
 the number of workers for that reason too.
+
+The `vaeac` approach is an exception to the general backend support. Its `torch` objects contain external pointers
+that cannot be exported to separate R processes, so `multisession` and `cluster` plans with more than one worker are
+unsupported. Use `future::plan(future::multicore)` where forking is available, or run `vaeac` sequentially. Forking
+is unavailable on Windows and within RStudio.
+
 Below is a basic example of a parallelization with two workers.
 
 

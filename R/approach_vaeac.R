@@ -17,6 +17,12 @@
 #' @param vaeac.extra_parameters Named list with extra parameters to the `vaeac` approach. See
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
+#' @section VAEAC parallelization:
+#' The `vaeac` approach uses `torch` objects backed by external pointers. These objects cannot be exported to separate
+#' R processes, so serializing [future::future] backends such as `multisession` and `cluster` are unsupported with more
+#' than one worker. Use `future::plan(future::multicore)` where forking is available, or run `vaeac` sequentially.
+#' Forking is unavailable on Windows and within RStudio.
+#'
 #' @inheritParams default_doc_export
 #'
 #' @export

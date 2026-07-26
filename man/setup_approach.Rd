@@ -323,6 +323,14 @@ which are forwarded from \code{\link[=explain]{explain()}}.
 See the \href{https://norskregnesentral.github.io/shapr/articles/general_usage.html}{general usage vignette}
 for more information about the different approaches.
 }
+\section{VAEAC parallelization}{
+
+The \code{vaeac} approach uses \code{torch} objects backed by external pointers. These objects cannot be exported to separate
+R processes, so serializing \link[future:future]{future::future} backends such as \code{multisession} and \code{cluster} are unsupported with more
+than one worker. Use \code{future::plan(future::multicore)} where forking is available, or run \code{vaeac} sequentially.
+Forking is unavailable on Windows and within RStudio.
+}
+
 \references{
 \itemize{
 \item \href{https://martinjullum.com/publication/aas-2021-explaining/aas-2021-explaining.pdf}{
