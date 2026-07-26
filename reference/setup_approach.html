@@ -13,7 +13,7 @@ for more information about the different approaches."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -459,6 +459,15 @@ This includes <code>vaeac.extra_parameters$epochs_initiation_phase</code>, where
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Updated internal object with the approach set up.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="vaeac-parallelization">VAEAC parallelization<a class="anchor" aria-label="anchor" href="#vaeac-parallelization"></a></h2>
+
+
+<p>The <code>vaeac</code> approach uses <code>torch</code> objects backed by external pointers. These objects cannot be exported to separate
+R processes, so serializing <a href="https://future.futureverse.org/reference/future.html" class="external-link">future::future</a> backends such as <code>multisession</code> and <code>cluster</code> are unsupported with more
+than one worker. Use <code>future::plan(future::multicore)</code> where forking is available, or run <code>vaeac</code> sequentially.
+Forking is unavailable on Windows and within RStudio.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,8 +125,9 @@
 <p>We first enable parallel computation and progress updates with the following code chunk. These are optional, but recommended for improved performance and user-friendliness, particularly for problems with many features.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Enable parallel computation</span></span>
-<span><span class="co"># Requires the future and future_lapply packages</span></span>
+<span><span class="co"># Uses future for the plan and future.apply internally</span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="st">"multisession"</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># Increase the number of workers for increased performance with many features</span></span>
+<span><span class="co"># For vaeac, use future::multicore where available (not Windows or RStudio), or run sequentially.</span></span>
 <span></span>
 <span><span class="co"># Enable progress updates of the v(S) computations</span></span>
 <span><span class="co"># Requires the progressr package</span></span>

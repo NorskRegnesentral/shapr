@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -2025,8 +2025,16 @@ processes/machines when running in parallel, it is not always preferable
 to run <code><a href="../reference/explain.html">shapr::explain()</a></code> in parallel, at least not with many
 parallel sessions/workers. Parallelization also increases the memory
 consumption proportionally, so you may want to limit the number of
-workers for that reason too. Below is a basic example of a
-parallelization with two workers.</p>
+workers for that reason too.</p>
+<p>The <code>vaeac</code> approach is an exception to the general
+backend support. Its <code>torch</code> objects contain external
+pointers that cannot be exported to separate R processes, so
+<code>multisession</code> and <code>cluster</code> plans with more than
+one worker are unsupported. Use
+<code>future::plan(future::multicore)</code> where forking is available,
+or run <code>vaeac</code> sequentially. Forking is unavailable on
+Windows and within RStudio.</p>
+<p>Below is a basic example of a parallelization with two workers.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="va">old_future_plan</span> <span class="op">&lt;-</span> <span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="op">)</span></span>

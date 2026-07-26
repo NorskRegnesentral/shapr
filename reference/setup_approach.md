@@ -445,6 +445,16 @@ setup_approach(
 
 Updated internal object with the approach set up.
 
+## VAEAC parallelization
+
+The `vaeac` approach uses `torch` objects backed by external pointers.
+These objects cannot be exported to separate R processes, so serializing
+[future::future](https://future.futureverse.org/reference/future.html)
+backends such as `multisession` and `cluster` are unsupported with more
+than one worker. Use `future::plan(future::multicore)` where forking is
+available, or run `vaeac` sequentially. Forking is unavailable on
+Windows and within RStudio.
+
 ## References
 
 - [Aas, K., Jullum, M., & Løland, A. (2021). Explaining individual

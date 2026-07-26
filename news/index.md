@@ -33,7 +33,15 @@
   together with grouping (`group`), causal Shapley values
   (`causal_ordering`/`confounding`), and asymmetric Shapley values
   (`asymmetric`).
-  ([\#503](https://github.com/NorskRegnesentral/shapr/pull/503)) \###
+  ([\#503](https://github.com/NorskRegnesentral/shapr/pull/503))
+- [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
+  now warns when the `vaeac` approach is combined with a serializing
+  parallelization backend (a `future` `multisession` or `cluster` plan)
+  with more than one worker, since `torch` objects are external pointers
+  that cannot be exported to separate R processes (which otherwise fails
+  with an “external pointer is not valid” error). Use a forking plan
+  (`future::plan(future::multicore)`) or run sequentially.
+  ([\#507](https://github.com/NorskRegnesentral/shapr/pull/507)) \###
   Development workflow
 - Added repository-wide agent instructions, VS Code tasks, and
   snapshot-safe local testing helpers

@@ -128,8 +128,9 @@ features.
 ``` r
 
 # Enable parallel computation
-# Requires the future and future_lapply packages
+# Uses future for the plan and future.apply internally
 future::plan("multisession", workers = 2) # Increase the number of workers for increased performance with many features
+# For vaeac, use future::multicore where available (not Windows or RStudio), or run sequentially.
 
 # Enable progress updates of the v(S) computations
 # Requires the progressr package
