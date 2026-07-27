@@ -12,12 +12,10 @@ git-ignored because they are generated, granular, and substantially larger.
 
 ## Current status
 
-The current snapshot contains all 2,582 planned runs: 2,572 succeeded and 10
-VAEAC runs failed. Of the failures, eight used a serializing `multisession`
-future plan with non-serializable torch pointers, and two used an
-all-categorical dataset affected by the one-hot encoding bug. These runs are
-retained to record the study state and should be replaced after their fixes are
-available on the benchmark branch.
+The current snapshot contains all 2,582 planned runs, all successful. Ten
+previously failed VAEAC runs were replaced after their fixes became available:
+eight parallel runs now use the non-serializing `multicore` future plan, and two
+all-categorical runs use the corrected one-hot encoding.
 
 Obsolete `oat_*` and `factorial_*` experiments from an earlier study design are
 not part of the committed snapshot.
