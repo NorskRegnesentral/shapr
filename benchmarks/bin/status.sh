@@ -19,9 +19,9 @@ RESULTS="$ROOT/results"
 
 [[ -d "$RESULTS" ]] || { echo "No results directory yet ($RESULTS)."; exit 0; }
 
-printf "%-22s %10s %5s %5s %5s %5s %8s\n" \
-  APPROACH DONE/TOTAL OK TMO ERR SKIP LAST
-printf '%.0s-' {1..64}; echo
+printf "%-22s %10s %5s %5s %5s %5s %5s %8s\n" \
+  APPROACH DONE/TOTAL OK TMO KILL ERR SKIP LAST
+printf '%.0s-' {1..70}; echo
 
 grand_done=0; grand_total=0
 for d in "$RESULTS"/*/; do
@@ -44,13 +44,14 @@ for d in "$RESULTS"/*/; do
     files+=( "$f" )
   done
   done="${#files[@]}"
-  ok=0; tmo=0; err=0; skip=0; last=""
+  ok=0; tmo=0; killed=0; err=0; skip=0; last=""
   if [[ "$done" -gt 0 ]]; then
     # /dev/null guards grep from reading stdin if the list is short.
     ok="$(grep -l '"status": "ok"'                   "${files[@]}" /dev/null | wc -l | tr -d ' ')"
     tmo="$(grep -l '"status": "timeout"'             "${files[@]}" /dev/null | wc -l | tr -d ' ')"
+    killed="$(grep -l '"status": "killed_resource"' "${files[@]}" /dev/null | wc -l | tr -d ' ')"
     err="$(grep -l '"status": "error"'               "${files[@]}" /dev/null | wc -l | tr -d ' ')"
-    skip="$(grep -l '"status": "skipped_missing_dep"' "${files[@]}" /dev/null | wc -l | tr -d ' ')"
+    skip="$(grep -l '"status": "skipped_'             "${files[@]}" /dev/null | wc -l | tr -d ' ')"
     newest="$(ls -t "${files[@]}" 2>/dev/null | head -1)"
     [[ -n "$newest" ]] && last="$(date -r "$newest" '+%m-%d %H:%M')"
   fi
@@ -58,11 +59,11 @@ for d in "$RESULTS"/*/; do
   grand_done=$((grand_done + done))
   grand_total=$((grand_total + total))
 
-  printf "%-22s %5d/%-4d %5s %5s %5s %5s %8s\n" \
-    "$name" "$done" "$total" "$ok" "$tmo" "$err" "$skip" "$last"
+  printf "%-22s %5d/%-4d %5s %5s %5s %5s %5s %8s\n" \
+    "$name" "$done" "$total" "$ok" "$tmo" "$killed" "$err" "$skip" "$last"
 done
 
-printf '%.0s-' {1..64}; echo
+printf '%.0s-' {1..70}; echo
 pct=0
 [[ "$grand_total" -gt 0 ]] && pct=$((100 * grand_done / grand_total))
 printf "%-22s %5d/%-4d  (%d%%)\n" "TOTAL" "$grand_done" "$grand_total" "$pct"

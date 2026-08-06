@@ -78,10 +78,37 @@ parse_approach_args <- function(s) {
   return(out)
 }
 
+# Build an intentionally more expensive version of shapr's native prediction
+# function. Optional prediction-cost studies use this to vary model-evaluation
+# cost while returning exactly the same predictions.
+make_repeated_predict_model <- function(model, repeats) {
+  native_predict <- getFromNamespace("get_predict_model", "shapr")(
+    predict_model = NULL,
+    model = model
+  )
+  force(native_predict)
+  force(repeats)
+  return(function(model, newdata) {
+    prediction <- NULL
+    for (i in seq_len(repeats)) {
+      prediction <- native_predict(model, newdata)
+    }
+    return(prediction)
+  })
+}
+
 # Build the explain() argument list for a grid row. `coalitions_override` (if
 # > 0) replaces max_n_coalitions (used for the iterative `dependent` run).
 build_explain_args <- function(cfg, row, run_data, model, coalitions_override = NA_integer_) {
   approach_args <- parse_approach_args(row$approach_args)
+
+  prediction_repeats <- approach_args[["benchmark.prediction_repeats"]] %||% 1
+  approach_args[["benchmark.prediction_repeats"]] <- NULL
+  if (!is.numeric(prediction_repeats) || length(prediction_repeats) != 1 ||
+    prediction_repeats < 1 || prediction_repeats != as.integer(prediction_repeats)) {
+    stop("benchmark.prediction_repeats must be a positive integer")
+  }
+  prediction_repeats <- as.integer(prediction_repeats)
 
   # Named regression variant -> merge its (complex) explain args from registry.
   variant_args <- list()
@@ -129,6 +156,9 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     verbose = NULL,
     seed = cfg$seed + row$id
   )
+  if (prediction_repeats > 1L) {
+    base_args$predict_model <- make_repeated_predict_model(model, prediction_repeats)
+  }
 
   # Feature grouping (group sweep): partition features into groups of
   # `group_size` consecutive columns. group_size is a swept grid dimension;
@@ -224,6 +254,11 @@ main <- function() {
     result$used_n_batches_max <- if (all(is.na(nb_vec))) NA_integer_ else as.integer(max(nb_vec, na.rm = TRUE))
     result$effective_max_batch_size <- effective_max_batch_size(res$expl)
     result$timing <- flatten_timing(res$expl)
+    if (isTRUE(cfg$save_explanations)) {
+      shapley_path <- file.path(cfg$dir$results, paste0(a$id, ".shapley.rds"))
+      saveRDS(res$expl$shapley_values_est, shapley_path, compress = FALSE)
+      result$shapley_file <- basename(shapley_path)
+    }
   }
 
   jsonlite::write_json(result, out_path, auto_unbox = TRUE, pretty = TRUE, null = "null")

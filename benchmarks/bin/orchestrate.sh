@@ -86,10 +86,15 @@ RUN_ORDER="$(read_meta run_order)"
 [[ "$AGG_EVERY" =~ ^[0-9]+$ ]] || AGG_EVERY=0
 [[ "$TIME_BUDGET" =~ ^[0-9]+$ ]] || TIME_BUDGET=0
 
-# cgroup measurement needs systemd-run --user; fall back to poll if missing.
-if [[ "$RAM_METHOD" != "poll" ]] && ! command -v systemd-run >/dev/null 2>&1; then
-  echo "systemd-run not available; falling back to RAM method 'poll'." >&2
-  RAM_METHOD="poll"
+# cgroup measurement needs both systemd-run and a responsive user manager. The
+# latter can disappear after a host-level resource kill, so test an actual
+# transient scope rather than only checking that the executable exists.
+if [[ "$RAM_METHOD" != "poll" ]]; then
+  if ! command -v systemd-run >/dev/null 2>&1 ||
+    ! systemd-run --user --scope --quiet -- true >/dev/null 2>&1; then
+    echo "User systemd scopes unavailable; falling back to session polling." >&2
+    RAM_METHOD="poll"
+  fi
 fi
 
 echo "Study '$STUDY': RAM='$RAM_METHOD', poll=${POLL_MS}ms, cooldown=${COOLDOWN}s, timeout=${TIMEOUT}s, aggregate_every=${AGG_EVERY}"
@@ -140,11 +145,6 @@ run_id() {
   local tjson="$RESULTS/$id.time.json"
   local log="$LOGS/$id.log"
 
-  if [[ -f "$out" ]]; then
-    echo "[id $id] already done, skipping."
-    return 0
-  fi
-
   # Iterative dependent: reuse the source run's used coalition budget. If the
   # source result is missing or never recorded a usable coalition budget (it
   # timed out / errored), the dependent cannot run with a meaningful budget, so
@@ -159,6 +159,23 @@ run_id() {
     if [[ -f "$src_json" ]]; then
       mnc="$(sed -n 's/.*"used_n_coalitions"[: ]*\([0-9][0-9]*\).*/\1/p' "$src_json" | head -1)"
     fi
+
+    # A source may have been refreshed while an older dependent result remains.
+    # Reuse the dependent only when its stored override still equals the
+    # source's current coalition count. No version/SHA check is needed: the
+    # coalition budget is the dependency that defines this paired comparison.
+    if [[ -f "$out" && -n "$mnc" ]]; then
+      local stored_mnc=""
+      stored_mnc="$(sed -n 's/.*"coalitions_override"[: ]*\([0-9][0-9]*\).*/\1/p' "$out" | head -1)"
+      if [[ "$stored_mnc" == "$mnc" ]]; then
+        echo "[id $id] already done with matching source budget $mnc, skipping."
+        return 0
+      fi
+
+      echo "[id $id] invalidating stale dependent budget ${stored_mnc:-missing}; source now uses $mnc."
+      rm -f "$out" "$mem" "$tjson" "$log"
+    fi
+
     if [[ -n "$mnc" ]]; then
       extra_args+=(--max-n-coalitions "$mnc")
     else
@@ -183,17 +200,28 @@ EOF
       echo "[id $id] SKIPPED: $reason"
       return 0
     fi
+  elif [[ -f "$out" ]]; then
+    echo "[id $id] already done, skipping."
+    return 0
   fi
 
-  local start end elapsed rc timed_out=false
+  # A dependent with an unavailable source is handled above. For all ordinary
+  # runs, and for any legacy row without pair metadata, an existing result is
+  # resumable as before.
+  if [[ -f "$out" ]]; then
+    echo "[id $id] already done, skipping."
+    return 0
+  fi
+
+  local start end elapsed rc timed_out=false resource_killed=false
   start="$(date +%s.%N)"
 
   if [[ "$RAM_METHOD" == "poll" ]]; then
-    timeout --signal=TERM "$TIMEOUT" \
+    setsid timeout --signal=TERM "$TIMEOUT" \
       "$RSCRIPT" "$RDIR/run_one.R" --config "$CONFIG" --id "$id" "${extra_args[@]}" \
       >"$log" 2>&1 &
     local rpid=$!
-    "$RSCRIPT" "$RDIR/sampler.R" --pid "$rpid" --out "$mem" --interval-ms "$POLL_MS" \
+    "$RSCRIPT" "$RDIR/sampler.R" --sid "$rpid" --out "$mem" --interval-ms "$POLL_MS" \
       >>"$log" 2>&1 &
     local spid=$!
     wait "$rpid"; rc=$?
@@ -214,8 +242,10 @@ EOF
 
   end="$(date +%s.%N)"
   elapsed="$(awk "BEGIN{printf \"%.3f\", $end - $start}")"
-  if [[ "$rc" -eq 124 || "$rc" -eq 137 ]]; then
+  if [[ "$rc" -eq 124 ]]; then
     timed_out=true
+  elif [[ "$rc" -eq 137 ]]; then
+    resource_killed=true
   fi
 
   # Bash-level timing sidecar (headline wall time).
@@ -224,7 +254,8 @@ EOF
   "id": $id,
   "bash_wall_secs": $elapsed,
   "exit_code": $rc,
-  "timed_out": $timed_out
+  "timed_out": $timed_out,
+  "resource_killed": $resource_killed
 }
 EOF
 
@@ -244,6 +275,35 @@ EOF
 }
 EOF
     echo "[id $id] TIMEOUT after ${elapsed}s (limit ${TIMEOUT}s)"
+  elif [[ "$resource_killed" == "true" && ! -f "$out" ]]; then
+    local appr ds
+    appr="$(grid_approach "$id")"
+    ds="$(grid_dataset "$id")"
+    cat >"$out" <<EOF
+{
+  "id": $id,
+  "study": "$STUDY",
+  "approach": "$appr",
+  "dataset": "$ds",
+  "status": "killed_resource"
+}
+EOF
+    echo "[id $id] KILLED BY RESOURCE LIMIT after ${elapsed}s"
+  elif [[ "$rc" -ne 0 && ! -f "$out" ]]; then
+    local appr ds
+    appr="$(grid_approach "$id")"
+    ds="$(grid_dataset "$id")"
+    cat >"$out" <<EOF
+{
+  "id": $id,
+  "study": "$STUDY",
+  "approach": "$appr",
+  "dataset": "$ds",
+  "status": "error",
+  "error": "benchmark launcher exited with code $rc"
+}
+EOF
+    echo "[id $id] LAUNCH ERROR after ${elapsed}s (exit $rc)"
   else
     tail -n 1 "$log"
   fi

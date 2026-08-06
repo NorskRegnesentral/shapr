@@ -10,6 +10,8 @@ results/*/*
 !results/*/grid.csv
 !results/*/results.csv
 !results/*/summary.csv
+!results/*/accuracy_results.csv
+!results/*/accuracy_summary.csv
 
 # Obsolete experiments from the earlier OAT/factorial study design.
 results/oat_*/

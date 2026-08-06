@@ -1,0 +1,15 @@
+dataset,approach,n_features,max_n_coalitions,n_MC_samples,min_n_batches,max_batch_size,max_batch_cube_size,workers,backend,dt_threads,n_train,n_explain,iterative,group,group_size,sweep,approach_args,n,wall_median,wall_iqr,cpu_user_median,ram_mb_median,ram_mb_max,bash_wall_median,data_load_median,n_iterations_median
+numeric,timeseries,12,256,250,32,Inf,1000000,1,multisession,1,2500,50,FALSE,FALSE,2,heavy_sequential,,1,907.971,0,835.092,9177.9,9177.9,910.391,0.787,1
+numeric,timeseries,12,256,250,32,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,medium_sequential,,2,344.828,0.435,331.447,2327.7,2328,346.986,0.821,1
+numeric,timeseries,12,256,250,32,Inf,1000000,4,multisession,1,2500,50,FALSE,FALSE,2,heavy_parallel,,2,262.826,1.012,21.194,35098.4,35229.5,267.014,0.794,1
+numeric,timeseries,12,256,250,8,Inf,1000000,1,multisession,1,2500,50,FALSE,FALSE,2,heavy_sequential,,2,250.668,1.503,231.574,11810.2,11871.6,253.5,0.797,1
+numeric,timeseries,12,256,250,32,Inf,1000000,4,multisession,1,1000,25,FALSE,FALSE,2,medium_parallel,,2,100.576,6.559,9.246,8750.9,8801.9,103.833,0.812,1
+numeric,timeseries,12,256,250,2,Inf,1000000,1,multisession,1,2500,50,FALSE,FALSE,2,heavy_sequential,,2,97.661,0.093,82.23,15283.8,15313.3,100.756,0.794,1
+numeric,timeseries,12,256,250,8,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,medium_sequential,,2,93.302,1.021,89.703,2615.7,2648.4,95.405,0.79,1
+numeric,timeseries,12,256,250,8,Inf,1000000,4,multisession,1,2500,50,FALSE,FALSE,2,heavy_parallel,,2,78.525,0.375,7.548,47148.4,47362.1,83.082,0.787,1
+numeric,timeseries,12,256,250,8,Inf,1000000,16,multisession,1,2500,50,FALSE,FALSE,2,heavy_parallel,,2,49.787,0.16,5.962,72050,72089.6,53.665,0.821,1
+numeric,timeseries,12,256,250,8,Inf,1000000,8,multisession,1,2500,50,FALSE,FALSE,2,heavy_parallel_8workers,,2,49.791,0.346,6.064,71476.6,71576.7,53.472,0.788,1
+numeric,timeseries,12,256,250,32,Inf,1000000,16,multisession,1,1000,25,FALSE,FALSE,2,medium_parallel,,2,43.808,1.694,6.297,34215.6,34419.3,48.116,0.796,1
+numeric,timeseries,12,256,250,8,Inf,1000000,4,multisession,1,1000,25,FALSE,FALSE,2,medium_parallel,,2,30.846,0.86,3.895,9674,9680,34.185,0.807,1
+numeric,timeseries,12,256,250,8,Inf,1000000,16,multisession,1,1000,25,FALSE,FALSE,2,medium_parallel,,2,20.062,0.222,3.354,17203.4,17374.4,23.913,0.824,1
+numeric,timeseries,12,256,250,1,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,medium_sequential,,2,21.164,0.24,19.23,3608.5,3621.3,23.378,0.79,1

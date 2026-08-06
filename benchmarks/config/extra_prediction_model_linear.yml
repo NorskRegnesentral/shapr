@@ -1,0 +1,26 @@
+# Optional real-model prediction-cost study; excluded from run_week.sh.
+# A basic linear model supplies a genuinely cheap prediction lower bound.
+approach: gaussian
+dataset: numeric
+
+replicates: 2
+warmup: false
+cooldown_sec: 0.2
+timeout_sec: 1800
+time_budget_sec: 7200
+
+models:
+  numeric:
+    type: linear
+
+blocks:
+  - name: prediction_model
+    grid:
+      n_features: [12]
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1, 4, 16]
+      min_n_batches: [32]
+      max_batch_cube_size: [Inf]

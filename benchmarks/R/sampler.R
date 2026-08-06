@@ -1,9 +1,11 @@
 #!/usr/bin/env Rscript
 # sampler.R — measure peak memory of a benchmark run and write a *.mem.json.
 #
-# Two modes:
-#   --pid <PID>     Poll the RSS of the process tree rooted at PID (captures all
-#                   future workers). Stops when PID exits.
+# Three modes:
+#   --sid <SID>     Poll the summed RSS of every process in a dedicated session.
+#                   This catches workers even if they detach from the parent.
+#   --pid <PID>     Poll the RSS of the process tree rooted at PID. This is a
+#                   fallback for launches that cannot create a new session.
 #   --unit <NAME>   The run was launched under `systemd-run --user --scope
 #                   --unit=NAME`; read the scope's cgroup-v2 memory.peak (exact)
 #                   AND poll the process-tree RSS of the cgroup members.
@@ -25,6 +27,7 @@ parse_args <- function() {
   }
   list(
     pid = get("--pid"),
+    sid = get("--sid"),
     unit = get("--unit"),
     out = get("--out"),
     interval_ms = as.numeric(get("--interval-ms", 15)),
@@ -44,9 +47,37 @@ sum_rss <- function(pids) {
 
 tree_pids <- function(pid) {
   h <- tryCatch(ps::ps_handle(as.integer(pid)), error = function(e) NULL)
-  if (is.null(h)) return(integer(0))
-  desc <- tryCatch(ps::ps_descendants(h), error = function(e) list())
+  if (is.null(h)) {
+    return(integer(0))
+  }
+  desc <- tryCatch(ps::ps_children(h, recursive = TRUE), error = function(e) list())
   c(as.integer(pid), vapply(desc, ps::ps_pid, integer(1)))
+}
+
+# Read the session id from /proc/<pid>/stat. The command name is parenthesized
+# and may itself contain spaces or closing parentheses, so split after the last
+# ") " before selecting field 6 (the fourth token in the remaining suffix).
+proc_session_id <- function(pid) {
+  stat_path <- file.path("/proc", pid, "stat")
+  stat <- tryCatch(suppressWarnings(readLines(stat_path, warn = FALSE, n = 1)),
+    error = function(e) character(0)
+  )
+  if (length(stat) == 0) {
+    return(NA_integer_)
+  }
+  suffix <- sub("^.*\\) ", "", stat)
+  fields <- strsplit(suffix, " ", fixed = TRUE)[[1]]
+  if (length(fields) < 4) {
+    return(NA_integer_)
+  }
+  return(suppressWarnings(as.integer(fields[4])))
+}
+
+session_pids <- function(sid) {
+  proc_dirs <- Sys.glob("/proc/[0-9]*")
+  pids <- suppressWarnings(as.integer(basename(proc_dirs)))
+  sessions <- vapply(pids, proc_session_id, integer(1))
+  return(pids[!is.na(sessions) & sessions == as.integer(sid)])
 }
 
 read_int_file <- function(path) {
@@ -93,6 +124,28 @@ sample_by_pid <- function(a) {
   write_result(a$out, "poll", peak, NA_real_, n)
 }
 
+sample_by_sid <- function(a) {
+  interval <- a$interval_ms / 1000
+  deadline <- Sys.time() + a$max_seconds
+  peak <- 0
+  n <- 0L
+  empty_samples <- 0L
+  repeat {
+    pids <- session_pids(a$sid)
+    if (length(pids) == 0) {
+      empty_samples <- empty_samples + 1L
+      if (empty_samples >= 2L) break
+    } else {
+      empty_samples <- 0L
+      peak <- max(peak, sum_rss(pids))
+      n <- n + 1L
+    }
+    if (Sys.time() > deadline) break
+    Sys.sleep(interval)
+  }
+  write_result(a$out, "poll_session", peak, NA_real_, n)
+}
+
 sample_by_unit <- function(a) {
   interval <- a$interval_ms / 1000
   deadline <- Sys.time() + a$max_seconds
@@ -114,7 +167,8 @@ sample_by_unit <- function(a) {
     repeat {
       procs_path <- file.path(cg, "cgroup.procs")
       pids <- tryCatch(suppressWarnings(readLines(procs_path, warn = FALSE)),
-        error = function(e) character(0))
+        error = function(e) character(0)
+      )
       pids <- pids[nzchar(pids)]
       # cgroup.peak (preferred) else running memory.current.
       mp <- read_int_file(file.path(cg, "memory.peak"))
@@ -137,10 +191,12 @@ main <- function() {
   if (is.na(a$out)) stop("Provide --out <path>")
   if (!is.na(a$unit)) {
     sample_by_unit(a)
+  } else if (!is.na(a$sid)) {
+    sample_by_sid(a)
   } else if (!is.na(a$pid)) {
     sample_by_pid(a)
   } else {
-    stop("Provide either --pid or --unit")
+    stop("Provide --sid, --pid, or --unit")
   }
 }
 

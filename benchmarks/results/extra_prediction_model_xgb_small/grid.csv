@@ -1,0 +1,7 @@
+id,sweep,rep,is_warmup,dataset,approach,n_features,max_n_coalitions,n_MC_samples,min_n_batches,max_batch_size,max_batch_cube_size,workers,backend,dt_threads,n_train,n_explain,iterative,group,group_size,approach_args,pair_key,pair_role,coalitions_from
+1,prediction_model,1,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,1,multisession,1,1000,50,FALSE,FALSE,2,"",,,
+2,prediction_model,2,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,1,multisession,1,1000,50,FALSE,FALSE,2,"",,,
+3,prediction_model,1,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,4,multisession,1,1000,50,FALSE,FALSE,2,"",,,
+4,prediction_model,2,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,4,multisession,1,1000,50,FALSE,FALSE,2,"",,,
+5,prediction_model,1,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,16,multisession,1,1000,50,FALSE,FALSE,2,"",,,
+6,prediction_model,2,FALSE,numeric,gaussian,12,512,250,32,Inf,Inf,16,multisession,1,1000,50,FALSE,FALSE,2,"",,,

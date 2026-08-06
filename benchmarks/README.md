@@ -8,6 +8,8 @@ fast / memory-hungry each approach is, and how that scales with the arguments
 you can change — so end users know which knob to turn when compute is limited.
 
 Everything is driven by editable YAML config files in [`config/`](config/).
+Findings from the optional follow-up studies are summarized in
+[`EXTRA_FINDINGS.md`](EXTRA_FINDINGS.md).
 
 ---
 
@@ -58,7 +60,7 @@ Per run (one `explain()` call in a fresh R process):
 | Phase breakdown | shapr's own `$timing` | where time goes (setup vs `compute_vS` …) |
 | Iterations | `length(internal$iter_list)` | 1 for non-iterative; >1 for iterative |
 | Batches used | `length(iter_list[[i]]$S_batch)` | `used_n_batches` (final iter) + `used_n_batches_max`; `effective_max_batch_size` shows the post-cap batch size |
-| Peak RAM (tree) | external `/proc` sampler | sums RSS of the whole process tree incl. workers |
+| Peak RAM (poll) | external `/proc` sampler | sums RSS for a dedicated process session incl. detached workers |
 | Peak RAM (cgroup) | cgroup-v2 `memory.peak` | exact, catches transient spikes (Linux + systemd) |
 | gc peak | `gc()` max in the parent | in-process cross-check (sequential runs) |
 
@@ -68,9 +70,15 @@ pre-built). The internal `explain()` wall and `data_load_secs` let you decompose
 it.
 
 Plus full config, actual coalitions used, iterations, status (`ok` / `error` /
-`skipped_missing_dep` / `timeout`), and metadata (R/shapr version, git SHA,
-host, timestamp). A run exceeding `timeout_sec` is killed and recorded as
-`timeout`.
+`skipped_*` / `timeout` / `killed_resource`), and metadata (R/shapr version,
+git SHA, host, timestamp). A run exceeding `timeout_sec` is recorded as
+`timeout`; a separate signal-based resource kill is retained distinctly.
+
+For iterative pairs, `source_used_n_coalitions` and `pair_budget_matches` make
+the dependency check explicit in `results.csv`. A successful dependent is only
+included in `summary.csv` when its override and actual coalition count both
+match the source's currently recorded count. This is deliberately independent
+of Git SHA and package version.
 
 ## What gets varied
 
@@ -152,6 +160,11 @@ fewer/lighter blocks.
 A study file is deep-merged on top of `common.yml` (study wins). To tweak a
 study, just edit its YAML — no code changes needed.
 
+Configs prefixed `extra_` are optional follow-up experiments and are not part
+of `bin/run_week.sh`. Their matching `results/extra_*` directories are likewise
+self-contained, so an uninformative extension can be omitted from a presented
+benchmark set without changing any core study or shared configuration.
+
 Example block config:
 
 ```yaml
@@ -190,7 +203,8 @@ and the `baseline` (which carries every run dimension, incl. `dt_threads`,
 To make the numbers trustworthy:
 
 - **No cross-run caching / warm heap** — each config starts cold.
-- **Attributable RAM** — peak memory belongs to exactly one config.
+- **Attributable RAM** — peak memory belongs to exactly one config or dedicated
+  process session.
 - **Clean parallelism** — fresh `future` workers each time.
 
 `orchestrate.sh` also pins `OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=
@@ -220,6 +234,7 @@ benchmarks/
     run_one.R      run ONE config in isolation -> results/<study>/<id>.json
     sampler.R      external peak-RAM sampler (poll + cgroup)
     aggregate.R    merge results (+ *.time.json, *.mem.json) -> results.csv + summary.csv
+    accuracy.R     score saved explanations against a high-budget reference
   bin/
     orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
     run_week.sh    run the whole suite, one approach at a time (cheapest first)
@@ -230,6 +245,7 @@ benchmarks/
     summary.csv           generated configuration summary (committed)
     *.json                generated per-run artefacts (git-ignored)
   logs/                   generated run logs (git-ignored)
+  EXTRA_FINDINGS.md       optional-study conclusions and user guidance
 ```
 
 Per run the orchestrator writes `results/<study>/<id>.json` (R-side result),
@@ -244,9 +260,9 @@ R packages: `shapr` (installed), `yaml`, `jsonlite`, `data.table`, `future`,
 smooth/penalised regression variants, …). Approaches/variants whose deps are
 missing are recorded as `skipped_missing_dep` instead of failing the study.
 
-The cgroup RAM method needs Linux with cgroup-v2 and `systemd-run --user`;
-otherwise set `ram.method: poll` in `common.yml` (the framework also falls back
-to `poll` automatically if `systemd-run` is absent).
+The cgroup RAM method needs Linux with cgroup-v2 and a responsive
+`systemd-run --user`; otherwise set `ram.method: poll` in `common.yml` (the
+framework also falls back to session polling automatically).
 
 ---
 

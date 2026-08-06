@@ -123,6 +123,7 @@ build_groups <- function(feature_names, group_size = 2L) {
 
 # Train (or load from cache) the prediction model for a run. The model type is
 # chosen by dataset FAMILY (xgboost for numeric, ranger for mixed/categorical).
+# Optional prediction-cost studies may override this with a basic linear model.
 get_model <- function(cfg, dataset, x_train, y_train) {
   model_cfg <- cfg$models[[dataset_family(dataset)]]
   key <- digest_key(list(
@@ -135,6 +136,10 @@ get_model <- function(cfg, dataset, x_train, y_train) {
   }
 
   model <- switch(model_cfg$type,
+    linear = {
+      model_data <- data.frame(.response = y_train, as.data.frame(x_train), check.names = FALSE)
+      stats::lm(.response ~ ., data = model_data, model = FALSE, x = FALSE, y = FALSE)
+    },
     # Use the stable xgb.train + xgb.DMatrix API (consistent across xgboost
     # versions) to avoid the high-level API's deprecation warnings.
     xgboost = xgboost::xgb.train(
