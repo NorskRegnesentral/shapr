@@ -10,35 +10,27 @@ study. Each current approach has:
 The per-run JSON artefacts, datasets, trained models, and logs remain local and
 git-ignored because they are generated, granular, and substantially larger.
 
-## Core status
+## Status
 
-The current snapshot contains all 2,582 planned runs, all successful. Ten
-previously failed VAEAC runs were replaced after their fixes became available:
-eight parallel runs now use the non-serializing `multicore` future plan, and two
-all-categorical runs use the corrected one-hot encoding.
+The curated snapshot contains all 2,353 planned runs, all successful. It uses
+three replicates by default, two for VAEAC, and two for the added expensive ARF
+and timeseries realistic-workload blocks. Warm-up runs are not part of the
+configuration or result set.
 
-A dependency audit found 72 historical iterative-pair dependents whose stored
-fixed budget (4,096 coalitions) does not match the coalition count now recorded
-by their source. They are retained as successful standalone fixed-budget runs,
-but must not be used for iterative-versus-fixed comparisons. The affected
-studies have eight rows each: ARF, copula, CTree, empirical, Gaussian,
-independence, regression separate, regression surrogate, and timeseries.
-Categorical and VAEAC pairs are valid; all non-dependent rows remain comparable.
-The aggregator now labels this condition and excludes such dependents from new
-summaries without using Git/package-version invalidation.
+Thirty-six historical iterative-pair dependents have a stored fixed budget that
+does not match the coalition count currently recorded by their source: six rows
+each for ARF, copula, independence, regression separate, regression surrogate,
+and timeseries. They remain valid standalone fixed-budget timings but are
+labelled and excluded from paired summaries. Gaussian, empirical, CTree,
+categorical, and VAEAC currently have no mismatched pairs.
 
 Obsolete `oat_*` and `factorial_*` experiments from an earlier study design are
 not part of the committed snapshot.
 
-## Optional follow-up status
+The approach grids include the retained realistic parallel workloads, Gaussian
+accuracy/cost interactions, dense-batch memory calibration, and prediction
+models (`linear`, `xgb`, and `xgb_large`). Superseded `extra_*` studies are not
+part of the active configuration or result tree.
 
-Twelve self-contained `extra_*` studies add realistic parallel workloads,
-Gaussian accuracy/cost interactions, dense-batch memory calibration, and model
-prediction-cost sensitivity. They planned 343 runs: 341 completed normally, one
-duplicate known to exceed the resource limit was skipped, and one timeseries
-run was resource-killed.
-
-See [`../EXTRA_FINDINGS.md`](../EXTRA_FINDINGS.md) for the cross-study findings,
-user guidance, limitations, and a recommendation about which optional studies
-are most useful to retain. Any extension can be discarded independently by
-removing its `config/extra_*.yml` and matching `results/extra_*` directory.
+See [`../BENCHMARK_FINDINGS.md`](../BENCHMARK_FINDINGS.md) for cross-study
+findings, user guidance, and limitations.

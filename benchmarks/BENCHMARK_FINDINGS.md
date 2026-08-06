@@ -1,25 +1,22 @@
-# Follow-up benchmark findings
+# Compute and memory benchmark findings
 
-This note records the optional follow-up experiments in the `extra_*` configs.
-It complements the core benchmark snapshot; it does not replace or re-run it.
-The main questions are what drives elapsed time and peak RAM, and which settings
-users should change when either resource is constrained.
+This note summarizes the complete curated benchmark set. The main questions are
+what drives elapsed time and peak RAM, and which settings users should change
+when either resource is constrained.
 
 ## Scope and interpretation
 
-- The follow-ups planned 343 runs. Of these, 341 completed normally, one skipped
-  a duplicate known to exceed the resource limit, and one was killed by that
-  limit.
-- Parallel and memory studies use two replicates per point. Accuracy uses three.
-  Treat small timing differences as ties; the large effects are consistent
-  enough to support operational guidance.
-- All results come from one Linux host and synthetic numeric data. Absolute
-  seconds and RAM are machine-specific; relative effects are the useful result.
+- The approach-specific grids contain 2,353 successful runs. Most configurations
+  use three replicates; VAEAC and the expensive ARF/timeseries realistic blocks
+  use two. Treat small timing differences as ties.
+- All results come from one Linux host and synthetic numeric, mixed, or
+  categorical data. Absolute seconds and RAM are machine-specific; relative
+  effects are the useful result.
 - Tables below use whole-process elapsed time (`bash_wall_secs`) unless they are
   explicitly labelled as `explain()` time. RAM is the median process-tree or
   cgroup peak, not merely the parent R process.
-- Every extension is removable as one `config/extra_*.yml` file plus its matching
-  `results/extra_*` directory. None is called by `bin/run_week.sh`.
+- All retained experiments are blocks in the ordinary approach-specific YAML
+  files and are included by `bin/run_week.sh`.
 
 ## Main conclusions across approaches
 
@@ -45,23 +42,20 @@ users should change when either resource is constrained.
    as fast as, or faster than, larger caps. Disabling the cap should be an
    informed latency-for-memory trade, not a general optimization.
 6. **Real prediction cost changes the parallel optimum.** Four workers captured
-   most of the benefit for linear and small/current XGBoost models. For a real
-   500-tree, depth-6 XGBoost model, `explain()` speedup rose to 2.76x with four
-   workers and 3.28x with 16. Advice about workers therefore has to account for
+   most of the benefit for linear and standard XGBoost models. For a real
+   500-tree, depth-6 XGBoost model, `explain()` speedup rose to 2.79x with four
+   workers and 3.80x with 16. Advice about workers therefore has to account for
    the model, not just the shapr approach and dimensions.
-7. **Controlled prediction repeats confirm the mechanism.** Repeating otherwise
-   identical model predictions increased 16-worker `explain()` speedup from
-   1.83x to 5.63x, independently of changes to the prediction values.
 
 ## 1. Iterative-pair integrity
 
-The historical core snapshot contains 72 dependent rows whose stored fixed
-budget is 4,096 coalitions while the source currently records another achieved
-budget. There are eight such rows for each of ARF, copula, CTree, empirical,
-Gaussian, independence, regression separate, regression surrogate, and
-timeseries. Categorical and VAEAC pairs are valid.
+The curated snapshot contains 36 dependent rows whose stored fixed budget does
+not match the source's currently recorded achieved budget. There are six such
+rows for each of ARF, copula, independence, regression separate, regression
+surrogate, and timeseries. Gaussian, empirical, CTree, categorical, and VAEAC
+pairs are valid.
 
-These 72 rows remain valid standalone fixed-budget timings, and all ordinary
+These 36 rows remain valid standalone fixed-budget timings, and all ordinary
 non-pair rows remain comparable. They are not valid iterative-versus-fixed
 pairs. The aggregator now records `source_used_n_coalitions` and
 `pair_budget_matches`, and excludes only mismatched dependents from newly
@@ -81,9 +75,9 @@ median MB.
 
 | Approach / batches | 1 worker | 4 workers | 8 workers | 16 workers |
 |---|---:|---:|---:|---:|
-| Gaussian / 32 | 36.7 s, 591 MB | 17.3 s, 2,233 MB | 14.8 s, 4,098 MB | 13.7 s, 7,262 MB |
-| Empirical / 8 | 79.2 s, 1,577 MB | 28.3 s, 5,227 MB | 20.2 s, 8,893 MB | 20.3 s, 9,397 MB |
-| CTree / 32 | 252.6 s, 796 MB | 74.9 s, 2,868 MB | 46.7 s, 5,212 MB | 32.4 s, 9,966 MB |
+| Gaussian / 32 | 36.5 s, 592 MB | 17.3 s, 2,236 MB | 14.6 s, 4,116 MB | 13.6 s, 7,263 MB |
+| Empirical / 8 | 79.6 s, 1,548 MB | 28.2 s, 5,133 MB | 20.2 s, 8,892 MB | 20.3 s, 9,391 MB |
+| CTree / 32 | 254.3 s, 747 MB | 75.2 s, 2,860 MB | 46.9 s, 5,241 MB | 32.5 s, 9,989 MB |
 | ARF / 32 | 365.9 s, 3,793 MB | 120.1 s, 12,981 MB | 77.7 s, 24,452 MB | 65.7 s, 44,733 MB |
 | Timeseries / 8 | 253.5 s, 11,810 MB | 83.1 s, 47,148 MB | 53.5 s, 71,477 MB | 53.7 s, 72,050 MB |
 | VAEAC, explanation-heavy / 16 | 294.6 s, 3,376 MB | 212.8 s, 10,488 MB | not run | 194.2 s, 17,475 MB |
@@ -99,8 +93,8 @@ Important approach-specific findings:
   16. A 32-batch parallel layout used substantially less RAM than eight batches,
   at a modest time cost in most cases.
 - **CTree:** this was the clearest CPU-parallel case; the heavy 32-batch run
-  improved from 252.6 seconds sequentially to 32.4 seconds at 16 workers. RAM
-  rose from 0.8 GB to 10.0 GB.
+  improved from 254.3 seconds sequentially to 32.5 seconds at 16 workers. RAM
+  rose from 0.7 GB to 10.0 GB.
 - **ARF:** heavy runs parallelized strongly but retained large worker-local
   state. A practical compromise is four workers and 32 batches (120.1 seconds,
   13.0 GB); 16 workers saved another 54 seconds but peaked at 44.7 GB.
@@ -108,9 +102,7 @@ Important approach-specific findings:
   sequential case took 100.8 seconds with two batches but 900.4 seconds with 32.
   Four workers/eight batches was faster but needed 47.1 GB. Eight workers
   matched 16 workers almost exactly in both time (53.5 versus 53.7 seconds) and
-  RAM (71.5 versus 72.1 GB), so it did not reveal a safer intermediate point. A
-  16-worker, 32-batch attempt reached 132.8 GB (123.7 GiB) and was
-  resource-killed; its duplicate was not launched.
+  RAM (71.5 versus 72.1 GB), so it did not reveal a safer intermediate point.
 - **VAEAC:** training-dominated work had no useful parallel payoff. The best
   sequential setup took 409.9 seconds and 0.8 GB; 16 workers took 398.5 seconds
   and 7.0 GB. Explanation-heavy work gained modestly, but even there four
@@ -163,11 +155,11 @@ For the 12-feature, 1,024-coalition Gaussian workload:
 
 | Cube-size cap | Actual batches | 1-worker elapsed / RAM | 4-worker elapsed / RAM |
 |---:|---:|---:|---:|
-| 1 million | 342 | 33.2 s / 372 MB | 16.6 s / 1,569 MB |
-| 4 million | 79 | 38.4 s / 425 MB | 18.2 s / 2,079 MB |
-| 16 million | 20 | 36.2 s / 752 MB | 18.5 s / 2,710 MB |
-| 64 million | 8 | 34.5 s / 1,477 MB | 18.1 s / 5,086 MB |
-| unlimited | 8 | 34.1 s / 1,466 MB | 18.2 s / 4,975 MB |
+| 1 million | 342 | 33.1 s / 367 MB | 16.5 s / 1,568 MB |
+| 4 million | 79 | 38.6 s / 425 MB | 18.2 s / 2,057 MB |
+| 16 million | 20 | 36.1 s / 748 MB | 18.5 s / 2,728 MB |
+| 64 million | 8 | 34.3 s / 1,473 MB | 18.0 s / 5,260 MB |
+| unlimited | 8 | 34.1 s / 1,462 MB | 17.8 s / 5,233 MB |
 
 The 20-feature calibration showed the same conclusion: the 1-million cap used
 128 batches and 343 MB, compared with about 706-710 MB at the largest settings,
@@ -186,21 +178,20 @@ observable.
 
 The real-model study kept the Gaussian workload fixed and changed only its
 pre-built prediction model. Training remained outside the measured run. The
-models were a basic linear regression and XGBoost with small (10 trees, depth
-2), current (50 trees, depth 3), and large (500 trees, depth 6) configurations.
+models were a basic linear regression, the standard XGBoost configuration (50
+trees, depth 3), and a large XGBoost configuration (500 trees, depth 6).
 
 | Prediction model | 1 worker | 4 workers | 16 workers |
 |---|---:|---:|---:|
-| Linear | 8.26 s, 300 MB | 4.59 s (1.80x), 1,242 MB | 4.28 s (1.93x), 3,717 MB |
-| XGBoost small | 9.45 s, 369 MB | 5.88 s (1.61x), 1,682 MB | 5.62 s (1.68x), 5,270 MB |
-| XGBoost current | 10.52 s, 370 MB | 6.37 s (1.65x), 1,763 MB | 5.76 s (1.83x), 5,271 MB |
-| XGBoost large | 50.02 s, 374 MB | 18.15 s (2.76x), 1,743 MB | 15.27 s (3.28x), 5,337 MB |
+| Linear | 8.28 s, 300 MB | 4.54 s (1.82x), 1,237 MB | 4.18 s (1.98x), 3,580 MB |
+| XGBoost | 10.59 s, 369 MB | 6.36 s (1.66x), 1,756 MB | 5.75 s (1.84x), 5,269 MB |
+| XGBoost large | 50.36 s, 373 MB | 18.03 s (2.79x), 1,742 MB | 13.24 s (3.80x), 5,336 MB |
 
 Times are median `explain()` seconds. The linear model is a useful cheap lower
 bound, but it does not make parallelism free: whole-process elapsed time fell
-only from 9.40 seconds sequentially to 6.83 seconds with four workers, and did
-not improve at 16. The small and current XGBoost models likewise saturated at
-four workers for practical purposes. Only the large real model retained a
+only from 9.39 seconds sequentially to 6.78 seconds with four workers, and did
+not improve at 16. The standard XGBoost model likewise saturated at four
+workers for practical purposes. Only the large real model retained a
 meaningful 4-to-16-worker gain, at the cost of tripling parallel RAM.
 
 **User guidance:** use one worker for small jobs or strict RAM limits; four is
@@ -208,43 +199,19 @@ the normal parallel ceiling for cheap/moderate prediction models. Consider more
 workers only when representative measurements show that prediction is a large
 fraction of the workload.
 
-### Controlled repeated predictions
-
-The benchmark-only wrapper repeated the native model prediction 1, 4, or 16
-times while returning identical predictions. This isolates model evaluation
-cost without changing the explanation.
-
-| Prediction work | 1 worker | 4 workers | 16 workers |
-|---:|---:|---:|---:|
-| 1x | 10.52 s | 6.37 s (1.65x) | 5.76 s (1.83x) |
-| 4x | 18.05 s | 8.45 s (2.14x) | 6.17 s (2.92x) |
-| 16x | 52.66 s | 17.09 s (3.08x) | 9.36 s (5.63x) |
-
-These are `explain()` times so fixed R startup does not dilute the causal
-effect. Peak RAM was nearly unchanged by repeated prediction work at a fixed
-worker count: roughly 0.35 GB, 1.6-1.8 GB, and 5.3-5.5 GB for one, four, and 16
-workers respectively.
-
-This experiment supports the mechanism independently of model-output changes,
-but is artificial. It can live in an appendix or be dropped from a lean public
-benchmark set without weakening the directly observed real-model results.
-
-## What to retain in a presented benchmark set
+## Retained benchmark components
 
 - **Essential:** the pair-integrity labels and resume check. They protect the
   interpretation of every iterative comparison and add no benchmark workload.
 - **High-value:** accuracy/cost interactions and the memory-cap calibration.
   They directly turn two important user knobs into actionable guidance.
-- **High-value:** the real linear/small/current/large prediction-model study. It
+- **High-value:** the real linear/standard/large prediction-model study. It
   directly demonstrates when additional workers become worthwhile.
 - **High-value for resource guidance:** Gaussian, CTree, ARF, timeseries, and
   VAEAC parallel studies. Together they show why a universal worker/batch rule
   would be unsafe.
-- **Useful corroboration:** empirical parallelism. It strengthens the common
-  pattern but could be omitted if the presentation needs fewer approach panels.
-- **Mechanistic/optional:** prediction-cost repeats. Keep it to explain why
-  users should benchmark their model; omit it if only real workloads should be
-  shown.
+- **Useful corroboration:** empirical parallelism strengthens the common pattern
+  and is retained in the empirical approach grid.
 
 ## Small, bounded follow-ups worth considering
 

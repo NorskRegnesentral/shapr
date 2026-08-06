@@ -1,4 +1,0 @@
-dataset,approach,n_features,max_n_coalitions,n_MC_samples,min_n_batches,max_batch_size,max_batch_cube_size,workers,backend,dt_threads,n_train,n_explain,iterative,group,group_size,sweep,approach_args,n,wall_median,wall_iqr,cpu_user_median,ram_mb_median,ram_mb_max,bash_wall_median,data_load_median,n_iterations_median
-numeric,gaussian,12,512,250,32,Inf,Inf,1,multisession,1,1000,50,FALSE,FALSE,2,prediction_model,,2,9.446,0.012,9.154,369.1,369.2,11.45,0.786,1
-numeric,gaussian,12,512,250,32,Inf,Inf,16,multisession,1,1000,50,FALSE,FALSE,2,prediction_model,,2,5.621,0.079,3.144,5269.5,5270.4,9.172,0.816,1
-numeric,gaussian,12,512,250,32,Inf,Inf,4,multisession,1,1000,50,FALSE,FALSE,2,prediction_model,,2,5.877,0.009,2.798,1682,1705,8.984,0.788,1

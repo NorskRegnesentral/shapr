@@ -49,8 +49,8 @@ blocks:
       max_n_coalitions: [256, 1024]
 
   # Realistic workloads are kept at two replicates because the heavy sequential
-  # rows take about 15 minutes each. The resource-killed 16-worker/32-batch
-  # heavy cell is deliberately absent, so every listed row is intended to run.
+  # rows take about 15 minutes each. The high-risk 16-worker/32-batch heavy cell
+  # is deliberately absent, so every listed row is intended to run.
   - name: realistic_medium
     replicates: 2
     grid:

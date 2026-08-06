@@ -137,12 +137,6 @@ main <- function() {
     if (!col %in% names(results)) results[, (col) := FALSE]
     results[is.na(get(col)), (col) := FALSE]
   }
-  # Historical studies may contain unmeasured warm-up artifacts. Exclude them
-  # during migration, then remove the retired bookkeeping column altogether.
-  if ("is_warmup" %in% names(results)) {
-    results <- results[is.na(is_warmup) | is_warmup == FALSE]
-    results[, is_warmup := NULL]
-  }
   if (!"wall_secs" %in% names(results)) results[, wall_secs := NA_real_]
 
   # Headline peak-RAM column: prefer cgroup, fall back to the poll/tree number.
