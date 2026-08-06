@@ -4,8 +4,8 @@
 # The categorical approach requires ALL features to be factors, so it runs ONLY
 # on the all-categorical dataset (baseline overridden accordingly). There is no
 # numeric `features` sweep (feature count is fixed by the dataset) and no
-# `dataset` sweep. Standard OAT battery otherwise. Inherits timeout (1 h) + 24 h
-# budget.
+# `dataset` sweep. Standard OAT battery otherwise. Inherits the 12-hour timeout
+# and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/categorical.yml
 # ============================================================================

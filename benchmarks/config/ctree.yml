@@ -4,8 +4,8 @@
 # ctree fits a conditional-inference tree per coalition and is one of the more
 # expensive approaches (and memory-heavy in the iterative setting), so grids are
 # somewhat coarser than gaussian's. Supports all dataset families -> includes
-# the mixed/categorical `dataset` sweep. Baseline numeric. Inherits timeout
-# (1 h) + 24 h budget.
+# the mixed/categorical `dataset` sweep. Baseline numeric. Inherits the 12-hour
+# timeout and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/ctree.yml
 # ============================================================================

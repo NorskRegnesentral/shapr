@@ -14,10 +14,9 @@ dataset: numeric
 
 replicates: 2
 
-# timeout_sec (10 min) and time_budget_sec (24 h) are inherited from common.yml.
-# Many vaeac runs will hit the 10-min limit on the first pass and be recorded as
-# timeouts (with partial time + peak RAM); re-run with a raised timeout and
-# `--retry-timeouts` to pick up the long ones.
+# The 12-hour per-run timeout and 96-hour study budget are inherited from
+# common.yml. VAEAC keeps two replicates because its retained blocks are much
+# more expensive than the other approaches.
 
 blocks:
   # ---- Core OAT battery (coarse levels, since vaeac is expensive) -----------

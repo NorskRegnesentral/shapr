@@ -4,8 +4,8 @@
 # arf fits a density model and is moderately expensive and memory-heavy under
 # parallelism. Coarser grids than gaussian. Supports all dataset families ->
 # includes the mixed/categorical `dataset` sweep. Baseline numeric. Requires the
-# `arf` package (runs are skipped if missing). Inherits timeout (1 h) + 24 h
-# budget.
+# `arf` package (runs are skipped if missing). Inherits the 12-hour timeout and
+# 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/arf.yml
 # ============================================================================

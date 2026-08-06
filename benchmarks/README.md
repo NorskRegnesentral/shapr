@@ -3,9 +3,10 @@
 A self-contained framework to measure **CPU time** and **peak RAM** of
 `shapr::explain()` across the package's many settings, on a single machine.
 
-The goal is **not** accuracy (that depends on the data) but **cost**: how
-fast / memory-hungry each approach is, and how that scales with the arguments
-you can change — so end users know which knob to turn when compute is limited.
+The primary goal is **cost**: how fast and memory-hungry each approach is, and
+how that scales with user-controlled arguments. A bounded Gaussian accuracy
+surface is also included so coalition and Monte Carlo cost can be interpreted
+against approximation quality rather than in isolation.
 
 Everything is driven by editable YAML config files in [`config/`](config/).
 Findings from the complete study are summarized in
@@ -78,7 +79,8 @@ For iterative pairs, `source_used_n_coalitions` and `pair_budget_matches` make
 the dependency check explicit in `results.csv`. A successful dependent is only
 included in `summary.csv` when its override and actual coalition count both
 match the source's currently recorded count. This is deliberately independent
-of Git SHA and package version.
+of Git SHA and package version. Pair identity is retained in `summary.csv` so
+separate iterative budgets cannot be combined into one aggregate row.
 
 ## What gets varied
 
@@ -125,7 +127,7 @@ Only `gaussian`/`copula`/`empirical` use the dense-array cube-size cap.
 
 ### Datasets (numeric, four mixed, categorical)
 
-- `numeric` — all numeric features (AR(1)-correlated), up to 20 columns. Works
+- `numeric` — all numeric features (AR(1)-correlated), up to 30 columns. Works
   with every approach.
 - `mixed_fc_fl`, `mixed_fc_ml`, `mixed_mc_fl`, `mixed_mc_ml` — numeric + factor
   features spanning **f**ew/**m**any factor **c**olumns x **f**ew/**m**any
@@ -152,8 +154,9 @@ fewer/lighter blocks.
 
 - [`config/common.yml`](config/common.yml) — machine-wide defaults: seed,
   replicates, RAM method, models, the four `mixed_*` dataset specs, the
-  `baseline` configuration, thread controls, the per-run `timeout_sec` (1 h) and
-  the per-approach `time_budget_sec` (24 h). **Every study inherits from this.**
+  `baseline` configuration, thread controls, the per-run `timeout_sec` (12 h)
+  and the per-approach `time_budget_sec` (96 h). **Every study inherits from
+  this.**
 - `config/<approach>.yml` — one file per approach (`gaussian.yml`, `vaeac.yml`,
   …), each a list of `blocks`.
 
@@ -189,8 +192,8 @@ Set `max_batch_cube_size: Inf` in a block to disable shapr's dense-array cap and
 control the batch count precisely via `min_n_batches` / `max_batch_size`; the
 batch count actually used is recorded as `used_n_batches`.
 
-Machine-wide knobs in `common.yml`: `timeout_sec` (per-run wall-clock kill, 1 h),
-`time_budget_sec` (per-approach budget, 24 h), the four `mixed_*` dataset specs,
+Machine-wide knobs in `common.yml`: `timeout_sec` (per-run wall-clock kill, 12 h),
+`time_budget_sec` (per-approach budget, 96 h), the four `mixed_*` dataset specs,
 and the `baseline` (which carries every run dimension, incl. `dt_threads`,
 `group`, `group_size` and `max_batch_cube_size`).
 

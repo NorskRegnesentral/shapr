@@ -3,8 +3,8 @@
 #
 # The timeseries approach treats the (AR(1)-correlated) numeric features as an
 # ordered series. Standard OAT battery, no approach-specific knobs and no
-# cube-size cap (it does not use the dense-array code path). Inherits timeout
-# (1 h) + 24 h budget.
+# cube-size cap (it does not use the dense-array code path). Inherits the
+# 12-hour timeout and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/timeseries.yml
 # ============================================================================

@@ -4,7 +4,7 @@
 # empirical uses the dense per-batch DISTANCE array subject to
 # max_batch_cube_size, so it gets the cube-size cap study. Its key
 # approach-specific knob is `empirical.type`, swept one-by-one. Same OAT battery
-# as gaussian minus grouping. Inherits timeout (1 h) + 24 h budget.
+# as gaussian minus grouping. Inherits the 12-hour timeout and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/empirical.yml
 # ============================================================================

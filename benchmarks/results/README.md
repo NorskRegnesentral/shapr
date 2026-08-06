@@ -17,12 +17,9 @@ three replicates by default, two for VAEAC, and two for the added expensive ARF
 and timeseries realistic-workload blocks. Warm-up runs are not part of the
 configuration or result set.
 
-Thirty-six historical iterative-pair dependents have a stored fixed budget that
-does not match the coalition count currently recorded by their source: six rows
-each for ARF, copula, independence, regression separate, regression surrogate,
-and timeseries. They remain valid standalone fixed-budget timings but are
-labelled and excluded from paired summaries. Gaussian, empirical, CTree,
-categorical, and VAEAC currently have no mismatched pairs.
+All iterative-pair dependents use the coalition budget currently recorded by
+their source. The final validation found no mismatched pairs, so every retained
+pair is included in its approach summary.
 
 Obsolete `oat_*` and `factorial_*` experiments from an earlier study design are
 not part of the committed snapshot.
@@ -34,3 +31,6 @@ part of the active configuration or result tree.
 
 See [`../BENCHMARK_FINDINGS.md`](../BENCHMARK_FINDINGS.md) for cross-study
 findings, user guidance, and limitations.
+
+Run `Rscript benchmarks/R/audit_findings.R` from the repository root to verify
+the snapshot invariants and reproduce the numerical tables used in the report.

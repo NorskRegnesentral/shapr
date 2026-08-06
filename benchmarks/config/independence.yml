@@ -4,7 +4,8 @@
 # independence is parameter-free and supports every dataset family, so besides
 # the standard numeric OAT battery it runs the `dataset` sweep across all four
 # mixed settings and the categorical data. Baseline stays numeric (to line up
-# with the gaussian/numeric reference). Inherits timeout (1 h) + 24 h budget.
+# with the gaussian/numeric reference). Inherits the 12-hour timeout and
+# 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/independence.yml
 # ============================================================================

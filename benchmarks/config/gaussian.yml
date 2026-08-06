@@ -22,7 +22,7 @@ approach: gaussian
 dataset: numeric        # gaussian supports the all-numeric data
 model_variant: xgb
 
-# timeout_sec (10 min) and time_budget_sec (24 h) are inherited from common.yml.
+# The 12-hour per-run timeout and 96-hour study budget are inherited from common.yml.
 
 blocks:
   # 1. Core cost surface: training rows x MC samples (dense).

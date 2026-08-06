@@ -9,7 +9,7 @@
 #     R/registry.R (`surrogate_none`) vs the default linear model.
 # Supports all dataset families -> includes the mixed/categorical dataset sweep.
 # Baseline numeric. Requires `parsnip` (+ `xgboost` for the variant). Inherits
-# timeout (1 h) + 24 h budget.
+# the 12-hour timeout and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/regression_surrogate.yml
 # ============================================================================

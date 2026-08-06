@@ -10,7 +10,7 @@
 #   * xgb_*    — xgboost boost_tree.   xgb_none / xgb_light / xgb_cv, same idea.
 # Supports all dataset families -> includes the mixed/categorical dataset sweep.
 # Baseline numeric. Requires `parsnip` (+ `glmnet`/`xgboost` per variant).
-# Inherits timeout (1 h) + 24 h budget.
+# Inherits the 12-hour timeout and 96-hour budget.
 #
 # Run with:  bin/orchestrate.sh config/regression_separate.yml
 # ============================================================================

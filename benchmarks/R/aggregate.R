@@ -172,9 +172,18 @@ main <- function() {
     status == "ok" &
       (is.na(pair_budget_matches) | pair_budget_matches == TRUE)
   ]
+  for (col in intersect(c("approach_args", "pair_key", "pair_role"), names(ok))) {
+    ok[get(col) == "", (col) := NA_character_]
+  }
   summary <- NULL
   if (nrow(ok) > 0) {
-    by_cols <- intersect(c(grid_dimensions(), "sweep", "approach_args"), names(ok))
+    # Keep paired iterative blocks distinct. Dependent rows intentionally share
+    # the generic fixed-budget dimensions, so omitting the pair identity would
+    # combine separate source/dependent experiments into one summary row.
+    by_cols <- intersect(
+      c(grid_dimensions(), "sweep", "approach_args", "pair_key", "pair_role"),
+      names(ok)
+    )
     has_bash <- "bash_wall_secs" %in% names(ok)
     has_load <- "data_load_secs" %in% names(ok)
     has_iter <- "n_iterations" %in% names(ok)

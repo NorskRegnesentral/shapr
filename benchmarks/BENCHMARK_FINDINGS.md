@@ -1,77 +1,134 @@
 # Compute and memory benchmark findings
 
-This note summarizes the complete curated benchmark set. The main questions are
-what drives elapsed time and peak RAM, and which settings users should change
-when either resource is constrained.
+This report summarizes only the experiments retained in the approach-specific
+configuration files and their committed result snapshot. Its purpose is to
+explain what drives elapsed time and peak RAM, and to turn those observations
+into practical guidance for users.
 
-## Scope and interpretation
+## Executive summary
 
-- The approach-specific grids contain 2,353 successful runs. Most configurations
-  use three replicates; VAEAC and the expensive ARF/timeseries realistic blocks
-  use two. Treat small timing differences as ties.
-- All results come from one Linux host and synthetic numeric, mixed, or
-  categorical data. Absolute seconds and RAM are machine-specific; relative
-  effects are the useful result.
-- Tables below use whole-process elapsed time (`bash_wall_secs`) unless they are
-  explicitly labelled as `explain()` time. RAM is the median process-tree or
-  cgroup peak, not merely the parent R process.
-- All retained experiments are blocks in the ordinary approach-specific YAML
-  files and are included by `bin/run_week.sh`.
+- There is no single fastest or most memory-efficient setting across all
+  approaches. Approach internals and the prediction model often matter more
+  than any one generic shapr parameter.
+- Coalition count and the number of explained observations are the most
+  consistent generic time drivers. Training-row count matters little for some
+  approaches, but strongly affects methods that fit, search, or store richer
+  conditional models.
+- Monte Carlo sample count is important when conditional sampling or prediction
+  is expensive, but it can be secondary to training, fitting, or data-search
+  costs. It should be tuned for accuracy rather than assumed to be the main
+  runtime control.
+- Batching controls how much intermediate state is live at once. More batches
+  can reduce sequential RAM substantially, but each batch adds overhead.
+  Gaussian, CTree, and ARF tolerate fine batching well; timeseries and VAEAC do
+  not.
+- Parallel workers normally multiply live state. They are worthwhile only when
+  individual batches contain enough computation. Cheap approaches should
+  normally use one worker. Four workers are a sensible first parallel trial for
+  material workloads; eight or sixteen should be selected only from a measured
+  time-versus-RAM trade-off.
+- Prediction cost changes that trade-off. A large XGBoost model continued to
+  benefit beyond four workers, while linear and standard XGBoost models were
+  already close to saturation.
+- The Gaussian accuracy experiment shows that coalition count and Monte Carlo
+  count address different error sources. Increasing either in isolation can
+  have diminishing returns.
 
-## Main conclusions across approaches
+## Scope, completeness, and interpretation
 
-1. **Total sampling work drives time.** More coalitions, Monte Carlo samples,
-   explicands, and costly conditional/prediction methods all add work. The
-   accuracy experiment confirms that coalition count and Monte Carlo count are
-   different accuracy levers, so neither should be increased mechanically.
-2. **The live batch and worker count drive RAM.** Splitting coalitions into more
-   batches often reduces sequential peak RAM by several-fold. Parallel workers
-   then multiply the live state: 16 workers routinely used several GB and the
-   most demanding ARF/timeseries cases used tens of GB.
-3. **Parallelism pays only when each batch contains enough work.** Four workers
-   are a robust first step. Eight often improves throughput further. Sixteen is
-   mainly a latency option for CTree, heavy empirical/ARF, and expensive model
-   prediction; it is usually a poor default because memory grows faster than
-   speed.
-4. **More batches are not free.** They are an effective memory control for
-   Gaussian, empirical, CTree, and ARF, but timeseries and VAEAC incur large
-   per-batch overheads. For those approaches, overly fine batching can increase
-   elapsed time by multiples.
-5. **The default dense-array cap is conservative for good reason.** In the
-   Gaussian calibration, `max_batch_cube_size = 1e6` was both lowest-memory and
-   as fast as, or faster than, larger caps. Disabling the cap should be an
-   informed latency-for-memory trade, not a general optimization.
-6. **Real prediction cost changes the parallel optimum.** Four workers captured
-   most of the benefit for linear and standard XGBoost models. For a real
-   500-tree, depth-6 XGBoost model, `explain()` speedup rose to 2.79x with four
-   workers and 3.80x with 16. Advice about workers therefore has to account for
-   the model, not just the shapr approach and dimensions.
+The curated snapshot contains 2,353 successful runs representing 814 distinct
+configurations. There are 725 configurations with three replicates and 89 with
+two. Two replicates are used only for VAEAC and the expensive realistic ARF and
+timeseries blocks; all other configurations use the common three-replicate
+default. Warm-up runs are not part of the functionality, configuration, or
+results.
 
-## 1. Iterative-pair integrity
+All iterative source/dependent pairs are valid: the fixed dependent uses the
+coalition budget achieved by its corresponding iterative source. This was
+verified across every retained result after refreshing the previously invalid
+dependents.
 
-The curated snapshot contains 36 dependent rows whose stored fixed budget does
-not match the source's currently recorded achieved budget. There are six such
-rows for each of ARF, copula, independence, regression separate, regression
-surrogate, and timeseries. Gaussian, empirical, CTree, categorical, and VAEAC
-pairs are valid.
+The measurements were collected on one Linux host using synthetic numeric,
+mixed, and categorical datasets. Absolute time and RAM will change with
+hardware, operating system, backend, model implementation, and data. Relative
+effects within a controlled block are consequently more transferable than the
+absolute values.
 
-These 36 rows remain valid standalone fixed-budget timings, and all ordinary
-non-pair rows remain comparable. They are not valid iterative-versus-fixed
-pairs. The aggregator now records `source_used_n_coalitions` and
-`pair_budget_matches`, and excludes only mismatched dependents from newly
-generated summaries. On resume, a dependent is re-used only when its override
-still matches its source's recorded coalition count. This check intentionally
-does not invalidate results because the Git SHA or installed package changed.
+Unless explicitly labelled as `explain()` time, elapsed time means median
+whole-process wall time. Peak RAM is the median peak for the measured process
+tree or cgroup, rather than only the parent R process. Small timing differences
+should be treated as ties: the median relative timing IQR is 0.73% for
+three-replicate configurations and 0.33% for two-replicate configurations; the
+90th percentiles are 1.96% and 1.33%, respectively. The apparently lower
+variation for two replicates is not evidence that two are more precise—their
+tails are simply estimated less robustly.
 
-**Guidance:** paired comparisons require equal realized coalition budgets. For
-all other comparisons, do not discard otherwise compatible runs merely because
-metadata such as SHA differs.
+## Comparable reference workload
 
-## 2. Realistic parallel workloads
+This reference holds the generic numeric workload at 12 features, 128 maximum
+coalitions, 250 Monte Carlo samples, 10 batches, 1 worker, 1,000 training rows,
+and 25 explained rows. The categorical approach uses its corresponding
+categorical dataset. Approach defaults otherwise remain in force, so this is a
+practical cost comparison, not a claim that the methods are statistically
+equivalent.
 
-The following table selects representative heavy settings and compares equal
-batch counts where possible. Times are median total elapsed seconds and RAM is
-median MB.
+| Approach | Whole process | `explain()` | Peak RAM |
+|---|---:|---:|---:|
+| Gaussian | 4.123 s | 2.302 s | 273.1 MB |
+| Independence | 4.967 s | 3.184 s | 258.8 MB |
+| Copula | 4.967 s | 3.168 s | 283.3 MB |
+| Categorical | 4.979 s | 4.038 s | 278.2 MB |
+| Regression surrogate | 6.084 s | 3.311 s | 462.1 MB |
+| Empirical | 7.217 s | 5.417 s | 246.1 MB |
+| Regression separate | 8.188 s | 5.412 s | 308.6 MB |
+| CTree | 19.188 s | 17.337 s | 357.3 MB |
+| ARF | 19.232 s | 17.127 s | 775.2 MB |
+| Timeseries | 60.856 s | 58.983 s | 1,301.2 MB |
+| VAEAC | 1,163.646 s | 1,159.353 s | 542.7 MB |
+
+The ordering is workload-specific. In particular, VAEAC includes its neural
+training cost, and the reference does not amortize a trained model over repeated
+explanation calls.
+
+## What drives computation and memory across approaches
+
+### Problem dimensions
+
+More coalitions consistently add work and commonly add RAM. More explained
+observations also increase work, although the effect is weak when a large
+one-time fit dominates. Feature count affects both the possible coalition space
+and approach-specific internal representations, so it becomes especially
+important for CTree, ARF, timeseries, and grouped Gaussian runs.
+
+Training-row count separates the approaches most clearly:
+
+- It has little effect for Gaussian and independence at the tested Monte Carlo
+  budget.
+- It has a measurable effect for empirical, copula, categorical, ARF,
+  timeseries, VAEAC, and regression surrogate.
+- It is especially consequential when the method fits or retains complex
+  conditional structures, as in CTree, ARF, timeseries, and VAEAC.
+- Regression separate is comparatively insensitive to generic Monte Carlo and
+  training-size changes, but is highly sensitive to its model-fitting variant.
+
+Monte Carlo count should not be interpreted in isolation. In timeseries, for
+example, training and batch overhead can dominate it; in Gaussian and ARF it is
+more visible. Its most defensible role is an accuracy/stability control, tested
+together with coalition count.
+
+### Data and method complexity
+
+The number of factor levels and mixed-data structure can materially increase
+CTree, ARF, and VAEAC costs. Regression-separate tuning and learner choice can
+dominate all ordinary dimension changes. These results support exposing
+approach choice, approach arguments, and data structure in any estimate of
+resource needs; rows and columns alone are insufficient.
+
+### Batches and workers
+
+Batching trades live memory against repeated setup and scheduling. Parallelism
+trades elapsed time against multiple worker-local copies. Representative heavy
+workloads illustrate the scale of that trade:
 
 | Approach / batches | 1 worker | 4 workers | 8 workers | 16 workers |
 |---|---:|---:|---:|---:|
@@ -80,78 +137,156 @@ median MB.
 | CTree / 32 | 254.3 s, 747 MB | 75.2 s, 2,860 MB | 46.9 s, 5,241 MB | 32.5 s, 9,989 MB |
 | ARF / 32 | 365.9 s, 3,793 MB | 120.1 s, 12,981 MB | 77.7 s, 24,452 MB | 65.7 s, 44,733 MB |
 | Timeseries / 8 | 253.5 s, 11,810 MB | 83.1 s, 47,148 MB | 53.5 s, 71,477 MB | 53.7 s, 72,050 MB |
-| VAEAC, explanation-heavy / 16 | 294.6 s, 3,376 MB | 212.8 s, 10,488 MB | not run | 194.2 s, 17,475 MB |
+| VAEAC explanation-heavy / 16 | 294.6 s, 3,376 MB | 212.8 s, 10,488 MB | not run | 194.2 s, 17,475 MB |
 
-Important approach-specific findings:
+These are deliberately heavy cases where parallel work has a chance to pay
+off. They must not be generalized to cheap work. The retained core parallel
+blocks show that independence, copula, categorical, and regression separate
+do not benefit at their tested sizes. Regression surrogate is the clearest
+counterexample: adding workers made it progressively slower while multiplying
+RAM. For those cases, one worker is the correct default.
 
-- **Gaussian:** four workers roughly halved elapsed time. Eight workers gave a
-  smaller second gain; 16 offered little beyond eight. With one worker, moving
-  from one to 32 batches cut heavy-case RAM from 8.6 GB to 0.6 GB and was also
-  slightly faster than one batch.
-- **Empirical:** parallelism remained worthwhile through eight workers. The
-  medium workload saturated there, while the heavier workload still gained at
-  16. A 32-batch parallel layout used substantially less RAM than eight batches,
-  at a modest time cost in most cases.
-- **CTree:** this was the clearest CPU-parallel case; the heavy 32-batch run
-  improved from 254.3 seconds sequentially to 32.5 seconds at 16 workers. RAM
-  rose from 0.7 GB to 10.0 GB.
-- **ARF:** heavy runs parallelized strongly but retained large worker-local
-  state. A practical compromise is four workers and 32 batches (120.1 seconds,
-  13.0 GB); 16 workers saved another 54 seconds but peaked at 44.7 GB.
-- **Timeseries:** coarse batches mattered at least as much as workers. The heavy
-  sequential case took 100.8 seconds with two batches but 900.4 seconds with 32.
-  Four workers/eight batches was faster but needed 47.1 GB. Eight workers
-  matched 16 workers almost exactly in both time (53.5 versus 53.7 seconds) and
-  RAM (71.5 versus 72.1 GB), so it did not reveal a safer intermediate point.
-- **VAEAC:** training-dominated work had no useful parallel payoff. The best
-  sequential setup took 409.9 seconds and 0.8 GB; 16 workers took 398.5 seconds
-  and 7.0 GB. Explanation-heavy work gained modestly, but even there four
-  workers should precede 16. Fine 64-batch sequential runs were slow even after
-  replication: 738.7 seconds for the training-dominated workload and 544.2
-  seconds for the explanation-heavy workload.
+## Findings by approach
 
-**User guidance:** start at one worker when RAM is uncertain, then try four.
-Use eight only for a material workload and adequate RAM. Reserve 16 for measured
-latency needs. Prefer 32 batches as a memory-oriented starting point for
-Gaussian/empirical/CTree/ARF, but use coarse batching for timeseries and VAEAC.
+### Gaussian
 
-## 3. Accuracy versus cost and parameter interactions
+Gaussian is inexpensive at the reference workload. Coalition count, explained
+rows, and Monte Carlo samples increase cost, while training rows have little
+effect in the tested range. Fine batching controls memory effectively and has
+low overhead. Feature grouping helps only when it reduces the effective problem
+substantially; small groups can add organization without reducing work.
 
-The Gaussian experiment used eight features, three replicates, and a reference
-mean from three exact-coalition runs with 2,000 Monte Carlo samples. Reference
-noise RMSE was 0.00634. Selected results for 50 explained observations are:
+Heavy Gaussian work benefits from four workers, with diminishing time gains at
+eight and sixteen. The Linux multicore backend was substantially lighter than
+multisession in the tested small parallel block, but this is platform- and
+backend-specific and should not be presented as portable behavior.
+
+### Empirical
+
+Empirical cost grows with training rows, coalitions, and explained rows. Very
+fine batching lowers RAM but can add substantial repeated-search overhead.
+Parallelism is worthwhile for the retained heavy workloads through four or
+eight workers, but the benefit saturates.
+
+The empirical bandwidth-selection mode is a first-order cost decision: repeated
+AICc selection is orders of magnitude more expensive than fixed bandwidth in
+the tested block. Users should choose it for statistical reasons and budget for
+it explicitly.
+
+### CTree
+
+CTree responds strongly to feature count, coalitions, explained rows, training
+rows, and mixed/factor complexity. Batching reduces peak memory with little
+penalty in the tested ordinary range. It also has the strongest sustained CPU
+parallel scaling among the retained approaches, although RAM rises nearly with
+the worker-local state.
+
+### ARF
+
+ARF time and RAM grow strongly with the main problem dimensions and with complex
+mixed data. More batches are an effective memory control, with a modest time
+cost. Heavy workloads parallelize well, but their worker-local model and sample
+state make the RAM price unusually large. Four workers are a practical first
+trial; higher counts require an explicit memory budget.
+
+### Timeseries
+
+Timeseries is sensitive to features, coalitions, explained rows, training rows,
+and data structure. Its per-batch overhead is large: splitting work too finely
+can increase elapsed time by multiples even while RAM falls. Coarse batching is
+therefore preferred unless memory forces a compromise.
+
+Material timeseries workloads parallelize, but their absolute RAM use can be
+very high. In the representative case, eight and sixteen workers were
+effectively tied in elapsed time and RAM, so sixteen had no justification.
+
+### VAEAC
+
+VAEAC is dominated by neural-model training in the default reference. Training
+rows and epoch count are primary time drivers; network depth, width, latent
+size, factor complexity, and explanation dimensions affect either time or RAM
+to varying degrees. More batches reduce memory but add expensive repeated
+overhead.
+
+Training-dominated work showed almost no useful parallel payoff. The
+explanation-heavy block improved at four workers and only modestly thereafter.
+Users should first consider whether training can be amortized or reused, then
+consider parallel explanation.
+
+### Independence
+
+Independence is cheap and largely insensitive to training-row count. Coalition
+count, explained rows, and Monte Carlo samples are the relevant generic
+dimensions. More workers do not help at the retained sizes and multiply RAM, so
+one worker is preferred.
+
+### Copula
+
+Copula is also inexpensive at the reference workload, but unlike independence
+it becomes more sensitive to training size. Coalition and explanation sizes
+remain important. Its retained core workload does not justify parallel workers.
+
+### Categorical
+
+Categorical cost increases with training and explanation size, while Monte
+Carlo count is weak in the tested block. Parallel overhead outweighs useful work
+at the retained size, making one worker the appropriate default.
+
+### Regression separate
+
+Regression separate is relatively insensitive to generic Monte Carlo,
+explanation, batch, and data.table-thread changes in the retained blocks.
+Coalition count matters, but learner and tuning configuration dominate: smooth
+or XGBoost cross-validation is far more expensive than the untuned variants.
+The retained workload does not benefit from shapr worker parallelism; users
+should instead budget around the selected fitting strategy.
+
+### Regression surrogate
+
+Regression surrogate grows with training size, coalition count, and surrogate
+combination count; explained rows and Monte Carlo count are weaker drivers in
+the tested range. Its retained parallel experiment is actively unfavorable:
+worker startup and duplicated state make both elapsed time and RAM worse. Use
+one shapr worker unless a materially different workload is measured.
+
+## Accuracy versus cost
+
+The Gaussian accuracy experiment used eight features and three replicates. Its
+reference mean came from three exact-coalition runs with 2,000 Monte Carlo
+samples; reference noise RMSE was 0.00634. Selected results for 50 explained
+observations are:
 
 | Coalitions | MC samples | `explain()` time | Peak RAM | Shapley RMSE | Replicate instability RMSE |
 |---:|---:|---:|---:|---:|---:|
 | 32 | 25 | 1.36 s | 234 MB | 0.214 | 0.302 |
 | 32 | 100 | 1.43 s | 247 MB | 0.081 | 0.140 |
 | 32 | 400 | 1.73 s | 263 MB | 0.068 | 0.101 |
-| 64 | 100 | 1.62 s | 259 MB | 0.054 | 0.084 |
+| 64 | 100 | 1.62 s | 258 MB | 0.054 | 0.084 |
 | 128 | 100 | 2.14 s | 262 MB | 0.047 | 0.060 |
 | 128 | 400 | 4.05 s | 309 MB | 0.023 | 0.033 |
 | 256 | 100 | 1.70 s | 273 MB | 0.023 | 0.034 |
 | 256 | 400 | 6.21 s | 359 MB | 0.014 | 0.017 |
 
-The two levers interact. At only 32 coalitions, increasing MC samples from 100
-to 400 had diminishing returns because coalition approximation remained. At
-128 or 256 coalitions, the same MC increase reduced both error and replicate
-variation much more effectively. Conversely, increasing coalitions with only 25
-MC samples left substantial Monte Carlo noise.
+At 32 coalitions, increasing Monte Carlo samples has diminishing returns because
+coalition approximation remains. At 128 or 256 coalitions, the same increase
+reduces both error and replicate instability more effectively. Conversely,
+adding coalitions while leaving Monte Carlo noise high is insufficient.
 
-With eight features, 256 is the exact set of coalitions and follows a different
-execution path. Its unexpectedly low runtime relative to 128 coalitions is
-therefore a path-specific discontinuity, not evidence that more coalitions are
-generally cheaper.
+With eight features, 256 is the exact coalition set and follows a different
+execution path. Its low time at 100 Monte Carlo samples relative to 128 is a
+path-specific discontinuity, not evidence that more coalitions are generally
+cheaper.
 
-**User guidance:** increase the visibly limiting dimension. If repeated runs
-vary materially, raise `n_MC_samples`; if they are stable but biased relative to
-a higher-budget check, raise `max_n_coalitions`. For this example, 64-128
-coalitions and 100 MC samples form a sensible middle region; 256/400 is a
-high-accuracy option at roughly four times the `explain()` time of 64/100.
+Practical guidance is to increase the limiting dimension. If repeated runs vary
+materially, raise `n_MC_samples`. If results are stable but differ from a
+higher-coalition check, raise `max_n_coalitions`. For this example, 64–128
+coalitions and 100 Monte Carlo samples form a useful middle region; this is an
+illustration rather than a universal accuracy prescription.
 
-## 4. Dense-batch memory budget
+## Dense-batch memory cap
 
-For the 12-feature, 1,024-coalition Gaussian workload:
+The Gaussian memory calibration used 12 features, 1,024 coalitions, and 100
+explained observations:
 
 | Cube-size cap | Actual batches | 1-worker elapsed / RAM | 4-worker elapsed / RAM |
 |---:|---:|---:|---:|
@@ -159,69 +294,68 @@ For the 12-feature, 1,024-coalition Gaussian workload:
 | 4 million | 79 | 38.6 s / 425 MB | 18.2 s / 2,057 MB |
 | 16 million | 20 | 36.1 s / 748 MB | 18.5 s / 2,728 MB |
 | 64 million | 8 | 34.3 s / 1,473 MB | 18.0 s / 5,260 MB |
-| unlimited | 8 | 34.1 s / 1,462 MB | 17.8 s / 5,233 MB |
+| Unlimited | 8 | 34.1 s / 1,462 MB | 17.8 s / 5,233 MB |
 
-The 20-feature calibration showed the same conclusion: the 1-million cap used
-128 batches and 343 MB, compared with about 706-710 MB at the largest settings,
-without a speed penalty. The many small Gaussian batches did not exhibit the
-severe overhead seen for timeseries or VAEAC.
+The one-million default delivered the lowest RAM and no speed penalty in this
+Gaussian experiment. It should remain the default under an unknown memory
+budget. Relaxing it is a measured memory-for-latency decision, and the memory
+effect becomes much larger with multiple workers. This conclusion is specific
+to the dense Gaussian path; it does not override the observed batch overhead
+for timeseries and VAEAC.
 
-**User guidance:** keep the 1-million default under an unknown memory budget.
-Relax it only after measuring a representative job, and expect the memory
-effect to be multiplied by parallel workers. `used_n_batches` and
-`effective_max_batch_size` in the result make the cap's actual consequence
-observable.
+## Real prediction-model cost
 
-## 5. Prediction-cost sensitivity
+The prediction experiment keeps the Gaussian explanation problem fixed and
+changes only a pre-built model. Model training is outside the measured run. The
+standard XGBoost model has 50 trees of depth 3; the large model has 500 trees of
+depth 6.
 
-### Real model complexity
-
-The real-model study kept the Gaussian workload fixed and changed only its
-pre-built prediction model. Training remained outside the measured run. The
-models were a basic linear regression, the standard XGBoost configuration (50
-trees, depth 3), and a large XGBoost configuration (500 trees, depth 6).
-
-| Prediction model | 1 worker | 4 workers | 16 workers |
+| Model | 1 worker | 4 workers | 16 workers |
 |---|---:|---:|---:|
-| Linear | 8.28 s, 300 MB | 4.54 s (1.82x), 1,237 MB | 4.18 s (1.98x), 3,580 MB |
-| XGBoost | 10.59 s, 369 MB | 6.36 s (1.66x), 1,756 MB | 5.75 s (1.84x), 5,269 MB |
+| Linear | 8.28 s, 300 MB | 4.54 s (1.82x), 1,236 MB | 4.18 s (1.98x), 3,580 MB |
+| XGBoost | 10.59 s, 369 MB | 6.36 s (1.67x), 1,756 MB | 5.75 s (1.84x), 5,269 MB |
 | XGBoost large | 50.36 s, 373 MB | 18.03 s (2.79x), 1,742 MB | 13.24 s (3.80x), 5,336 MB |
 
-Times are median `explain()` seconds. The linear model is a useful cheap lower
-bound, but it does not make parallelism free: whole-process elapsed time fell
-only from 9.39 seconds sequentially to 6.78 seconds with four workers, and did
-not improve at 16. The standard XGBoost model likewise saturated at four
-workers for practical purposes. Only the large real model retained a
-meaningful 4-to-16-worker gain, at the cost of tripling parallel RAM.
+Times are median `explain()` seconds. For the linear model, whole-process time
+falls from 9.39 seconds with one worker to 6.78 with four and 6.75 with sixteen;
+the extra workers therefore add RAM without a meaningful end-to-end gain. The
+standard XGBoost model is also close to practical saturation at four workers.
+Only the large model retains a material four-to-sixteen-worker gain, with a
+large RAM increase.
 
-**User guidance:** use one worker for small jobs or strict RAM limits; four is
-the normal parallel ceiling for cheap/moderate prediction models. Consider more
-workers only when representative measurements show that prediction is a large
-fraction of the workload.
+## User guidance
 
-## Retained benchmark components
+1. Start with one worker when the workload is small or memory is uncertain.
+2. If runtime is material, test four workers on a representative case and
+   record both whole-process time and peak RAM. Test eight or sixteen only when
+   the measured gain can justify the additional memory.
+3. Use batching as a memory control, but distinguish approaches: finer batches
+   are generally safe for Gaussian, CTree, and ARF; avoid very fine batches for
+   timeseries and VAEAC unless required by memory.
+4. Tune coalitions and Monte Carlo samples together. Use replicate instability
+   and a higher-budget comparison to decide which error source is limiting.
+5. Include prediction-model cost, training rows, feature types, and
+   approach-specific tuning in resource estimates. Generic dimensions alone do
+   not predict cost reliably.
+6. For iterative comparisons, require matching realized coalition budgets. The
+   final curated snapshot satisfies this requirement for every pair.
 
-- **Essential:** the pair-integrity labels and resume check. They protect the
-  interpretation of every iterative comparison and add no benchmark workload.
-- **High-value:** accuracy/cost interactions and the memory-cap calibration.
-  They directly turn two important user knobs into actionable guidance.
-- **High-value:** the real linear/standard/large prediction-model study. It
-  directly demonstrates when additional workers become worthwhile.
-- **High-value for resource guidance:** Gaussian, CTree, ARF, timeseries, and
-  VAEAC parallel studies. Together they show why a universal worker/batch rule
-  would be unsafe.
-- **Useful corroboration:** empirical parallelism strengthens the common pattern
-  and is retained in the empirical approach grid.
+## Limitations and bounded follow-ups
 
-## Small, bounded follow-ups worth considering
+The current results support operational guidance, but not hardware-independent
+runtime formulas. They use one host, synthetic datasets, and one detailed
+accuracy study based on Gaussian explanations. Two-replicate expensive blocks
+are adequate for large effects but less reliable for close timing differences.
 
-1. **Accuracy generalization:** repeat a reduced 2 x 2 coalition/MC grid for one
-   nonlinear model and one mixed dataset. About 12 candidate runs plus two or
-   three references would test whether the Gaussian conclusion generalizes.
-2. **VAEAC amortization:** separately report one-time training/setup and
-   explanation phases for two `n_explain` values. Existing timing fields may be
-   enough; if not, a small four-point run would clarify when training dominates.
-3. **Second-machine check:** run a compact Gaussian/CTree subset on a smaller
-   RAM or core-count machine. This is the most useful validation of transfer,
-   but is not necessary before presenting the current single-host results with
-   an explicit limitation.
+If more evidence is wanted, the highest-value bounded additions are:
+
+1. Repeat a reduced 2-by-2 coalition/Monte Carlo accuracy grid for one nonlinear
+   model and one mixed dataset, with a small reference set.
+2. Separate reusable VAEAC training/setup time from explanation time at two
+   explanation sizes, if the existing timing fields cannot already do so.
+3. Run a compact Gaussian/CTree subset on a second, smaller machine to test how
+   well the worker and RAM guidance transfers.
+
+These are extensions, not prerequisites for reporting the present curated
+benchmark. The numerical tables and snapshot invariants in this report are
+reproduced by `Rscript benchmarks/R/audit_findings.R`.
