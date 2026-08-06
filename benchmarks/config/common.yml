@@ -10,13 +10,9 @@
 # runs are reproducible and replicates of the same config are identical.
 seed: 2025
 
-# Number of MEASURED replicates per configuration (median/IQR reported).
-# Usually overridden per study (quick = 1, weekend = 3).
-replicates: 1
-
-# Run one extra UNMEASURED warm-up replicate per config and drop it in
-# aggregation. Smooths out first-call JIT / allocation effects.
-warmup: true
+# Number of measured replicates per configuration (median/IQR reported).
+# Expensive studies or blocks may override this with 2.
+replicates: 3
 
 # Randomise the order in which configs are executed (seeded). Protects against
 # thermal drift on this box (schedutil governor) correlating with any one
@@ -103,6 +99,21 @@ models:
     type: ranger
     num_trees: 100
     max_depth: 6
+
+# Named numeric-model variants used by the Gaussian prediction-cost block.
+model_variants:
+  linear:
+    type: linear
+  xgb:
+    type: xgboost
+    nrounds: 50
+    max_depth: 3
+    eta: 0.3
+  xgb_large:
+    type: xgboost
+    nrounds: 500
+    max_depth: 6
+    eta: 0.05
 
 # ---------------------------------------------------------------------------
 # Synthetic datasets. Each is generated once into a large pool and cached; each
@@ -192,3 +203,7 @@ baseline:
   # group_size only applies when group = true; features are chunked into groups
   # of this many consecutive columns. Swept in the gaussian grouping study.
   group_size: 2
+  # Most studies use the dataset-family model above. Gaussian overrides this
+  # with the explicitly named xgb variant so model-cost comparisons are clear.
+  model_variant: default
+  save_explanations: false

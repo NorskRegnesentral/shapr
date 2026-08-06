@@ -189,7 +189,7 @@ main <- function() {
 
   result <- c(
     list(id = a$id, study = cfg$study),
-    row[c("sweep", "rep", "is_warmup", grid_dimensions(), "approach_args",
+    row[c("sweep", "rep", grid_dimensions(), "approach_args",
       "pair_role", "coalitions_from")],
     list(coalitions_override = if (is.na(a$max_n_coalitions)) NA_integer_ else a$max_n_coalitions),
     run_metadata()
@@ -214,7 +214,7 @@ main <- function() {
       # Load pre-processed data + cached model (timed separately).
       load0 <- Sys.time()
       run_data <- build_run_data(cfg, row$dataset, row$n_features, row$n_train, row$n_explain)
-      model <- get_model(cfg, row$dataset, run_data$x_train, run_data$y_train)
+      model <- get_model(cfg, row$dataset, run_data$x_train, run_data$y_train, row$model_variant)
       load_secs <- as.numeric(difftime(Sys.time(), load0, units = "secs"))
 
       explain_args <- build_explain_args(cfg, row, run_data, model, a$max_n_coalitions)
@@ -254,7 +254,7 @@ main <- function() {
     result$used_n_batches_max <- if (all(is.na(nb_vec))) NA_integer_ else as.integer(max(nb_vec, na.rm = TRUE))
     result$effective_max_batch_size <- effective_max_batch_size(res$expl)
     result$timing <- flatten_timing(res$expl)
-    if (isTRUE(cfg$save_explanations)) {
+    if (isTRUE(as.logical(row$save_explanations))) {
       shapley_path <- file.path(cfg$dir$results, paste0(a$id, ".shapley.rds"))
       saveRDS(res$expl$shapley_values_est, shapley_path, compress = FALSE)
       result$shapley_file <- basename(shapley_path)

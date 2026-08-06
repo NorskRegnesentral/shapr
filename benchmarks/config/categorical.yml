@@ -12,9 +12,6 @@
 approach: categorical
 dataset: categorical      # the only family this approach supports
 
-replicates: 3
-warmup: true
-
 blocks:
   - name: scale_train_mc
     grid:

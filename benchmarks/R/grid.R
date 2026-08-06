@@ -51,7 +51,7 @@ encode_approach_args <- function(args) {
 # specific dimensions.
 make_row <- function(base, overrides = list(), sweep = "baseline",
                      approach_args = list(), pair_key = NA_character_,
-                     pair_role = NA_character_) {
+                     pair_role = NA_character_, replicates = 1L) {
   row <- modifyList(base, overrides)
   dt <- data.table::as.data.table(row[grid_dimensions()])
   dt[, sweep := sweep]
@@ -59,6 +59,7 @@ make_row <- function(base, overrides = list(), sweep = "baseline",
   dt[, pair_key := pair_key]
   dt[, pair_role := pair_role]
   dt[, coalitions_from := NA_integer_]
+  dt[, n_replicates := as.integer(replicates)]
   return(dt)
 }
 
@@ -105,6 +106,7 @@ build_blocks <- function(cfg) {
 
   base <- modifyList(cfg$baseline, list(approach = cfg$approach))
   if (!is.null(cfg$dataset)) base$dataset <- cfg$dataset
+  if (!is.null(cfg[["model_variant"]])) base$model_variant <- cfg[["model_variant"]]
 
   rows <- list()
   add <- function(r) rows[[length(rows) + 1]] <<- r
@@ -114,6 +116,10 @@ build_blocks <- function(cfg) {
     dim_combos <- grid_combos(blk$grid)
     arg_combos <- grid_combos(blk$approach_args)
     is_pair <- identical(blk$pair, "iterative")
+    replicates <- blk$replicates %||% cfg$replicates
+    if (length(replicates) != 1 || is.na(replicates) || replicates < 1 || replicates %% 1 != 0) {
+      stop("Block `", name, "` must use a positive integer `replicates` value.")
+    }
     combo_idx <- 0L
 
     for (ov in dim_combos) {
@@ -124,11 +130,11 @@ build_blocks <- function(cfg) {
           src_ov <- modifyList(ov, list(iterative = TRUE))
           dep_ov <- modifyList(ov, list(iterative = FALSE, max_n_coalitions = -1L))
           add(make_row(base, src_ov, sweep = name, approach_args = aa,
-            pair_key = pk, pair_role = "source"))
+            pair_key = pk, pair_role = "source", replicates = replicates))
           add(make_row(base, dep_ov, sweep = name, approach_args = aa,
-            pair_key = pk, pair_role = "dependent"))
+            pair_key = pk, pair_role = "dependent", replicates = replicates))
         } else {
-          add(make_row(base, ov, sweep = name, approach_args = aa))
+          add(make_row(base, ov, sweep = name, approach_args = aa, replicates = replicates))
         }
       }
     }
@@ -138,19 +144,16 @@ build_blocks <- function(cfg) {
 }
 
 # After id assignment, link each iterative `dependent` row to its `source` row
-# (matched on pair_key + rep + is_warmup) via the coalitions_from column.
+# (matched on pair_key + rep) via the coalitions_from column.
 resolve_pairs <- function(grid) {
   dep_keys <- unique(grid[pair_role == "dependent", pair_key])
   for (pk in dep_keys) {
     sub <- grid[pair_key == pk]
     for (rp in unique(sub$rep)) {
-      for (wu in unique(sub[rep == rp, is_warmup])) {
-        sid <- grid[pair_key == pk & rep == rp & is_warmup == wu &
-          pair_role == "source", id]
-        if (length(sid) == 1) {
-          grid[pair_key == pk & rep == rp & is_warmup == wu &
-            pair_role == "dependent", coalitions_from := sid]
-        }
+      sid <- grid[pair_key == pk & rep == rp & pair_role == "source", id]
+      if (length(sid) == 1) {
+        grid[pair_key == pk & rep == rp &
+          pair_role == "dependent", coalitions_from := sid]
       }
     }
   }
@@ -184,22 +187,20 @@ main <- function() {
   # Drop approach/dataset combinations that are not supported.
   grid <- grid[mapply(approach_supports, approach, dataset)]
 
-  # De-duplicate identical rows (a baseline point may recur across blocks). Pair
-  # and approach-arg rows differ on dimensions / approach_args so are preserved.
+  # De-duplicate identical rows (a baseline point may recur across blocks).
+  # Blocks are ordered from the core design to optional extensions, so an
+  # overlap retains the core block's replicate count and sweep label.
   key_cols <- c(grid_dimensions(), "approach_args", "pair_key", "pair_role")
   grid <- grid[!duplicated(grid[, ..key_cols])]
 
-  # Expand replicates (+ optional warm-up rep flagged is_warmup = TRUE).
-  reps <- seq_len(cfg$replicates)
-  rep_dt <- data.table(rep = reps, is_warmup = FALSE)
-  if (isTRUE(cfg$warmup)) {
-    rep_dt <- rbind(data.table(rep = 0L, is_warmup = TRUE), rep_dt)
-  }
-  grid <- grid[, cbind(.SD, rep_dt), by = seq_len(nrow(grid))][, seq_len := NULL]
+  # Expand measured replicates, allowing expensive blocks to override the
+  # study-wide default without changing the rest of the experiment.
+  grid <- grid[, cbind(.SD, data.table(rep = seq_len(n_replicates))),
+    by = seq_len(nrow(grid))][, c("seq_len", "n_replicates") := NULL]
 
   grid[, id := .I]
   grid <- resolve_pairs(grid)
-  setcolorder(grid, c("id", "sweep", "rep", "is_warmup", grid_dimensions(),
+  setcolorder(grid, c("id", "sweep", "rep", grid_dimensions(),
     "approach_args", "pair_key", "pair_role", "coalitions_from"))
 
   dir.create(cfg$dir$results, recursive = TRUE, showWarnings = FALSE)

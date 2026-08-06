@@ -5,7 +5,6 @@ approach: vaeac
 dataset: numeric
 
 replicates: 2
-warmup: false
 cooldown_sec: 0.2
 timeout_sec: 3600
 time_budget_sec: 14400

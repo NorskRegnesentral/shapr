@@ -16,9 +16,6 @@
 approach: regression_surrogate
 dataset: numeric
 
-replicates: 3
-warmup: true
-
 blocks:
   - name: scale_train_mc
     grid:

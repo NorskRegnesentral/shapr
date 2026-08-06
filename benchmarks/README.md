@@ -151,7 +151,7 @@ fewer/lighter blocks.
 ## Configuration
 
 - [`config/common.yml`](config/common.yml) — machine-wide defaults: seed,
-  replicates, warm-up, RAM method, models, the four `mixed_*` dataset specs, the
+  replicates, RAM method, models, the four `mixed_*` dataset specs, the
   `baseline` configuration, thread controls, the per-run `timeout_sec` (1 h) and
   the per-approach `time_budget_sec` (24 h). **Every study inherits from this.**
 - `config/<approach>.yml` — one file per approach (`gaussian.yml`, `vaeac.yml`,
@@ -171,7 +171,6 @@ Example block config:
 approach: gaussian
 dataset: numeric
 replicates: 3
-warmup: true
 blocks:
   - name: scale_train_mc                 # a 2-D grid
     grid: {n_train: [500, 5000, 20000], n_MC_samples: [50, 250, 1000]}

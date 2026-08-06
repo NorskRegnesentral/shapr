@@ -58,7 +58,7 @@ main <- function() {
   cfg <- load_config(a$config)
   result_dir <- cfg$dir$results
   results <- fread(file.path(result_dir, "results.csv"))
-  results <- results[status == "ok" & is_warmup == FALSE]
+  results <- results[status == "ok"]
 
   references <- results[sweep == "accuracy_reference"]
   candidates <- results[sweep == "accuracy_cost"]

@@ -34,9 +34,9 @@ not part of the committed snapshot.
 
 Twelve self-contained `extra_*` studies add realistic parallel workloads,
 Gaussian accuracy/cost interactions, dense-batch memory calibration, and model
-prediction-cost sensitivity. They planned 343 runs: 338 completed normally,
-three duplicate long-duration runs were skipped, one duplicate known to exceed
-the resource limit was skipped, and one timeseries run was resource-killed.
+prediction-cost sensitivity. They planned 343 runs: 341 completed normally, one
+duplicate known to exceed the resource limit was skipped, and one timeseries
+run was resource-killed.
 
 See [`../EXTRA_FINDINGS.md`](../EXTRA_FINDINGS.md) for the cross-study findings,
 user guidance, limitations, and a recommendation about which optional studies

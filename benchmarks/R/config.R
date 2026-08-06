@@ -78,7 +78,8 @@ grid_dimensions <- function() {
   c(
     "dataset", "approach", "n_features", "max_n_coalitions", "n_MC_samples",
     "min_n_batches", "max_batch_size", "max_batch_cube_size", "workers", "backend",
-    "dt_threads", "n_train", "n_explain", "iterative", "group", "group_size"
+    "dt_threads", "n_train", "n_explain", "iterative", "group", "group_size",
+    "model_variant", "save_explanations"
   )
 }
 

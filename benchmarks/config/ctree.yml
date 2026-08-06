@@ -12,9 +12,6 @@
 approach: ctree
 dataset: numeric
 
-replicates: 3
-warmup: true
-
 blocks:
   - name: scale_train_mc
     grid:
@@ -55,3 +52,36 @@ blocks:
   - name: dataset
     grid:
       dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
+
+  # Realistic medium/heavy workloads for parallel-efficiency guidance.
+  - name: realistic_medium
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_medium_low_batch
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1]
+      min_n_batches: [1]
+
+  - name: realistic_heavy
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_heavy_low_batch
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [1]
+      min_n_batches: [1]

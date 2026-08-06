@@ -20,9 +20,7 @@
 # ============================================================================
 approach: gaussian
 dataset: numeric        # gaussian supports the all-numeric data
-
-replicates: 3
-warmup: true
+model_variant: xgb
 
 # timeout_sec (10 min) and time_budget_sec (24 h) are inherited from common.yml.
 
@@ -107,3 +105,122 @@ blocks:
     pair: iterative
     grid:
       max_n_coalitions: [256, 1024]
+
+  # 13. Realistic medium/heavy workloads. These complement the synthetic
+  # parallel sweep above by making each batch substantial enough for worker
+  # startup and data-transfer costs to be amortized.
+  - name: realistic_medium_sequential
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [1]
+      min_n_batches: [1, 8, 32]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_medium_parallel
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [4, 8, 16]
+      min_n_batches: [8, 32]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_heavy_sequential
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [1024]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [1]
+      min_n_batches: [1, 8, 32]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_heavy_parallel
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [1024]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [4, 8, 16]
+      min_n_batches: [8, 32]
+      max_batch_cube_size: [Inf]
+
+  # 14. Dense-batch memory calibration. These cap levels progressively allow
+  # larger Gaussian batches and expose the time/RAM trade-off directly.
+  - name: memory_cap_sequential
+    grid:
+      n_features: [12]
+      n_train: [1000]
+      max_n_coalitions: [1024]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [1]
+      min_n_batches: [8]
+      max_batch_cube_size: [1e6, 4e6, 16e6, 64e6, Inf]
+
+  - name: memory_cap_parallel
+    grid:
+      n_features: [12]
+      n_train: [1000]
+      max_n_coalitions: [1024]
+      n_MC_samples: [250]
+      n_explain: [100]
+      workers: [4]
+      min_n_batches: [8]
+      max_batch_cube_size: [1e6, 4e6, 16e6, 64e6, Inf]
+
+  - name: memory_cap_highdim
+    grid:
+      n_features: [20]
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [8]
+      max_batch_cube_size: [1e6, 4e6, 16e6, 64e6, Inf]
+
+  # 15. Accuracy/cost interaction surface. Explanations are saved only for
+  # these rows because accuracy.R compares them with the high-budget reference.
+  - name: accuracy_cost
+    grid:
+      n_features: [8]
+      n_train: [1000]
+      max_n_coalitions: [32, 64, 128, 256]
+      n_MC_samples: [25, 100, 400]
+      n_explain: [10, 50]
+      workers: [1]
+      min_n_batches: [16]
+      max_batch_cube_size: [Inf]
+      save_explanations: [true]
+
+  - name: accuracy_reference
+    grid:
+      n_features: [8]
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_MC_samples: [2000]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [32]
+      max_batch_cube_size: [Inf]
+      save_explanations: [true]
+
+  # 16. Real prediction-model cost at a fixed explanation workload. The three
+  # variants span a cheap linear model, the standard XGBoost model, and a much
+  # larger XGBoost model.
+  - name: prediction_model
+    grid:
+      n_features: [12]
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1, 4, 16]
+      min_n_batches: [32]
+      max_batch_cube_size: [Inf]
+      model_variant: [linear, xgb, xgb_large]

@@ -11,9 +11,6 @@
 approach: empirical
 dataset: numeric
 
-replicates: 3
-warmup: true
-
 blocks:
   - name: scale_train_mc
     grid:
@@ -65,3 +62,45 @@ blocks:
   - name: empirical_type
     approach_args:
       empirical.type: [fixed_sigma, AICc_each_k, AICc_full]
+
+  # Realistic medium/heavy workloads used to assess whether larger batches
+  # amortize multisession worker overhead.
+  - name: realistic_medium
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_medium_low_batch
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [2]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_heavy
+    grid:
+      n_train: [10000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+      max_batch_cube_size: [Inf]
+
+  - name: realistic_heavy_low_batch
+    grid:
+      n_train: [10000]
+      max_n_coalitions: [512]
+      n_MC_samples: [250]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [2]
+      max_batch_cube_size: [Inf]

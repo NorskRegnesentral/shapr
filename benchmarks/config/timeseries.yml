@@ -11,9 +11,6 @@
 approach: timeseries
 dataset: numeric
 
-replicates: 3
-warmup: true
-
 blocks:
   - name: scale_train_mc
     grid:
@@ -50,3 +47,51 @@ blocks:
     pair: iterative
     grid:
       max_n_coalitions: [256, 1024]
+
+  # Realistic workloads are kept at two replicates because the heavy sequential
+  # rows take about 15 minutes each. The resource-killed 16-worker/32-batch
+  # heavy cell is deliberately absent, so every listed row is intended to run.
+  - name: realistic_medium
+    replicates: 2
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1, 4, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_medium_low_batch
+    replicates: 2
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1]
+      min_n_batches: [1]
+
+  - name: realistic_heavy_sequential
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [2, 8, 32]
+
+  - name: realistic_heavy_parallel
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [4]
+      min_n_batches: [8, 32]
+
+  - name: realistic_heavy_safe_frontier
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [8, 16]
+      min_n_batches: [8]

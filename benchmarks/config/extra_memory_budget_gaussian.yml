@@ -4,7 +4,6 @@ approach: gaussian
 dataset: numeric
 
 replicates: 2
-warmup: false
 cooldown_sec: 0.2
 timeout_sec: 1800
 time_budget_sec: 7200

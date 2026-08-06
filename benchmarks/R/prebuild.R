@@ -30,10 +30,10 @@ main <- function() {
   cfg <- load_config(a$config)
   grid <- fread(file.path(cfg$dir$results, "grid.csv"))
 
-  # Unique (dataset, n_features, n_train) combinations to warm. Skip rows whose
+  # Unique dataset/model combinations to build. Skip rows whose
   # approach has missing dependencies (they will be skipped at run time anyway,
   # but their data/model is cheap to build so we keep them for completeness).
-  combos <- unique(grid[, .(dataset, n_features, n_train)])
+  combos <- unique(grid[, .(dataset, n_features, n_train, model_variant)])
   cat(sprintf("Prebuilding %d dataset/model combinations...\n", nrow(combos)))
 
   for (i in seq_len(nrow(combos))) {
@@ -41,8 +41,10 @@ main <- function() {
     nf <- combos$n_features[i]
     nt <- combos$n_train[i]
     run_data <- build_run_data(cfg, ds, nf, nt, n_explain = 1)
-    invisible(get_model(cfg, ds, run_data$x_train, run_data$y_train))
-    cat(sprintf("  [%d/%d] %s n_features=%s n_train=%s\n", i, nrow(combos), ds, nf, nt))
+    variant <- combos$model_variant[i]
+    invisible(get_model(cfg, ds, run_data$x_train, run_data$y_train, variant))
+    cat(sprintf("  [%d/%d] %s model=%s n_features=%s n_train=%s\n",
+      i, nrow(combos), ds, variant, nf, nt))
   }
   cat("Prebuild complete.\n")
 }

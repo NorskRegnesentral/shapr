@@ -7,9 +7,9 @@ users should change when either resource is constrained.
 
 ## Scope and interpretation
 
-- The follow-ups planned 343 runs. Of these, 338 completed normally, three
-  deliberately skipped duplicate long-duration runs, one skipped a duplicate
-  known to exceed the resource limit, and one was killed by that limit.
+- The follow-ups planned 343 runs. Of these, 341 completed normally, one skipped
+  a duplicate known to exceed the resource limit, and one was killed by that
+  limit.
 - Parallel and memory studies use two replicates per point. Accuracy uses three.
   Treat small timing differences as ties; the large effects are consistent
   enough to support operational guidance.
@@ -105,7 +105,7 @@ Important approach-specific findings:
   state. A practical compromise is four workers and 32 batches (120.1 seconds,
   13.0 GB); 16 workers saved another 54 seconds but peaked at 44.7 GB.
 - **Timeseries:** coarse batches mattered at least as much as workers. The heavy
-  sequential case took 100.8 seconds with two batches but 910.4 seconds with 32.
+  sequential case took 100.8 seconds with two batches but 900.4 seconds with 32.
   Four workers/eight batches was faster but needed 47.1 GB. Eight workers
   matched 16 workers almost exactly in both time (53.5 versus 53.7 seconds) and
   RAM (71.5 versus 72.1 GB), so it did not reveal a safer intermediate point. A
@@ -114,8 +114,9 @@ Important approach-specific findings:
 - **VAEAC:** training-dominated work had no useful parallel payoff. The best
   sequential setup took 409.9 seconds and 0.8 GB; 16 workers took 398.5 seconds
   and 7.0 GB. Explanation-heavy work gained modestly, but even there four
-  workers should precede 16. Fine 64-batch runs were slow, and duplicate
-  long-duration sequential runs were skipped after one completed replicate.
+  workers should precede 16. Fine 64-batch sequential runs were slow even after
+  replication: 738.7 seconds for the training-dominated workload and 544.2
+  seconds for the explanation-heavy workload.
 
 **User guidance:** start at one worker when RAM is uncertain, then try four.
 Use eight only for a material workload and adequate RAM. Reserve 16 for measured

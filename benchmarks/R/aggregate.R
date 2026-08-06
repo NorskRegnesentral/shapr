@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # aggregate.R — combine per-run JSON results (+ *.mem.json from the sampler)
 # into results/<study>/results.csv and a small summary.csv (median/IQR per
-# configuration over replicates, warm-up runs excluded).
+# configuration over measured replicates).
 #
 # Usage: Rscript R/aggregate.R --config config/oat_quick.yml
 
@@ -137,9 +137,12 @@ main <- function() {
     if (!col %in% names(results)) results[, (col) := FALSE]
     results[is.na(get(col)), (col) := FALSE]
   }
-  # Timeout/error marker rows may lack bookkeeping columns; backfill them.
-  if (!"is_warmup" %in% names(results)) results[, is_warmup := FALSE]
-  results[is.na(is_warmup), is_warmup := FALSE]
+  # Historical studies may contain unmeasured warm-up artifacts. Exclude them
+  # during migration, then remove the retired bookkeeping column altogether.
+  if ("is_warmup" %in% names(results)) {
+    results <- results[is.na(is_warmup) | is_warmup == FALSE]
+    results[, is_warmup := NULL]
+  }
   if (!"wall_secs" %in% names(results)) results[, wall_secs := NA_real_]
 
   # Headline peak-RAM column: prefer cgroup, fall back to the poll/tree number.
@@ -159,7 +162,7 @@ main <- function() {
   results <- add_pair_validation(results)
   fwrite(results, out_csv)
 
-  # Summary over measured replicates only.
+  # Summary over successful measured replicates only.
   invalid_pairs <- results[pair_budget_matches == FALSE, .N]
   if (invalid_pairs > 0) {
     cat(sprintf(
@@ -172,7 +175,7 @@ main <- function() {
   }
 
   ok <- results[
-    status == "ok" & is_warmup == FALSE &
+    status == "ok" &
       (is.na(pair_budget_matches) | pair_budget_matches == TRUE)
   ]
   summary <- NULL

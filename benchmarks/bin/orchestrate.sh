@@ -127,15 +127,20 @@ fi
 "$RSCRIPT" "$RDIR/prebuild.R" --config "$CONFIG" || { echo "prebuild failed" >&2; exit 1; }
 
 # --- Grid lookup helpers (awk over grid.csv) --------------------------------
-# Columns: 1=id 2=sweep 3=rep 4=is_warmup 5=dataset 6=approach ...
-# last=coalitions_from, last-1=pair_role.
-grid_field() { # grid_field <id> <awk-field-expr>
-  awk -F, -v id="$1" 'NR>1 && $1==id {print '"$2"'; exit}' "$GRID"
+# Resolve fields by header name so bookkeeping columns can evolve safely.
+grid_field() { # grid_field <id> <column-name>
+  awk -F, -v id="$1" -v name="$2" '
+    NR == 1 {
+      for (i = 1; i <= NF; i++) if ($i == name) col = i
+      next
+    }
+    $1 == id && col { print $col; exit }
+  ' "$GRID"
 }
-grid_pair_role()       { grid_field "$1" '$(NF-1)'; }
-grid_coalitions_from() { grid_field "$1" '$NF'; }
-grid_approach()        { grid_field "$1" '$6'; }
-grid_dataset()         { grid_field "$1" '$5'; }
+grid_pair_role()       { grid_field "$1" pair_role; }
+grid_coalitions_from() { grid_field "$1" coalitions_from; }
+grid_approach()        { grid_field "$1" approach; }
+grid_dataset()         { grid_field "$1" dataset; }
 
 # --- Run one id -------------------------------------------------------------
 run_id() {

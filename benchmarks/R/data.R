@@ -124,8 +124,15 @@ build_groups <- function(feature_names, group_size = 2L) {
 # Train (or load from cache) the prediction model for a run. The model type is
 # chosen by dataset FAMILY (xgboost for numeric, ranger for mixed/categorical).
 # Optional prediction-cost studies may override this with a basic linear model.
-get_model <- function(cfg, dataset, x_train, y_train) {
-  model_cfg <- cfg$models[[dataset_family(dataset)]]
+get_model <- function(cfg, dataset, x_train, y_train, model_variant = "default") {
+  model_cfg <- if (!is.na(model_variant) && model_variant != "default") {
+    cfg$model_variants[[model_variant]]
+  } else {
+    cfg$models[[dataset_family(dataset)]]
+  }
+  if (is.null(model_cfg)) {
+    stop("Unknown model variant: ", model_variant)
+  }
   key <- digest_key(list(
     dataset = dataset, model = model_cfg, cols = colnames(x_train),
     n_train = nrow(x_train), seed = cfg$seed
