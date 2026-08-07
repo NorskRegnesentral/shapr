@@ -30,26 +30,20 @@ into practical guidance for users.
 - Prediction cost changes that trade-off. A large XGBoost model continued to
   benefit beyond four workers, while linear and standard XGBoost models were
   already close to saturation.
-- The separate Gaussian accuracy study shows that coalition count and Monte
-  Carlo count address different error sources. Increasing either in isolation
-  can have diminishing returns.
 
 ## Scope, completeness, and interpretation
 
-This report covers two distinct bodies of work. The **cost studies** measure
-elapsed time and peak RAM across eleven approaches, and supply every finding
-below except one. The **accuracy study** ([`config/accuracy.yml`](config/accuracy.yml))
-measures error instead of cost, is currently Gaussian-only, and is reported
-separately in [Accuracy versus cost](#accuracy-versus-cost). Its runs are not
-part of the cost-snapshot counts.
+This report measures **cost only**: elapsed time and peak RAM. It does not
+measure approximation error, so it cannot say which budget is accurate enough.
+Where coalition and Monte Carlo counts are discussed below, the statements are
+about what they cost, not about the quality of the resulting Shapley values.
 
-The curated cost snapshot contains 2,278 successful runs representing 789
-distinct configurations. There are 700 configurations with three replicates and
-89 with two. Two replicates are used only for VAEAC and the expensive realistic
-ARF and timeseries blocks; all other configurations use the common
-three-replicate default. The accuracy study adds a further 75 successful runs
-(72 candidates and 3 references) at three replicates. Warm-up runs are not part
-of the functionality, configuration, or results.
+The curated snapshot contains 2,278 successful runs representing 789 distinct
+configurations. There are 700 configurations with three replicates and 89 with
+two. Two replicates are used only for VAEAC and the expensive realistic ARF and
+timeseries blocks; all other configurations use the common three-replicate
+default. Warm-up runs are not part of the functionality, configuration, or
+results.
 
 All iterative source/dependent pairs are valid: the fixed dependent uses the
 coalition budget achieved by its corresponding iterative source. This was
@@ -67,9 +61,12 @@ whole-process wall time. Peak RAM is the median peak for the measured process
 tree or cgroup, rather than only the parent R process. Small timing differences
 should be treated as ties: the median relative timing IQR is 0.73% for
 three-replicate configurations and 0.33% for two-replicate configurations; the
-90th percentiles are 1.96% and 1.33%, respectively. The apparently lower
+90th percentiles are 1.95% and 1.33%, respectively. The apparently lower
 variation for two replicates is not evidence that two are more precise—their
 tails are simply estimated less robustly.
+
+The numerical tables and snapshot invariants in this report are reproduced by
+`Rscript benchmarks/R/audit_findings.R`.
 
 ## Comparable reference workload
 
@@ -257,49 +254,6 @@ the tested range. Its retained parallel experiment is actively unfavorable:
 worker startup and duplicated state make both elapsed time and RAM worse. Use
 one shapr worker unless a materially different workload is measured.
 
-## Accuracy versus cost
-
-This section is the only part of the report that measures error rather than
-cost. It comes from the separate accuracy study
-([`config/accuracy.yml`](config/accuracy.yml)), whose runs are excluded from the
-cost snapshot above. The study is currently Gaussian-only; the accuracy/budget
-trade-off may behave differently for other approaches.
-
-The study used eight features and three replicates. Its reference mean came
-from three exact-coalition runs with 2,000 Monte Carlo samples; reference noise
-RMSE was 0.00634, roughly two orders of magnitude below the candidate errors.
-Because the reference is itself a Gaussian run, these numbers measure
-convergence toward the approach's own high-budget answer, not accuracy against
-the true conditional distribution. Selected results for 50 explained
-observations are:
-
-| Coalitions | MC samples | `explain()` time | Peak RAM | Shapley RMSE | Replicate instability RMSE |
-|---:|---:|---:|---:|---:|---:|
-| 32 | 25 | 1.46 s | 230 MB | 0.214 | 0.302 |
-| 32 | 100 | 1.53 s | 245 MB | 0.081 | 0.140 |
-| 32 | 400 | 1.84 s | 250 MB | 0.068 | 0.101 |
-| 64 | 100 | 1.73 s | 247 MB | 0.054 | 0.084 |
-| 128 | 100 | 2.25 s | 252 MB | 0.047 | 0.060 |
-| 128 | 400 | 4.06 s | 305 MB | 0.023 | 0.033 |
-| 256 | 100 | 1.78 s | 261 MB | 0.023 | 0.034 |
-| 256 | 400 | 6.30 s | 342 MB | 0.014 | 0.017 |
-
-At 32 coalitions, increasing Monte Carlo samples has diminishing returns because
-coalition approximation remains. At 128 or 256 coalitions, the same increase
-reduces both error and replicate instability more effectively. Conversely,
-adding coalitions while leaving Monte Carlo noise high is insufficient.
-
-With eight features, 256 is the exact coalition set and follows a different
-execution path. Its low time at 100 Monte Carlo samples relative to 128 is a
-path-specific discontinuity, not evidence that more coalitions are generally
-cheaper.
-
-Practical guidance is to increase the limiting dimension. If repeated runs vary
-materially, raise `n_MC_samples`. If results are stable but differ from a
-higher-coalition check, raise `max_n_coalitions`. For this example, 64–128
-coalitions and 100 Monte Carlo samples form a useful middle region; this is an
-illustration rather than a universal accuracy prescription.
-
 ## Dense-batch memory cap
 
 The Gaussian memory calibration used 12 features, 1,024 coalitions, and 100
@@ -349,31 +303,11 @@ large RAM increase.
 3. Use batching as a memory control, but distinguish approaches: finer batches
    are generally safe for Gaussian, CTree, and ARF; avoid very fine batches for
    timeseries and VAEAC unless required by memory.
-4. Tune coalitions and Monte Carlo samples together. Use replicate instability
-   and a higher-budget comparison to decide which error source is limiting.
+4. Treat `max_n_coalitions` and `n_MC_samples` as accuracy controls with a
+   measurable price, and tune them together. This report gives their cost; it
+   does not establish which values are accurate enough for a given model.
 5. Include prediction-model cost, training rows, feature types, and
    approach-specific tuning in resource estimates. Generic dimensions alone do
    not predict cost reliably.
 6. For iterative comparisons, require matching realized coalition budgets. The
    final curated snapshot satisfies this requirement for every pair.
-
-## Limitations and bounded follow-ups
-
-The current results support operational guidance, but not hardware-independent
-runtime formulas. They use one host, synthetic datasets, and one detailed
-accuracy study based on Gaussian explanations. Two-replicate expensive blocks
-are adequate for large effects but less reliable for close timing differences.
-
-If more evidence is wanted, the highest-value bounded additions are:
-
-1. Add a reduced 2-by-2 coalition/Monte Carlo grid for one nonlinear model and
-   one mixed dataset, with a small reference set, as further blocks in
-   [`config/accuracy.yml`](config/accuracy.yml).
-2. Separate reusable VAEAC training/setup time from explanation time at two
-   explanation sizes, if the existing timing fields cannot already do so.
-3. Run a compact Gaussian/CTree subset on a second, smaller machine to test how
-   well the worker and RAM guidance transfers.
-
-These are extensions, not prerequisites for reporting the present curated
-benchmark. The numerical tables and snapshot invariants in this report are
-reproduced by `Rscript benchmarks/R/audit_findings.R`.

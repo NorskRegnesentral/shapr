@@ -12,10 +12,6 @@ studies <- c(
   "regression_surrogate"
 )
 
-# The accuracy study measures error rather than cost, so it is audited
-# separately and excluded from the cost-snapshot integrity counts.
-accuracy_study <- "accuracy"
-
 args <- commandArgs(trailingOnly = FALSE)
 script_arg <- grep("^--file=", args, value = TRUE)
 script_path <- if (length(script_arg) == 1) sub("^--file=", "", script_arg) else "benchmarks/R/audit_findings.R"
@@ -65,18 +61,6 @@ stopifnot(
   sum(summaries$n) == 2278L,
   summaries[n == 3L, .N] == 700L,
   summaries[n == 2L, .N] == 89L
-)
-
-#### Accuracy-study integrity ------------------------------------------------
-
-accuracy_results <- data.table::fread(
-  file.path(result_root, accuracy_study, "results.csv")
-)
-stopifnot(
-  nrow(accuracy_results) == 75L,
-  all(accuracy_results$status == "ok"),
-  accuracy_results[sweep == "accuracy_cost", .N] == 72L,
-  accuracy_results[sweep == "accuracy_reference", .N] == 3L
 )
 
 #### Comparable reference configuration -------------------------------------
@@ -155,24 +139,6 @@ prediction_table[, speedup := round(
   2
 ), by = model_variant]
 
-#### Accuracy/cost surface ---------------------------------------------------
-
-accuracy <- data.table::fread(file.path(result_root, accuracy_study, "accuracy_summary.csv"))
-accuracy_table <- accuracy[
-  n_explain == 50 &
-    ((max_n_coalitions == 32 & n_MC_samples %in% c(25, 100, 400)) |
-      (max_n_coalitions == 64 & n_MC_samples == 100) |
-      (max_n_coalitions == 128 & n_MC_samples %in% c(100, 400)) |
-      (max_n_coalitions == 256 & n_MC_samples %in% c(100, 400))),
-  .(
-    max_n_coalitions, n_MC_samples,
-    explain_seconds = round(wall_median, 2),
-    peak_ram_mb = round(ram_mb_median, 0),
-    shapley_rmse = round(accuracy_rmse_median, 3),
-    replicate_instability_rmse = round(replicate_stability_rmse, 3)
-  )
-][order(max_n_coalitions, n_MC_samples)]
-
 #### Replicate variability ---------------------------------------------------
 
 variability <- results[, .(
@@ -250,17 +216,6 @@ expected_prediction <- data.table::data.table(
 )
 assert_table(prediction_table, expected_prediction, "prediction-model table")
 
-expected_accuracy <- data.table::data.table(
-  max_n_coalitions = c(32L, 32L, 32L, 64L, 128L, 128L, 256L, 256L),
-  n_MC_samples = c(25L, 100L, 400L, 100L, 100L, 400L, 100L, 400L),
-  explain_seconds = c(1.46, 1.53, 1.84, 1.73, 2.25, 4.06, 1.78, 6.30),
-  peak_ram_mb = c(230, 245, 250, 247, 252, 305, 261, 342),
-  shapley_rmse = c(0.214, 0.081, 0.068, 0.054, 0.047, 0.023, 0.023, 0.014),
-  replicate_instability_rmse = c(0.302, 0.140, 0.101, 0.084, 0.060, 0.033, 0.034, 0.017)
-)
-assert_table(accuracy_table, expected_accuracy, "accuracy table")
-stopifnot(abs(unique(accuracy$reference_noise_rmse) - 0.006336911) < 1e-9)
-
 expected_variability <- data.table::data.table(
   replicates = c(2L, 3L),
   configurations = c(89L, 700L),
@@ -269,8 +224,7 @@ expected_variability <- data.table::data.table(
 )
 assert_table(variability_table, expected_variability, "replicate-variability values")
 
-cat("Cost-snapshot integrity: 2,278 successful runs; 789 configurations; all pairs valid.\n")
-cat("Accuracy study: 75 successful runs (72 candidates, 3 references).\n\n")
+cat("Snapshot integrity: 2,278 successful runs; 789 configurations; all pairs valid.\n\n")
 cat("Comparable reference configuration:\n")
 print(reference_table)
 cat("\nRepresentative parallel workloads:\n")
@@ -279,7 +233,5 @@ cat("\nGaussian memory-cap calibration:\n")
 print(memory_table)
 cat("\nPrediction-model comparison:\n")
 print(prediction_table)
-cat("\nSelected accuracy/cost rows:\n")
-print(accuracy_table)
 cat("\nReplicate variability:\n")
 print(variability_table)

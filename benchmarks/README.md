@@ -3,11 +3,10 @@
 A self-contained framework to measure **CPU time** and **peak RAM** of
 `shapr::explain()` across the package's many settings, on a single machine.
 
-The primary goal is **cost**: how fast and memory-hungry each approach is, and
-how that scales with user-controlled arguments. A separate, bounded **accuracy**
-study ([`config/accuracy.yml`](config/accuracy.yml)) measures error instead of
-cost, so coalition and Monte Carlo budgets can be interpreted against
-approximation quality rather than in isolation.
+The goal is **cost**: how fast and memory-hungry each approach is, and how that
+scales with user-controlled arguments. Approximation error is not measured by
+the shipped studies, but the machinery to add such a study is included — see
+[Accuracy studies](#accuracy-studies).
 
 Everything is driven by editable YAML config files in [`config/`](config/).
 Findings from the complete study are summarized in
@@ -28,10 +27,6 @@ bin/run_week.sh
 
 # run just a few approaches
 bin/run_week.sh gaussian empirical ctree
-
-# the accuracy study is separate and needs its post-processing step
-bin/orchestrate.sh config/accuracy.yml
-Rscript R/accuracy.R --config config/accuracy.yml
 
 # re-attempt only the runs previously killed by the per-run timeout
 # (raise timeout_sec in common.yml first to give them more time)
@@ -241,7 +236,7 @@ benchmarks/
     sampler.R      external peak-RAM sampler (poll + cgroup)
     aggregate.R    merge results (+ *.time.json, *.mem.json) -> results.csv + summary.csv
     accuracy.R     score saved explanations against a high-budget reference
-                   (accuracy study only; run manually after orchestrate.sh)
+                   (opt-in; run manually after orchestrate.sh)
   bin/
     orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
     run_week.sh    run the whole suite, one approach at a time (cheapest first)
@@ -250,8 +245,8 @@ benchmarks/
     grid.csv              generated study grid (committed)
     results.csv           generated per-run aggregate (committed)
     summary.csv           generated configuration summary (committed)
-    accuracy_*.csv        accuracy study only: error metrics (committed)
-    *.shapley.rds         accuracy study only: saved Shapley values (committed)
+    accuracy_*.csv        accuracy studies only: error metrics (committed)
+    *.shapley.rds         accuracy studies only: saved Shapley values (committed)
     *.json                generated per-run artefacts (git-ignored)
   logs/                   generated run logs (git-ignored)
   BENCHMARK_FINDINGS.md   cross-study conclusions and user guidance
@@ -300,3 +295,63 @@ Note: changing a dataset spec (e.g. `n_features_max`) or the seed in
 `common.yml` automatically regenerates the affected `data/pool_*.rds` cache
 (the cache key includes the spec); trained models are keyed by their inputs and
 regenerate as needed too.
+
+## Accuracy studies
+
+The shipped studies measure cost only. To weigh a coalition / Monte Carlo
+budget against approximation quality instead, the framework can run an
+**accuracy study**: a grid of candidate budgets scored against a high-budget
+reference. No such study is part of the current snapshot, but the machinery is
+in place.
+
+Write a config with two blocks whose names `R/accuracy.R` looks for, and set
+`save_explanations: [true]` on both so each run writes its Shapley matrix to
+`results/<study>/<id>.shapley.rds` (saving happens outside the timed region, so
+`wall_secs` is unaffected):
+
+```yaml
+approach: gaussian
+dataset: numeric
+
+blocks:
+  - name: accuracy_cost          # candidate budgets
+    grid:
+      n_features: [8]
+      max_n_coalitions: [32, 64, 128, 256]
+      n_MC_samples: [25, 100, 400]
+      n_explain: [10, 50]
+      save_explanations: [true]
+
+  - name: accuracy_reference     # near-converged target, >= 2 replicates
+    grid:
+      n_features: [8]
+      max_n_coalitions: [256]
+      n_MC_samples: [2000]
+      n_explain: [50]
+      save_explanations: [true]
+```
+
+```bash
+bin/orchestrate.sh config/<study>.yml
+Rscript R/accuracy.R --config config/<study>.yml
+```
+
+`R/accuracy.R` averages the reference runs into a target, then reports RMSE,
+MAE, and max absolute deviation per candidate, plus two noise measures:
+`reference_noise_rmse` (spread among the references, which should be well below
+the candidate errors for the comparison to mean anything) and
+`replicate_stability_rmse` (spread among a candidate's own replicates, which
+needs no reference at all). Output goes to `accuracy_results.csv` and
+`accuracy_summary.csv`.
+
+Points to respect when designing one:
+
+- The reference must be a materially larger budget than every candidate, and
+  needs at least two replicates so its own noise can be quantified.
+- Candidates are only ever compared with a reference of the **same approach**;
+  blocks may override `approach:` in their `grid:` to cover several.
+- The reference is itself an approximation, so the result measures convergence
+  toward the approach's own high-budget answer — not accuracy against the true
+  conditional distribution.
+- Candidate `n_explain` must not exceed the reference's; the first rows are
+  compared.
