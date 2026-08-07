@@ -1,0 +1,60 @@
+# ============================================================================
+# accuracy.yml — ACCURACY-vs-COST study, kept separate from the cost studies.
+#
+# Every other config (gaussian.yml, ctree.yml, ...) measures COST: how long an
+# explanation takes and how much RAM it needs. This study measures ERROR: how
+# far the Shapley values produced under a given budget are from a high-budget
+# reference. It therefore has a different dependent variable, needs a
+# post-processing stage (R/accuracy.R), and produces its own
+# accuracy_results.csv / accuracy_summary.csv artefacts.
+#
+# Design: a candidate grid (`accuracy_cost`) is compared against the mean of
+# several near-converged reference runs (`accuracy_reference`). Both sweeps set
+# save_explanations so the Shapley matrices are written to <id>.shapley.rds;
+# R/accuracy.R reads them afterwards. The saving happens outside the timed
+# region, so wall_secs is unaffected.
+#
+# The reference must be a materially larger budget than every candidate. With 8
+# features, 256 coalitions is the EXACT coalition set, so the reference differs
+# from the largest candidate only by Monte Carlo samples (2000 vs 400).
+#
+# Currently gaussian only. Because the accuracy/budget trade-off may behave
+# differently elsewhere, further approaches can be added as additional blocks
+# that override `approach:` in their `grid:`; R/accuracy.R pairs candidates with
+# references per approach.
+#
+# Run with:  bin/orchestrate.sh config/accuracy.yml
+#            Rscript R/accuracy.R --config config/accuracy.yml
+# ============================================================================
+approach: gaussian
+dataset: numeric
+model_variant: xgb
+
+blocks:
+  # Candidate budgets: the coalition/Monte Carlo interaction surface, at two
+  # explicand counts.
+  - name: accuracy_cost
+    grid:
+      n_features: [8]
+      n_train: [1000]
+      max_n_coalitions: [32, 64, 128, 256]
+      n_MC_samples: [25, 100, 400]
+      n_explain: [10, 50]
+      workers: [1]
+      min_n_batches: [16]
+      max_batch_cube_size: [Inf]
+      save_explanations: [true]
+
+  # High-budget reference. Replicated so the between-reference spread
+  # (reference noise) can be reported alongside the candidate errors.
+  - name: accuracy_reference
+    grid:
+      n_features: [8]
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_MC_samples: [2000]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [32]
+      max_batch_cube_size: [Inf]
+      save_explanations: [true]

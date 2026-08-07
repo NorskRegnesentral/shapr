@@ -12,6 +12,10 @@ studies <- c(
   "regression_surrogate"
 )
 
+# The accuracy study measures error rather than cost, so it is audited
+# separately and excluded from the cost-snapshot integrity counts.
+accuracy_study <- "accuracy"
+
 args <- commandArgs(trailingOnly = FALSE)
 script_arg <- grep("^--file=", args, value = TRUE)
 script_path <- if (length(script_arg) == 1) sub("^--file=", "", script_arg) else "benchmarks/R/audit_findings.R"
@@ -42,24 +46,37 @@ configuration_cols <- c(
 #### Snapshot integrity -------------------------------------------------------
 
 stopifnot(
-  nrow(results) == 2353L,
+  nrow(results) == 2278L,
   all(results$status == "ok"),
   sum(results$pair_budget_matches == FALSE, na.rm = TRUE) == 0L,
   results[pair_role == "source", .N] == 62L,
   results[pair_role == "dependent", .N] == 62L,
-  !"is_warmup" %in% names(results)
+  !"is_warmup" %in% names(results),
+  !any(grepl("accuracy", results$sweep))
 )
 
 configuration_counts <- results[, .N, by = configuration_cols]
 stopifnot(
-  nrow(configuration_counts) == 814L,
-  configuration_counts[N == 3L, .N] == 725L,
+  nrow(configuration_counts) == 789L,
+  configuration_counts[N == 3L, .N] == 700L,
   configuration_counts[N == 2L, .N] == 89L,
   all(configuration_counts$N %in% c(2L, 3L)),
-  nrow(summaries) == 814L,
-  sum(summaries$n) == 2353L,
-  summaries[n == 3L, .N] == 725L,
+  nrow(summaries) == 789L,
+  sum(summaries$n) == 2278L,
+  summaries[n == 3L, .N] == 700L,
   summaries[n == 2L, .N] == 89L
+)
+
+#### Accuracy-study integrity ------------------------------------------------
+
+accuracy_results <- data.table::fread(
+  file.path(result_root, accuracy_study, "results.csv")
+)
+stopifnot(
+  nrow(accuracy_results) == 75L,
+  all(accuracy_results$status == "ok"),
+  accuracy_results[sweep == "accuracy_cost", .N] == 72L,
+  accuracy_results[sweep == "accuracy_reference", .N] == 3L
 )
 
 #### Comparable reference configuration -------------------------------------
@@ -140,7 +157,7 @@ prediction_table[, speedup := round(
 
 #### Accuracy/cost surface ---------------------------------------------------
 
-accuracy <- data.table::fread(file.path(result_root, "gaussian", "accuracy_summary.csv"))
+accuracy <- data.table::fread(file.path(result_root, accuracy_study, "accuracy_summary.csv"))
 accuracy_table <- accuracy[
   n_explain == 50 &
     ((max_n_coalitions == 32 & n_MC_samples %in% c(25, 100, 400)) |
@@ -236,8 +253,8 @@ assert_table(prediction_table, expected_prediction, "prediction-model table")
 expected_accuracy <- data.table::data.table(
   max_n_coalitions = c(32L, 32L, 32L, 64L, 128L, 128L, 256L, 256L),
   n_MC_samples = c(25L, 100L, 400L, 100L, 100L, 400L, 100L, 400L),
-  explain_seconds = c(1.36, 1.43, 1.73, 1.62, 2.14, 4.05, 1.70, 6.21),
-  peak_ram_mb = c(234, 247, 263, 258, 262, 309, 273, 359),
+  explain_seconds = c(1.46, 1.53, 1.84, 1.73, 2.25, 4.06, 1.78, 6.30),
+  peak_ram_mb = c(230, 245, 250, 247, 252, 305, 261, 342),
   shapley_rmse = c(0.214, 0.081, 0.068, 0.054, 0.047, 0.023, 0.023, 0.014),
   replicate_instability_rmse = c(0.302, 0.140, 0.101, 0.084, 0.060, 0.033, 0.034, 0.017)
 )
@@ -246,13 +263,14 @@ stopifnot(abs(unique(accuracy$reference_noise_rmse) - 0.006336911) < 1e-9)
 
 expected_variability <- data.table::data.table(
   replicates = c(2L, 3L),
-  configurations = c(89L, 725L),
+  configurations = c(89L, 700L),
   median_relative_iqr = c(0.0033, 0.0073),
-  p90_relative_iqr = c(0.0133, 0.0196)
+  p90_relative_iqr = c(0.0133, 0.0195)
 )
 assert_table(variability_table, expected_variability, "replicate-variability values")
 
-cat("Snapshot integrity: 2,353 successful runs; 814 configurations; all pairs valid.\n\n")
+cat("Cost-snapshot integrity: 2,278 successful runs; 789 configurations; all pairs valid.\n")
+cat("Accuracy study: 75 successful runs (72 candidates, 3 references).\n\n")
 cat("Comparable reference configuration:\n")
 print(reference_table)
 cat("\nRepresentative parallel workloads:\n")

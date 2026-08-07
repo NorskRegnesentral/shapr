@@ -184,33 +184,7 @@ blocks:
       min_n_batches: [8]
       max_batch_cube_size: [1e6, 4e6, 16e6, 64e6, Inf]
 
-  # 15. Accuracy/cost interaction surface. Explanations are saved only for
-  # these rows because accuracy.R compares them with the high-budget reference.
-  - name: accuracy_cost
-    grid:
-      n_features: [8]
-      n_train: [1000]
-      max_n_coalitions: [32, 64, 128, 256]
-      n_MC_samples: [25, 100, 400]
-      n_explain: [10, 50]
-      workers: [1]
-      min_n_batches: [16]
-      max_batch_cube_size: [Inf]
-      save_explanations: [true]
-
-  - name: accuracy_reference
-    grid:
-      n_features: [8]
-      n_train: [1000]
-      max_n_coalitions: [256]
-      n_MC_samples: [2000]
-      n_explain: [50]
-      workers: [1]
-      min_n_batches: [32]
-      max_batch_cube_size: [Inf]
-      save_explanations: [true]
-
-  # 16. Real prediction-model cost at a fixed explanation workload. The three
+  # 15. Real prediction-model cost at a fixed explanation workload. The three
   # variants span a cheap linear model, the standard XGBoost model, and a much
   # larger XGBoost model.
   - name: prediction_model

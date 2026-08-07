@@ -4,9 +4,10 @@ A self-contained framework to measure **CPU time** and **peak RAM** of
 `shapr::explain()` across the package's many settings, on a single machine.
 
 The primary goal is **cost**: how fast and memory-hungry each approach is, and
-how that scales with user-controlled arguments. A bounded Gaussian accuracy
-surface is also included so coalition and Monte Carlo cost can be interpreted
-against approximation quality rather than in isolation.
+how that scales with user-controlled arguments. A separate, bounded **accuracy**
+study ([`config/accuracy.yml`](config/accuracy.yml)) measures error instead of
+cost, so coalition and Monte Carlo budgets can be interpreted against
+approximation quality rather than in isolation.
 
 Everything is driven by editable YAML config files in [`config/`](config/).
 Findings from the complete study are summarized in
@@ -27,6 +28,10 @@ bin/run_week.sh
 
 # run just a few approaches
 bin/run_week.sh gaussian empirical ctree
+
+# the accuracy study is separate and needs its post-processing step
+bin/orchestrate.sh config/accuracy.yml
+Rscript R/accuracy.R --config config/accuracy.yml
 
 # re-attempt only the runs previously killed by the per-run timeout
 # (raise timeout_sec in common.yml first to give them more time)
@@ -236,6 +241,7 @@ benchmarks/
     sampler.R      external peak-RAM sampler (poll + cgroup)
     aggregate.R    merge results (+ *.time.json, *.mem.json) -> results.csv + summary.csv
     accuracy.R     score saved explanations against a high-budget reference
+                   (accuracy study only; run manually after orchestrate.sh)
   bin/
     orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
     run_week.sh    run the whole suite, one approach at a time (cheapest first)
@@ -244,6 +250,8 @@ benchmarks/
     grid.csv              generated study grid (committed)
     results.csv           generated per-run aggregate (committed)
     summary.csv           generated configuration summary (committed)
+    accuracy_*.csv        accuracy study only: error metrics (committed)
+    *.shapley.rds         accuracy study only: saved Shapley values (committed)
     *.json                generated per-run artefacts (git-ignored)
   logs/                   generated run logs (git-ignored)
   BENCHMARK_FINDINGS.md   cross-study conclusions and user guidance

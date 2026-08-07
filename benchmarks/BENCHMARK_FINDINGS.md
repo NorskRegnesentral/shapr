@@ -30,18 +30,26 @@ into practical guidance for users.
 - Prediction cost changes that trade-off. A large XGBoost model continued to
   benefit beyond four workers, while linear and standard XGBoost models were
   already close to saturation.
-- The Gaussian accuracy experiment shows that coalition count and Monte Carlo
-  count address different error sources. Increasing either in isolation can
-  have diminishing returns.
+- The separate Gaussian accuracy study shows that coalition count and Monte
+  Carlo count address different error sources. Increasing either in isolation
+  can have diminishing returns.
 
 ## Scope, completeness, and interpretation
 
-The curated snapshot contains 2,353 successful runs representing 814 distinct
-configurations. There are 725 configurations with three replicates and 89 with
-two. Two replicates are used only for VAEAC and the expensive realistic ARF and
-timeseries blocks; all other configurations use the common three-replicate
-default. Warm-up runs are not part of the functionality, configuration, or
-results.
+This report covers two distinct bodies of work. The **cost studies** measure
+elapsed time and peak RAM across eleven approaches, and supply every finding
+below except one. The **accuracy study** ([`config/accuracy.yml`](config/accuracy.yml))
+measures error instead of cost, is currently Gaussian-only, and is reported
+separately in [Accuracy versus cost](#accuracy-versus-cost). Its runs are not
+part of the cost-snapshot counts.
+
+The curated cost snapshot contains 2,278 successful runs representing 789
+distinct configurations. There are 700 configurations with three replicates and
+89 with two. Two replicates are used only for VAEAC and the expensive realistic
+ARF and timeseries blocks; all other configurations use the common
+three-replicate default. The accuracy study adds a further 75 successful runs
+(72 candidates and 3 references) at three replicates. Warm-up runs are not part
+of the functionality, configuration, or results.
 
 All iterative source/dependent pairs are valid: the fixed dependent uses the
 coalition budget achieved by its corresponding iterative source. This was
@@ -251,21 +259,30 @@ one shapr worker unless a materially different workload is measured.
 
 ## Accuracy versus cost
 
-The Gaussian accuracy experiment used eight features and three replicates. Its
-reference mean came from three exact-coalition runs with 2,000 Monte Carlo
-samples; reference noise RMSE was 0.00634. Selected results for 50 explained
+This section is the only part of the report that measures error rather than
+cost. It comes from the separate accuracy study
+([`config/accuracy.yml`](config/accuracy.yml)), whose runs are excluded from the
+cost snapshot above. The study is currently Gaussian-only; the accuracy/budget
+trade-off may behave differently for other approaches.
+
+The study used eight features and three replicates. Its reference mean came
+from three exact-coalition runs with 2,000 Monte Carlo samples; reference noise
+RMSE was 0.00634, roughly two orders of magnitude below the candidate errors.
+Because the reference is itself a Gaussian run, these numbers measure
+convergence toward the approach's own high-budget answer, not accuracy against
+the true conditional distribution. Selected results for 50 explained
 observations are:
 
 | Coalitions | MC samples | `explain()` time | Peak RAM | Shapley RMSE | Replicate instability RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 32 | 25 | 1.36 s | 234 MB | 0.214 | 0.302 |
-| 32 | 100 | 1.43 s | 247 MB | 0.081 | 0.140 |
-| 32 | 400 | 1.73 s | 263 MB | 0.068 | 0.101 |
-| 64 | 100 | 1.62 s | 258 MB | 0.054 | 0.084 |
-| 128 | 100 | 2.14 s | 262 MB | 0.047 | 0.060 |
-| 128 | 400 | 4.05 s | 309 MB | 0.023 | 0.033 |
-| 256 | 100 | 1.70 s | 273 MB | 0.023 | 0.034 |
-| 256 | 400 | 6.21 s | 359 MB | 0.014 | 0.017 |
+| 32 | 25 | 1.46 s | 230 MB | 0.214 | 0.302 |
+| 32 | 100 | 1.53 s | 245 MB | 0.081 | 0.140 |
+| 32 | 400 | 1.84 s | 250 MB | 0.068 | 0.101 |
+| 64 | 100 | 1.73 s | 247 MB | 0.054 | 0.084 |
+| 128 | 100 | 2.25 s | 252 MB | 0.047 | 0.060 |
+| 128 | 400 | 4.06 s | 305 MB | 0.023 | 0.033 |
+| 256 | 100 | 1.78 s | 261 MB | 0.023 | 0.034 |
+| 256 | 400 | 6.30 s | 342 MB | 0.014 | 0.017 |
 
 At 32 coalitions, increasing Monte Carlo samples has diminishing returns because
 coalition approximation remains. At 128 or 256 coalitions, the same increase
@@ -349,8 +366,9 @@ are adequate for large effects but less reliable for close timing differences.
 
 If more evidence is wanted, the highest-value bounded additions are:
 
-1. Repeat a reduced 2-by-2 coalition/Monte Carlo accuracy grid for one nonlinear
-   model and one mixed dataset, with a small reference set.
+1. Add a reduced 2-by-2 coalition/Monte Carlo grid for one nonlinear model and
+   one mixed dataset, with a small reference set, as further blocks in
+   [`config/accuracy.yml`](config/accuracy.yml).
 2. Separate reusable VAEAC training/setup time from explanation time at two
    explanation sizes, if the existing timing fields cannot already do so.
 3. Run a compact Gaussian/CTree subset on a second, smaller machine to test how

@@ -3,6 +3,8 @@ data/
 logs/
 
 # Keep the compact study inputs and aggregates, but not per-run JSON artefacts.
+# The saved Shapley matrices are small and are the raw input to R/accuracy.R,
+# so the accuracy study can be recomputed from a clone.
 results/*
 !results/README.md
 !results/*/
@@ -12,6 +14,7 @@ results/*/*
 !results/*/summary.csv
 !results/*/accuracy_results.csv
 !results/*/accuracy_summary.csv
+!results/*/*.shapley.rds
 
 # Obsolete experiments from the earlier OAT/factorial study design.
 results/oat_*/
