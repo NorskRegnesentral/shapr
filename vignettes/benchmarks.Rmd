@@ -185,6 +185,15 @@ are available in the
   bandwidth selection, regression-separate learner tuning, VAEAC training, fine
   timeseries or VAEAC batches, and parallel ARF require explicit planning.
 
+`workers` is configured through `future::plan()`. The default is `workers = 1`,
+which means that `shapr` does not use parallel workers. For example, use
+`future::plan("multisession", workers = 4)` to try four workers.
+`min_n_batches` is an element of `extra_computation_args` passed to `explain()`;
+it defaults to 10 and sets the minimum number of batches per iteration. For
+example, use `extra_computation_args = list(min_n_batches = 20)`. With
+`progressr`, `shapr` reports progress once per batch, so fewer batches also give
+fewer progress updates.
+
 ## Findings and guidance by approach
 
 ### Gaussian
