@@ -138,141 +138,59 @@ The full design, execution framework, committed CSV files, and numerical audit
 are available in the
 [benchmark directory](https://github.com/NorskRegnesentral/shapr/tree/master/benchmarks).
 
-## General findings and practical guidance
+## Key findings and practical guidance
 
-### Approach choice depends on the data and workload
+- **Choose the approach for the data, then consider cost.** Gaussian is the
+  fastest dependence-aware method for purely numeric data, regression
+  surrogate for the mixed-data settings, and the categorical approach
+  for fully categorical data. These are cost comparisons, not rankings of
+  explanation quality.
 
-For the shared numeric reference workload (12 features, 1,000 training rows,
-25 explained rows, 128 maximum coalitions, 250 Monte Carlo samples, and one
-worker), Gaussian was the fastest dependence-aware approach: the median
-whole-process time was 4.12 seconds, compared with 4.97 seconds for copula and
-7.22 seconds for empirical. Independence was similarly inexpensive, but it
-deliberately ignores feature dependence and should only be used when that
-approximation is appropriate. Gaussian is therefore the strongest
-computational starting point for numeric data when its distributional
-assumptions are suitable, but cost alone should not determine the statistical
-approach.
+- **Workload size can change the preferred approach.** Low-setup approaches
+  such as Gaussian, copula, and empirical are attractive for few explanations.
+  Regression surrogate, regression separate, and VAEAC have reusable setup
+  costs and add little runtime as `n_explain` increases; this makes the
+  regression approaches more competitive, although VAEAC remains expensive.
+  (CTree and ARF also perform setup work, but their runtime grows strongly with
+  `n_explain`). Large training sets favor methods with weak training-size
+  sensitivity.
 
-For the four mixed-data configurations, the default regression-surrogate setup
-was fastest among the retained dependence-aware approaches, followed by
-regression separate. For fully categorical data, the dedicated categorical
-approach was fastest at the shared reference workload. CTree, ARF, and VAEAC
-were more expensive, sometimes substantially so, but offer different models of
-the conditional distribution. These timings rank computational cost under the
-tested defaults; they do not rank explanation quality.
+- **Start with one worker; try four for expensive runs.** Parallel overhead
+  commonly outweighs useful work for small explanations. Heavy workloads can
+  benefit, but additional workers increase memory use and gains often diminish
+  beyond four.
 
-### Explained and training observations change the ranking
+- **The batching defaults are usually a good starting point.** Increase the
+  number of batches when memory is limiting. Fine batching is comparatively
+  inexpensive for Gaussian, CTree, and ARF, but costly for timeseries and
+  VAEAC.
 
-For one or a few explained observations, approaches with little setup work are
-favored. Gaussian, copula, and empirical were comparatively inexpensive, while
-the setup cost of the regression approaches had little opportunity to
-amortize. At 100 explained observations in the shared numeric sweep, regression
-surrogate became slightly faster than Gaussian (6.12 versus 6.59 seconds for
-the whole process) because its fitted surrogate was reused. Regression
-separate and VAEAC also changed little with `n_explain` in the tested sweep,
-although VAEAC remained much slower in absolute terms because training
-dominated. CTree, ARF, and especially timeseries grew much more strongly with
-the number of explained observations.
+- **Use iteration for adaptive stopping, not as a shortcut.** At the same final
+  coalition budget, iterative execution costs about the same as a fixed run if
+  it stops after one iteration and more if it needs several. It is most useful
+  when a suitable fixed budget is not already known.
 
-Training size had little effect on Gaussian and independence and only a modest
-effect on regression separate. It mattered considerably for empirical, copula,
-categorical, CTree, ARF, timeseries, VAEAC, and regression surrogate. For large
-training sets, do not extrapolate from a small pilot unless the approach showed
-weak training-size sensitivity; fit or search costs can dominate the ordinary
-explanation dimensions.
+- **Coalitions and explained observations are the clearest general cost
+  drivers.** Feature count, training size, factor complexity, and Monte Carlo
+  samples can also be important, but their effects vary more by approach.
 
-### Features, coalitions, and Monte Carlo samples
+- **Expensive prediction models amplify explanation cost.** Their prediction
+  work is repeated across coalitions and conditional samples, so budget
+  `n_MC_samples` carefully. This interaction is expected but was not measured
+  directly in this benchmark.
 
-Coalition count and the number of explained observations were the most
-consistent generic time drivers. Feature count can additionally change the
-available coalition space and approach-specific internal representations, and
-was especially important for CTree, ARF, timeseries, and grouped Gaussian
-runs. Factor count and the number of factor levels materially affected CTree,
-ARF, and VAEAC.
-
-`max_n_coalitions` and `n_MC_samples` should be treated as accuracy controls
-with a measurable computational price. Their cost differed by approach:
-Monte Carlo count was visible for Gaussian, independence, copula, and ARF, but
-was weak where fitting, training, or per-batch setup dominated. This study does
-not determine which values are accurate enough.
-
-### Parallel workers
-
-One worker was generally best for small workloads. At the ordinary tested
-sizes, extra workers did not help Gaussian, independence, copula, categorical,
-regression separate, or regression surrogate consistently, and always raised
-RAM through worker-local state. Material Gaussian, empirical, CTree, ARF,
-timeseries, and explanation-heavy VAEAC workloads could benefit from
-parallelization.
-
-When sequential runtime is material, four workers are a sensible first trial.
-Measure both elapsed time and peak RAM on a representative case before trying
-eight or sixteen workers: time gains commonly diminished while memory continued
-to grow. Regression surrogate is the clearest warning against universal
-parallel advice, since additional workers made the retained workload slower as
-well as more memory-intensive.
-
-### Batching and memory
-
-The defaults are a reasonable starting point: `min_n_batches = 10`, together
-with the one-million-element dense-array cap used by Gaussian, copula, and
-empirical, limits live intermediate state without requiring users to estimate a
-batch size. The Gaussian cap calibration found no speed penalty at the default
-and substantially lower RAM than with larger caps.
-
-Change batching for a measured reason. More batches can sharply reduce peak
-RAM for Gaussian, CTree, ARF, timeseries, and VAEAC, but every batch adds setup
-and scheduling work. Fine batching had little penalty for Gaussian, CTree, and
-ARF, was expensive for empirical at the finest splits, and was particularly
-costly for timeseries and VAEAC. In parallel runs, use at least as many batches
-as workers; in sequential timeseries or VAEAC runs, fewer batches may be much
-faster if memory permits.
-
-### Iterative versus fixed coalitions
-
-The iterative approach is an adaptive stopping mechanism, not a computational
-shortcut when the required fixed budget is already known. In matched pairs
-with the same realized coalition budget, one-iteration runs cost about the same
-as fixed runs. When convergence required several iterations, iterative runs
-were about 1.1 to 5.0 times slower because work was performed and checked in
-stages. Iteration can still save substantial work when it stops below an
-otherwise conservative fixed budget; use it when the required budget is
-unknown, and use a fixed budget when a suitable value has already been
-established.
-
-### Prediction-model cost
-
-The prediction model can be a first-order cost driver. In the Gaussian model
-experiment, a 500-tree depth-six XGBoost model made explanations much slower
-than a linear or standard XGBoost model and retained useful parallel scaling
-through sixteen workers, whereas the cheaper models were close to practical
-saturation at four.
-
-For sampling-based approaches, increasing `n_MC_samples` also increases the
-amount of conditional sampling and prediction work, so its absolute cost should
-be budgeted especially carefully when model prediction is expensive. The study
-varied Monte Carlo count and prediction-model complexity in separate blocks,
-however, and did not directly estimate their interaction.
-
-### Important approach-specific cost traps
-
-Several approach settings outweighed the generic workload dimensions. Repeated
-AICc bandwidth selection made empirical orders of magnitude slower than fixed
-bandwidth in the tested block. Learner choice and cross-validation dominated
-regression-separate cost. VAEAC was commonly dominated by neural-network
-training and epoch count. Fine batches were unusually expensive for timeseries
-and VAEAC, while parallel ARF could require very large amounts of RAM. These
-choices belong in the initial resource estimate rather than being treated as
-minor tuning details.
+- **Some method-specific settings dominate everything else.** Empirical AICc
+  bandwidth selection, regression-separate learner tuning, VAEAC training, fine
+  timeseries or VAEAC batches, and parallel ARF require explicit planning.
 
 ## Findings and guidance by approach
 
 ### Gaussian
 
 Gaussian is inexpensive for the shared reference workload. Coalition count,
-explained rows, and Monte Carlo samples increase cost, while training size had
-little effect in the tested range. Fine batching reduced memory with little
-overhead. Four workers helped on heavy workloads, with diminishing gains at
+explained rows, and Monte Carlo samples increase cost, while training size has
+little effect in the tested range. Fine batching reduces memory with little
+overhead. Four workers help on heavy workloads, with diminishing gains at
 eight and sixteen. The default dense-array cap of one million elements gave the
 lowest memory without a speed penalty in the calibration and remains a sensible
 default when the memory budget is unknown.
@@ -281,25 +199,25 @@ default when the memory budget is unknown.
 
 Empirical cost grows with training rows, coalitions, and explained rows. Fine
 batching can reduce RAM, but very small batches add repeated-search overhead.
-Four or eight workers helped the retained heavy workloads before performance
-saturated. Repeated AICc bandwidth selection was orders of magnitude more
+Four or eight workers help on heavy workloads before performance saturates.
+Repeated AICc bandwidth selection is orders of magnitude more
 expensive than a fixed bandwidth in the tested block and should be budgeted as
 a first-order modeling choice.
 
 ### CTree
 
 CTree is sensitive to feature count, coalitions, explained rows, training rows,
-and mixed or factor complexity. Batching reduced peak memory with little cost in
-the ordinary tested range. Heavy CTree workloads showed strong parallel
-scaling, but RAM increased substantially with worker-local state. Four workers
+and mixed or factor complexity. Batching reduces peak memory with little cost in
+the ordinary tested range. Heavy CTree workloads show strong parallel scaling,
+but RAM increases substantially with worker-local state. Four workers
 are a reasonable first parallel trial when the sequential runtime is material.
 
 ### ARF
 
 ARF time and memory grow strongly with the main problem dimensions and complex
-mixed data. More batches controlled memory at a modest time cost. Heavy
-workloads parallelized well, but duplicated model and sampling state made the
-RAM cost unusually large. Start with four workers only after confirming that
+mixed data. More batches control memory at a modest time cost. Heavy workloads
+parallelize well, but duplicated model and sampling state make the RAM cost
+unusually large. Start with four workers only after confirming that
 the sequential workload is expensive and that sufficient memory is available.
 
 ### Timeseries
@@ -316,8 +234,8 @@ to use sixteen.
 VAEAC cost is commonly dominated by neural-network training. Training rows and
 epochs are primary time drivers, while architecture, latent size, factor
 complexity, and explanation dimensions can also affect time or memory. Fine
-batching adds expensive repeated overhead. Training-dominated work showed
-little parallel benefit; explanation-heavy work improved at four workers and
+batching adds expensive repeated overhead. Training-dominated work shows
+little parallel benefit; explanation-heavy work improves at four workers and
 only modestly thereafter. Reusing or amortizing a trained model should be
 considered before adding workers.
 
@@ -325,39 +243,168 @@ considered before adding workers.
 
 Independence is inexpensive and largely insensitive to training size. Coalition
 count, explained rows, and Monte Carlo samples are its relevant generic cost
-drivers. Parallel overhead exceeded useful work at the retained sizes and
-multiplied memory, so one worker is preferred.
+drivers. Parallel overhead exceeds useful work at the retained sizes and
+multiplies memory, so one worker is preferred.
 
 ### Copula
 
 Copula is also inexpensive at the shared reference workload, but is more
 sensitive to training size than independence. Coalition count and explanation
-size remain important. The retained workload did not justify multiple workers;
-start with one unless a materially heavier representative case demonstrates a
-benefit.
+size remain important. The benchmark indicates that the retained workload does
+not justify multiple workers; start with one unless a materially heavier
+representative case demonstrates a benefit.
 
 ### Categorical
 
-Categorical cost increased with training and explanation size, while Monte
-Carlo count was a weak driver in the tested block. Parallel overhead outweighed
+Categorical cost increases with training and explanation size, while Monte
+Carlo count is a weak driver in the tested block. Parallel overhead outweighs
 useful work at the retained size, making one worker the appropriate default.
 
 ### Regression separate
 
-Regression separate was comparatively insensitive to generic Monte Carlo,
-explanation, batching, and data.table-thread changes. Coalition count mattered,
-but learner and tuning choices dominated: smooth-model or XGBoost
-cross-validation was much more expensive than untuned variants. The retained
-workload did not benefit from shapr worker parallelism, so resource planning
+Regression separate is comparatively insensitive to generic Monte Carlo,
+explanation, batching, and data.table-thread changes. Coalition count matters,
+but learner and tuning choices dominate: smooth-model or XGBoost
+cross-validation is much more expensive than untuned variants. The retained
+workload does not benefit from shapr worker parallelism, so resource planning
 should focus first on the fitting strategy.
 
 ### Regression surrogate
 
-Regression surrogate grew with training size, coalition count, and the number
-of surrogate combinations; explained rows and Monte Carlo count were weaker
-cost drivers in the tested range. Its parallel experiment was unfavorable:
-additional workers increased both elapsed time and RAM. Use one shapr worker
+Regression surrogate grows with training size, coalition count, and the number
+of surrogate combinations; explained rows and Monte Carlo count are weaker
+cost drivers in the tested range. Its parallel experiment is unfavorable:
+additional workers increase both elapsed time and RAM. Use one shapr worker
 unless a materially different workload demonstrates otherwise.
+
+## Detailed cross-approach findings
+
+### Approach choice depends on the data and workload
+
+For the shared numeric reference workload (12 features, 1,000 training rows,
+25 explained rows, 128 maximum coalitions, 250 Monte Carlo samples, and one
+worker), Gaussian is the fastest dependence-aware approach: the median
+whole-process time is 4.12 seconds, compared with 4.97 seconds for copula and
+7.22 seconds for empirical. Independence is similarly inexpensive, but it
+deliberately ignores feature dependence and should only be used when that
+approximation is appropriate. Gaussian is therefore the strongest
+computational starting point for numeric data when its distributional
+assumptions are suitable, but cost alone should not determine the statistical
+approach.
+
+For the four mixed-data configurations, the benchmark indicates that the
+default regression-surrogate setup is fastest among the retained
+dependence-aware approaches, followed by regression separate. For fully
+categorical data, the dedicated categorical approach is fastest at the shared
+reference workload. CTree, ARF, and VAEAC are more expensive, sometimes
+substantially so, but offer different models of
+the conditional distribution. These timings rank computational cost under the
+tested defaults; they do not rank explanation quality.
+
+### Explained and training observations change the ranking
+
+For one or a few explained observations, approaches with little setup work are
+favored. Gaussian, copula, and empirical are comparatively inexpensive, while
+the setup cost of the regression approaches has little opportunity to
+amortize. At 100 explained observations in the shared numeric sweep, regression
+surrogate is slightly faster than Gaussian (6.12 versus 6.59 seconds for
+the whole process) because its fitted surrogate is reused. Regression
+separate and VAEAC also change little with `n_explain` in the tested sweep,
+although VAEAC remains much slower in absolute terms because training
+dominates. CTree, ARF, and especially timeseries grow much more strongly with
+the number of explained observations.
+
+Training size has little effect on Gaussian and independence and only a modest
+effect on regression separate. It matters considerably for empirical, copula,
+categorical, CTree, ARF, timeseries, VAEAC, and regression surrogate. For large
+training sets, do not extrapolate from a small pilot unless the benchmark shows
+weak training-size sensitivity; fit or search costs can dominate the ordinary
+explanation dimensions.
+
+### Features, coalitions, and Monte Carlo samples
+
+Coalition count and the number of explained observations are the most
+consistent generic time drivers. Feature count can additionally change the
+available coalition space and approach-specific internal representations, and
+is especially important for CTree, ARF, timeseries, and grouped Gaussian
+runs. Factor count and the number of factor levels materially affect CTree,
+ARF, and VAEAC.
+
+`max_n_coalitions` and `n_MC_samples` should be treated as accuracy controls
+with a measurable computational price. Their cost differs by approach:
+Monte Carlo count is visible for Gaussian, independence, copula, and ARF, but
+is weak where fitting, training, or per-batch setup dominates. This study does
+not determine which values are accurate enough.
+
+### Parallel workers
+
+One worker is generally best for small workloads. At the ordinary tested
+sizes, extra workers do not help Gaussian, independence, copula, categorical,
+regression separate, or regression surrogate consistently, and always raise
+RAM through worker-local state. Material Gaussian, empirical, CTree, ARF,
+timeseries, and explanation-heavy VAEAC workloads can benefit from
+parallelization.
+
+When sequential runtime is material, four workers are a sensible first trial.
+Measure both elapsed time and peak RAM on a representative case before trying
+eight or sixteen workers: time gains commonly diminish while memory continues
+to grow. Regression surrogate is the clearest warning against universal
+parallel advice, since additional workers make the retained workload slower as
+well as more memory-intensive.
+
+### Batching and memory
+
+The defaults are a reasonable starting point: `min_n_batches = 10`, together
+with the one-million-element dense-array cap used by Gaussian, copula, and
+empirical, limits live intermediate state without requiring users to estimate a
+batch size. The Gaussian cap calibration found no speed penalty at the default
+and substantially lower RAM than with larger caps.
+
+Change batching for a measured reason. More batches can sharply reduce peak
+RAM for Gaussian, CTree, ARF, timeseries, and VAEAC, but every batch adds setup
+and scheduling work. Fine batching has little penalty for Gaussian, CTree, and
+ARF, is expensive for empirical at the finest splits, and is particularly
+costly for timeseries and VAEAC. In parallel runs, use at least as many batches
+as workers; in sequential timeseries or VAEAC runs, fewer batches may be much
+faster if memory permits.
+
+### Iterative versus fixed coalitions
+
+The iterative approach is an adaptive stopping mechanism, not a computational
+shortcut when the required fixed budget is already known. In matched pairs
+with the same realized coalition budget, one-iteration runs cost about the same
+as fixed runs. When convergence requires several iterations, the benchmark
+indicates that iterative runs are about 1.1 to 5.0 times slower because work is
+performed and checked in
+stages. Iteration can still save substantial work when it stops below an
+otherwise conservative fixed budget; use it when the required budget is
+unknown, and use a fixed budget when a suitable value has already been
+established.
+
+### Prediction-model cost
+
+The prediction model can be a first-order cost driver. In the Gaussian model
+experiment, a 500-tree depth-six XGBoost model makes explanations much slower
+than a linear or standard XGBoost model and retains useful parallel scaling
+through sixteen workers, whereas the cheaper models are close to practical
+saturation at four.
+
+For sampling-based approaches, increasing `n_MC_samples` also increases the
+amount of conditional sampling and prediction work, so its absolute cost should
+be budgeted especially carefully when model prediction is expensive. The study
+varied Monte Carlo count and prediction-model complexity in separate blocks,
+however, and did not directly estimate their interaction.
+
+### Important approach-specific cost traps
+
+Several approach settings outweigh the generic workload dimensions. Repeated
+AICc bandwidth selection makes empirical orders of magnitude slower than fixed
+bandwidth in the tested block. Learner choice and cross-validation dominate
+regression-separate cost. Neural-network training and epoch count commonly
+dominate VAEAC cost. Fine batches are unusually expensive for timeseries and
+VAEAC, while parallel ARF can require very large amounts of RAM. These
+choices belong in the initial resource estimate rather than being treated as
+minor tuning details.
 
 ## Explore all results
 
