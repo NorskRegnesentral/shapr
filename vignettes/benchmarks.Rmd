@@ -140,47 +140,48 @@ are available in the
 
 ## Key findings and practical guidance
 
-- **Choose the approach for the data, then consider cost.** Gaussian is the
+- **`approach`: choose for the data, then consider cost.** Gaussian is the
   fastest dependence-aware method for purely numeric data, regression
-  surrogate for the mixed-data settings, and the categorical approach
-  for fully categorical data. These are cost comparisons, not rankings of
-  explanation quality.
+  surrogate for the mixed-data settings, and the categorical approach for fully
+  categorical data. These are cost comparisons, not rankings of explanation
+  quality.
 
-- **The size of the explanation task can change the preferred approach.** Low-setup approaches
-  such as Gaussian, copula, and empirical are attractive for few explanations.
-  Regression surrogate, regression separate, and VAEAC have reusable setup
-  costs and add little runtime as `n_explain` increases; this makes the
-  regression approaches more competitive, although VAEAC remains expensive.
-  (CTree and ARF also perform setup work, but their runtime grows strongly with
-  `n_explain`). Large training sets favor methods with weak training-size
-  sensitivity (Gaussian, regression separate and independence (not recommended)).
+- **`x_explain` and `x_train`: their sizes can change the preferred approach.**
+  Low-setup approaches such as Gaussian, copula, and empirical are attractive
+  when there are few observations to explain (few rows in `x_explain`).
+  Regression surrogate, regression separate,
+  and VAEAC have reusable setup costs and add little runtime as `x_explain`
+  grows; this makes the regression approaches more competitive, although VAEAC
+  remains expensive. CTree and ARF also perform setup work, but their runtime still
+  grows strongly with `x_explain`; hence, using a sample of the original `x_explain` may reduce their runtime.
+  Large `x_train` favors methods with weak
+  training-size sensitivity (Gaussian, regression separate, and independence,
+  (not recommended)).
 
-- **Light explanation tasks run best without parallelization; try e.g. four for expensive runs.** Parallel overhead
-  commonly outweighs useful work for small explanations. Heavy workloads can
-  benefit, but additional workers increase memory use and in our experiments, gains often diminished
+- ** `workers`: one is often fine; try e.g.~four for expensive runs.** Parallel overhead
+  commonly outweighs useful work for small explanation tasks. Heavy tasks can
+  benefit, but additional workers increase memory use and gains often diminish
   beyond four.
 
-- **Use batching to manage memory.** Increase the number of batches when memory
-  is limiting; reduce it when repeated batch overhead dominates runtime. Fine
-  batching is comparatively inexpensive for Gaussian, CTree, and ARF, but
-  costly for timeseries and VAEAC.
+- **`min_n_batches`: use batching to manage memory.** Increase the number of
+  batches when memory is limiting; reduce it when repeated batch overhead
+  dominates runtime. Fine batching is comparatively inexpensive for Gaussian,
+  CTree, and ARF, but costly for timeseries and VAEAC.
 
-- **Use iteration for adaptive stopping, not as a shortcut.** At the same final
+- **`iterative`: use adaptive stopping, not a shortcut.** At the same final
   coalition budget, iterative execution costs about the same as a fixed run if
-  it stops after one iteration and more if it needs several. I.e. the iterative method is most useful
+  it stops after one iteration and more if it needs several. It is most useful
   when not even a rough fixed budget is known.
 
-- **Coalitions and explained observations are the clearest general cost
-  drivers.**
-  Feature count, training size, factor complexity, and Monte Carlo
-  samples can also be important, but their effects vary more by approach.
+- **`max_n_coalitions`, `n_MC_samples`, and `x_explain`: control the main
+  generic costs.** Feature count, training size, and factor complexity can also
+  be important, but their effects vary more by approach.
 
-- **Expensive prediction models amplify explanation cost.** Their prediction
-  work is repeated across coalitions and conditional samples, so budget
-  `n_MC_samples` carefully. This interaction is expected but was not measured
-  directly in this benchmark.
+- **`model` and `n_MC_samples`: budget expensive predictions carefully.** Model
+  prediction is repeated across coalitions and conditional samples. This
+  interaction is expected but was not measured directly in this benchmark.
 
-- **Some method-specific settings dominate everything else.** Empirical AICc
+- **Approach-specific arguments can dominate generic settings.** Empirical AICc
   bandwidth selection, regression-separate learner tuning, VAEAC training, fine
   timeseries or VAEAC batches, and parallel ARF require explicit planning.
 
