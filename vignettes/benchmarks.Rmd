@@ -198,95 +198,124 @@ fewer progress updates.
 
 ### Gaussian
 
-Gaussian is inexpensive for the shared reference workload. Coalition count,
-explained rows, and Monte Carlo samples increase cost, while training size has
-little effect in the tested range. Fine batching reduces memory with little
 overhead. Four workers help on heavy workloads, with diminishing gains at
-eight and sixteen. The default dense-array cap of one million elements gave the
-lowest memory without a speed penalty in the calibration and remains a sensible
-default when the memory budget is unknown.
+- **`max_n_coalitions` and `n_MC_samples`: spend the accuracy budget carefully.**
+  Both increase runtime; training size has little effect in the tested range.
+
+- **`min_n_batches` and `max_batch_cube_size`: use them to limit RAM.** Fine
+  batching had little time penalty, and the default dense-array cap of one
+  million elements was the best tested starting point when memory is unknown.
+
+- **`workers`: try four only for a material workload.** Further gains diminished
+  at eight and sixteen workers.
 
 ### Empirical
 
-Empirical cost grows with training rows, coalitions, and explained rows. Fine
-batching can reduce RAM, but very small batches add repeated-search overhead.
-Four or eight workers help on heavy workloads before performance saturates.
-Repeated AICc bandwidth selection is orders of magnitude more
-expensive than a fixed bandwidth in the tested block and should be budgeted as
-a first-order modeling choice.
+- **`empirical.type`: use `"fixed_sigma"` unless repeated AICc bandwidth
+  selection is required.** `"AICc_full"` and `"AICc_each_k"` were orders of
+  magnitude slower in the tested block; set `empirical.fixed_sigma` explicitly
+  when using the fixed option.
+
+- **`min_n_batches` and `workers`: increase batches only to meet a memory
+  limit, then try four or eight workers for a heavy workload.** Very fine
+  batching adds repeated search overhead, while parallel gains eventually
+  saturate.
 
 ### CTree
 
-CTree is sensitive to feature count, coalitions, explained rows, training rows,
-and mixed or factor complexity. Batching reduces peak memory with little cost in
-the ordinary tested range. Heavy CTree workloads show strong parallel scaling,
-but RAM increases substantially with worker-local state. Four workers
-are a reasonable first parallel trial when the sequential runtime is material.
+- **`max_n_coalitions`, `n_MC_samples`, and the tree controls
+  (`ctree.mincriterion`, `ctree.minsplit`, and `ctree.minbucket`): plan these
+  together.** CTree cost is sensitive to feature count, coalition count,
+  training size, explained rows, and mixed or factor complexity.
+
+- **`min_n_batches` and `workers`: use more batches to reduce RAM, then try
+  four workers for a heavy workload.** Batching had little overhead in the
+  tested range, but worker-local state increases memory substantially.
 
 ### ARF
 
-ARF time and memory grow strongly with the main problem dimensions and complex
-mixed data. More batches control memory at a modest time cost. Heavy workloads
-parallelize well, but duplicated model and sampling state make the RAM cost
-unusually large. Start with four workers only after confirming that
-the sequential workload is expensive and that sufficient memory is available.
+- **`arf.num_trees`, `arf.max_iters`, `max_n_coalitions`, and `n_MC_samples`:
+  budget the main ARF workload deliberately.** Time and memory grow strongly
+  with these settings and with complex mixed data.
+
+- **`min_n_batches`, `workers`, and `arf.parallel_gen`: treat parallelism as a
+  memory trade-off.** More batches reduce RAM at a modest time cost. Heavy
+  workloads can scale with workers, but avoid nested parallelism and confirm
+  that enough RAM is available before starting with four workers.
 
 ### Timeseries
 
-Timeseries is sensitive to features, coalitions, explained rows, training rows,
-and data structure. Its per-batch overhead is high, so prefer coarse batching
-unless memory requires a finer split. Material workloads can benefit from
-parallel execution, but absolute RAM use can become very large. In the retained
-heavy case, eight and sixteen workers were effectively tied, leaving no reason
 to use sixteen.
+- **`min_n_batches`: keep batches coarse unless memory requires a finer
+  split.** Timeseries has high per-batch overhead, especially as feature,
+  coalition, training, and explanation sizes grow.
+
+- **`workers`: benchmark a material case and stop at the first saturation
+  point.** Parallel runs can help, but absolute RAM can become very large; the
+  retained heavy case showed no gain from sixteen over eight workers.
 
 ### VAEAC
 
-VAEAC cost is commonly dominated by neural-network training. Training rows and
-epochs are primary time drivers, while architecture, latent size, factor
-complexity, and explanation dimensions can also affect time or memory. Fine
-batching adds expensive repeated overhead. Training-dominated work shows
-little parallel benefit; explanation-heavy work improves at four workers and
-only modestly thereafter. Reusing or amortizing a trained model should be
-considered before adding workers.
+- **`vaeac.epochs`: this is usually the first cost control.** Training rows,
+  epochs, and architecture settings such as `vaeac.depth`, `vaeac.width`, and
+  `vaeac.latent_dim` can dominate elapsed time or RAM; consider amortizing a
+  trained model before adding workers.
+
+- **`min_n_batches` and `workers`: avoid fine batching and use parallelism
+  selectively.** Fine batching has high repeated overhead. Training-dominated
+  work showed little parallel benefit, while explanation-heavy work improved at
+  four workers. More than one worker requires `future::multicore` where
+  forking is available; otherwise, run sequentially.
 
 ### Independence
 
-Independence is inexpensive and largely insensitive to training size. Coalition
-count, explained rows, and Monte Carlo samples are its relevant generic cost
 drivers. Parallel overhead exceeds useful work at the retained sizes and
-multiplies memory, so one worker is preferred.
+- **`max_n_coalitions` and `n_MC_samples`: these are the relevant cost
+  controls.** Independence is inexpensive and largely insensitive to training
+  size in the tested range.
+
+- **`workers`: keep the default of one.** Parallel overhead exceeded useful
+  work at the retained sizes and multiplied memory.
 
 ### Copula
 
-Copula is also inexpensive at the shared reference workload, but is more
-sensitive to training size than independence. Coalition count and explanation
-size remain important. The benchmark indicates that the retained workload does
-not justify multiple workers; start with one unless a materially heavier
-representative case demonstrates a benefit.
+- **`max_n_coalitions`, `n_MC_samples`, and `min_n_batches`: change these only
+  for an accuracy or memory requirement.** Copula is inexpensive at the shared
+  reference workload, but grows more with training size than independence.
+
+- **`workers`: start with one.** The retained workload did not justify
+  parallel workers; benchmark a materially heavier representative case before
+  increasing them.
 
 ### Categorical
 
-Categorical cost increases with training and explanation size, while Monte
-Carlo count is a weak driver in the tested block. Parallel overhead outweighs
-useful work at the retained size, making one worker the appropriate default.
+- **`max_n_coalitions` and `min_n_batches`: use these to manage the main
+  workload and memory trade-off.** Cost increased with training and explanation
+  size, while `n_MC_samples` was a weak driver in the tested block.
+
+- **`workers`: keep the default of one for ordinary workloads.** Parallel
+  overhead outweighed useful work at the retained size.
 
 ### Regression separate
 
-Regression separate is comparatively insensitive to generic Monte Carlo,
-explanation, batching, and data.table-thread changes. Coalition count matters,
-but learner and tuning choices dominate: smooth-model or XGBoost
-cross-validation is much more expensive than untuned variants. The retained
-workload does not benefit from shapr worker parallelism, so resource planning
-should focus first on the fitting strategy.
+- **`regression.model`, `regression.tune_values`, and
+  `regression.vfold_cv_para`: choose the fitting strategy before tuning generic
+  settings.** Learner choice and cross-validation dominated cost, while
+  `max_n_coalitions` remained the main generic driver.
+
+- **`workers`: keep the default of one for the retained workload.** Focus
+  resource planning on the fitting strategy rather than `shapr` parallelism.
 
 ### Regression surrogate
 
-Regression surrogate grows with training size, coalition count, and the number
-of surrogate combinations; explained rows and Monte Carlo count are weaker
-cost drivers in the tested range. Its parallel experiment is unfavorable:
-additional workers increase both elapsed time and RAM. Use one shapr worker
-unless a materially different workload demonstrates otherwise.
+- **`regression.surrogate_n_comb`: use the smallest value that supports an
+  adequate surrogate model.** More surrogate combinations, training rows, and
+  `max_n_coalitions` increase cost; explained rows and `n_MC_samples` were
+  weaker drivers in the tested range.
+
+- **`regression.model`, `regression.tune_values`, and `workers`: keep fitting
+  simple before attempting parallelism.** Additional workers increased both
+  elapsed time and RAM in the retained experiment.
 
 ## Detailed cross-approach findings
 
