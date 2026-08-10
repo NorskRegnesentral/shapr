@@ -146,32 +146,33 @@ are available in the
   for fully categorical data. These are cost comparisons, not rankings of
   explanation quality.
 
-- **Workload size can change the preferred approach.** Low-setup approaches
+- **The size of the explanation task can change the preferred approach.** Low-setup approaches
   such as Gaussian, copula, and empirical are attractive for few explanations.
   Regression surrogate, regression separate, and VAEAC have reusable setup
   costs and add little runtime as `n_explain` increases; this makes the
   regression approaches more competitive, although VAEAC remains expensive.
   (CTree and ARF also perform setup work, but their runtime grows strongly with
   `n_explain`). Large training sets favor methods with weak training-size
-  sensitivity.
+  sensitivity (Gaussian, regression separate and independence (not recommended)).
 
-- **Start with one worker; try four for expensive runs.** Parallel overhead
+- **Light explanation tasks run best without parallelization; try e.g. four for expensive runs.** Parallel overhead
   commonly outweighs useful work for small explanations. Heavy workloads can
-  benefit, but additional workers increase memory use and gains often diminish
+  benefit, but additional workers increase memory use and in our experiments, gains often diminished
   beyond four.
 
-- **The batching defaults are usually a good starting point.** Increase the
-  number of batches when memory is limiting. Fine batching is comparatively
-  inexpensive for Gaussian, CTree, and ARF, but costly for timeseries and
-  VAEAC.
+- **Use batching to manage memory.** Increase the number of batches when memory
+  is limiting; reduce it when repeated batch overhead dominates runtime. Fine
+  batching is comparatively inexpensive for Gaussian, CTree, and ARF, but
+  costly for timeseries and VAEAC.
 
 - **Use iteration for adaptive stopping, not as a shortcut.** At the same final
   coalition budget, iterative execution costs about the same as a fixed run if
-  it stops after one iteration and more if it needs several. It is most useful
-  when a suitable fixed budget is not already known.
+  it stops after one iteration and more if it needs several. I.e. the iterative method is most useful
+  when not even a rough fixed budget is known.
 
 - **Coalitions and explained observations are the clearest general cost
-  drivers.** Feature count, training size, factor complexity, and Monte Carlo
+  drivers.**
+  Feature count, training size, factor complexity, and Monte Carlo
   samples can also be important, but their effects vary more by approach.
 
 - **Expensive prediction models amplify explanation cost.** Their prediction
