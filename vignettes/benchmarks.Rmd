@@ -196,126 +196,130 @@ fewer progress updates.
 
 ## Findings and guidance by approach
 
+The settings below are the most useful cost controls for each approach. Reducing
+the data, coalition, Monte Carlo, or model-training budgets can also affect the
+statistical result, so choose those values based on the required explanation
+quality rather than cost alone.
+
 ### Gaussian
 
-overhead. Four workers help on heavy workloads, with diminishing gains at
-- **`max_n_coalitions` and `n_MC_samples`: spend the accuracy budget carefully.**
-  Both increase runtime; training size has little effect in the tested range.
+- **`max_n_coalitions` and `n_MC_samples`: reduce them to shorten runs.** The
+  number of rows in `x_explain` is another important runtime control, whereas
+  reducing `x_train` helps little.
 
-- **`min_n_batches` and `max_batch_cube_size`: use them to limit RAM.** Fine
-  batching had little time penalty, and the default dense-array cap of one
-  million elements was the best tested starting point when memory is unknown.
-
-- **`workers`: try four only for a material workload.** Further gains diminished
-  at eight and sixteen workers.
+- **`min_n_batches`, `max_batch_size`, and `max_batch_cube_size`: use smaller
+  batches to lower peak RAM.** Gaussian pays little time penalty for finer
+  batches. For a heavy run, setting `workers = 4` can reduce elapsed time, but
+  additional workers give smaller gains and continue to increase RAM.
 
 ### Empirical
 
-- **`empirical.type`: use `"fixed_sigma"` unless repeated AICc bandwidth
-  selection is required.** `"AICc_full"` and `"AICc_each_k"` were orders of
-  magnitude slower in the tested block; set `empirical.fixed_sigma` explicitly
-  when using the fixed option.
+- **`empirical.type`: keep the default `"fixed_sigma"` for the fastest
+  option.** Switching to `"AICc_full"` or `"AICc_each_k"` makes the tested
+  runs orders of magnitude slower. Use these modes only when their adaptive
+  bandwidth selection is needed.
 
-- **`min_n_batches` and `workers`: increase batches only to meet a memory
-  limit, then try four or eight workers for a heavy workload.** Very fine
-  batching adds repeated search overhead, while parallel gains eventually
-  saturate.
+- **`min_n_batches` and `max_batch_size`: use smaller batches to lower peak
+  RAM, but avoid more batches than memory requires.** Fine batching repeats
+  expensive searches. For a heavy run, try `workers = 4`; increase to eight
+  only when a representative run still becomes faster and memory allows it.
 
 ### CTree
 
-- **`max_n_coalitions`, `n_MC_samples`, and the tree controls
-  (`ctree.mincriterion`, `ctree.minsplit`, and `ctree.minbucket`): plan these
-  together.** CTree cost is sensitive to feature count, coalition count,
-  training size, explained rows, and mixed or factor complexity.
+- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
+  these inputs to shorten runs and lower RAM.** CTree is particularly sensitive
+  to the number of features and to mixed or factor data, which are usually
+  properties of the explanation problem rather than tuning controls.
 
-- **`min_n_batches` and `workers`: use more batches to reduce RAM, then try
-  four workers for a heavy workload.** Batching had little overhead in the
-  tested range, but worker-local state increases memory substantially.
+- **`min_n_batches` and `max_batch_size`: use smaller batches to lower peak
+  RAM.** CTree pays little time penalty for finer batches. Setting `workers = 4`
+  can substantially shorten a heavy run, but each worker adds considerable
+  memory use.
 
 ### ARF
 
 - **`arf.num_trees`, `arf.max_iters`, `max_n_coalitions`, and `n_MC_samples`:
-  budget the main ARF workload deliberately.** Time and memory grow strongly
-  with these settings and with complex mixed data.
+  reduce them to make ARF faster and less memory-hungry.** Lower ARF training
+  settings can change the fitted conditional distribution, so verify that they
+  remain adequate for the data.
 
-- **`min_n_batches`, `workers`, and `arf.parallel_gen`: treat parallelism as a
-  memory trade-off.** More batches reduce RAM at a modest time cost. Heavy
-  workloads can scale with workers, but avoid nested parallelism and confirm
-  that enough RAM is available before starting with four workers.
+- **`min_n_batches` and `max_batch_size`: use smaller batches to lower peak
+  RAM at a modest time cost.** Setting `workers = 4` can shorten a heavy run,
+  but ARF has an unusually large per-worker memory cost; increase the worker
+  count only after measuring available RAM.
 
 ### Timeseries
 
-to use sixteen.
-- **`min_n_batches`: keep batches coarse unless memory requires a finer
-  split.** Timeseries has high per-batch overhead, especially as feature,
-  coalition, training, and explanation sizes grow.
+- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
+  them to shorten runs.** Feature count and data structure also strongly affect
+  cost but are generally fixed by the explanation problem.
 
-- **`workers`: benchmark a material case and stop at the first saturation
-  point.** Parallel runs can help, but absolute RAM can become very large; the
-  retained heavy case showed no gain from sixteen over eight workers.
+- **`min_n_batches` and `max_batch_size`: prefer larger batches for speed and
+  smaller batches only when you need lower peak RAM.** Per-batch overhead is
+  high. A heavy run can benefit from more workers, but RAM grows sharply and
+  increasing from eight to sixteen workers provides no benefit in the retained
+  case.
 
 ### VAEAC
 
-- **`vaeac.epochs`: this is usually the first cost control.** Training rows,
-  epochs, and architecture settings such as `vaeac.depth`, `vaeac.width`, and
-  `vaeac.latent_dim` can dominate elapsed time or RAM; consider amortizing a
-  trained model before adding workers.
+- **`vaeac.epochs`, `vaeac.depth`, `vaeac.width`, and `vaeac.latent_dim`:
+  reduce them to shorten training and potentially lower RAM.** These settings
+  control model capacity or training, so verify explanation quality after
+  changing them. Reducing the rows in `x_train` also speeds up training.
 
-- **`min_n_batches` and `workers`: avoid fine batching and use parallelism
-  selectively.** Fine batching has high repeated overhead. Training-dominated
-  work showed little parallel benefit, while explanation-heavy work improved at
-  four workers. More than one worker requires `future::multicore` where
-  forking is available; otherwise, run sequentially.
+- **`min_n_batches` and `max_batch_size`: prefer larger batches for speed and
+  smaller batches only when you need lower peak RAM.** More workers do little
+  for training-dominated runs; `workers = 4` can help when explanation work
+  dominates. Parallel VAEAC requires `future::multicore`, so run sequentially
+  where forking is unavailable.
 
 ### Independence
 
-drivers. Parallel overhead exceeds useful work at the retained sizes and
-- **`max_n_coalitions` and `n_MC_samples`: these are the relevant cost
-  controls.** Independence is inexpensive and largely insensitive to training
-  size in the tested range.
+- **`max_n_coalitions`, `n_MC_samples`, and `x_explain`: reduce them to shorten
+  runs.** Reducing `x_train` provides little benefit in the tested range.
 
-- **`workers`: keep the default of one.** Parallel overhead exceeded useful
-  work at the retained sizes and multiplied memory.
+- **`workers`: keep the default of one.** Additional workers make the retained
+  workloads no faster and increase peak RAM.
 
 ### Copula
 
-- **`max_n_coalitions`, `n_MC_samples`, and `min_n_batches`: change these only
-  for an accuracy or memory requirement.** Copula is inexpensive at the shared
-  reference workload, but grows more with training size than independence.
+- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
+  them to shorten runs.** Unlike Gaussian and independence, copula also becomes
+  more expensive as the training data grows.
 
-- **`workers`: start with one.** The retained workload did not justify
-  parallel workers; benchmark a materially heavier representative case before
-  increasing them.
+- **`workers`: keep the default of one for ordinary workloads.** Additional
+  workers provide no benefit at the retained size and increase peak RAM.
 
 ### Categorical
 
-- **`max_n_coalitions` and `min_n_batches`: use these to manage the main
-  workload and memory trade-off.** Cost increased with training and explanation
-  size, while `n_MC_samples` was a weak driver in the tested block.
+- **`max_n_coalitions`, `x_train`, and `x_explain`: reduce them to shorten
+  runs.** Lowering `n_MC_samples` provides comparatively little benefit in the
+  tested range.
 
-- **`workers`: keep the default of one for ordinary workloads.** Parallel
-  overhead outweighed useful work at the retained size.
+- **`workers`: keep the default of one for ordinary workloads.** Additional
+  workers make the retained workloads no faster and increase peak RAM.
 
 ### Regression separate
 
 - **`regression.model`, `regression.tune_values`, and
-  `regression.vfold_cv_para`: choose the fitting strategy before tuning generic
-  settings.** Learner choice and cross-validation dominated cost, while
-  `max_n_coalitions` remained the main generic driver.
+  `regression.vfold_cv_para`: use a simpler learner and avoid cross-validation
+  to shorten runs.** Learner fitting and tuning dominate cost, while reducing
+  `max_n_coalitions` is the most effective generic adjustment.
 
-- **`workers`: keep the default of one for the retained workload.** Focus
-  resource planning on the fitting strategy rather than `shapr` parallelism.
+- **`workers`: keep the default of one.** Additional `shapr` workers provide
+  no benefit for the retained workload; reduce model-fitting work instead.
 
 ### Regression surrogate
 
-- **`regression.surrogate_n_comb`: use the smallest value that supports an
-  adequate surrogate model.** More surrogate combinations, training rows, and
-  `max_n_coalitions` increase cost; explained rows and `n_MC_samples` were
-  weaker drivers in the tested range.
+- **`regression.surrogate_n_comb`: reduce it from its default to shorten runs
+  and lower RAM.** Also reduce `x_train` or `max_n_coalitions` when the
+  explanation design allows it. Check that the resulting surrogate model
+  remains adequate.
 
-- **`regression.model`, `regression.tune_values`, and `workers`: keep fitting
-  simple before attempting parallelism.** Additional workers increased both
-  elapsed time and RAM in the retained experiment.
+- **`regression.model`, `regression.tune_values`, and
+  `regression.vfold_cv_para`: use a simpler learner and avoid cross-validation
+  for faster fitting.** Keep `workers = 1`; additional workers make the retained
+  workloads slower and more memory-hungry.
 
 ## Detailed cross-approach findings
 
