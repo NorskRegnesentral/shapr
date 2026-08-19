@@ -117,6 +117,31 @@ benchmark_results[, (categorical_columns) := lapply(.SD, factor), .SDcols = cate
 batch_limit_columns <- c("max_batch_size", "max_batch_cube_size")
 benchmark_results[, (batch_limit_columns) := lapply(.SD, factor), .SDcols = batch_limit_columns]
 
+headline_columns <- c("bash_wall_median", "ram_mb_median")
+data.table::setcolorder(
+  benchmark_results,
+  c(setdiff(names(benchmark_results), headline_columns), headline_columns)
+)
+
+hidden_columns <- c(
+  "max_batch_size",
+  "max_batch_cube_size",
+  "backend",
+  "dt_threads",
+  "group_size",
+  "save_explanations",
+  "sweep",
+  "pair_key",
+  "pair_role",
+  "wall_median",
+  "wall_iqr",
+  "cpu_user_median",
+  "ram_mb_max",
+  "data_load_median",
+  "n_iterations_median"
+)
+hidden_column_indices <- match(hidden_columns, names(benchmark_results)) - 1
+
 discrete_slider_columns <- c(
   "n_features",
   "max_n_coalitions",
@@ -141,33 +166,87 @@ discrete_slider_map <- paste(
   }, character(1)),
   collapse = ", "
 )
-discrete_slider_callback <- DT::JS(paste0(
+benchmark_table_callback <- DT::JS(paste0(
   "function(settings, json) {",
   "var discreteValues = {", discrete_slider_map, "};",
   "var table = this.api();",
+  "var $container = $(table.table().container());",
+  "var $header = $container.find('.dataTables_scrollHead thead').first();",
   "var applyDiscreteSliders = function() {",
-  "var $header = $(table.table().container()).find('.dataTables_scrollHead thead').first();",
   "Object.keys(discreteValues).forEach(function(columnIndex) {",
   "var values = discreteValues[columnIndex];",
+  "var visibleIndex = table.column.index('toVisible', Number(columnIndex));",
+  "if (visibleIndex === null) return;",
   "var range = {min: values[0], max: values[values.length - 1]};",
   "values.slice(1, -1).forEach(function(value, index) {",
   "var position = 100 * (index + 1) / (values.length - 1);",
   "range[position.toFixed(6) + '%'] = value;",
   "});",
-  "var $slider = $header.find('tr').eq(1).children().eq(columnIndex).find('.noUi-target');",
-  "if (!$slider.length) return;",
+  "var $slider = $header.find('tr').eq(1).children().eq(visibleIndex).find('.noUi-target');",
+  "if (!$slider.length || $slider.data('benchmarkDiscrete')) return;",
+  "var currentValues = $slider.val().map(Number);",
   "$slider.noUiSlider({",
-  "start: [values[0], values[values.length - 1]],",
+  "start: currentValues,",
   "range: range,",
   "snap: true",
   "}, true);",
+  "$slider.data('benchmarkDiscrete', true);",
   "var $popup = $slider.parent();",
   "$popup.children('.benchmark-discrete-values').remove();",
   "$('<div class=\"benchmark-discrete-values\"></div>')",
   ".text('Available values: ' + values.join(', ')).appendTo($popup);",
   "});",
   "};",
-  "setTimeout(applyDiscreteSliders, 0);",
+  "var syncFixedFilterCells = function() {",
+  "var $rows = $header.find('tr');",
+  "var $labels = $rows.eq(0).children();",
+  "var $filters = $rows.eq(1).children();",
+  "$filters.removeClass('dtfc-fixed-left dtfc-fixed-right').css({left: '', right: '', position: '', zIndex: ''});",
+  "$labels.each(function(index) {",
+  "var $label = $(this);",
+  "var side = $label.hasClass('dtfc-fixed-right') ? 'right' :",
+  "  ($label.hasClass('dtfc-fixed-left') ? 'left' : null);",
+  "if (!side) return;",
+  "var $filter = $filters.eq(index);",
+  "$filter.addClass('dtfc-fixed-' + side).css({position: 'sticky', zIndex: 3});",
+  "$filter.css(side, $label.css(side));",
+  "});",
+  "};",
+  "document.addEventListener('mousedown', function(event) {",
+  "var $input = $(event.target).closest('.dtfc-fixed-right input');",
+  "if (!$input.closest('.benchmark-table-wide').length) return;",
+  "event.preventDefault();",
+  "var $popup = $input.parent().next();",
+  "var shouldOpen = !$popup.is(':visible');",
+  "$header.find('.dtfc-fixed-right input').each(function() {",
+  "var $otherPopup = $(this).parent().next();",
+  "if (!$otherPopup.is($popup)) $otherPopup.hide();",
+  "});",
+  "if (shouldOpen) {",
+  "$input.closest('.dataTables_scrollHead').addClass('benchmark-filter-open');",
+  "$popup.css({left: 'auto', right: 0}).show();",
+  "} else {",
+  "$popup.hide();",
+  "$input.closest('.dataTables_scrollHead').removeClass('benchmark-filter-open');",
+  "}",
+  "}, true);",
+  "$(document).on('mousedown.benchmarkFilters', function(event) {",
+  "if ($(event.target).closest('.dtfc-fixed-right').length) return;",
+  "$header.find('.dtfc-fixed-right input').each(function() {",
+  "$(this).parent().next().hide();",
+  "});",
+  "$header.closest('.dataTables_scrollHead').removeClass('benchmark-filter-open');",
+  "});",
+  "table.on('column-sizing.dt.benchmarkFilters column-visibility.dt.benchmarkFilters', function() {",
+  "window.setTimeout(function() {",
+  "applyDiscreteSliders();",
+  "syncFixedFilterCells();",
+  "}, 75);",
+  "});",
+  "window.setTimeout(function() {",
+  "applyDiscreteSliders();",
+  "syncFixedFilterCells();",
+  "}, 0);",
   "}"
 ))
 
@@ -199,6 +278,16 @@ n_configurations <- nrow(benchmark_results)
 .benchmark-table-wide .dt-buttons,
 .benchmark-table-wide .dataTables_filter {
   margin-bottom: 0.75rem;
+}
+
+.benchmark-table-wide .dataTables_scrollHead.benchmark-filter-open {
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+.benchmark-table-wide table.dataTable tr > :nth-last-child(2).dtfc-fixed-right {
+  box-shadow: -4px 0 4px -4px var(--bs-secondary-color);
 }
 
 .benchmark-discrete-values {
@@ -374,17 +463,30 @@ cover `r paste(sort(unique(benchmark_results$n_features)), collapse = ", ")`
 features, with available values varying by approach. Use the controls above each
 column to filter: categorical controls accept one or more values, and sliders
 for experiment inputs snap to values present in the results. Click headings to
-sort, and use **Column visibility** to focus on relevant fields. The first three
-columns remain fixed while scrolling horizontally. **CSV** downloads the
-currently displayed table.
+sort, and use **Column visibility** to focus on relevant fields. The headline
+time and RAM metrics remain fixed on the right while scrolling horizontally.
+**CSV** downloads the currently displayed table.
 
-Key timing and memory columns are:
+The default view keeps the main workload inputs, approach-specific settings,
+replicate count, and two headline outcomes. Less frequently needed execution
+details and secondary outcomes remain available under **Column visibility**.
 
-- `bash_wall_median`: median whole-process wall time in seconds;
-- `wall_median`: median `explain()` wall time in seconds;
-- `wall_iqr`: interquartile range of `explain()` time;
-- `ram_mb_median`: median peak RAM in MB;
-- `ram_mb_max`: maximum peak RAM across replicates.
+### Result and metadata columns
+
+| Column | Meaning |
+|:--|:--|
+| `bash_wall_median` | **Headline time:** median elapsed seconds for the fresh R process, including startup, cached data/model loading, and `explain()`. |
+| `ram_mb_median` | **Headline RAM:** median peak MB for the whole process tree; cgroup peak is preferred, with process-tree polling as fallback. |
+| `wall_median` | Median seconds spent inside `explain()` only. |
+| `wall_iqr` | Interquartile range of `explain()` wall time across replicates. |
+| `cpu_user_median` | Median user CPU seconds for the parent R process; it does not include multisession-worker CPU. |
+| `ram_mb_max` | Largest whole-process peak RAM observed across replicates. |
+| `data_load_median` | Median seconds used to load the cached dataset and fitted prediction model. |
+| `n_iterations_median` | Median number of Shapley estimation iterations; normally one unless iterative estimation is used. |
+| `n` | Number of successful measured replicates represented by the row. |
+| `sweep` | Name of the benchmark block that generated the configuration. |
+| `approach_args` | Approach-specific settings encoded as `name=value` pairs. |
+| `pair_key`, `pair_role` | Identity and role of matched iterative/fixed-budget comparisons. |
 
 <div class="benchmark-table-wide">
 
@@ -401,16 +503,19 @@ DT::datatable(
     buttons = list(
       "copy",
       list(extend = "csv", filename = "shapr-benchmark-summary"),
-      "colvis"
+      list(extend = "colvis", text = "Column visibility")
+    ),
+    columnDefs = list(
+      list(targets = hidden_column_indices, visible = FALSE)
     ),
     scrollX = TRUE,
     scrollY = "65vh",
     scrollCollapse = TRUE,
-    fixedColumns = list(leftColumns = 3),
+    fixedColumns = list(leftColumns = 0, rightColumns = 2),
     pageLength = 25,
     lengthMenu = list(c(10, 25, 50, 100, -1), c("10", "25", "50", "100", "All")),
     autoWidth = TRUE,
-    initComplete = discrete_slider_callback
+    initComplete = benchmark_table_callback
   )
 ) |>
   DT::formatRound(
