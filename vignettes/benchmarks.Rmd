@@ -22,8 +22,8 @@ popover_notes <- list(
   workers = list(
     number = 1,
     content = paste0(
-      "<code>workers</code> controls how many parallel R processes <code>shapr</code> may use, typically allowing ",
-      "that many CPU cores or hardware threads to work concurrently. Configure it through <code>future::plan()</code> ",
+      "<code>workers</code> controls how many parallel R processes <code>shapr</code> may use. Configure it through ",
+      "<code>future::plan()</code> ",
       "before calling <code>explain()</code>, for example <code>future::plan(\"multisession\", workers = 4)</code>. ",
       "The default is one worker. In a fresh R session, this is equivalent to ",
       "<code>future::plan(\"sequential\")</code> or not calling <code>future::plan()</code>."
@@ -32,11 +32,11 @@ popover_notes <- list(
   batching = list(
     number = 2,
     content = paste0(
-      "These controls split coalition estimates within each iteration into batches. <code>min_n_batches</code> sets ",
-      "the minimum number of batches, <code>max_batch_size</code> limits the coalitions processed at once, and ",
-      "<code>max_batch_cube_size</code> limits dense per-batch arrays for Gaussian, copula, and empirical. Smaller ",
-      "batches generally reduce peak RAM but add overhead. Pass the controls through <code>extra_computation_args</code>, ",
-      "for example <code>list(min_n_batches = 20)</code>. The defaults are 10, 10, and one million, respectively."
+      "<code>min_n_batches</code> and <code>max_batch_size</code> controls the number of batches in each iteration, while ",
+      "<code>max_batch_cube_size</code> limits dense per-batch arrays for Gaussian, copula, and empirical. ",
+      "Pass the controls through <code>extra_computation_args</code>, ",
+      "for example <code>list(min_n_batches = 20)</code>. The defaults are 10, 10, and one million, respectively. ",
+      "Progress is reported once per batch, so fewer batches give less frequent updates."
     )
   )
 )
@@ -47,12 +47,21 @@ popover_note <- function(key, label = key) {
     stop("Unknown popover note: ", key)
   }
 
+  formatted_labels <- paste0("<code>", htmltools::htmlEscape(label), "</code>")
+  formatted_label <- if (length(formatted_labels) == 1) {
+    formatted_labels
+  } else if (length(formatted_labels) == 2) {
+    paste(formatted_labels, collapse = " and ")
+  } else {
+    paste0(paste(utils::head(formatted_labels, -1), collapse = ", "), ", and ", utils::tail(formatted_labels, 1))
+  }
+
   htmltools::HTML(sprintf(
     paste0(
-      '<code>%s</code><sup><a class="footnote-ref" tabindex="0" role="button" ',
+      '%s<sup><a class="footnote-ref" tabindex="0" role="button" ',
       'data-bs-toggle="popover" data-bs-content="%s">[%s]</a></sup>'
     ),
-    htmltools::htmlEscape(label),
+    formatted_label,
     htmltools::htmlEscape(note$content, attribute = TRUE),
     note$number
   ))
@@ -199,176 +208,64 @@ at GitHub.
   training-size sensitivity (Gaussian, regression separate, and independence,
   (not recommended)).
 
-- **`r popover_note("workers")`: one is often fine; try e.g. four for expensive
-  runs.** This controls how many R worker processes, and therefore CPU cores or
-  hardware threads, can run `shapr` computations concurrently. Parallel overhead
-  commonly outweighs useful work for small explanation tasks. Heavy tasks can
-  benefit, but additional workers increase memory use, and in our experiments
-  the gains often diminish beyond four workers.
+- **`r popover_note("workers")`: one worker is often fine; try four for expensive
+  runs.** Parallel overhead commonly outweighs useful work for small explanation
+  tasks. Heavy Gaussian, empirical, Ctree, ARF, timeseries, and
+  explanation-heavy VAEAC workloads can benefit. Independence, copula,
+  categorical, regression separate, and regression surrogate do not benefit at
+  the tested sizes. Additional workers increase memory use, and runtime gains
+  often diminish beyond four workers. Parallel VAEAC requires
+  `future::multicore`.
 
-- **`r popover_note("batching", "min_n_batches")`: use batching to manage memory.** Increase the
-  number of batches when memory is limiting; reduce it when repeated batch
-  overhead dominates runtime. Fine batching is comparatively inexpensive for
-  Gaussian, Ctree, and ARF, but costly for timeseries and VAEAC.
+- **`r popover_note("batching", c("min_n_batches", "max_batch_size", "max_batch_cube_size"))`:
+  use batching to manage memory.** Increase the number of batches when memory is
+  limiting; reduce it when repeated batch overhead dominates runtime. Fine
+  batching is comparatively inexpensive for Gaussian, Ctree, and ARF, but can
+  be costly for empirical, timeseries, and VAEAC. For Gaussian, copula, and
+  empirical, `max_batch_cube_size` provides an additional cap on dense
+  per-batch arrays.
 
-- **`iterative`: use adaptive stopping, not a shortcut.** At the same final
+- **`iterative`: use when no reasonable coalition budget is known.** At the same final
   coalition budget, iterative execution costs about the same as a fixed run if
   it stops after one iteration and more if it needs several. It is most useful
-  when not even a rough fixed budget is known.
+  when not even a rough fixed budget is known; otherwise, prefer a fixed run.
 
 - **`max_n_coalitions`, `n_MC_samples`, and `x_explain`: control the main
   generic costs.** Feature count, training size, and factor complexity can also
-  be important, but their effects vary more by approach.
+  be important, but their effects vary more by approach (see below).
 
-- **`model` and `n_MC_samples`: budget expensive predictions carefully.** Model
-  prediction is repeated across coalitions and conditional samples. This
-  interaction is expected but was not measured directly in this benchmark.
+- **`model` and `n_MC_samples`: prediction cost can amplify sampling cost.**
+  Model prediction is repeated across coalitions and conditional samples. For
+  slow prediction models, reducing `n_MC_samples` may therefore shorten runtime
+  considerably; for fast models, other work may dominate.
 
-- **Approach-specific arguments can dominate generic settings.** Empirical AICc
-  bandwidth selection, regression-separate learner tuning, VAEAC training, fine
-  timeseries or VAEAC batches, and parallel ARF require explicit planning.
+- **Approach-specific arguments can dominate generic settings.** Examples include
+  empirical AICc bandwidth selection, regression-separate learner tuning, VAEAC
+  training, fine timeseries or VAEAC batches, and parallel ARF.
 
-## Findings and guidance by approach
+## Additional guidance by approach
 
-The settings below are the most useful cost controls for each approach. Reducing
-the data, coalition, Monte Carlo, or model-training budgets can also affect the
-statistical result, so choose those values based on the required explanation
-quality rather than cost alone.
+The controls described above, including `max_n_coalitions`, `n_MC_samples`,
+`x_explain`, `x_train`, workers, and batching, apply across approaches. This
+section highlights only additional approach-specific controls and important
+constraints that affect how those controls should be used. Reducing statistical
+budgets or model complexity can change the explanation, so choose them based on
+the required quality rather than cost alone. Pass approach-specific arguments
+to `explain()` through `...`; see the [manual](../reference/explain.html#arg--).
 
-### Gaussian
-
-- **`max_n_coalitions` and `n_MC_samples`: reduce them to shorten runs.** The
-  number of rows in `x_explain` is another important runtime control, whereas
-  reducing `x_train` helps little.
-
-- **`r popover_note("batching", "min_n_batches")`, `max_batch_size`, and
-  `max_batch_cube_size`: use smaller batches to lower peak RAM.** Gaussian pays little time penalty for
-  finer batches. For a heavy run, setting `r popover_note("workers", "workers = 4")` can reduce
-  elapsed time, but additional workers give smaller gains and continue to
-  increase RAM.
-
-### Empirical
-
-- **`empirical.type`: keep the default `"fixed_sigma"` for the fastest
-  option.** Pass this argument directly to `explain()` through `...`; see the
-  [manual](../reference/explain.html#arg--). Switching to `"AICc_full"` or `"AICc_each_k"`
-  makes the tested runs orders of magnitude slower. Use these modes only when
-  their adaptive bandwidth selection is needed.
-
-- **`r popover_note("batching", "min_n_batches")` and `max_batch_size`: use
-  smaller batches to lower peak RAM, but avoid more batches than memory requires.** Fine batching
-  repeats expensive searches. For a heavy run, try `r popover_note("workers", "workers = 4")`;
-  increase to eight only when a representative run still becomes faster and
-  memory allows it.
-
-### Ctree
-
-- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
-  these inputs to shorten runs and lower RAM.** Ctree is particularly sensitive
-  to the number of features and to mixed or factor data, which are usually
-  properties of the explanation problem rather than tuning controls.
-
-- **`r popover_note("batching", "min_n_batches")` and `max_batch_size`: use
-  smaller batches to lower peak RAM.** Ctree pays little time penalty for finer batches. Setting
-  `r popover_note("workers", "workers = 4")` can substantially shorten a heavy run, but each
-  worker adds considerable memory use.
-
-### ARF
-
-- **`arf.num_trees`, `arf.max_iters`, `max_n_coalitions`, and `n_MC_samples`:
-  reduce them to make ARF faster and less memory-hungry.** Pass the ARF arguments directly to
-  `explain()` through `...`; see the [manual](../reference/explain.html#arg--). Lower ARF
-  training settings can change the fitted conditional distribution, so verify
-  that they remain adequate for the data.
-
-- **`r popover_note("batching", "min_n_batches")` and `max_batch_size`: use
-  smaller batches to lower peak RAM at a modest time cost.** Setting
-  `r popover_note("workers", "workers = 4")` can
-  shorten a heavy run, but ARF has an unusually large per-worker memory cost;
-  increase the worker count only after measuring available RAM.
-
-### Timeseries
-
-- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
-  them to shorten runs.** Feature count and data structure also strongly affect
-  cost but are generally fixed by the explanation problem.
-
-- **`r popover_note("batching", "min_n_batches")` and `max_batch_size`: prefer
-  larger batches for speed and smaller batches only when you need lower peak RAM.** Per-batch
-  overhead is high. A heavy run can benefit from more workers, but RAM grows
-  sharply and increasing from eight to sixteen workers provides no benefit in
-  the retained case.
-
-### VAEAC
-
-- **`vaeac.epochs`, `vaeac.depth`, `vaeac.width`, and `vaeac.latent_dim`:
-  reduce them to shorten training and potentially lower RAM.** Pass these arguments directly to
-  `explain()` through `...`; see the [manual](../reference/explain.html#arg--).
-  These settings control model capacity or training, so verify explanation
-  quality after changing them. Reducing the rows in `x_train` also speeds up
-  training.
-
-- **`r popover_note("batching", "min_n_batches")` and `max_batch_size`: prefer
-  larger batches for speed and smaller batches only when you need lower peak RAM.** More workers
-  do little for training-dominated runs; `r popover_note("workers", "workers = 4")` can help when
-  explanation work dominates. Parallel VAEAC requires `future::multicore`, so
-  run sequentially where forking is unavailable.
-
-### Independence
-
-- **`max_n_coalitions`, `n_MC_samples`, and `x_explain`: reduce them to shorten
-  runs.** Reducing `x_train` provides little benefit in the tested range.
-
-- **`r popover_note("workers")`: keep the default of one.** Additional workers make the
-  retained workloads no faster and increase peak RAM.
-
-### Copula
-
-- **`max_n_coalitions`, `n_MC_samples`, `x_train`, and `x_explain`: reduce
-  them to shorten runs.** Unlike Gaussian and independence, copula also becomes
-  more expensive as the training data grows.
-
-- **`r popover_note("workers")`: keep the default of one for ordinary workloads.**
-  Additional workers provide no benefit at the retained size and increase peak
-  RAM.
-
-### Categorical
-
-- **`max_n_coalitions`, `x_train`, and `x_explain`: reduce them to shorten
-  runs.** Lowering `n_MC_samples` provides comparatively little benefit in the
-  tested range.
-
-- **`r popover_note("workers")`: keep the default of one for ordinary workloads.**
-  Additional workers make the retained workloads no faster and increase peak
-  RAM.
-
-### Regression separate
-
-- **`regression.model`, `regression.tune_values`, and
-  `regression.vfold_cv_para`: use a simpler learner and avoid cross-validation
-  to shorten runs.** Pass these arguments directly to `explain()` through `...`;
-  see the [manual](../reference/explain.html#arg--). Learner fitting and tuning dominate cost,
-  while reducing `max_n_coalitions` is the most effective generic adjustment.
-
-- **`r popover_note("workers")`: keep the default of one.** Additional `shapr` workers
-  provide no benefit for the retained workload; reduce model-fitting work
-  instead.
-
-### Regression surrogate
-
-- **`regression.surrogate_n_comb`: reduce it from its default to shorten runs
-  and lower RAM.** Pass this argument directly to `explain()` through `...`; see the
-  [manual](../reference/explain.html#arg--). Also reduce `x_train` or
-  `max_n_coalitions` when the explanation design allows it. Check that the
-  resulting surrogate model remains adequate.
-
-- **`regression.model`, `regression.tune_values`, and
-  `regression.vfold_cv_para`: use a simpler learner and avoid cross-validation
-  for faster fitting.** Pass these arguments directly to `explain()` through `...`;
-  see the [manual](../reference/explain.html#arg--). Keep
-  `r popover_note("workers", "workers = 1")`;
-  additional workers make the retained workloads slower and more
-  memory-hungry.
+| Approach | Additional cost control or constraint | How to reduce computational cost |
+|:--|:--|:--|
+| Gaussian | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
+| Empirical | `empirical.type` | **Time:** Keep `"fixed_sigma"` unless adaptive bandwidth selection is needed; `"AICc_full"` and `"AICc_each_k"` are orders of magnitude slower. |
+| Ctree | Strong sensitivity to feature and factor complexity | **Both:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible. Many factor levels are especially costly when many factor columns are present. |
+| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Both:** Lower `arf.num_trees`, `arf.max_iters`, `max_n_coalitions`, or `n_MC_samples`, then verify the fitted conditional distribution. **RAM:** Add `r popover_note("workers")` only after checking available memory. |
+| Timeseries | High runtime overhead from fine `r popover_note("batching", c("min_n_batches", "max_batch_size"))`; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible, and prefer larger batches. **RAM:** Use smaller batches when needed; memory rises sharply with workers. |
+| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Both:** Lower `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, or `vaeac.latent_dim`, or reduce `x_train`, then verify explanation quality. **Time:** Prefer larger batches; additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
+| Independence | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
+| Copula | Sensitivity to `x_train` | **Time:** Reduce `x_train` as well as `max_n_coalitions`, `n_MC_samples`, or `x_explain`. |
+| Categorical | Limited sensitivity to `n_MC_samples` | **Time:** Prioritize reducing `max_n_coalitions`, `x_train`, or `x_explain` before reducing Monte Carlo samples. |
+| Regression separate | `regression.model`, `regression.tune_values`, `regression.vfold_cv_para`; fitting-dominated runtime | **Time:** Use a simpler learner and avoid tuning or cross-validation when appropriate; among the general controls, prioritize `max_n_coalitions`. |
+| Regression surrogate | `regression.surrogate_n_comb` and regression fitting controls | **Both:** Reduce `regression.surrogate_n_comb`, `x_train`, or `max_n_coalitions`. **Time:** Use a simpler learner and avoid tuning or cross-validation when appropriate. Verify that the resulting surrogate remains adequate. |
 
 ## Detailed cross-approach findings
 
