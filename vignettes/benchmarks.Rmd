@@ -102,7 +102,74 @@ benchmark_results <- data.table::rbindlist(
 )
 benchmark_results[, approach := factor(approach, levels = approaches)]
 data.table::setorder(benchmark_results, approach, sweep)
-benchmark_results[, approach := as.character(approach)]
+
+categorical_columns <- c(
+  "dataset",
+  "backend",
+  "model_variant",
+  "sweep",
+  "approach_args",
+  "pair_key",
+  "pair_role"
+)
+benchmark_results[, (categorical_columns) := lapply(.SD, factor), .SDcols = categorical_columns]
+
+batch_limit_columns <- c("max_batch_size", "max_batch_cube_size")
+benchmark_results[, (batch_limit_columns) := lapply(.SD, factor), .SDcols = batch_limit_columns]
+
+discrete_slider_columns <- c(
+  "n_features",
+  "max_n_coalitions",
+  "n_MC_samples",
+  "min_n_batches",
+  "workers",
+  "dt_threads",
+  "n_train",
+  "n_explain",
+  "group_size",
+  "n",
+  "n_iterations_median"
+)
+discrete_slider_map <- paste(
+  vapply(discrete_slider_columns, function(column) {
+    values <- sort(unique(benchmark_results[[column]]))
+    sprintf(
+      "%d: [%s]",
+      match(column, names(benchmark_results)) - 1,
+      paste(values, collapse = ", ")
+    )
+  }, character(1)),
+  collapse = ", "
+)
+discrete_slider_callback <- DT::JS(paste0(
+  "function(settings, json) {",
+  "var discreteValues = {", discrete_slider_map, "};",
+  "var table = this.api();",
+  "var applyDiscreteSliders = function() {",
+  "var $header = $(table.table().container()).find('.dataTables_scrollHead thead').first();",
+  "Object.keys(discreteValues).forEach(function(columnIndex) {",
+  "var values = discreteValues[columnIndex];",
+  "var range = {min: values[0], max: values[values.length - 1]};",
+  "values.slice(1, -1).forEach(function(value, index) {",
+  "var position = 100 * (index + 1) / (values.length - 1);",
+  "range[position.toFixed(6) + '%'] = value;",
+  "});",
+  "var $slider = $header.find('tr').eq(1).children().eq(columnIndex).find('.noUi-target');",
+  "if (!$slider.length) return;",
+  "$slider.noUiSlider({",
+  "start: [values[0], values[values.length - 1]],",
+  "range: range,",
+  "snap: true",
+  "}, true);",
+  "var $popup = $slider.parent();",
+  "$popup.children('.benchmark-discrete-values').remove();",
+  "$('<div class=\"benchmark-discrete-values\"></div>')",
+  ".text('Available values: ' + values.join(', ')).appendTo($popup);",
+  "});",
+  "};",
+  "setTimeout(applyDiscreteSliders, 0);",
+  "}"
+))
 
 n_runs <- sum(benchmark_results$n)
 n_configurations <- nrow(benchmark_results)
@@ -132,6 +199,15 @@ n_configurations <- nrow(benchmark_results)
 .benchmark-table-wide .dt-buttons,
 .benchmark-table-wide .dataTables_filter {
   margin-bottom: 0.75rem;
+}
+
+.benchmark-discrete-values {
+  clear: both;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  padding-top: 0.5rem;
+  white-space: normal;
 }
 
 @media (min-width: 768px) {
@@ -293,10 +369,14 @@ to `explain()` through `...`; see the [manual](../reference/explain.html#arg--).
 ## Explore all results
 
 The table below combines every committed approach-level `summary.csv`. Each row
-is one configuration aggregated over its replicates. Use the controls above each
-column to filter, click headings to sort, and use **Column visibility** to focus
-on relevant fields. The first three columns remain fixed while scrolling
-horizontally. **CSV** downloads the currently displayed table.
+is one configuration aggregated over its replicates. The retained experiments
+cover `r paste(sort(unique(benchmark_results$n_features)), collapse = ", ")`
+features, with available values varying by approach. Use the controls above each
+column to filter: categorical controls accept one or more values, and sliders
+for experiment inputs snap to values present in the results. Click headings to
+sort, and use **Column visibility** to focus on relevant fields. The first three
+columns remain fixed while scrolling horizontally. **CSV** downloads the
+currently displayed table.
 
 Key timing and memory columns are:
 
@@ -329,7 +409,8 @@ DT::datatable(
     fixedColumns = list(leftColumns = 3),
     pageLength = 25,
     lengthMenu = list(c(10, 25, 50, 100, -1), c("10", "25", "50", "100", "All")),
-    autoWidth = TRUE
+    autoWidth = TRUE,
+    initComplete = discrete_slider_callback
   )
 ) |>
   DT::formatRound(
