@@ -100,6 +100,12 @@ benchmark_results <- data.table::rbindlist(
   fill = TRUE,
   use.names = TRUE
 )
+benchmark_results[, save_explanations := NULL]
+benchmark_results[
+  is.na(model_variant) | model_variant == "default",
+  model_variant := data.table::fifelse(dataset == "numeric", "xgb", "ranger")
+]
+benchmark_results[, approach_args := sub("variant=", "regression_variant=", approach_args, fixed = TRUE)]
 benchmark_results[, approach := factor(approach, levels = approaches)]
 data.table::setorder(benchmark_results, approach, sweep)
 
@@ -118,9 +124,11 @@ batch_limit_columns <- c("max_batch_size", "max_batch_cube_size")
 benchmark_results[, (batch_limit_columns) := lapply(.SD, factor), .SDcols = batch_limit_columns]
 
 headline_columns <- c("bash_wall_median", "ram_mb_median")
+table_columns <- setdiff(names(benchmark_results), c("n_iterations_median", headline_columns))
+table_columns <- append(table_columns, "n_iterations_median", after = match("iterative", table_columns))
 data.table::setcolorder(
   benchmark_results,
-  c(setdiff(names(benchmark_results), headline_columns), headline_columns)
+  c(table_columns, headline_columns)
 )
 
 hidden_columns <- c(
@@ -129,7 +137,6 @@ hidden_columns <- c(
   "backend",
   "dt_threads",
   "group_size",
-  "save_explanations",
   "sweep",
   "pair_key",
   "pair_role",
@@ -148,41 +155,53 @@ column_descriptions <- c(
   n_features = "Number of features in x_train and x_explain.",
   max_n_coalitions = "Maximum number of coalitions passed to explain().",
   n_MC_samples = "Number of Monte Carlo samples passed to explain().",
-  min_n_batches = "Minimum number of computation batches per iteration.",
-  max_batch_size = "Maximum number of coalitions computed in one batch.",
-  max_batch_cube_size = "Maximum number of elements in a dense per-batch array.",
-  workers = "Number of parallel future workers.",
+  min_n_batches = "Minimum batches per iteration, passed through explain(extra_computation_args = list(...)).",
+  max_batch_size = "Maximum coalitions per batch, passed through explain(extra_computation_args = list(...)).",
+  max_batch_cube_size = "Dense-array size limit, passed through explain(extra_computation_args = list(...)).",
+  workers = "Parallel workers configured with future::plan() before calling explain().",
   backend = "future backend used for parallel execution.",
   dt_threads = "Number of data.table threads.",
   n_train = "Number of rows in x_train.",
   n_explain = "Number of rows in x_explain.",
   iterative = "Whether iterative estimation was requested in explain().",
+  n_iterations_median = "Median number of Shapley estimation iterations.",
   group = "Whether group-wise explanations were requested in explain().",
   group_size = "Number of consecutive features per generated group.",
-  model_variant = "Prediction-model or registered learner variant.",
-  save_explanations = "Whether the estimated Shapley values were saved to an RDS file.",
+  model_variant = "Prediction model being explained: xgb, xgb_large, ranger, or linear.",
   sweep = "Benchmark block that generated the configuration.",
-  approach_args = "Approach-specific settings encoded as name=value pairs.",
+  approach_args = paste(
+    "Arguments passed through explain(...); regression_variant selects a registered regression estimator",
+    "and tuning recipe."
+  ),
   pair_key = "Identifier for a matched iterative/fixed-budget comparison.",
   pair_role = "Role in a matched iterative/fixed-budget comparison.",
   n = "Number of successful measured replicates.",
-  wall_median = "Median seconds spent inside explain() only.",
-  wall_iqr = "Interquartile range of explain() wall time across replicates.",
-  cpu_user_median = "Median user CPU seconds for the parent R process.",
+  wall_median = "Median runtime of explain() in seconds.",
+  wall_iqr = "Interquartile range of explain() runtime in seconds.",
+  cpu_user_median = "Median user CPU time for the parent R process in seconds.",
   ram_mb_median = "Median peak RAM in MB across successful replicates.",
   ram_mb_max = "Maximum peak RAM in MB across successful replicates.",
   bash_wall_median = "Median total runtime in seconds across successful replicates.",
-  data_load_median = "Median seconds used to load the cached data and prediction model.",
-  n_iterations_median = "Median number of Shapley estimation iterations."
+  data_load_median = "Median time to load the cached data and prediction model in seconds."
 )
 stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
 column_descriptions <- column_descriptions[names(benchmark_results)]
 
-headline_display_names <- c("Time (s)" = "bash_wall_median", "RAM (MB)" = "ram_mb_median")
+display_name_overrides <- c(
+  "Iterations" = "n_iterations_median",
+  "Explain time (s)" = "wall_median",
+  "Explain time IQR (s)" = "wall_iqr",
+  "CPU time (s)" = "cpu_user_median",
+  "Max RAM (MB)" = "ram_mb_max",
+  "Load time (s)" = "data_load_median",
+  "Time (s)" = "bash_wall_median",
+  "RAM (MB)" = "ram_mb_median"
+)
 column_display_names <- stats::setNames(names(benchmark_results), names(benchmark_results))
-column_display_names[unname(headline_display_names)] <- names(headline_display_names)
+column_display_names[unname(display_name_overrides)] <- names(display_name_overrides)
 
-explain_columns <- c("approach", "max_n_coalitions", "n_MC_samples", "iterative", "group")
+explain_columns <- c("approach", "max_n_coalitions", "n_MC_samples", "iterative", "group", "approach_args")
+extra_computation_columns <- c("min_n_batches", "max_batch_size", "max_batch_cube_size")
 column_guide_names <- stats::setNames(
   sprintf("<code>%s</code>", column_display_names),
   names(column_display_names)
@@ -190,6 +209,10 @@ column_guide_names <- stats::setNames(
 column_guide_names[explain_columns] <- sprintf(
   '<a href="../reference/explain.html"><code>%s</code></a>',
   column_display_names[explain_columns]
+)
+column_guide_names[extra_computation_columns] <- sprintf(
+  '<a href="../reference/get_extra_comp_args_default.html"><code>%s</code></a>',
+  column_display_names[extra_computation_columns]
 )
 column_guide <- data.frame(
   Column = unname(column_guide_names),
@@ -560,8 +583,26 @@ time and RAM metrics remain fixed on the right while scrolling horizontally.
 The default view keeps the main workload inputs, approach-specific settings,
 replicate count, and two headline outcomes. Less frequently needed execution
 details and secondary outcomes remain available under **Column visibility**.
-Hover over any column name for its description. A complete column guide is
-available below the table.
+Hover over any column name for its description.
+
+<details class="benchmark-column-guide">
+<summary>Column descriptions</summary>
+
+Direct `explain()` arguments link to the function manual. Batching controls
+link to [`get_extra_comp_args_default()`](../reference/get_extra_comp_args_default.html)
+and are passed through `extra_computation_args`.
+
+```{r benchmark-column-guide, results = "asis"}
+knitr::kable(
+  column_guide,
+  format = "html",
+  escape = FALSE,
+  align = c("l", "l"),
+  table.attr = 'class="table table-sm"'
+)
+```
+
+</details>
 
 <div class="benchmark-table-wide">
 
@@ -569,7 +610,7 @@ available below the table.
 DT::datatable(
   benchmark_results,
   rownames = FALSE,
-  colnames = headline_display_names,
+  colnames = display_name_overrides,
   filter = "top",
   extensions = c("Buttons", "FixedColumns"),
   class = "stripe hover compact nowrap",
@@ -596,39 +637,22 @@ DT::datatable(
 ) |>
   DT::formatRound(
     columns = c(
-      "wall_median",
-      "wall_iqr",
-      "cpu_user_median",
+      "Explain time (s)",
+      "Explain time IQR (s)",
+      "CPU time (s)",
       "Time (s)",
-      "data_load_median"
+      "Load time (s)"
     ),
     digits = 1
   ) |>
   DT::formatRound(
-    columns = c("RAM (MB)", "ram_mb_max"),
+    columns = c("RAM (MB)", "Max RAM (MB)"),
     digits = 0
   ) |>
   DT::formatRound(
-    columns = "n_iterations_median",
+    columns = "Iterations",
     digits = 1
   )
 ```
 
 </div>
-
-<details class="benchmark-column-guide">
-<summary>Column descriptions</summary>
-
-Direct `explain()` arguments link to the function manual.
-
-```{r benchmark-column-guide, results = "asis"}
-knitr::kable(
-  column_guide,
-  format = "html",
-  escape = FALSE,
-  align = c("l", "l"),
-  table.attr = 'class="table table-sm"'
-)
-```
-
-</details>
