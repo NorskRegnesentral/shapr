@@ -142,6 +142,40 @@ hidden_columns <- c(
 )
 hidden_column_indices <- match(hidden_columns, names(benchmark_results)) - 1
 
+column_tooltips <- c(
+  bash_wall_median = paste(
+    "Headline time: Median elapsed seconds for the fresh R process, including startup, cached data/model loading,",
+    "and explain()."
+  ),
+  ram_mb_median = paste(
+    "Headline RAM: Median peak MB for the whole process tree; cgroup peak is preferred, with process-tree polling",
+    "as fallback."
+  ),
+  wall_median = "Median seconds spent inside explain() only.",
+  wall_iqr = "Interquartile range of explain() wall time across replicates.",
+  cpu_user_median = paste(
+    "Median user CPU seconds for the parent R process; it does not include multisession-worker CPU."
+  ),
+  ram_mb_max = "Largest whole-process peak RAM observed across replicates.",
+  data_load_median = "Median seconds used to load the cached dataset and fitted prediction model.",
+  n_iterations_median = paste(
+    "Median number of Shapley estimation iterations; normally one unless iterative estimation is used."
+  ),
+  n = "Number of successful measured replicates represented by the row.",
+  sweep = "Name of the benchmark block that generated the configuration.",
+  approach_args = "Approach-specific settings encoded as name=value pairs.",
+  pair_key = "Identity of a matched iterative/fixed-budget comparison.",
+  pair_role = "Role within a matched iterative/fixed-budget comparison."
+)
+column_tooltip_map <- paste(
+  sprintf(
+    "%s: %s",
+    encodeString(names(column_tooltips), quote = "\""),
+    encodeString(unname(column_tooltips), quote = "\"")
+  ),
+  collapse = ", "
+)
+
 discrete_slider_columns <- c(
   "n_features",
   "max_n_coalitions",
@@ -169,9 +203,17 @@ discrete_slider_map <- paste(
 benchmark_table_callback <- DT::JS(paste0(
   "function(settings, json) {",
   "var discreteValues = {", discrete_slider_map, "};",
+  "var columnTooltips = {", column_tooltip_map, "};",
   "var table = this.api();",
   "var $container = $(table.table().container());",
   "var $header = $container.find('.dataTables_scrollHead thead').first();",
+  "var applyHeaderTooltips = function() {",
+  "table.columns().every(function(columnIndex) {",
+  "var columnName = table.settings()[0].aoColumns[columnIndex].sTitle;",
+  "var tooltip = columnTooltips[columnName];",
+  "if (tooltip) $(this.header()).attr('title', tooltip);",
+  "});",
+  "};",
   "var applyDiscreteSliders = function() {",
   "Object.keys(discreteValues).forEach(function(columnIndex) {",
   "var values = discreteValues[columnIndex];",
@@ -239,11 +281,13 @@ benchmark_table_callback <- DT::JS(paste0(
   "});",
   "table.on('column-sizing.dt.benchmarkFilters column-visibility.dt.benchmarkFilters', function() {",
   "window.setTimeout(function() {",
+  "applyHeaderTooltips();",
   "applyDiscreteSliders();",
   "syncFixedFilterCells();",
   "}, 75);",
   "});",
   "window.setTimeout(function() {",
+  "applyHeaderTooltips();",
   "applyDiscreteSliders();",
   "syncFixedFilterCells();",
   "}, 0);",
@@ -470,6 +514,7 @@ time and RAM metrics remain fixed on the right while scrolling horizontally.
 The default view keeps the main workload inputs, approach-specific settings,
 replicate count, and two headline outcomes. Less frequently needed execution
 details and secondary outcomes remain available under **Column visibility**.
+Hover over a result or metadata column name for its description.
 
 ### Result and metadata columns
 
