@@ -98,6 +98,8 @@
 - Added scheduled/manual maintenance runs for R CMD check and Python
   tests, and updated Python testing to use `uv` with Python 3.14
   ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+- Added manually triggered pkgdown previews at branch-specific GitHub
+  Pages URLs. (branch: ci/pkgdown-preview)
 
 #### Documentation
 
