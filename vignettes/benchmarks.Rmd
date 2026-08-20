@@ -142,36 +142,66 @@ hidden_columns <- c(
 )
 hidden_column_indices <- match(hidden_columns, names(benchmark_results)) - 1
 
-column_tooltips <- c(
-  bash_wall_median = paste(
-    "Headline time: Median elapsed seconds for the fresh R process, including startup, cached data/model loading,",
-    "and explain()."
-  ),
-  ram_mb_median = paste(
-    "Headline RAM: Median peak MB for the whole process tree; cgroup peak is preferred, with process-tree polling",
-    "as fallback."
-  ),
+column_descriptions <- c(
+  dataset = "Benchmark dataset type.",
+  approach = "Conditional-distribution approach passed to explain().",
+  n_features = "Number of features in x_train and x_explain.",
+  max_n_coalitions = "Maximum number of coalitions passed to explain().",
+  n_MC_samples = "Number of Monte Carlo samples passed to explain().",
+  min_n_batches = "Minimum number of computation batches per iteration.",
+  max_batch_size = "Maximum number of coalitions computed in one batch.",
+  max_batch_cube_size = "Maximum number of elements in a dense per-batch array.",
+  workers = "Number of parallel future workers.",
+  backend = "future backend used for parallel execution.",
+  dt_threads = "Number of data.table threads.",
+  n_train = "Number of rows in x_train.",
+  n_explain = "Number of rows in x_explain.",
+  iterative = "Whether iterative estimation was requested in explain().",
+  group = "Whether group-wise explanations were requested in explain().",
+  group_size = "Number of consecutive features per generated group.",
+  model_variant = "Prediction-model or registered learner variant.",
+  save_explanations = "Whether the estimated Shapley values were saved to an RDS file.",
+  sweep = "Benchmark block that generated the configuration.",
+  approach_args = "Approach-specific settings encoded as name=value pairs.",
+  pair_key = "Identifier for a matched iterative/fixed-budget comparison.",
+  pair_role = "Role in a matched iterative/fixed-budget comparison.",
+  n = "Number of successful measured replicates.",
   wall_median = "Median seconds spent inside explain() only.",
   wall_iqr = "Interquartile range of explain() wall time across replicates.",
-  cpu_user_median = paste(
-    "Median user CPU seconds for the parent R process; it does not include multisession-worker CPU."
-  ),
-  ram_mb_max = "Largest whole-process peak RAM observed across replicates.",
-  data_load_median = "Median seconds used to load the cached dataset and fitted prediction model.",
-  n_iterations_median = paste(
-    "Median number of Shapley estimation iterations; normally one unless iterative estimation is used."
-  ),
-  n = "Number of successful measured replicates represented by the row.",
-  sweep = "Name of the benchmark block that generated the configuration.",
-  approach_args = "Approach-specific settings encoded as name=value pairs.",
-  pair_key = "Identity of a matched iterative/fixed-budget comparison.",
-  pair_role = "Role within a matched iterative/fixed-budget comparison."
+  cpu_user_median = "Median user CPU seconds for the parent R process.",
+  ram_mb_median = "Median peak RAM in MB across successful replicates.",
+  ram_mb_max = "Maximum peak RAM in MB across successful replicates.",
+  bash_wall_median = "Median total runtime in seconds across successful replicates.",
+  data_load_median = "Median seconds used to load the cached data and prediction model.",
+  n_iterations_median = "Median number of Shapley estimation iterations."
 )
+stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
+column_descriptions <- column_descriptions[names(benchmark_results)]
+
+headline_display_names <- c("Time (s)" = "bash_wall_median", "RAM (MB)" = "ram_mb_median")
+column_display_names <- stats::setNames(names(benchmark_results), names(benchmark_results))
+column_display_names[unname(headline_display_names)] <- names(headline_display_names)
+
+explain_columns <- c("approach", "max_n_coalitions", "n_MC_samples", "iterative", "group")
+column_guide_names <- stats::setNames(
+  sprintf("<code>%s</code>", column_display_names),
+  names(column_display_names)
+)
+column_guide_names[explain_columns] <- sprintf(
+  '<a href="../reference/explain.html"><code>%s</code></a>',
+  column_display_names[explain_columns]
+)
+column_guide <- data.frame(
+  Column = unname(column_guide_names),
+  Description = unname(column_descriptions),
+  check.names = FALSE
+)
+
 column_tooltip_map <- paste(
   sprintf(
     "%s: %s",
-    encodeString(names(column_tooltips), quote = "\""),
-    encodeString(unname(column_tooltips), quote = "\"")
+    encodeString(unname(column_display_names), quote = "\""),
+    encodeString(unname(column_descriptions), quote = "\"")
   ),
   collapse = ", "
 )
@@ -332,6 +362,22 @@ n_configurations <- nrow(benchmark_results)
 
 .benchmark-table-wide table.dataTable tr > :nth-last-child(2).dtfc-fixed-right {
   box-shadow: -4px 0 4px -4px var(--bs-secondary-color);
+}
+
+.benchmark-column-guide {
+  border-bottom: 1px solid var(--bs-border-color);
+  border-top: 1px solid var(--bs-border-color);
+  margin-top: 1rem;
+  padding: 0.75rem 0;
+}
+
+.benchmark-column-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.benchmark-column-guide table {
+  margin-top: 0.75rem;
 }
 
 .benchmark-discrete-values {
@@ -514,24 +560,8 @@ time and RAM metrics remain fixed on the right while scrolling horizontally.
 The default view keeps the main workload inputs, approach-specific settings,
 replicate count, and two headline outcomes. Less frequently needed execution
 details and secondary outcomes remain available under **Column visibility**.
-Hover over a result or metadata column name for its description.
-
-### Result and metadata columns
-
-| Column | Meaning |
-|:--|:--|
-| `bash_wall_median` | **Headline time:** median elapsed seconds for the fresh R process, including startup, cached data/model loading, and `explain()`. |
-| `ram_mb_median` | **Headline RAM:** median peak MB for the whole process tree; cgroup peak is preferred, with process-tree polling as fallback. |
-| `wall_median` | Median seconds spent inside `explain()` only. |
-| `wall_iqr` | Interquartile range of `explain()` wall time across replicates. |
-| `cpu_user_median` | Median user CPU seconds for the parent R process; it does not include multisession-worker CPU. |
-| `ram_mb_max` | Largest whole-process peak RAM observed across replicates. |
-| `data_load_median` | Median seconds used to load the cached dataset and fitted prediction model. |
-| `n_iterations_median` | Median number of Shapley estimation iterations; normally one unless iterative estimation is used. |
-| `n` | Number of successful measured replicates represented by the row. |
-| `sweep` | Name of the benchmark block that generated the configuration. |
-| `approach_args` | Approach-specific settings encoded as `name=value` pairs. |
-| `pair_key`, `pair_role` | Identity and role of matched iterative/fixed-budget comparisons. |
+Hover over any column name for its description. A complete column guide is
+available below the table.
 
 <div class="benchmark-table-wide">
 
@@ -539,6 +569,7 @@ Hover over a result or metadata column name for its description.
 DT::datatable(
   benchmark_results,
   rownames = FALSE,
+  colnames = headline_display_names,
   filter = "top",
   extensions = c("Buttons", "FixedColumns"),
   class = "stripe hover compact nowrap",
@@ -568,14 +599,36 @@ DT::datatable(
       "wall_median",
       "wall_iqr",
       "cpu_user_median",
-      "ram_mb_median",
-      "ram_mb_max",
-      "bash_wall_median",
-      "data_load_median",
-      "n_iterations_median"
+      "Time (s)",
+      "data_load_median"
     ),
-    digits = 3
+    digits = 1
+  ) |>
+  DT::formatRound(
+    columns = c("RAM (MB)", "ram_mb_max"),
+    digits = 0
+  ) |>
+  DT::formatRound(
+    columns = "n_iterations_median",
+    digits = 1
   )
 ```
 
 </div>
+
+<details class="benchmark-column-guide">
+<summary>Column descriptions</summary>
+
+Direct `explain()` arguments link to the function manual.
+
+```{r benchmark-column-guide, results = "asis"}
+knitr::kable(
+  column_guide,
+  format = "html",
+  escape = FALSE,
+  align = c("l", "l"),
+  table.attr = 'class="table table-sm"'
+)
+```
+
+</details>
