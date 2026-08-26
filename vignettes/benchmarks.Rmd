@@ -32,7 +32,7 @@ popover_notes <- list(
   batching = list(
     number = 2,
     content = paste0(
-      "<code>min_n_batches</code> and <code>max_batch_size</code> controls the number of batches in each iteration, while ",
+      "<code>min_n_batches</code> and <code>max_batch_size</code> control the number of batches in each iteration, while ",
       "<code>max_batch_cube_size</code> limits dense per-batch arrays for Gaussian, copula, and empirical. ",
       "Pass the controls through <code>extra_computation_args</code>, ",
       "for example <code>list(min_n_batches = 20)</code>. The defaults are 10, 10, and one million, respectively. ",
@@ -488,22 +488,34 @@ at GitHub.
 ## Key findings and practical guidance
 
 - **`approach`: choose for the data, then consider cost.** Gaussian is the
-  fastest dependence-aware method for purely numeric data, regression
-  surrogate for the mixed-data settings, and the categorical approach for fully
-  categorical data. These are cost comparisons, not rankings of explanation
-  quality.
+  fastest dependence-aware method for purely numeric data in most tested
+  settings, although regression surrogate is faster at large `x_explain` (100+).
+  Regression surrogate is fastest for the mixed-data settings, and
+  the categorical approach for fully categorical data. These are cost
+  comparisons, not rankings of explanation quality.
 
-- **`x_explain` and `x_train`: their sizes can change the preferred approach.**
-  Low-setup approaches such as Gaussian, copula, and empirical are attractive
-  when there are few observations to explain (few rows in `x_explain`).
-  Regression surrogate, regression separate,
-  and VAEAC have reusable setup costs and add little runtime as `x_explain`
-  grows; this makes the regression approaches more competitive, although VAEAC
-  remains expensive. Ctree and ARF also perform setup work, but their runtime still
-  grows strongly with `x_explain`; hence, using a sample of the original `x_explain` may reduce their runtime.
-  Large `x_train` favors methods with weak
-  training-size sensitivity (Gaussian, regression separate, and independence,
-  (not recommended)).
+- **`x_explain`: approaches differ in setup cost and cost per explained
+  observation.** The approaches fall into three broad cost patterns.
+  1. **Low setup, increasing cost per observation:** Gaussian, copula,
+  empirical, categorical, and independence are attractive when explaining only
+  a few observations, but their runtime increases as `x_explain` grows.
+  2. **High setup, low cost per observation:** For regression surrogate,
+  regression separate, and VAEAC, setup costs typically dominate while each
+  additional observation adds relatively little runtime. They can therefore
+  become more competitive for larger `x_explain` (although VAEAC remains
+  costly).
+  3. **High setup, increasing cost per observation:** Ctree, ARF, and timeseries
+  combine setup costs with strong runtime growth as `x_explain` increases.
+
+  When appropriate, explaining a representative sample can reduce runtime for
+  methods whose cost increases with `x_explain` (category 1 and 3).
+
+- **`x_train`: reducing the training set can lower runtime for most
+  approaches.** Runtime changes little with `x_train` for Gaussian, regression
+  separate, and independence. It increases more clearly for empirical, copula,
+  categorical, Ctree, ARF, timeseries, VAEAC, and regression surrogate.
+  Subsampling `x_train` can therefore reduce runtime for these approaches (when
+  statistically appropriate).
 
 - **`r popover_note("workers")`: one worker is often fine; try four for expensive
   runs.** Parallel overhead commonly outweighs useful work for small explanation
