@@ -527,12 +527,19 @@ at GitHub.
   `future::multicore`.
 
 - **`r popover_note("batching", c("min_n_batches", "max_batch_size", "max_batch_cube_size"))`:
-  use batching to manage memory.** Increase the number of batches when memory is
-  limiting; reduce it when repeated batch overhead dominates runtime. Fine
-  batching is comparatively inexpensive for Gaussian, Ctree, and ARF, but can
-  be costly for empirical, timeseries, and VAEAC. For Gaussian, copula, and
-  empirical, `max_batch_cube_size` provides an additional cap on dense
-  per-batch arrays.
+  balance peak RAM against runtime.**
+  - **RAM:** Smaller batches generally reduce
+  peak RAM by limiting how much intermediate data is held at once. For Gaussian,
+  copula, and empirical, `max_batch_cube_size` only affects large dense workloads,
+  where it can automatically create smaller batches; relaxing the default limit
+  can sharply increase RAM.
+  - **Runtime:** The cost of
+  smaller batches depends on the approach. Fine batching adds little overhead
+  for Gaussian, Ctree, and ARF, but can be costly for empirical, timeseries, and
+  VAEAC. Parallel runs also need enough batches to keep workers busy.
+
+  Start with the defaults, then use smaller batches when memory is limiting or larger
+  batches when repeated batch overhead dominates.
 
 - **`iterative`: use when no reasonable coalition budget is known.** At the same final
   coalition budget, iterative execution costs about the same as a fixed run if
