@@ -487,12 +487,12 @@ at GitHub.
 
 ## Key findings and practical guidance
 
-- **`approach`: choose for the data, then consider cost.** Gaussian is the
-  fastest dependence-aware method for purely numeric data in most tested
-  settings, although regression surrogate is faster at large `x_explain` (100+).
-  Regression surrogate is fastest for the mixed-data settings, and
-  the categorical approach for fully categorical data. These are cost
-  comparisons, not rankings of explanation quality.
+- **`approach`: choose for the data, then consider cost.** Gaussian is typically the
+  fastest dependence-aware method for purely numeric data, although
+  regression surrogate is faster at large `x_explain` (`100+`).
+  Regression surrogate is fastest for the mixed-data settings. For fully
+  categorical data, it has similar runtime to the categorical approach.
+  These are cost comparisons, not rankings of explanation quality.
 
 - **`x_explain`: approaches differ in setup cost and cost per explained
   observation.** The approaches fall into three broad cost patterns.
@@ -534,9 +534,10 @@ at GitHub.
   where it can automatically create smaller batches; relaxing the default limit
   can sharply increase RAM.
   - **Runtime:** The cost of
-  smaller batches depends on the approach. Fine batching adds little overhead
-  for Gaussian, Ctree, and ARF, but can be costly for empirical, timeseries, and
-  VAEAC. Parallel runs also need enough batches to keep workers busy.
+  smaller batches depends on the approach. Fine batching adds little to modest
+  overhead for Gaussian, Ctree, and ARF, but can be costly for empirical,
+  timeseries, and VAEAC. Parallel runs also need enough batches to keep workers
+  busy.
 
   Start with the defaults, then use smaller batches when memory is limiting or larger
   batches when repeated batch overhead dominates.
@@ -546,18 +547,21 @@ at GitHub.
   it stops after one iteration and more if it needs several. It is most useful
   when not even a rough fixed budget is known; otherwise, prefer a fixed run.
 
-- **`max_n_coalitions`, `n_MC_samples`, and `x_explain`: control the main
-  generic costs.** Feature count, training size, and factor complexity can also
-  be important, but their effects vary more by approach (see below).
+- **`max_n_coalitions` and `x_explain`: the most consistent generic cost
+  controls.** `n_MC_samples` can also matter, but training, fitting, or data-search
+  costs dominate it for some approaches. Feature count, training size, and
+  factor complexity can also be important, but their effects vary more by
+  approach (see below).
 
 - **`model` and `n_MC_samples`: prediction cost can amplify sampling cost.**
   Model prediction is repeated across coalitions and conditional samples. For
   slow prediction models, reducing `n_MC_samples` may therefore shorten runtime
   considerably; for fast models, other work may dominate.
 
-- **Approach-specific arguments can dominate generic settings.** Examples include
-  empirical AICc bandwidth selection, regression-separate learner tuning, VAEAC
-  training, fine timeseries or VAEAC batches, and parallel ARF.
+- **Approach-specific choices and execution settings can dominate generic
+  controls.** Examples include empirical AICc bandwidth selection,
+  regression-separate learner tuning, VAEAC training, fine timeseries or VAEAC
+  batches, and parallel ARF.
 
 ## Additional guidance by approach
 
@@ -576,9 +580,9 @@ to `explain()` through `...`; see the [manual](../reference/explain.html#arg--).
 | Gaussian | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
 | Empirical | `empirical.type` | **Time:** Keep `"fixed_sigma"` unless adaptive bandwidth selection is needed; `"AICc_full"` and `"AICc_each_k"` are orders of magnitude slower. |
 | Ctree | Strong sensitivity to feature and factor complexity | **Both:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible. Many factor levels are especially costly when many factor columns are present. |
-| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Both:** Lower `arf.num_trees`, `arf.max_iters`, `max_n_coalitions`, or `n_MC_samples`, then verify the fitted conditional distribution.<br>**RAM:** Add `r popover_note("workers")` only after checking available memory. |
-| Timeseries | High runtime overhead from fine `r popover_note("batching", c("min_n_batches", "max_batch_size"))`; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible, and prefer larger batches.<br>**RAM:** Use smaller batches when needed; memory rises sharply with workers. |
-| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Both:** Lower `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, or `vaeac.latent_dim`, or reduce `x_train`, then verify explanation quality.<br>**Time:** Prefer larger batches; additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
+| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Both:** Lower `max_n_coalitions` or `n_MC_samples`. Reducing `arf.num_trees` or `arf.max_iters` may also lower fitting cost, but remember to verify the fitted conditional distribution.<br>**RAM:** Add `r popover_note("workers")` only after checking available memory. |
+| Timeseries | High runtime overhead from fine `r popover_note("batching", c("min_n_batches", "max_batch_size"))`; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, or `x_explain` when possible, and prefer larger batches. Changing `n_MC_samples` had little effect in the tested settings.<br>**RAM:** Use smaller batches when needed; memory rises sharply with workers. |
+| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Time:** Lower `vaeac.epochs` or reduce `x_train`, then verify explanation quality; depth, width, and latent dimension has smaller effects in relevant ranges. Prefer larger batches.<br>**RAM:** Use smaller batches and fewer workers. Additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
 | Independence | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
 | Copula | Sensitivity to `x_train` | **Time:** Reduce `x_train` as well as `max_n_coalitions`, `n_MC_samples`, or `x_explain`. |
 | Categorical | Limited sensitivity to `n_MC_samples` | **Time:** Prioritize reducing `max_n_coalitions`, `x_train`, or `x_explain` before reducing Monte Carlo samples. |
