@@ -123,7 +123,15 @@ benchmark_results[, (categorical_columns) := lapply(.SD, factor), .SDcols = cate
 batch_limit_columns <- c("max_batch_size", "max_batch_cube_size")
 benchmark_results[, (batch_limit_columns) := lapply(.SD, factor), .SDcols = batch_limit_columns]
 
-headline_columns <- c("bash_wall_median", "ram_mb_median")
+diagnostic_columns <- c(
+  "cpu_user_median",
+  "ram_mb_max",
+  "bash_wall_median",
+  "data_load_median"
+)
+benchmark_results[, (diagnostic_columns) := NULL]
+
+headline_columns <- c("wall_median", "ram_mb_median")
 table_columns <- setdiff(names(benchmark_results), c("n_iterations_median", headline_columns))
 table_columns <- append(table_columns, "n_iterations_median", after = match("iterative", table_columns))
 data.table::setcolorder(
@@ -140,11 +148,7 @@ hidden_columns <- c(
   "sweep",
   "pair_key",
   "pair_role",
-  "wall_median",
   "wall_iqr",
-  "cpu_user_median",
-  "ram_mb_max",
-  "data_load_median",
   "n_iterations_median"
 )
 hidden_column_indices <- match(hidden_columns, names(benchmark_results)) - 1
@@ -178,24 +182,16 @@ column_descriptions <- c(
   n = "Number of successful measured replicates.",
   wall_median = "Median runtime of explain() in seconds.",
   wall_iqr = "Interquartile range of explain() runtime in seconds.",
-  cpu_user_median = "Median user CPU time for the parent R process in seconds.",
-  ram_mb_median = "Median peak RAM in MB across successful replicates.",
-  ram_mb_max = "Maximum peak RAM in MB across successful replicates.",
-  bash_wall_median = "Median total runtime in seconds across successful replicates.",
-  data_load_median = "Median time to load the cached data and prediction model in seconds."
+  ram_mb_median = "Median peak RAM in MB across successful replicates."
 )
 stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
 column_descriptions <- column_descriptions[names(benchmark_results)]
 
 display_name_overrides <- c(
   "Iterations" = "n_iterations_median",
-  "Explain time (s)" = "wall_median",
-  "Explain time IQR (s)" = "wall_iqr",
-  "CPU time (s)" = "cpu_user_median",
-  "Max RAM (MB)" = "ram_mb_max",
-  "Load time (s)" = "data_load_median",
-  "Time (s)" = "bash_wall_median",
-  "RAM (MB)" = "ram_mb_median"
+  "Runtime (s)" = "wall_median",
+  "Runtime IQR (s)" = "wall_iqr",
+  "Peak RAM (MB)" = "ram_mb_median"
 )
 column_display_names <- stats::setNames(names(benchmark_results), names(benchmark_results))
 column_display_names[unname(display_name_overrides)] <- names(display_name_overrides)
@@ -474,11 +470,13 @@ We recommend benchmarking a representative subset of the intended workload befor
 substantial compute resources.
 </div>
 
-The headline elapsed-time measure is whole-process wall time, which includes R
-startup, loading the pre-built model and data, and `explain()`. The table also
-contains `explain()` wall time separately. Peak RAM covers the measured process
-tree or cgroup, including workers. Most configurations have three replicates;
-the expensive VAEAC and realistic ARF and timeseries blocks have two.
+Runtime is measured directly around `shapr::explain()`. The benchmark data and
+fitted prediction models are prepared in advance and loaded before this timer
+starts. Fresh R-process startup, package and input loading, benchmark-harness
+setup, result serialization, and process shutdown are therefore excluded. Peak
+RAM covers the measured process tree or cgroup, including workers. Most
+configurations have three replicates; the expensive VAEAC and realistic ARF and
+timeseries blocks have two.
 
 The full design, execution framework, committed CSV files, and numerical audit
 are available in the
@@ -576,14 +574,15 @@ cover `r paste(sort(unique(benchmark_results$n_features)), collapse = ", ")`
 features, with available values varying by approach. Use the controls above each
 column to filter: categorical controls accept one or more values, and sliders
 for experiment inputs snap to values present in the results. Click headings to
-sort, and use **Column visibility** to focus on relevant fields. The headline
-time and RAM metrics remain fixed on the right while scrolling horizontally.
-**CSV** downloads the currently displayed table.
+sort, and use **Column visibility** to focus on relevant fields. Runtime and peak
+RAM remain fixed on the right while scrolling horizontally; runtime IQR is
+available under **Column visibility**. **CSV** downloads the currently displayed
+table.
 
 The default view keeps the main workload inputs, approach-specific settings,
-replicate count, and two headline outcomes. Less frequently needed execution
-details and secondary outcomes remain available under **Column visibility**.
-Hover over any column name for its description.
+replicate count, and headline outcomes. Less frequently needed experiment
+details remain available under **Column visibility**. Hover over any column name
+for its description.
 
 <details class="benchmark-column-guide">
 <summary>Column descriptions</summary>
@@ -637,16 +636,13 @@ DT::datatable(
 ) |>
   DT::formatRound(
     columns = c(
-      "Explain time (s)",
-      "Explain time IQR (s)",
-      "CPU time (s)",
-      "Time (s)",
-      "Load time (s)"
+      "Runtime (s)",
+      "Runtime IQR (s)"
     ),
     digits = 1
   ) |>
   DT::formatRound(
-    columns = c("RAM (MB)", "Max RAM (MB)"),
+    columns = "Peak RAM (MB)",
     digits = 0
   ) |>
   DT::formatRound(

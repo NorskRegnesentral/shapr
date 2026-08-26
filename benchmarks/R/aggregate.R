@@ -113,7 +113,7 @@ main <- function() {
       set(dt, j = "peak_rss_tree_bytes", value = as.numeric(m$peak_rss_tree_bytes %||% NA))
       set(dt, j = "peak_cgroup_bytes", value = as.numeric(m$peak_cgroup_bytes %||% NA))
     }
-    # Merge bash-level timing sidecar (headline wall time), if present.
+    # Merge bash-level fresh-process timing sidecar, if present.
     time_file <- sub("\\.json$", ".time.json", f)
     if (file.exists(time_file)) {
       t <- jsonlite::fromJSON(time_file, simplifyVector = TRUE)

@@ -56,10 +56,11 @@ hardware, operating system, backend, model implementation, and data. Relative
 effects within a controlled block are consequently more transferable than the
 absolute values.
 
-Unless explicitly labelled as `explain()` time, elapsed time means median
-whole-process wall time. Peak RAM is the median peak for the measured process
-tree or cgroup, rather than only the parent R process. Small timing differences
-should be treated as ties: the median relative timing IQR is 0.73% for
+Elapsed time means median wall time measured directly around `shapr::explain()`.
+The benchmark data and fitted prediction models are prepared in advance and
+loaded before this timer starts. Peak RAM is the median peak for the measured
+process tree or cgroup, rather than only the parent R process. Small timing
+differences should be treated as ties: the median relative timing IQR is 0.73% for
 three-replicate configurations and 0.33% for two-replicate configurations; the
 90th percentiles are 1.95% and 1.33%, respectively. The apparently lower
 variation for two replicates is not evidence that two are more precise—their
@@ -77,19 +78,19 @@ categorical dataset. Approach defaults otherwise remain in force, so this is a
 practical cost comparison, not a claim that the methods are statistically
 equivalent.
 
-| Approach | Whole process | `explain()` | Peak RAM |
-|---|---:|---:|---:|
-| Gaussian | 4.123 s | 2.302 s | 273.1 MB |
-| Independence | 4.967 s | 3.184 s | 258.8 MB |
-| Copula | 4.967 s | 3.168 s | 283.3 MB |
-| Categorical | 4.979 s | 4.038 s | 278.2 MB |
-| Regression surrogate | 6.084 s | 3.311 s | 462.1 MB |
-| Empirical | 7.217 s | 5.417 s | 246.1 MB |
-| Regression separate | 8.188 s | 5.412 s | 308.6 MB |
-| CTree | 19.188 s | 17.337 s | 357.3 MB |
-| ARF | 19.232 s | 17.127 s | 775.2 MB |
-| Timeseries | 60.856 s | 58.983 s | 1,301.2 MB |
-| VAEAC | 1,163.646 s | 1,159.353 s | 542.7 MB |
+| Approach | `explain()` runtime | Peak RAM |
+|---|---:|---:|
+| Gaussian | 2.302 s | 273.1 MB |
+| Copula | 3.168 s | 283.3 MB |
+| Independence | 3.184 s | 258.8 MB |
+| Regression surrogate | 3.311 s | 462.1 MB |
+| Categorical | 4.038 s | 278.2 MB |
+| Regression separate | 5.412 s | 308.6 MB |
+| Empirical | 5.417 s | 246.1 MB |
+| ARF | 17.127 s | 775.2 MB |
+| CTree | 17.337 s | 357.3 MB |
+| Timeseries | 58.983 s | 1,301.2 MB |
+| VAEAC | 1,159.353 s | 542.7 MB |
 
 The ordering is workload-specific. In particular, VAEAC includes its neural
 training cost, and the reference does not amortize a trained model over repeated
@@ -137,12 +138,12 @@ workloads illustrate the scale of that trade:
 
 | Approach / batches | 1 worker | 4 workers | 8 workers | 16 workers |
 |---|---:|---:|---:|---:|
-| Gaussian / 32 | 36.5 s, 592 MB | 17.3 s, 2,236 MB | 14.6 s, 4,116 MB | 13.6 s, 7,263 MB |
-| Empirical / 8 | 79.6 s, 1,548 MB | 28.2 s, 5,133 MB | 20.2 s, 8,892 MB | 20.3 s, 9,391 MB |
-| CTree / 32 | 254.3 s, 747 MB | 75.2 s, 2,860 MB | 46.9 s, 5,241 MB | 32.5 s, 9,989 MB |
-| ARF / 32 | 365.9 s, 3,793 MB | 120.1 s, 12,981 MB | 77.7 s, 24,452 MB | 65.7 s, 44,733 MB |
-| Timeseries / 8 | 253.5 s, 11,810 MB | 83.1 s, 47,148 MB | 53.5 s, 71,477 MB | 53.7 s, 72,050 MB |
-| VAEAC explanation-heavy / 16 | 294.6 s, 3,376 MB | 212.8 s, 10,488 MB | not run | 194.2 s, 17,475 MB |
+| Gaussian / 32 | 34.5 s, 592 MB | 14.3 s, 2,236 MB | 11.3 s, 4,116 MB | 10.1 s, 7,263 MB |
+| Empirical / 8 | 77.6 s, 1,548 MB | 25.2 s, 5,133 MB | 16.9 s, 8,892 MB | 16.9 s, 9,391 MB |
+| CTree / 32 | 252.2 s, 747 MB | 72.1 s, 2,860 MB | 43.6 s, 5,241 MB | 28.8 s, 9,989 MB |
+| ARF / 32 | 363.5 s, 3,793 MB | 116.4 s, 12,981 MB | 73.7 s, 24,452 MB | 60.9 s, 44,733 MB |
+| Timeseries / 8 | 250.7 s, 11,810 MB | 78.5 s, 47,148 MB | 49.8 s, 71,477 MB | 49.8 s, 72,050 MB |
+| VAEAC explanation-heavy / 16 | 289.8 s, 3,376 MB | 208.3 s, 10,488 MB | not run | 189.7 s, 17,475 MB |
 
 These are deliberately heavy cases where parallel work has a chance to pay
 off. They must not be generalized to cheap work. The retained core parallel
@@ -261,11 +262,11 @@ explained observations:
 
 | Cube-size cap | Actual batches | 1-worker elapsed / RAM | 4-worker elapsed / RAM |
 |---:|---:|---:|---:|
-| 1 million | 342 | 33.1 s / 367 MB | 16.5 s / 1,568 MB |
-| 4 million | 79 | 38.6 s / 425 MB | 18.2 s / 2,057 MB |
-| 16 million | 20 | 36.1 s / 748 MB | 18.5 s / 2,728 MB |
-| 64 million | 8 | 34.3 s / 1,473 MB | 18.0 s / 5,260 MB |
-| Unlimited | 8 | 34.1 s / 1,462 MB | 17.8 s / 5,233 MB |
+| 1 million | 342 | 31.1 s / 367 MB | 13.4 s / 1,568 MB |
+| 4 million | 79 | 36.6 s / 425 MB | 15.0 s / 2,057 MB |
+| 16 million | 20 | 34.1 s / 748 MB | 15.3 s / 2,728 MB |
+| 64 million | 8 | 32.1 s / 1,473 MB | 14.8 s / 5,260 MB |
+| Unlimited | 8 | 32.0 s / 1,462 MB | 14.8 s / 5,233 MB |
 
 The one-million default delivered the lowest RAM and no speed penalty in this
 Gaussian experiment. It should remain the default under an unknown memory
@@ -287,18 +288,18 @@ depth 6.
 | XGBoost | 10.59 s, 369 MB | 6.36 s (1.67x), 1,756 MB | 5.75 s (1.84x), 5,269 MB |
 | XGBoost large | 50.36 s, 373 MB | 18.03 s (2.79x), 1,742 MB | 13.24 s (3.80x), 5,336 MB |
 
-Times are median `explain()` seconds. For the linear model, whole-process time
-falls from 9.39 seconds with one worker to 6.78 with four and 6.75 with sixteen;
-the extra workers therefore add RAM without a meaningful end-to-end gain. The
-standard XGBoost model is also close to practical saturation at four workers.
-Only the large model retains a material four-to-sixteen-worker gain, with a
-large RAM increase.
+Times are median `explain()` seconds. For the linear model, runtime falls from
+8.28 seconds with one worker to 4.54 with four and 4.18 with sixteen; the extra
+workers therefore add substantial RAM for little additional gain. The standard
+XGBoost model is also close to practical saturation at four workers. Only the
+large model retains a material four-to-sixteen-worker gain, with a large RAM
+increase.
 
 ## User guidance
 
 1. Start with one worker when the workload is small or memory is uncertain.
 2. If runtime is material, test four workers on a representative case and
-   record both whole-process time and peak RAM. Test eight or sixteen only when
+  record both `explain()` runtime and peak RAM. Test eight or sixteen only when
    the measured gain can justify the additional memory.
 3. Use batching as a memory control, but distinguish approaches: finer batches
    are generally safe for Gaussian, CTree, and ARF; avoid very fine batches for

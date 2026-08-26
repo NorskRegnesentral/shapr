@@ -11,8 +11,8 @@
 #   3. For each run id (dependency-aware order, resumable): launch a FRESH
 #      Rscript run_one.R under a wall-clock `timeout`, with the RAM sampler
 #      attached. The WHOLE-Rscript wall time is measured at the bash level and
-#      written to <id>.time.json (this is the headline timing number). Then cool
-#      down.
+#      written to <id>.time.json as a diagnostic alongside the explain() wall
+#      time recorded by run_one.R. Then cool down.
 #   4. Aggregate everything (R/aggregate.R) -> results/<study>/results.csv
 #
 # Each config runs in its own process so there is no cross-run caching, no warm
@@ -253,7 +253,7 @@ EOF
     resource_killed=true
   fi
 
-  # Bash-level timing sidecar (headline wall time).
+  # Bash-level fresh-process timing sidecar (diagnostic).
   cat >"$tjson" <<EOF
 {
   "id": $id,

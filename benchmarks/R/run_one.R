@@ -2,13 +2,12 @@
 # run_one.R — execute ONE benchmark configuration in a fresh R process and write
 # results/<study>/<id>.json. One run = one explain() call.
 #
-# Timing model: the orchestrator measures the WHOLE-Rscript wall time at the
-# bash level (that is the headline number). Here we additionally record, inside
-# R, the time to load the pre-processed (cached) data + model (`data_load_secs`)
-# and shapr's own internal $timing breakdown, so the bash wall can be decomposed
-# into "load" vs "explain" vs "R startup". Model FITTING is done up front by
-# prebuild.R and is therefore excluded from the measured process (run_one only
-# reads the cached model).
+# Timing model: wall time measured directly around `explain()` is the reporting
+# metric. The orchestrator also records whole-Rscript wall time at the bash
+# level, while this script records cached data/model load time and shapr's own
+# internal timing breakdown. These diagnostic timings help decompose harness
+# overhead. Model FITTING is done up front by prebuild.R and is therefore
+# excluded from the measured process (run_one only reads the cached model).
 #
 # Usage: Rscript R/run_one.R --config config/oat_quick.yml --id 42
 #        [--max-n-coalitions N]   (override; used for iterative `dependent` runs)

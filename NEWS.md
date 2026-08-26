@@ -31,6 +31,7 @@
 
 ### Documentation
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+* Updated computational benchmark reporting to use wall time measured directly around `explain()` rather than fresh-process runtime, while retaining harness timings as diagnostics. (branch: bench)
 
 ### Python
 * Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy` compatibility package remains available on PyPI for a transition period. ([#500](https://github.com/NorskRegnesentral/shapr/pull/500))

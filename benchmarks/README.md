@@ -54,9 +54,9 @@ Per run (one `explain()` call in a fresh R process):
 
 | Metric | Source | Notes |
 |---|---|---|
-| **Bash wall time** | `date +%s.%N` around the whole `Rscript` | **headline** number; includes R startup + data load + `explain()` |
+| Fresh-process wall time | `date +%s.%N` around the whole `Rscript` | diagnostic; includes R startup + data load + `explain()` |
 | Data-load time | `Sys.time()` around the cached data/model read | lets you subtract I/O from the bash wall |
-| explain() wall time | `Sys.time()` around `explain()` only | the pure compute portion |
+| **explain() wall time** | `Sys.time()` around `explain()` only | **headline** runtime reported in the findings and vignette |
 | CPU time | `proc.time()` (self + child) | child time covers `multicore` forks only |
 | Phase breakdown | shapr's own `$timing` | where time goes (setup vs `compute_vS` …) |
 | Iterations | `length(internal$iter_list)` | 1 for non-iterative; >1 for iterative |
@@ -65,10 +65,11 @@ Per run (one `explain()` call in a fresh R process):
 | Peak RAM (cgroup) | cgroup-v2 `memory.peak` | exact, catches transient spikes (Linux + systemd) |
 | gc peak | `gc()` max in the parent | in-process cross-check (sequential runs) |
 
-The **bash wall time** is the headline because it captures the *true* cost of
-producing one explanation on this machine (model fitting excluded, since that is
-pre-built). The internal `explain()` wall and `data_load_secs` let you decompose
-it.
+The **`explain()` wall time** is the headline because it measures the package
+call consistently without conflating it with fresh-process startup, cached-input
+loading, benchmark bookkeeping, or process shutdown. Fresh-process wall time,
+`data_load_secs`, CPU time, and the internal phase breakdown remain available as
+diagnostics. Model fitting is pre-built and excluded from both wall-time metrics.
 
 Plus full config, actual coalitions used, iterations, status (`ok` / `error` /
 `skipped_*` / `timeout` / `killed_resource`), and metadata (R/shapr version,

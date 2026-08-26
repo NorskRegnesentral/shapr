@@ -74,10 +74,9 @@ reference <- results[
       (approach != "categorical" & dataset == "numeric"))
 ]
 reference_table <- reference[, .(
-  whole_process_seconds = round(stats::median(bash_wall_secs), 3),
   explain_seconds = round(stats::median(wall_secs), 3),
   peak_ram_mb = round(stats::median(peak_ram_mb), 1)
-), by = approach][order(whole_process_seconds)]
+), by = approach][order(explain_seconds)]
 stopifnot(nrow(reference_table) == length(studies))
 
 #### Representative heavy parallel workloads --------------------------------
@@ -86,7 +85,7 @@ parallel_case <- function(study_name, subset_expression, label) {
   study_results <- results[study == study_name]
   selected <- study_results[eval(parse(text = subset_expression))]
   table <- selected[, .(
-    elapsed_seconds = round(stats::median(bash_wall_secs), 1),
+    elapsed_seconds = round(stats::median(wall_secs), 1),
     peak_ram_mb = round(stats::median(peak_ram_mb), 0)
   ), by = workers][order(workers)]
   table[, case := label]
@@ -117,7 +116,7 @@ memory_table <- results[
     workers %in% c(1, 4),
   .(
     actual_batches = as.integer(stats::median(used_n_batches)),
-    elapsed_seconds = round(stats::median(bash_wall_secs), 1),
+    elapsed_seconds = round(stats::median(wall_secs), 1),
     peak_ram_mb = round(stats::median(peak_ram_mb), 0)
   ),
   by = .(max_batch_cube_size, workers)
@@ -129,7 +128,6 @@ prediction_table <- results[
   study == "gaussian" & sweep == "prediction_model",
   .(
     explain_seconds = round(stats::median(wall_secs), 2),
-    whole_process_seconds = round(stats::median(bash_wall_secs), 2),
     peak_ram_mb = round(stats::median(peak_ram_mb), 0)
   ),
   by = .(model_variant, workers)
@@ -171,12 +169,11 @@ assert_table <- function(actual, expected, label) {
 
 expected_reference <- data.table::data.table(
   approach = c(
-    "gaussian", "independence", "copula", "categorical", "regression_surrogate",
-    "empirical", "regression_separate", "ctree", "arf", "timeseries", "vaeac"
+    "gaussian", "copula", "independence", "regression_surrogate", "categorical",
+    "regression_separate", "empirical", "arf", "ctree", "timeseries", "vaeac"
   ),
-  whole_process_seconds = c(4.123, 4.967, 4.967, 4.979, 6.084, 7.217, 8.188, 19.188, 19.232, 60.856, 1163.646),
-  explain_seconds = c(2.302, 3.184, 3.168, 4.038, 3.311, 5.417, 5.412, 17.337, 17.127, 58.983, 1159.353),
-  peak_ram_mb = c(273.1, 258.8, 283.3, 278.2, 462.1, 246.1, 308.6, 357.3, 775.2, 1301.2, 542.7)
+  explain_seconds = c(2.302, 3.168, 3.184, 3.311, 4.038, 5.412, 5.417, 17.127, 17.337, 58.983, 1159.353),
+  peak_ram_mb = c(273.1, 283.3, 258.8, 462.1, 278.2, 308.6, 246.1, 775.2, 357.3, 1301.2, 542.7)
 )
 assert_table(reference_table, expected_reference, "reference table")
 
@@ -187,8 +184,8 @@ expected_parallel <- data.table::data.table(
   ), c(4, 4, 4, 4, 4, 3)),
   workers = c(rep(c(1L, 4L, 8L, 16L), 5), 1L, 4L, 16L),
   elapsed_seconds = c(
-    36.5, 17.3, 14.6, 13.6, 79.6, 28.2, 20.2, 20.3, 254.3, 75.2, 46.9, 32.5,
-    365.9, 120.1, 77.7, 65.7, 253.5, 83.1, 53.5, 53.7, 294.6, 212.8, 194.2
+    34.5, 14.3, 11.3, 10.1, 77.6, 25.2, 16.9, 16.9, 252.2, 72.1, 43.6, 28.8,
+    363.5, 116.4, 73.7, 60.9, 250.7, 78.5, 49.8, 49.8, 289.8, 208.3, 189.7
   ),
   peak_ram_mb = c(
     592, 2236, 4116, 7263, 1548, 5133, 8892, 9391, 747, 2860, 5241, 9989,
@@ -201,7 +198,7 @@ expected_memory <- data.table::data.table(
   max_batch_cube_size = rep(c(1e6, 4e6, 16e6, 64e6, Inf), each = 2),
   workers = rep(c(1L, 4L), 5),
   actual_batches = rep(c(342L, 79L, 20L, 8L, 8L), each = 2),
-  elapsed_seconds = c(33.1, 16.5, 38.6, 18.2, 36.1, 18.5, 34.3, 18.0, 34.1, 17.8),
+  elapsed_seconds = c(31.1, 13.4, 36.6, 15.0, 34.1, 15.3, 32.1, 14.8, 32.0, 14.8),
   peak_ram_mb = c(367, 1568, 425, 2057, 748, 2728, 1473, 5260, 1462, 5233)
 )
 assert_table(memory_table, expected_memory, "memory-cap table")
@@ -210,7 +207,6 @@ expected_prediction <- data.table::data.table(
   model_variant = rep(c("linear", "xgb", "xgb_large"), each = 3),
   workers = rep(c(1L, 4L, 16L), 3),
   explain_seconds = c(8.28, 4.54, 4.18, 10.59, 6.36, 5.75, 50.36, 18.03, 13.24),
-  whole_process_seconds = c(9.39, 6.78, 6.75, 12.57, 9.44, 9.22, 52.43, 21.12, 16.74),
   peak_ram_mb = c(300, 1236, 3580, 369, 1756, 5269, 373, 1742, 5336),
   speedup = c(1.00, 1.82, 1.98, 1.00, 1.67, 1.84, 1.00, 2.79, 3.80)
 )
