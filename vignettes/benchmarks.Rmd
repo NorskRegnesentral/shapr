@@ -497,7 +497,7 @@ at GitHub.
 - **`x_explain`: approaches differ in setup cost and cost per explained
   observation.** The approaches fall into three broad cost patterns.
   1. **Low setup, increasing cost per observation:** Gaussian, copula,
-  empirical, categorical, and independence are attractive when explaining only
+  empirical, categorical, and independence (not recommended) are attractive when explaining only
   a few observations, but their runtime increases as `x_explain` grows.
   2. **High setup, low cost per observation:** For regression surrogate,
   regression separate, and VAEAC, setup costs typically dominate while each
@@ -512,7 +512,7 @@ at GitHub.
 
 - **`x_train`: reducing the training set can lower runtime for most
   approaches.** Runtime changes little with `x_train` for Gaussian, regression
-  separate, and independence. It increases more clearly for empirical, copula,
+  separate, and independence (not recommended). It increases more clearly for empirical, copula,
   categorical, Ctree, ARF, timeseries, VAEAC, and regression surrogate.
   Subsampling `x_train` can therefore reduce runtime for these approaches (when
   statistically appropriate).
