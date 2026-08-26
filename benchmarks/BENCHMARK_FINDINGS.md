@@ -80,17 +80,17 @@ equivalent.
 
 | Approach | `explain()` runtime | Peak RAM |
 |---|---:|---:|
-| Gaussian | 2.302 s | 273.1 MB |
-| Copula | 3.168 s | 283.3 MB |
-| Independence | 3.184 s | 258.8 MB |
-| Regression surrogate | 3.311 s | 462.1 MB |
-| Categorical | 4.038 s | 278.2 MB |
-| Regression separate | 5.412 s | 308.6 MB |
-| Empirical | 5.417 s | 246.1 MB |
-| ARF | 17.127 s | 775.2 MB |
-| CTree | 17.337 s | 357.3 MB |
-| Timeseries | 58.983 s | 1,301.2 MB |
-| VAEAC | 1,159.353 s | 542.7 MB |
+| Gaussian | 2.302 s | 273.1 MiB |
+| Copula | 3.168 s | 283.3 MiB |
+| Independence | 3.184 s | 258.8 MiB |
+| Regression surrogate | 3.311 s | 462.1 MiB |
+| Categorical | 4.038 s | 278.2 MiB |
+| Regression separate | 5.412 s | 308.6 MiB |
+| Empirical | 5.417 s | 246.1 MiB |
+| ARF | 17.127 s | 775.2 MiB |
+| CTree | 17.337 s | 357.3 MiB |
+| Timeseries | 58.983 s | 1,301.2 MiB |
+| VAEAC | 1,159.353 s | 542.7 MiB |
 
 The ordering is workload-specific. In particular, VAEAC includes its neural
 training cost, and the reference does not amortize a trained model over repeated
@@ -138,12 +138,12 @@ workloads illustrate the scale of that trade:
 
 | Approach / batches | 1 worker | 4 workers | 8 workers | 16 workers |
 |---|---:|---:|---:|---:|
-| Gaussian / 32 | 34.5 s, 592 MB | 14.3 s, 2,236 MB | 11.3 s, 4,116 MB | 10.1 s, 7,263 MB |
-| Empirical / 8 | 77.6 s, 1,548 MB | 25.2 s, 5,133 MB | 16.9 s, 8,892 MB | 16.9 s, 9,391 MB |
-| CTree / 32 | 252.2 s, 747 MB | 72.1 s, 2,860 MB | 43.6 s, 5,241 MB | 28.8 s, 9,989 MB |
-| ARF / 32 | 363.5 s, 3,793 MB | 116.4 s, 12,981 MB | 73.7 s, 24,452 MB | 60.9 s, 44,733 MB |
-| Timeseries / 8 | 250.7 s, 11,810 MB | 78.5 s, 47,148 MB | 49.8 s, 71,477 MB | 49.8 s, 72,050 MB |
-| VAEAC explanation-heavy / 16 | 289.8 s, 3,376 MB | 208.3 s, 10,488 MB | not run | 189.7 s, 17,475 MB |
+| Gaussian / 32 | 34.5 s, 592 MiB | 14.3 s, 2,236 MiB | 11.3 s, 4,116 MiB | 10.1 s, 7,263 MiB |
+| Empirical / 8 | 77.6 s, 1,548 MiB | 25.2 s, 5,133 MiB | 16.9 s, 8,892 MiB | 16.9 s, 9,391 MiB |
+| CTree / 32 | 252.2 s, 747 MiB | 72.1 s, 2,860 MiB | 43.6 s, 5,241 MiB | 28.8 s, 9,989 MiB |
+| ARF / 32 | 363.5 s, 3,793 MiB | 116.4 s, 12,981 MiB | 73.7 s, 24,452 MiB | 60.9 s, 44,733 MiB |
+| Timeseries / 8 | 250.7 s, 11,810 MiB | 78.5 s, 47,148 MiB | 49.8 s, 71,477 MiB | 49.8 s, 72,050 MiB |
+| VAEAC explanation-heavy / 16 | 289.8 s, 3,376 MiB | 208.3 s, 10,488 MiB | not run | 189.7 s, 17,475 MiB |
 
 These are deliberately heavy cases where parallel work has a chance to pay
 off. They must not be generalized to cheap work. The retained core parallel
@@ -262,11 +262,11 @@ explained observations:
 
 | Cube-size cap | Actual batches | 1-worker elapsed / RAM | 4-worker elapsed / RAM |
 |---:|---:|---:|---:|
-| 1 million | 342 | 31.1 s / 367 MB | 13.4 s / 1,568 MB |
-| 4 million | 79 | 36.6 s / 425 MB | 15.0 s / 2,057 MB |
-| 16 million | 20 | 34.1 s / 748 MB | 15.3 s / 2,728 MB |
-| 64 million | 8 | 32.1 s / 1,473 MB | 14.8 s / 5,260 MB |
-| Unlimited | 8 | 32.0 s / 1,462 MB | 14.8 s / 5,233 MB |
+| 1 million | 342 | 31.1 s / 367 MiB | 13.4 s / 1,568 MiB |
+| 4 million | 79 | 36.6 s / 425 MiB | 15.0 s / 2,057 MiB |
+| 16 million | 20 | 34.1 s / 748 MiB | 15.3 s / 2,728 MiB |
+| 64 million | 8 | 32.1 s / 1,473 MiB | 14.8 s / 5,260 MiB |
+| Unlimited | 8 | 32.0 s / 1,462 MiB | 14.8 s / 5,233 MiB |
 
 The one-million default delivered the lowest RAM and no speed penalty in this
 Gaussian experiment. It should remain the default under an unknown memory
@@ -284,9 +284,9 @@ depth 6.
 
 | Model | 1 worker | 4 workers | 16 workers |
 |---|---:|---:|---:|
-| Linear | 8.28 s, 300 MB | 4.54 s (1.82x), 1,236 MB | 4.18 s (1.98x), 3,580 MB |
-| XGBoost | 10.59 s, 369 MB | 6.36 s (1.67x), 1,756 MB | 5.75 s (1.84x), 5,269 MB |
-| XGBoost large | 50.36 s, 373 MB | 18.03 s (2.79x), 1,742 MB | 13.24 s (3.80x), 5,336 MB |
+| Linear | 8.28 s, 300 MiB | 4.54 s (1.82x), 1,236 MiB | 4.18 s (1.98x), 3,580 MiB |
+| XGBoost | 10.59 s, 369 MiB | 6.36 s (1.67x), 1,756 MiB | 5.75 s (1.84x), 5,269 MiB |
+| XGBoost large | 50.36 s, 373 MiB | 18.03 s (2.79x), 1,742 MiB | 13.24 s (3.80x), 5,336 MiB |
 
 Times are median `explain()` seconds. For the linear model, runtime falls from
 8.28 seconds with one worker to 4.54 with four and 4.18 with sixteen; the extra

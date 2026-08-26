@@ -182,7 +182,7 @@ column_descriptions <- c(
   n = "Number of successful measured replicates.",
   wall_median = "Median runtime of explain() in seconds.",
   wall_iqr = "Interquartile range of explain() runtime in seconds.",
-  ram_mb_median = "Median peak RAM in MB across successful replicates."
+  ram_mb_median = "Median peak memory across the measured process and workers; 1 MiB = 1.048576 MB."
 )
 stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
 column_descriptions <- column_descriptions[names(benchmark_results)]
@@ -191,7 +191,7 @@ display_name_overrides <- c(
   "Iterations" = "n_iterations_median",
   "Runtime (s)" = "wall_median",
   "Runtime IQR (s)" = "wall_iqr",
-  "Peak RAM (MB)" = "ram_mb_median"
+  "Peak RAM (MiB)" = "ram_mb_median"
 )
 column_display_names <- stats::setNames(names(benchmark_results), names(benchmark_results))
 column_display_names[unname(display_name_overrides)] <- names(display_name_overrides)
@@ -642,7 +642,7 @@ DT::datatable(
     digits = 1
   ) |>
   DT::formatRound(
-    columns = "Peak RAM (MB)",
+    columns = "Peak RAM (MiB)",
     digits = 0
   ) |>
   DT::formatRound(
