@@ -180,9 +180,12 @@ column_descriptions <- c(
   pair_key = "Identifier for a matched iterative/fixed-budget comparison.",
   pair_role = "Role in a matched iterative/fixed-budget comparison.",
   n = "Number of successful measured replicates.",
-  wall_median = "Median runtime of explain() in seconds.",
-  wall_iqr = "Interquartile range of explain() runtime in seconds.",
-  ram_mb_median = "Median peak memory across the measured process and workers; 1 MiB = 1.048576 MB."
+  wall_median = "Median runtime of explain() across replicates, in seconds.",
+  wall_iqr = "Interquartile range of explain() runtimes across replicates, in seconds.",
+  ram_mb_median = paste(
+    "Median peak RAM used during the full benchmark run, including loaded data,",
+    "the fitted prediction model, and workers; 1 MiB = 1.0486 MB."
+  )
 )
 stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
 column_descriptions <- column_descriptions[names(benchmark_results)]
@@ -437,7 +440,7 @@ n_configurations <- nrow(benchmark_results)
 ## What this study measures
 
 This benchmark study measures the **computational cost** of `shapr::explain()`:
-elapsed time and peak RAM. It covers `r format(n_runs, big.mark = ",")` successful
+runtime and peak RAM. It covers `r format(n_runs, big.mark = ",")` successful
 runs across `r format(n_configurations, big.mark = ",")` configurations and all
 11 built-in estimation approaches. Each approach is studied through controlled
 blocks that vary one or a few workload dimensions around a shared baseline.
@@ -470,12 +473,11 @@ We recommend benchmarking a representative subset of the intended workload befor
 substantial compute resources.
 </div>
 
-Runtime is measured directly around `shapr::explain()`. The benchmark data and
-fitted prediction models are prepared in advance and loaded before this timer
-starts. Fresh R-process startup, package and input loading, benchmark-harness
-setup, result serialization, and process shutdown are therefore excluded. Peak
-RAM covers the measured process tree or cgroup, including workers. Most
-configurations have three replicates; the expensive VAEAC and realistic ARF and
+Runtime is measured directly around `shapr::explain()`.
+This timing excludes preparing the benchmark data and fitting the models.
+Peak RAM is the highest memory used during the full benchmark run, including
+loaded data, the fitted prediction model, and workers.
+Most configurations have three replicates; the expensive VAEAC and realistic ARF and
 timeseries blocks have two.
 
 The full design, execution framework, committed CSV files, and numerical audit
