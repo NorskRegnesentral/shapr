@@ -477,12 +477,12 @@ Runtime is measured directly around `shapr::explain()`.
 This timing excludes preparing the benchmark data and fitting the models.
 Peak RAM is the highest memory used during the full benchmark run, including
 loaded data, the fitted prediction model, and workers.
-Most configurations have three replicates; the expensive VAEAC and realistic ARF and
-timeseries blocks have two.
+To limit compute time, some of the most expensive VAEAC, ARF, and timeseries
+configurations were run twice; all other configurations were run three times.
 
 The full design, execution framework, committed CSV files, and numerical audit
 are available in the
-[benchmark directory](https://github.com/NorskRegnesentral/shapr/tree/master/benchmarks).
+[benchmark directory](https://github.com/NorskRegnesentral/shapr/tree/master/benchmarks)
 at GitHub.
 
 ## Key findings and practical guidance
@@ -581,10 +581,10 @@ RAM remain fixed on the right while scrolling horizontally; runtime IQR is
 available under **Column visibility**. **CSV** downloads the currently displayed
 table.
 
-The default view keeps the main workload inputs, approach-specific settings,
-replicate count, and headline outcomes. Less frequently needed experiment
-details remain available under **Column visibility**. Hover over any column name
-for its description.
+The default view shows the main workload inputs, approach-specific settings,
+replicate count, runtime, and peak RAM.
+Less frequently needed experiment details remain available under **Column visibility**.
+Hover over any column name for its description.
 
 <details class="benchmark-column-guide">
 <summary>Column descriptions</summary>
