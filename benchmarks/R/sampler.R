@@ -15,8 +15,13 @@
 #   peak_cgroup_bytes    -> cgroup memory.peak / max(memory.current) (cgroup)
 #   method, n_samples
 
-suppressMessages(if (!requireNamespace("ps", quietly = TRUE)) {
-  stop("The 'ps' package is required for sampler.R")
+suppressMessages({
+  if (!requireNamespace("ps", quietly = TRUE)) {
+    stop("The 'ps' package is required for sampler.R")
+  }
+  if (!requireNamespace("jsonlite", quietly = TRUE)) {
+    stop("The 'jsonlite' package is required for sampler.R")
+  }
 })
 
 parse_args <- function() {

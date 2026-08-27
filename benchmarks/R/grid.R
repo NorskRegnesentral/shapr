@@ -186,6 +186,7 @@ main <- function() {
 
   # Drop approach/dataset combinations that are not supported.
   grid <- grid[mapply(approach_supports, approach, dataset)]
+  if (nrow(grid) == 0) stop("No supported runs remain after capability filtering.")
 
   # De-duplicate identical rows (a baseline point may recur across blocks).
   # Blocks are ordered from the core design to optional extensions, so an

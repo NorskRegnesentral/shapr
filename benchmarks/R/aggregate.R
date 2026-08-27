@@ -193,8 +193,8 @@ main <- function() {
         wall_median = round(median(wall_secs), 3),
         wall_iqr = round(IQR(wall_secs), 3),
         cpu_user_median = round(median(cpu_user_secs), 3),
-        ram_mb_median = round(median(peak_ram_mb, na.rm = TRUE), 1),
-        ram_mb_max = round(max(peak_ram_mb, na.rm = TRUE), 1)
+        ram_mb_median = if (all(is.na(peak_ram_mb))) NA_real_ else round(median(peak_ram_mb, na.rm = TRUE), 1),
+        ram_mb_max = if (all(is.na(peak_ram_mb))) NA_real_ else round(max(peak_ram_mb, na.rm = TRUE), 1)
       )
       if (has_bash) s$bash_wall_median <- round(median(bash_wall_secs, na.rm = TRUE), 3)
       if (has_load) s$data_load_median <- round(median(data_load_secs, na.rm = TRUE), 3)
