@@ -297,6 +297,8 @@ files.
 - [ ] Imports are explicit and grouped stdlib, third-party, local.
 - [ ] Python R-bridging goes through `_rutils._importr` and `utils.py2r` / `r2py`.
 - [ ] Public API functions return structured objects, not raw dictionaries.
+- [ ] Python release preparation updates the `shapr` development/full-support version metadata in `_rutils.py` and
+  reviews whether unavailable functionality needs a clear warning or a targeted safety guard.
 
 ### Changelog And Versioning
 - [ ] `NEWS.md` has a brief entry under the current development version for R-facing or developer-facing changes.

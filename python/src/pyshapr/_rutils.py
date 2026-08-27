@@ -1,7 +1,61 @@
 from __future__ import annotations
 
+import re
+import warnings
 from collections.abc import Sequence
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+from typing import Any
+
+RECENT_FEATURES_REQUIRE_NEWER_THAN = "1.0.8"
+SHAPR_VERSION_USED_FOR_DEVELOPMENT = "1.0.8.9005"
+_checked_shapr_versions: set[str] = set()
+
+
+class ShaprVersionWarning(UserWarning):
+    """Warning raised when the installed shapr version lacks pyshapr functionality."""
+
+
+class ShaprVersionError(RuntimeError):
+    """Error raised when shapr cannot safely provide requested pyshapr functionality."""
+
+
+def _version_tuple(package_version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in re.split(r"[.-]", package_version))
+
+
+def _warn_if_shapr_version_lacks_full_support(shapr_package: Any) -> None:
+    installed_version = str(shapr_package.__version__)
+    if _version_tuple(installed_version) > _version_tuple(RECENT_FEATURES_REQUIRE_NEWER_THAN):
+        return
+
+    try:
+        pyshapr_version = version("pyshapr")
+    except PackageNotFoundError:
+        pyshapr_version = "development version"
+
+    warnings.warn(
+        f"pyshapr {pyshapr_version} was developed with shapr "
+        f"{SHAPR_VERSION_USED_FOR_DEVELOPMENT}, but shapr {installed_version} is installed. "
+        f"ARF and SAGE require a shapr version newer than "
+        f"{RECENT_FEATURES_REQUIRE_NEWER_THAN} and are unavailable; other "
+        "functionality may still work. "
+        "Update shapr from R with pak::pak('NorskRegnesentral/shapr').",
+        ShaprVersionWarning,
+        stacklevel=3,
+    )
+
+
+def _check_shapr_feature_support(shapr_package: Any, scope: str) -> None:
+    if scope != "global" or "scope" in shapr_package.setup.formals().names:
+        return
+
+    installed_version = str(shapr_package.__version__)
+    raise ShaprVersionError(
+        f"shapr {installed_version} does not support SAGE (`scope='global'`). Without this "
+        "check, it can return local SHAP values instead of SAGE values. Update shapr from R with "
+        "pak::pak('NorskRegnesentral/shapr')."
+    )
 
 
 def get_non_empty_libpaths(robjects_module) -> list[str] | None:
@@ -53,6 +107,12 @@ def _importr(package: str, robjects_module=None, importr_func=None):
         from rpy2.robjects.packages import importr as importr_func
 
     lib_loc = get_package_lib_loc(robjects_module, package)
-    if lib_loc:
-        return importr_func(package, lib_loc=lib_loc)
-    return importr_func(package)
+    imported_package = importr_func(package, lib_loc=lib_loc) if lib_loc else importr_func(package)
+
+    if package == "shapr":
+        installed_version = str(imported_package.__version__)
+        if installed_version not in _checked_shapr_versions:
+            _warn_if_shapr_version_lacks_full_support(imported_package)
+            _checked_shapr_versions.add(installed_version)
+
+    return imported_package

@@ -193,6 +193,10 @@ Do not bump versions mechanically for every PR.
 - Bump the R package version only when preparing a release, beginning a new development cycle, or when the user asks.
 - `python/pyproject.toml` should usually stay unchanged during normal development.
 - Bump the Python package version only when preparing a Python package release or when the user asks.
+- For every Python package release, update `SHAPR_VERSION_USED_FOR_DEVELOPMENT` and review
+   `RECENT_FEATURES_REQUIRE_NEWER_THAN` in `python/src/pyshapr/_rutils.py`. Confirm that the compatibility warning
+   names functionality unavailable on older `shapr` versions. Add a feature-specific guard only when the older R
+   backend could fail unclearly or return incorrect results.
 - `NEWS.md` and `python/CHANGELOG.md` should describe **significant** user-facing changes, developer-facing workflow
   changes, bug fixes, and notable compatibility changes. Aim for one entry per meaningful change, not one entry per
   file touched. Omit internal refactors, config tweaks, and mechanical moves that do not affect how contributors or

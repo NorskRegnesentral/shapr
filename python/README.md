@@ -34,12 +34,19 @@ sudo apt install r-base r-base-dev -y
 
 ### 1. Install the R package `shapr`
 
-`pyshapr` requires the R package `shapr` (version 1.0.5 or newer).
-In your R environment, install the latest version from CRAN using:
+`pyshapr` requires the R package `shapr` version 1.0.5 or newer for established SHAP
+functionality. ARF and SAGE were added after `shapr 1.0.8` and require a newer version. Until
+the next CRAN release of `shapr`, install the development version from GitHub using:
 
 ```bash
-Rscript -e 'install.packages("shapr", repos="https://cran.rstudio.com")'
+Rscript -e 'pak::pak("NorskRegnesentral/shapr")'
 ```
+
+The current development version of `pyshapr` is developed with `shapr 1.0.8.9005`. When
+`pyshapr` loads with `shapr 1.0.8` or older, it emits a `ShaprVersionWarning` that identifies
+the unavailable functionality while allowing supported SHAP functionality to run. Requesting
+SAGE with a `shapr` version that does not expose the SAGE API raises an error because such a
+version can silently return local SHAP values instead of SAGE values.
 
 ### 2. Ensure R is discoverable (R_HOME and PATH)
 
