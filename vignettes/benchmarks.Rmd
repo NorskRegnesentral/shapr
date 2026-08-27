@@ -1,0 +1,729 @@
+---
+title: "Computational cost benchmarks"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+    fig_caption: yes
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Computational cost benchmarks}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  markdown:
+    wrap: 80
+    toc: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+popover_notes <- list(
+  workers = list(
+    number = 1,
+    content = paste0(
+      "<code>workers</code> controls how many parallel R processes <code>shapr</code> may use. Configure it through ",
+      "<code>future::plan()</code> ",
+      "before calling <code>explain()</code>, for example <code>future::plan(\"multisession\", workers = 4)</code>. ",
+      "The default is one worker. In a fresh R session, this is equivalent to ",
+      "<code>future::plan(\"sequential\")</code> or not calling <code>future::plan()</code>."
+    )
+  ),
+  batching = list(
+    number = 2,
+    content = paste0(
+      "<code>min_n_batches</code> and <code>max_batch_size</code> control the number of batches in each iteration, while ",
+      "<code>max_batch_cube_size</code> limits dense per-batch arrays for Gaussian, copula, and empirical. ",
+      "Pass the controls through <code>extra_computation_args</code>, ",
+      "for example <code>list(min_n_batches = 20)</code>. The defaults are 10, 10, and one million, respectively. ",
+      "Progress is reported once per batch, so fewer batches give less frequent updates."
+    )
+  )
+)
+
+popover_note <- function(key, label = key) {
+  note <- popover_notes[[key]]
+  if (is.null(note)) {
+    stop("Unknown popover note: ", key)
+  }
+
+  formatted_labels <- paste0("<code>", htmltools::htmlEscape(label), "</code>")
+  formatted_label <- if (length(formatted_labels) == 1) {
+    formatted_labels
+  } else if (length(formatted_labels) == 2) {
+    paste(formatted_labels, collapse = " and ")
+  } else {
+    paste0(paste(utils::head(formatted_labels, -1), collapse = ", "), ", and ", utils::tail(formatted_labels, 1))
+  }
+
+  htmltools::HTML(sprintf(
+    paste0(
+      '%s<sup><a class="footnote-ref" tabindex="0" role="button" ',
+      'data-bs-toggle="popover" data-bs-content="%s">[%s]</a></sup>'
+    ),
+    formatted_label,
+    htmltools::htmlEscape(note$content, attribute = TRUE),
+    note$number
+  ))
+}
+
+approaches <- c(
+  "gaussian",
+  "empirical",
+  "ctree",
+  "arf",
+  "timeseries",
+  "vaeac",
+  "independence",
+  "copula",
+  "categorical",
+  "regression_separate",
+  "regression_surrogate"
+)
+
+result_roots <- c(
+  file.path("benchmarks", "results"),
+  file.path("..", "benchmarks", "results")
+)
+result_root <- result_roots[dir.exists(result_roots)][1]
+if (is.na(result_root)) {
+  stop("Could not locate the benchmark result directory.")
+}
+
+summary_files <- file.path(result_root, approaches, "summary.csv")
+if (!all(file.exists(summary_files))) {
+  stop("One or more benchmark summary files are missing.")
+}
+
+benchmark_results <- data.table::rbindlist(
+  lapply(summary_files, data.table::fread),
+  fill = TRUE,
+  use.names = TRUE
+)
+benchmark_results[, save_explanations := NULL]
+benchmark_results[
+  is.na(model_variant) | model_variant == "default",
+  model_variant := data.table::fifelse(dataset == "numeric", "xgb", "ranger")
+]
+benchmark_results[, approach_args := sub("variant=", "regression_variant=", approach_args, fixed = TRUE)]
+benchmark_results[, approach := factor(approach, levels = approaches)]
+data.table::setorder(benchmark_results, approach, sweep)
+
+categorical_columns <- c(
+  "dataset",
+  "backend",
+  "model_variant",
+  "sweep",
+  "approach_args",
+  "pair_key",
+  "pair_role"
+)
+benchmark_results[, (categorical_columns) := lapply(.SD, factor), .SDcols = categorical_columns]
+
+batch_limit_columns <- c("max_batch_size", "max_batch_cube_size")
+benchmark_results[, (batch_limit_columns) := lapply(.SD, factor), .SDcols = batch_limit_columns]
+
+diagnostic_columns <- c(
+  "cpu_user_median",
+  "ram_mb_max",
+  "bash_wall_median",
+  "data_load_median"
+)
+benchmark_results[, (diagnostic_columns) := NULL]
+
+headline_columns <- c("wall_median", "ram_mb_median")
+table_columns <- setdiff(names(benchmark_results), c("n_iterations_median", headline_columns))
+table_columns <- append(table_columns, "n_iterations_median", after = match("iterative", table_columns))
+data.table::setcolorder(
+  benchmark_results,
+  c(table_columns, headline_columns)
+)
+
+hidden_columns <- c(
+  "max_batch_size",
+  "max_batch_cube_size",
+  "backend",
+  "dt_threads",
+  "group_size",
+  "sweep",
+  "pair_key",
+  "pair_role",
+  "wall_iqr",
+  "n_iterations_median"
+)
+hidden_column_indices <- match(hidden_columns, names(benchmark_results)) - 1
+
+column_descriptions <- c(
+  dataset = "Benchmark dataset type.",
+  approach = "Conditional-distribution approach passed to explain().",
+  n_features = "Number of features in x_train and x_explain.",
+  max_n_coalitions = "Maximum number of coalitions passed to explain().",
+  n_MC_samples = "Number of Monte Carlo samples passed to explain().",
+  min_n_batches = "Minimum batches per iteration, passed through explain(extra_computation_args = list(...)).",
+  max_batch_size = "Maximum coalitions per batch, passed through explain(extra_computation_args = list(...)).",
+  max_batch_cube_size = "Dense-array size limit, passed through explain(extra_computation_args = list(...)).",
+  workers = "Parallel workers configured with future::plan() before calling explain().",
+  backend = "future backend used for parallel execution.",
+  dt_threads = "Number of data.table threads.",
+  n_train = "Number of rows in x_train.",
+  n_explain = "Number of rows in x_explain.",
+  iterative = "Whether iterative estimation was requested in explain().",
+  n_iterations_median = "Median number of Shapley estimation iterations.",
+  group = "Whether group-wise explanations were requested in explain().",
+  group_size = "Number of consecutive features per generated group.",
+  model_variant = "Prediction model being explained: xgb, xgb_large, ranger, or linear.",
+  sweep = "Benchmark block that generated the configuration.",
+  approach_args = paste(
+    "Arguments passed through explain(...); regression_variant selects a registered regression estimator",
+    "and tuning recipe."
+  ),
+  pair_key = "Identifier for a matched iterative/fixed-budget comparison.",
+  pair_role = "Role in a matched iterative/fixed-budget comparison.",
+  n = "Number of successful measured replicates.",
+  wall_median = "Median runtime of explain() across replicates, in seconds.",
+  wall_iqr = "Interquartile range of explain() runtimes across replicates, in seconds.",
+  ram_mb_median = paste(
+    "Median peak RAM used during the full benchmark run, including loaded data,",
+    "the fitted prediction model, and workers; 1 MiB = 1.0486 MB."
+  )
+)
+stopifnot(setequal(names(column_descriptions), names(benchmark_results)))
+column_descriptions <- column_descriptions[names(benchmark_results)]
+
+display_name_overrides <- c(
+  "Iterations" = "n_iterations_median",
+  "Runtime (s)" = "wall_median",
+  "Runtime IQR (s)" = "wall_iqr",
+  "Peak RAM (MiB)" = "ram_mb_median"
+)
+column_display_names <- stats::setNames(names(benchmark_results), names(benchmark_results))
+column_display_names[unname(display_name_overrides)] <- names(display_name_overrides)
+
+explain_columns <- c("approach", "max_n_coalitions", "n_MC_samples", "iterative", "group", "approach_args")
+extra_computation_columns <- c("min_n_batches", "max_batch_size", "max_batch_cube_size")
+column_guide_names <- stats::setNames(
+  sprintf("<code>%s</code>", column_display_names),
+  names(column_display_names)
+)
+column_guide_names[explain_columns] <- sprintf(
+  '<a href="../reference/explain.html"><code>%s</code></a>',
+  column_display_names[explain_columns]
+)
+column_guide_names[extra_computation_columns] <- sprintf(
+  '<a href="../reference/get_extra_comp_args_default.html"><code>%s</code></a>',
+  column_display_names[extra_computation_columns]
+)
+column_guide_descriptions <- column_descriptions
+column_guide_descriptions["approach_args"] <- paste0(
+  column_guide_descriptions["approach_args"],
+  ' <a href="https://github.com/NorskRegnesentral/shapr/blob/master/benchmarks/README.md#regression-variants">',
+  "See the regression variant reference.</a>"
+)
+column_guide <- data.frame(
+  Column = unname(column_guide_names),
+  Description = unname(column_guide_descriptions),
+  check.names = FALSE
+)
+
+column_tooltip_map <- paste(
+  sprintf(
+    "%s: %s",
+    encodeString(unname(column_display_names), quote = "\""),
+    encodeString(unname(column_descriptions), quote = "\"")
+  ),
+  collapse = ", "
+)
+
+discrete_slider_columns <- c(
+  "n_features",
+  "max_n_coalitions",
+  "n_MC_samples",
+  "min_n_batches",
+  "workers",
+  "dt_threads",
+  "n_train",
+  "n_explain",
+  "group_size",
+  "n",
+  "n_iterations_median"
+)
+discrete_slider_map <- paste(
+  vapply(discrete_slider_columns, function(column) {
+    values <- sort(unique(benchmark_results[[column]]))
+    sprintf(
+      "%d: [%s]",
+      match(column, names(benchmark_results)) - 1,
+      paste(values, collapse = ", ")
+    )
+  }, character(1)),
+  collapse = ", "
+)
+choice_filter_widths <- c(dataset = "12rem", approach = "14rem", approach_args = "24rem")
+choice_filter_width_map <- paste(
+  sprintf(
+    "%d: \"%s\"",
+    match(names(choice_filter_widths), names(benchmark_results)) - 1,
+    unname(choice_filter_widths)
+  ),
+  collapse = ", "
+)
+benchmark_table_callback <- DT::JS(paste0(
+  "function(settings, json) {",
+  "var choiceFilterWidths = {", choice_filter_width_map, "};",
+  "var discreteValues = {", discrete_slider_map, "};",
+  "var columnTooltips = {", column_tooltip_map, "};",
+  "var table = this.api();",
+  "var $container = $(table.table().container());",
+  "var $header = $container.find('.dataTables_scrollHead thead').first();",
+  "var applyHeaderTooltips = function() {",
+  "table.columns().every(function(columnIndex) {",
+  "var columnName = table.settings()[0].aoColumns[columnIndex].sTitle;",
+  "var tooltip = columnTooltips[columnName];",
+  "if (tooltip) $(this.header()).attr('title', tooltip);",
+  "});",
+  "};",
+  "var applyChoiceFilterWidths = function() {",
+  "Object.keys(choiceFilterWidths).forEach(function(columnIndex) {",
+  "var visibleIndex = table.column.index('toVisible', Number(columnIndex));",
+  "if (visibleIndex === null) return;",
+  "$header.find('tr').eq(1).children().eq(visibleIndex).children('div').eq(1)",
+  ".css({width: choiceFilterWidths[columnIndex], minWidth: ''});",
+  "});",
+  "};",
+  "var applyDiscreteSliders = function() {",
+  "Object.keys(discreteValues).forEach(function(columnIndex) {",
+  "var values = discreteValues[columnIndex];",
+  "var visibleIndex = table.column.index('toVisible', Number(columnIndex));",
+  "if (visibleIndex === null) return;",
+  "var range = {min: values[0], max: values[values.length - 1]};",
+  "values.slice(1, -1).forEach(function(value, index) {",
+  "var position = 100 * (index + 1) / (values.length - 1);",
+  "range[position.toFixed(6) + '%'] = value;",
+  "});",
+  "var $slider = $header.find('tr').eq(1).children().eq(visibleIndex).find('.noUi-target');",
+  "if (!$slider.length || $slider.data('benchmarkDiscrete')) return;",
+  "var currentValues = $slider.val().map(Number);",
+  "$slider.noUiSlider({",
+  "start: currentValues,",
+  "range: range,",
+  "snap: true",
+  "}, true);",
+  "$slider.data('benchmarkDiscrete', true);",
+  "var $popup = $slider.parent();",
+  "$popup.children('.benchmark-discrete-values').remove();",
+  "$('<div class=\"benchmark-discrete-values\"></div>')",
+  ".text('Available values: ' + values.join(', ')).appendTo($popup);",
+  "});",
+  "};",
+  "var syncFixedFilterCells = function() {",
+  "var $rows = $header.find('tr');",
+  "var $labels = $rows.eq(0).children();",
+  "var $filters = $rows.eq(1).children();",
+  "$filters.removeClass('dtfc-fixed-left dtfc-fixed-right').css({left: '', right: '', position: '', zIndex: ''});",
+  "$labels.each(function(index) {",
+  "var $label = $(this);",
+  "var side = $label.hasClass('dtfc-fixed-right') ? 'right' :",
+  "  ($label.hasClass('dtfc-fixed-left') ? 'left' : null);",
+  "if (!side) return;",
+  "var $filter = $filters.eq(index);",
+  "$filter.addClass('dtfc-fixed-' + side).css({position: 'sticky', zIndex: 3});",
+  "$filter.css(side, $label.css(side));",
+  "});",
+  "};",
+  "document.addEventListener('mousedown', function(event) {",
+  "var $input = $(event.target).closest('.dtfc-fixed-right input');",
+  "if (!$input.closest('.benchmark-table-wide').length) return;",
+  "event.preventDefault();",
+  "var $popup = $input.parent().next();",
+  "var shouldOpen = !$popup.is(':visible');",
+  "$header.find('.dtfc-fixed-right input').each(function() {",
+  "var $otherPopup = $(this).parent().next();",
+  "if (!$otherPopup.is($popup)) $otherPopup.hide();",
+  "});",
+  "if (shouldOpen) {",
+  "$input.closest('.dataTables_scrollHead').addClass('benchmark-filter-open');",
+  "$popup.css({left: 'auto', right: 0}).show();",
+  "} else {",
+  "$popup.hide();",
+  "$input.closest('.dataTables_scrollHead').removeClass('benchmark-filter-open');",
+  "}",
+  "}, true);",
+  "$(document).on('mousedown.benchmarkFilters', function(event) {",
+  "if ($(event.target).closest('.dtfc-fixed-right').length) return;",
+  "$header.find('.dtfc-fixed-right input').each(function() {",
+  "$(this).parent().next().hide();",
+  "});",
+  "$header.closest('.dataTables_scrollHead').removeClass('benchmark-filter-open');",
+  "});",
+  "table.on('column-sizing.dt.benchmarkFilters column-visibility.dt.benchmarkFilters', function() {",
+  "window.setTimeout(function() {",
+  "applyHeaderTooltips();",
+  "applyChoiceFilterWidths();",
+  "applyDiscreteSliders();",
+  "syncFixedFilterCells();",
+  "}, 75);",
+  "});",
+  "window.setTimeout(function() {",
+  "applyHeaderTooltips();",
+  "applyChoiceFilterWidths();",
+  "applyDiscreteSliders();",
+  "syncFixedFilterCells();",
+  "}, 0);",
+  "}"
+))
+
+n_runs <- sum(benchmark_results$n)
+n_configurations <- nrow(benchmark_results)
+```
+
+<style>
+.benchmark-callout {
+  border-left: 4px solid var(--bs-primary);
+  background: var(--bs-secondary-bg);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.benchmark-table-wide {
+  width: min(1320px, calc(100vw - 1.5rem));
+  margin-left: -0.75rem;
+  padding: 0 0.5rem 1rem;
+  background: var(--bs-body-bg);
+  position: relative;
+  z-index: 2;
+}
+
+.benchmark-table-wide .dataTables_wrapper {
+  width: 100%;
+}
+
+.benchmark-table-wide .dataTables_scrollBody table.dataTable {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.benchmark-table-wide .dataTables_scrollHead .selectize-control.multi .selectize-input.has-items {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+}
+
+.benchmark-table-wide .dataTables_scrollHead .selectize-control.multi .selectize-input.has-items > .item {
+  max-width: 100%;
+}
+
+.benchmark-table-wide table.dataTable.stripe > tbody > tr.odd > * {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.benchmark-table-wide .dt-buttons,
+.benchmark-table-wide .dataTables_filter {
+  margin-bottom: 0.75rem;
+}
+
+.benchmark-table-wide .dataTables_scrollHead.benchmark-filter-open {
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+.benchmark-table-wide table.dataTable tr > :nth-last-child(2).dtfc-fixed-right {
+  box-shadow: -4px 0 4px -4px var(--bs-secondary-color);
+}
+
+.benchmark-column-guide {
+  border-bottom: 1px solid var(--bs-border-color);
+  border-top: 1px solid var(--bs-border-color);
+  margin-top: 1rem;
+  padding: 0.75rem 0;
+}
+
+.benchmark-column-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.benchmark-column-guide table {
+  margin-top: 0.75rem;
+}
+
+.benchmark-discrete-values {
+  clear: both;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  padding-top: 0.5rem;
+  white-space: normal;
+}
+
+@media (min-width: 768px) {
+  .approach-guidance-table table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .approach-guidance-table col:nth-child(1) {
+    width: 14%;
+  }
+
+  .approach-guidance-table col:nth-child(2) {
+    width: 30%;
+  }
+
+  .approach-guidance-table col:nth-child(3) {
+    width: 56%;
+  }
+}
+
+@media (max-width: 576px) {
+  .benchmark-table-wide {
+    width: calc(100vw - 1rem);
+  }
+}
+</style>
+
+## What this study measures
+
+This benchmark study measures the **computational cost** of `shapr::explain()`:
+runtime and peak RAM. It covers `r format(n_runs, big.mark = ",")` successful
+runs across `r format(n_configurations, big.mark = ",")` configurations and all
+11 built-in estimation approaches. Each approach is studied through controlled
+blocks that vary one or a few workload dimensions around a shared baseline.
+
+The main workload dimensions are the number of features, coalitions, Monte Carlo
+samples, training observations, observations to explain, batches, and parallel
+workers. The study also includes relevant approach-specific choices, such as
+factor complexity, empirical bandwidth selection, regression models, and
+VAEAC architecture and training settings.
+
+<div class="benchmark-callout">
+<strong>This is a cost study, not an accuracy study.</strong> Coalition and Monte
+Carlo budgets affect runtime and memory, but these results do not establish which
+budgets are accurate enough for a particular explanation problem.
+</div>
+
+All measurements were collected on one Linux host running Ubuntu 24.04, with an
+AMD Ryzen Threadripper 1950X processor (16 physical cores, 32 threads) and 128 GiB RAM.
+The study used synthetic numeric, mixed, or categorical data. Absolute
+time and RAM depend on the machine, operating system, prediction model, and
+data. The most transferable evidence is therefore the relative change within a
+controlled benchmark block, rather than a direct prediction of runtime on
+another machine.
+
+<div class="benchmark-callout">
+<strong>Treat these results as rough planning guidelines.</strong> We provide no
+guarantee that the reported timings, memory use, approach ordering, or scaling
+patterns will generalize to another machine, dataset, model, or package version.
+We recommend benchmarking a representative subset of the intended workload before committing
+substantial compute resources.
+</div>
+
+Runtime is measured directly around `shapr::explain()`.
+This timing excludes preparing the benchmark data and fitting the models.
+Peak RAM is the highest memory used during the full benchmark run, including
+loaded data, the fitted prediction model, and workers.
+To limit compute time, some of the most expensive VAEAC, ARF, and timeseries
+configurations were run twice; all other configurations were run three times.
+
+The full design, execution framework, committed CSV files, and numerical audit
+are available in the
+[benchmark directory](https://github.com/NorskRegnesentral/shapr/tree/master/benchmarks)
+at GitHub.
+
+## Key findings and practical guidance
+
+- **`approach`: choose for the data, then consider cost.** Gaussian is typically the
+  fastest dependence-aware method for purely numeric data, although
+  regression surrogate is faster at large `x_explain` (`100+`).
+  Regression surrogate is fastest for the mixed-data settings. For fully
+  categorical data, it has similar runtime to the categorical approach.
+  These are cost comparisons, not rankings of explanation quality.
+
+- **`x_explain`: approaches differ in setup cost and cost per explained
+  observation.** The approaches fall into three broad cost patterns.
+  1. **Low setup, increasing cost per observation:** Gaussian, copula,
+  empirical, categorical, and independence (not recommended) are attractive when explaining only
+  a few observations, but their runtime increases as `x_explain` grows.
+  2. **High setup, low cost per observation:** For regression surrogate,
+  regression separate, and VAEAC, setup costs typically dominate while each
+  additional observation adds relatively little runtime. They can therefore
+  become more competitive for larger `x_explain` (although VAEAC remains
+  costly).
+  3. **High setup, increasing cost per observation:** Ctree, ARF, and timeseries
+  combine setup costs with strong runtime growth as `x_explain` increases.
+
+  When appropriate, explaining a representative sample can reduce runtime for
+  methods whose cost increases with `x_explain` (category 1 and 3).
+
+- **`x_train`: reducing the training set can lower runtime for most
+  approaches.** Runtime changes little with `x_train` for Gaussian, regression
+  separate, and independence (not recommended). It increases more clearly for empirical, copula,
+  categorical, Ctree, ARF, timeseries, VAEAC, and regression surrogate.
+  Subsampling `x_train` can therefore reduce runtime for these approaches (when
+  statistically appropriate).
+
+- **`r popover_note("workers")`: one worker is often fine; try four for expensive
+  runs.** Parallel overhead commonly outweighs useful work for small explanation
+  tasks. Heavy Gaussian, empirical, Ctree, ARF, timeseries, and
+  explanation-heavy VAEAC workloads can benefit. Independence, copula,
+  categorical, regression separate, and regression surrogate do not benefit at
+  the tested sizes. Additional workers increase memory use, and runtime gains
+  often diminish beyond four workers. Parallel VAEAC requires
+  `future::multicore`.
+
+- **`r popover_note("batching", c("min_n_batches", "max_batch_size", "max_batch_cube_size"))`:
+  balance peak RAM against runtime.**
+  - **RAM:** Smaller batches generally reduce
+  peak RAM by limiting how much intermediate data is held at once. For Gaussian,
+  copula, and empirical, `max_batch_cube_size` only affects large dense workloads,
+  where it can automatically create smaller batches; relaxing the default limit
+  can sharply increase RAM.
+  - **Runtime:** The cost of
+  smaller batches depends on the approach. Using smaller batches adds little to
+  modest overhead for Gaussian, Ctree, and ARF, but can be costly for empirical,
+  timeseries, and VAEAC. Parallel runs also need enough batches to keep workers
+  busy.
+
+  Start with the defaults, then use smaller batches when memory is limiting or larger
+  batches when repeated batch overhead dominates.
+
+- **`iterative`: use when no reasonable coalition budget is known.** At the same final
+  coalition budget, iterative execution costs about the same as a fixed run if
+  it stops after one iteration and more if it needs several. It is most useful
+  when not even a rough fixed budget is known; otherwise, prefer a fixed run.
+
+- **`max_n_coalitions` and `x_explain`: the most consistent generic cost
+  controls.** `n_MC_samples` can also matter, but training, fitting, or data-search
+  costs dominate it for some approaches. Feature count, training size, and
+  factor complexity can also be important, but their effects vary more by
+  approach (see below).
+
+- **`model` and `n_MC_samples`: prediction cost can amplify sampling cost.**
+  Model prediction is repeated across coalitions and conditional samples. For
+  slow prediction models, reducing `n_MC_samples` may therefore shorten runtime
+  considerably; for fast models, other parts of the computations may dominate.
+
+- **Approach-specific choices and execution settings can dominate generic
+  controls.** Examples include empirical AICc bandwidth selection,
+  tuning of the regression model in regression separate, VAEAC training, many
+  small batches for timeseries or VAEAC, and parallel ARF.
+
+## Additional guidance by approach
+
+The controls described above, including `max_n_coalitions`, `n_MC_samples`,
+`x_explain`, `x_train`, workers, and batching, apply relatively broadly across approaches. This
+section highlights *additional* approach-specific controls and important
+constraints that affect how those controls should be used. Reducing
+`max_n_coalitions`, `n_MC_samples`, `x_train`, or model complexity can affect the
+resulting explanations, so verify that the explanation accuracy and quality remain adequate.
+Reducing `x_explain` is not always an option because every observation may need to be
+explained. Nevertheless, knowing which approaches are sensitive to `x_explain`
+is useful for runtime planning. Pass
+approach-specific arguments to `explain()` through `...`; see the
+[manual](../reference/explain.html#arg--).
+
+::: {.approach-guidance-table}
+
+| Approach | *Additional* cost factors or constraint | How to reduce computational cost |
+|:--|:--|:--|
+| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Time and RAM:** Lower `max_n_coalitions` or `n_MC_samples`. Reducing `arf.num_trees` or `arf.max_iters` may also lower fitting cost, but remember to verify the fitted conditional distribution.<br>**RAM:** Add `r popover_note("workers")` only after checking available memory. |
+| Categorical | Limited sensitivity to `n_MC_samples` | **Time:** Prioritize reducing `max_n_coalitions`, `x_train`, or `x_explain` before reducing Monte Carlo samples. |
+| Copula | Sensitivity to `x_train` | **Time:** Reduce `x_train` as well as `max_n_coalitions`, `n_MC_samples`, or `x_explain`. |
+| Ctree | Strong sensitivity to feature and factor complexity | **Time and RAM:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible. Many factor levels are especially costly when many factor columns are present. |
+| Empirical | `empirical.type` | **Time:** Keep `"fixed_sigma"` unless adaptive bandwidth selection is needed; `"AICc_full"` and `"AICc_each_k"` are orders of magnitude slower. |
+| Gaussian | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
+| Independence | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
+| Regression separate | `regression.model`, `regression.tune_values`, `regression.vfold_cv_para`; fitting-dominated runtime | **Time:** Use a simpler regression model and avoid tuning or cross-validation when appropriate; among the general controls, prioritize `max_n_coalitions`. |
+| Regression surrogate | `regression.surrogate_n_comb` and regression fitting controls | **Time and RAM:** Reduce `regression.surrogate_n_comb`, `x_train`, or `max_n_coalitions`.<br>**Time:** Use a simpler regression model and avoid tuning or cross-validation when appropriate. Verify that the resulting surrogate remains adequate. |
+| Timeseries | High overhead per batch; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, or `x_explain` when possible, and prefer larger batches. Changing `n_MC_samples` had little effect in the tested settings.<br>**RAM:** Use smaller batches when needed; memory rises sharply with workers. |
+| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Time:** Lower `vaeac.epochs` or reduce `x_train`, then verify explanation quality; depth, width, and latent dimension has smaller effects in relevant ranges. Prefer larger batches.<br>**RAM:** Use smaller batches and fewer workers. Additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
+
+:::
+
+## Explore all results
+
+The table below combines the benchmark results for the various approaches. Each row
+is one configuration aggregated over its replicates. The retained experiments
+cover `r paste(sort(unique(benchmark_results$n_features)), collapse = ", ")`
+features, with available values varying by approach. Use the controls above each
+column to filter: categorical controls accept one or more values, and sliders
+for experiment inputs snap to values present in the results. Click headings to
+sort, and use **Column visibility** to focus on relevant fields. Runtime and peak
+RAM remain fixed on the right while scrolling horizontally; runtime IQR is
+available under **Column visibility**. **CSV** downloads the currently displayed
+table.
+
+The default view shows the main workload inputs, approach-specific settings,
+replicate count, runtime, and peak RAM.
+Less frequently needed experiment details remain available under **Column visibility**.
+Hover over any column name for its description.
+
+<details class="benchmark-column-guide">
+<summary>Column descriptions</summary>
+
+Direct `explain()` arguments link to the function manual. Batching controls
+link to [`get_extra_comp_args_default()`](../reference/get_extra_comp_args_default.html)
+and are passed through `extra_computation_args`.
+
+```{r benchmark-column-guide, results = "asis"}
+knitr::kable(
+  column_guide,
+  format = "html",
+  escape = FALSE,
+  align = c("l", "l"),
+  table.attr = 'class="table table-sm"'
+)
+```
+
+</details>
+
+<div class="benchmark-table-wide">
+
+```{r benchmark-table}
+DT::datatable(
+  benchmark_results,
+  rownames = FALSE,
+  colnames = display_name_overrides,
+  filter = "top",
+  extensions = c("Buttons", "FixedColumns"),
+  class = "stripe hover compact nowrap",
+  width = "100%",
+  options = list(
+    dom = "Blfrtip",
+    buttons = list(
+      "copy",
+      list(extend = "csv", filename = "shapr-benchmark-summary"),
+      list(extend = "colvis", text = "Column visibility")
+    ),
+    columnDefs = list(
+      list(targets = hidden_column_indices, visible = FALSE)
+    ),
+    scrollX = TRUE,
+    scrollY = "65vh",
+    scrollCollapse = TRUE,
+    fixedColumns = list(leftColumns = 0, rightColumns = 2),
+    pageLength = 25,
+    lengthMenu = list(c(10, 25, 50, 100, -1), c("10", "25", "50", "100", "All")),
+    autoWidth = TRUE,
+    initComplete = benchmark_table_callback
+  )
+) |>
+  DT::formatRound(
+    columns = c(
+      "Runtime (s)",
+      "Runtime IQR (s)"
+    ),
+    digits = 1
+  ) |>
+  DT::formatRound(
+    columns = "Peak RAM (MiB)",
+    digits = 0
+  ) |>
+  DT::formatRound(
+    columns = "Iterations",
+    digits = 1
+  )
+```
+
+</div>

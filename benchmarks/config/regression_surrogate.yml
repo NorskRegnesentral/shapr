@@ -1,0 +1,70 @@
+# ============================================================================
+# regression_surrogate.yml — cost study for the `regression_surrogate` approach.
+#
+# Fits a SINGLE surrogate regression model across all coalitions. Two headline
+# knobs beyond the standard battery:
+#   * regression.surrogate_n_comb — how many coalitions each training row is
+#     augmented with (default = n_coalitions - 2). Swept upward here.
+#   * the regression model itself — the xgboost surrogate variant from
+#     R/registry.R (`surrogate_none`) vs the default linear model.
+# Supports all dataset families -> includes the mixed/categorical dataset sweep.
+# Baseline numeric. Requires `parsnip` (+ `xgboost` for the variant). Inherits
+# the 12-hour timeout and 96-hour budget.
+#
+# Run with:  bin/orchestrate.sh config/regression_surrogate.yml
+# ============================================================================
+approach: regression_surrogate
+dataset: numeric
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 5000, 20000]
+      n_MC_samples: [50, 250]
+
+  - name: features
+    grid:
+      n_features: [4, 8, 12, 16, 20]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [32, 128, 256, 512]
+
+  - name: explain
+    grid:
+      n_explain: [1, 25, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 5, 25]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]
+
+  - name: dataset
+    grid:
+      dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
+
+  # Increase the training-augmentation count. Held at the baseline
+  # max_n_coalitions = 128, so the value must stay <= n_coalitions - 2 = 126;
+  # 126 is the maximum (= the default full-augmentation behaviour).
+  - name: surrogate_n_comb
+    approach_args:
+      regression.surrogate_n_comb: [8, 16, 32, 64, 126]
+
+  # The xgboost surrogate model (vs the default linear surrogate).
+  - name: variant
+    approach_args:
+      variant: [surrogate_none]

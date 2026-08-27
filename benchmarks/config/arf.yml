@@ -1,0 +1,92 @@
+# ============================================================================
+# arf.yml — cost study for the `arf` (adversarial random forests) approach.
+#
+# arf fits a density model and is moderately expensive and memory-heavy under
+# parallelism. Coarser grids than gaussian. Supports all dataset families ->
+# includes the mixed/categorical `dataset` sweep. Baseline numeric. Requires the
+# `arf` package (runs are skipped if missing). Inherits the 12-hour timeout and
+# 96-hour budget.
+#
+# Run with:  bin/orchestrate.sh config/arf.yml
+# ============================================================================
+approach: arf
+dataset: numeric
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 5000, 20000]
+      n_MC_samples: [50, 250, 1000]
+
+  - name: features
+    grid:
+      n_features: [4, 8, 12, 16, 20]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [32, 128, 256, 512]
+
+  - name: explain
+    grid:
+      n_explain: [1, 25, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 5, 25]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]
+
+  - name: dataset
+    grid:
+      dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
+
+  # Realistic workloads are substantially more expensive for ARF, so Option C
+  # keeps these added blocks at two replicates while the core blocks use three.
+  - name: realistic_medium
+    replicates: 2
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_medium_low_batch
+    replicates: 2
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1]
+      min_n_batches: [4]
+
+  - name: realistic_heavy
+    replicates: 2
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [1, 4, 8, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_heavy_low_batch
+    replicates: 2
+    grid:
+      n_train: [5000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [1]
+      min_n_batches: [4]

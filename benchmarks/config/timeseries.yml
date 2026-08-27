@@ -1,0 +1,97 @@
+# ============================================================================
+# timeseries.yml — cost study for the `timeseries` approach (numeric-only).
+#
+# The timeseries approach treats the (AR(1)-correlated) numeric features as an
+# ordered series. Standard OAT battery, no approach-specific knobs and no
+# cube-size cap (it does not use the dense-array code path). Inherits the
+# 12-hour timeout and 96-hour budget.
+#
+# Run with:  bin/orchestrate.sh config/timeseries.yml
+# ============================================================================
+approach: timeseries
+dataset: numeric
+
+blocks:
+  - name: scale_train_mc
+    grid:
+      n_train: [500, 2500, 10000, 20000]
+      n_MC_samples: [50, 250, 1000]
+
+  - name: features
+    grid:
+      n_features: [4, 8, 12, 16, 20, 30]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [16, 64, 128, 256, 512, 1024]
+
+  - name: explain
+    grid:
+      n_explain: [1, 10, 25, 50, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 2, 4, 8]
+
+  - name: parallel
+    grid:
+      workers: [1, 2, 4, 8, 16, 32]
+      min_n_batches: [8, 32, 128]
+
+  - name: batches
+    grid:
+      min_n_batches: [1, 2, 5, 10, 25, 50]
+      max_batch_cube_size: [Inf]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [256, 1024]
+
+  # Realistic workloads are kept at two replicates because the heavy sequential
+  # rows take about 15 minutes each. The high-risk 16-worker/32-batch heavy cell
+  # is deliberately absent, so every listed row is intended to run.
+  - name: realistic_medium
+    replicates: 2
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1, 4, 16]
+      min_n_batches: [8, 32]
+
+  - name: realistic_medium_low_batch
+    replicates: 2
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [256]
+      n_explain: [25]
+      workers: [1]
+      min_n_batches: [1]
+
+  - name: realistic_heavy_sequential
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [1]
+      min_n_batches: [2, 8, 32]
+
+  - name: realistic_heavy_parallel
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [4]
+      min_n_batches: [8, 32]
+
+  - name: realistic_heavy_safe_frontier
+    replicates: 2
+    grid:
+      n_train: [2500]
+      max_n_coalitions: [256]
+      n_explain: [50]
+      workers: [8, 16]
+      min_n_batches: [8]

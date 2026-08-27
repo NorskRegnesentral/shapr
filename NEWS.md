@@ -13,6 +13,7 @@
 ### Development workflow
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
+* Strengthened the compute/memory benchmark framework with coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. (branch: bench)
 
 ### Bug fixes
 * Fixed a bug in the `vaeac` approach where an all-categorical data set whose features all have the same number of levels was encoded incorrectly, causing a torch `index ... is out of bounds` error. `vaeac_preprocess_data()` used `sapply(data, levels)`, which simplifies to a matrix (instead of a per-feature list) when every feature is a factor with the same number of levels, corrupting `one_hot_max_sizes`. ([#506](https://github.com/NorskRegnesentral/shapr/pull/506))
@@ -30,6 +31,7 @@
 
 ### Documentation
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+* Updated computational benchmark reporting to use wall time measured directly around `explain()` rather than fresh-process runtime, while retaining harness timings as diagnostics. (branch: bench)
 
 ### Python
 * Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy` compatibility package remains available on PyPI for a transition period. ([#500](https://github.com/NorskRegnesentral/shapr/pull/500))

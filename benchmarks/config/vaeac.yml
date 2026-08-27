@@ -1,0 +1,141 @@
+# ============================================================================
+# vaeac.yml — per-approach cost study for the `vaeac` approach.
+#
+# vaeac is BY FAR the most expensive approach (~150–1170 s per run at the quick
+# scale; training the variational autoencoder dominates). It therefore gets
+# COARSE grids and only 2 replicates (each run is already long), with a real
+# wall-clock budget so it cannot overrun the week. One study = one approach = a
+# list of `blocks`. Anything set here overrides common.yml.
+#
+# Run with:  bin/orchestrate.sh config/vaeac.yml
+# ============================================================================
+approach: vaeac
+dataset: numeric
+
+replicates: 2
+
+# The 12-hour per-run timeout and 96-hour study budget are inherited from
+# common.yml. VAEAC keeps two replicates because its retained blocks are much
+# more expensive than the other approaches.
+
+blocks:
+  # ---- Core OAT battery (coarse levels, since vaeac is expensive) -----------
+  - name: scale_train_mc
+    grid:
+      n_train: [1000, 5000]
+      n_MC_samples: [50, 250]
+
+  - name: coalitions
+    grid:
+      max_n_coalitions: [32, 128, 256]
+
+  - name: features            # numeric-family only (column subsetting)
+    grid:
+      n_features: [4, 8, 12]
+
+  - name: explain
+    grid:
+      n_explain: [1, 25, 100]
+
+  - name: dt_threads
+    grid:
+      dt_threads: [1, 4]
+
+  # Parallel scaling combined with batching (workers need batches to be useful).
+  # Parallel scaling combined with batching. vaeac uses torch, whose objects are
+  # external pointers that cannot be serialized to `multisession` workers ("external
+  # pointer is not valid"); it must use forking (`multicore`) or run sequentially.
+  - name: parallel
+    grid:
+      workers: [1, 4, 16]
+      min_n_batches: [16, 64]
+      backend: [multicore]
+
+  # Batching lever, isolated (cap off so min_n_batches alone governs the count).
+  - name: batches
+    grid:
+      min_n_batches: [1, 4, 16, 64]
+      max_batch_cube_size: [Inf]
+
+  # Mixed / categorical data settings (vaeac supports factors): few/many factor
+  # columns x few/many levels, plus the all-categorical dataset.
+  - name: dataset
+    grid:
+      dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
+
+  - name: iterative_budget
+    pair: iterative
+    grid:
+      max_n_coalitions: [128]
+
+  # ---- vaeac-specific: vary each hyperparameter SEPARATELY (1-D sweeps) ------
+  - name: vaeac_depth
+    approach_args:
+      vaeac.depth: [2, 3, 4]
+
+  - name: vaeac_width
+    approach_args:
+      vaeac.width: [16, 32, 64]
+
+  - name: vaeac_epochs
+    approach_args:
+      vaeac.epochs: [3, 10, 30]
+
+  - name: vaeac_latent_dim
+    approach_args:
+      vaeac.latent_dim: [4, 8, 16]
+
+  - name: vaeac_n_vaeacs_initialize
+    approach_args:
+      vaeac.n_vaeacs_initialize: [1, 2, 4]
+
+  # Realistic workloads retain the approach-wide two-replicate setting. VAEAC
+  # uses multicore because trained torch objects cannot be serialized safely to
+  # multisession workers.
+  - name: realistic_training_sequential
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [128]
+      n_explain: [25]
+      workers: [1]
+      backend: [multicore]
+      min_n_batches: [4, 16, 64]
+      max_batch_cube_size: [Inf]
+    approach_args:
+      vaeac.epochs: [30]
+
+  - name: realistic_training_parallel
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [128]
+      n_explain: [25]
+      workers: [4, 16]
+      backend: [multicore]
+      min_n_batches: [16, 64]
+      max_batch_cube_size: [Inf]
+    approach_args:
+      vaeac.epochs: [30]
+
+  - name: realistic_explanation_sequential
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [1]
+      backend: [multicore]
+      min_n_batches: [4, 16, 64]
+      max_batch_cube_size: [Inf]
+    approach_args:
+      vaeac.epochs: [10]
+
+  - name: realistic_explanation_parallel
+    grid:
+      n_train: [1000]
+      max_n_coalitions: [512]
+      n_explain: [100]
+      workers: [4, 16]
+      backend: [multicore]
+      min_n_batches: [16, 64]
+      max_batch_cube_size: [Inf]
+    approach_args:
+      vaeac.epochs: [10]

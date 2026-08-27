@@ -70,6 +70,7 @@ LinkingTo:
     RcppArmadillo,
     Rcpp
 VignetteBuilder: knitr
+Config/Needs/website: DT
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0

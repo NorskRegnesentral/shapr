@@ -1,0 +1,209 @@
+# ============================================================================
+# common.yml — shared settings for ALL benchmark studies
+#
+# Every study config (oat_quick.yml, factorial_weekend.yml, ...) is merged on
+# top of this file. Anything you set in a study config OVERRIDES the value here.
+# Edit this file to change machine-wide defaults (model, datasets, baseline).
+# ============================================================================
+
+# Global RNG seed. Each run derives a per-run seed from this + the config id, so
+# runs are reproducible and replicates of the same config are identical.
+seed: 2025
+
+# Number of measured replicates per configuration (median/IQR reported).
+# Expensive studies or blocks may override this with 2.
+replicates: 3
+
+# Randomise the order in which configs are executed (seeded). Protects against
+# thermal drift on this box (schedutil governor) correlating with any one
+# dimension.
+randomize_order: true
+
+# Seconds to idle between runs (lets the CPU cool a little between configs).
+cooldown_sec: 0.5
+
+# Re-aggregate results.csv / summary.csv after every Nth completed run (so a
+# long study keeps an up-to-date combined CSV on disk). 0 disables periodic
+# aggregation (the final aggregate at the end always runs).
+aggregate_every: 10
+
+# Hard wall-clock limit (seconds) for a single run, enforced at the bash level
+# by orchestrate.sh. A run exceeding this is killed and recorded with
+# status="timeout". Re-attempt timed-out runs with `--retry-timeouts`.
+#
+# Every single run is capped at 12 h: a pathological argument combination is
+# killed at this limit (its partial time + peak RAM are still recorded as a
+# `timeout` row) so it cannot stall the whole study. Runs that need even longer
+# can be re-attempted later with a raised limit + `--retry-timeouts`.
+timeout_sec: 43200
+
+# Per-study (per-approach) wall-clock budget in seconds. orchestrate.sh stops
+# launching NEW runs once exceeded; resume to continue. 96 h per approach.
+time_budget_sec: 345600
+
+# Feature group size for the `group` sweep is set per run via the group_size
+# grid dimension (see the baseline below).
+
+# ---------------------------------------------------------------------------
+# Output locations (relative to the benchmarks/ folder).
+# ---------------------------------------------------------------------------
+paths:
+  data_dir: data        # cached datasets + trained models
+  results_dir: results  # one JSON per run + grid.csv + results.csv
+  logs_dir: logs        # per-run stdout/stderr
+
+# ---------------------------------------------------------------------------
+# Thread / BLAS controls.
+#
+# IMPORTANT: orchestrate.sh exports OMP_NUM_THREADS / OPENBLAS_NUM_THREADS /
+# MKL_NUM_THREADS = 1 so that BLAS is single-threaded. This guarantees the ONLY
+# source of parallelism is the `future` worker count we sweep ("workers"). Do
+# not raise these unless you specifically want to study BLAS threading.
+# ---------------------------------------------------------------------------
+controls:
+  blas_threads: 1
+  dt_threads: 1         # data.table::setDTthreads() inside each run
+
+# ---------------------------------------------------------------------------
+# Peak-RAM measurement.
+#   method: poll   -> external /proc process-session RSS sampler (captures
+#                     detached future workers). Portable, sampled at roughly
+#                     poll_interval_ms resolution.
+#           cgroup -> run under `systemd-run --user --scope` and read cgroup-v2
+#                     memory.peak (exact, catches transient spikes).
+#           both   -> wrap in a scope AND poll the tree; record both numbers.
+# ---------------------------------------------------------------------------
+ram:
+  method: both
+  poll_interval_ms: 15
+
+# ---------------------------------------------------------------------------
+# Models. One model is trained per dataset (and re-trained/cached per distinct
+# n_features / n_train, since those change the feature matrix). Model training
+# time is NOT included in the measured explain() time.
+#
+# xgboost is used for the all-numeric dataset; ranger handles factor features
+# natively so it is used for the mixed and categorical datasets.
+# ---------------------------------------------------------------------------
+models:
+  numeric:
+    type: xgboost
+    nrounds: 50
+    max_depth: 3
+    eta: 0.3
+  mixed:
+    type: ranger
+    num_trees: 100
+    max_depth: 6
+  categorical:
+    type: ranger
+    num_trees: 100
+    max_depth: 6
+
+# Named numeric-model variants used by the Gaussian prediction-cost block.
+model_variants:
+  linear:
+    type: linear
+  xgb:
+    type: xgboost
+    nrounds: 50
+    max_depth: 3
+    eta: 0.3
+  xgb_large:
+    type: xgboost
+    nrounds: 500
+    max_depth: 6
+    eta: 0.05
+
+# ---------------------------------------------------------------------------
+# Synthetic datasets. Each is generated once into a large pool and cached; each
+# run subsamples rows (n_train / n_explain) and, for the numeric data, columns
+# (n_features) from the pool.
+#   rho = AR(1) correlation between consecutive numeric features.
+# ---------------------------------------------------------------------------
+datasets:
+  numeric:
+    n_features_max: 30
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  # Four mixed datasets spanning few/many factor COLUMNS x few/many factor
+  # LEVELS, all with 4 numeric columns. dataset_family() maps every mixed_*
+  # name to the "mixed" model family.
+  mixed_fc_fl:        # few factor columns, few levels
+    n_numeric: 4
+    n_factor: 2
+    factor_levels: 2
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_fc_ml:        # few factor columns, many levels
+    n_numeric: 4
+    n_factor: 2
+    factor_levels: 8
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_mc_fl:        # many factor columns, few levels
+    n_numeric: 4
+    n_factor: 8
+    factor_levels: 2
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  mixed_mc_ml:        # many factor columns, many levels
+    n_numeric: 4
+    n_factor: 8
+    factor_levels: 8
+    n_train_max: 20000
+    n_explain_max: 100
+    rho: 0.5
+  categorical:
+    n_factor: 8
+    factor_levels: 3
+    n_train_max: 20000
+    n_explain_max: 100
+
+# ---------------------------------------------------------------------------
+# Baseline reference configuration.
+#
+# In the OAT design, every run starts from this baseline and changes ONE
+# dimension at a time. In the factorial design, dimensions not listed under
+# `factors` fall back to these values (unless overridden in `fixed`).
+#
+# max_batch_size = Inf means the batch count is governed by min_n_batches, but
+# only until shapr's max_batch_cube_size cap engages: in high dimensions that
+# cap lowers max_batch_size (raising the batch count) so no single dense
+# per-batch array exceeds max_batch_cube_size elements. Keep max_batch_cube_size
+# at the shapr default (1e6) for realistic runs; set it to Inf in a sweep to
+# disable the cap and control the batch count precisely via min_n_batches /
+# max_batch_size. The batch count actually used is recorded as used_n_batches
+# (and used_n_batches_max over iterations), alongside effective_max_batch_size.
+# ---------------------------------------------------------------------------
+baseline:
+  approach: gaussian
+  dataset: numeric
+  # 12 features (2^12 = 4096 possible coalitions) keeps the baseline in the
+  # SAMPLING regime. With fewer features, shapr collapses a sampled request to
+  # the EXACT 2^n_features coalitions, so the coalition/MC sweeps would not vary.
+  # The actual count used is always recorded as `used_n_coalitions`.
+  n_features: 12
+  max_n_coalitions: 128
+  n_MC_samples: 250
+  min_n_batches: 10
+  max_batch_size: Inf
+  max_batch_cube_size: 1e6
+  workers: 1
+  backend: multisession
+  dt_threads: 1
+  n_train: 1000
+  n_explain: 25
+  iterative: false
+  group: false
+  # group_size only applies when group = true; features are chunked into groups
+  # of this many consecutive columns. Swept in the gaussian grouping study.
+  group_size: 2
+  # Most studies use the dataset-family model above. Gaussian overrides this
+  # with the explicitly named xgb variant so model-cost comparisons are clear.
+  model_variant: default
+  save_explanations: false

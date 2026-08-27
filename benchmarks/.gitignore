@@ -1,0 +1,21 @@
+# Generated benchmark artefacts that are too large or granular for Git
+data/
+logs/
+
+# Keep the compact study inputs and aggregates, but not per-run JSON artefacts.
+# The accuracy_* and *.shapley.rds rules apply to accuracy studies (see the
+# README); the saved matrices are small and are the raw input to R/accuracy.R.
+results/*
+!results/README.md
+!results/*/
+results/*/*
+!results/*/grid.csv
+!results/*/results.csv
+!results/*/summary.csv
+!results/*/accuracy_results.csv
+!results/*/accuracy_summary.csv
+!results/*/*.shapley.rds
+
+# Obsolete experiments from the earlier OAT/factorial study design.
+results/oat_*/
+results/factorial_*/
