@@ -566,28 +566,32 @@ at GitHub.
 ## Additional guidance by approach
 
 The controls described above, including `max_n_coalitions`, `n_MC_samples`,
-`x_explain`, `x_train`, workers, and batching, apply across approaches. This
-section highlights only additional approach-specific controls and important
-constraints that affect how those controls should be used. Reducing statistical
-budgets or model complexity can change the explanation, so choose them based on
-the required quality rather than cost alone. Pass approach-specific arguments
-to `explain()` through `...`; see the [manual](../reference/explain.html#arg--).
+`x_explain`, `x_train`, workers, and batching, apply relatively broadly across approaches. This
+section highlights *additional* approach-specific controls and important
+constraints that affect how those controls should be used. Reducing
+`max_n_coalitions`, `n_MC_samples`, `x_train`, or model complexity can affect the
+resulting explanations, so verify that the explanation accuracy and quality remain adequate.
+Reducing `x_explain` is not always an option because every observation may need to be
+explained. Nevertheless, knowing which approaches are sensitive to `x_explain`
+is useful for runtime planning. Pass
+approach-specific arguments to `explain()` through `...`; see the
+[manual](../reference/explain.html#arg--).
 
 ::: {.approach-guidance-table}
 
-| Approach | Additional cost control or constraint | How to reduce computational cost |
+| Approach | *Additional* cost factors or constraint | How to reduce computational cost |
 |:--|:--|:--|
-| Gaussian | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
-| Empirical | `empirical.type` | **Time:** Keep `"fixed_sigma"` unless adaptive bandwidth selection is needed; `"AICc_full"` and `"AICc_each_k"` are orders of magnitude slower. |
-| Ctree | Strong sensitivity to feature and factor complexity | **Both:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible. Many factor levels are especially costly when many factor columns are present. |
-| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Both:** Lower `max_n_coalitions` or `n_MC_samples`. Reducing `arf.num_trees` or `arf.max_iters` may also lower fitting cost, but remember to verify the fitted conditional distribution.<br>**RAM:** Add `r popover_note("workers")` only after checking available memory. |
-| Timeseries | High runtime overhead from using many small batches `r popover_note("batching", c("min_n_batches", "max_batch_size"))`; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, or `x_explain` when possible, and prefer larger batches. Changing `n_MC_samples` had little effect in the tested settings.<br>**RAM:** Use smaller batches when needed; memory rises sharply with workers. |
-| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Time:** Lower `vaeac.epochs` or reduce `x_train`, then verify explanation quality; depth, width, and latent dimension has smaller effects in relevant ranges. Prefer larger batches.<br>**RAM:** Use smaller batches and fewer workers. Additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
-| Independence | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
-| Copula | Sensitivity to `x_train` | **Time:** Reduce `x_train` as well as `max_n_coalitions`, `n_MC_samples`, or `x_explain`. |
+| ARF | `arf.num_trees`, `arf.max_iters`; high per-worker memory | **Time and RAM:** Lower `max_n_coalitions` or `n_MC_samples`. Reducing `arf.num_trees` or `arf.max_iters` may also lower fitting cost, but remember to verify the fitted conditional distribution.<br>**RAM:** Add `r popover_note("workers")` only after checking available memory. |
 | Categorical | Limited sensitivity to `n_MC_samples` | **Time:** Prioritize reducing `max_n_coalitions`, `x_train`, or `x_explain` before reducing Monte Carlo samples. |
+| Copula | Sensitivity to `x_train` | **Time:** Reduce `x_train` as well as `max_n_coalitions`, `n_MC_samples`, or `x_explain`. |
+| Ctree | Strong sensitivity to feature and factor complexity | **Time and RAM:** Reduce `x_train`, `max_n_coalitions`, `n_MC_samples`, or `x_explain` when possible. Many factor levels are especially costly when many factor columns are present. |
+| Empirical | `empirical.type` | **Time:** Keep `"fixed_sigma"` unless adaptive bandwidth selection is needed; `"AICc_full"` and `"AICc_each_k"` are orders of magnitude slower. |
+| Gaussian | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
+| Independence | Weak sensitivity to `x_train` | **Time:** Prioritize reducing `max_n_coalitions`, `n_MC_samples`, or `x_explain`; reducing `x_train` helps little. |
 | Regression separate | `regression.model`, `regression.tune_values`, `regression.vfold_cv_para`; fitting-dominated runtime | **Time:** Use a simpler regression model and avoid tuning or cross-validation when appropriate; among the general controls, prioritize `max_n_coalitions`. |
-| Regression surrogate | `regression.surrogate_n_comb` and regression fitting controls | **Both:** Reduce `regression.surrogate_n_comb`, `x_train`, or `max_n_coalitions`.<br>**Time:** Use a simpler regression model and avoid tuning or cross-validation when appropriate. Verify that the resulting surrogate remains adequate. |
+| Regression surrogate | `regression.surrogate_n_comb` and regression fitting controls | **Time and RAM:** Reduce `regression.surrogate_n_comb`, `x_train`, or `max_n_coalitions`.<br>**Time:** Use a simpler regression model and avoid tuning or cross-validation when appropriate. Verify that the resulting surrogate remains adequate. |
+| Timeseries | High overhead per batch; strong sensitivity to feature and data structure | **Time:** Reduce `x_train`, `max_n_coalitions`, or `x_explain` when possible, and prefer larger batches. Changing `n_MC_samples` had little effect in the tested settings.<br>**RAM:** Use smaller batches when needed; memory rises sharply with workers. |
+| VAEAC | `vaeac.epochs`, `vaeac.depth`, `vaeac.width`, `vaeac.latent_dim`; training-dominated runtime | **Time:** Lower `vaeac.epochs` or reduce `x_train`, then verify explanation quality; depth, width, and latent dimension has smaller effects in relevant ranges. Prefer larger batches.<br>**RAM:** Use smaller batches and fewer workers. Additional `r popover_note("workers")` mainly help when post-training coalition estimation, like conditional sampling and prediction, dominates runtime. |
 
 :::
 
