@@ -51,6 +51,10 @@
   agent-assisted PR readiness checks; consolidated development scripts
   under `dev/`.
   ([\#494](https://github.com/NorskRegnesentral/shapr/pull/494))
+- Strengthened the compute/memory benchmark framework with
+  coalition-budget validation for iterative pairs, corrected
+  process-tree RAM polling, and optional realistic parallel-workload
+  studies. (branch: bench)
 
 #### Bug fixes
 
@@ -106,6 +110,11 @@
 - Simplified roxygen2 (following package update) inheritance for
   approach-specific arguments and refreshed affected documentation
   ([\#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+- Updated computational benchmark reporting to use wall time measured
+  directly around
+  [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
+  rather than fresh-process runtime, while retaining harness timings as
+  diagnostics. (branch: bench)
 
 #### Python
 

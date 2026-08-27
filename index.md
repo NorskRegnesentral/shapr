@@ -5,6 +5,11 @@ See the pkgdown site at
 for a complete introduction with examples and documentation of the
 package.
 
+See the [computational cost
+benchmarks](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)
+for practical runtime and memory guidance across the available
+approaches and an interactive results table.
+
 For an overview of the methodology and capabilities of the package (per
 `shapr` v1.0.8), see the software paper Jullum et al.
 ([2025](#ref-jullum2025shapr)), available as a preprint
@@ -186,39 +191,39 @@ explanation <- explain(
   phi0 = p0,
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Print the Shapley values for the observations to explain.
@@ -234,7 +239,7 @@ print(explanation)
 
 # Provide a formatted summary of the shapr object
 summary(explanation)
-#> 
+#>
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
 #> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23
 #> • Model class: <xgboost>
@@ -247,8 +252,8 @@ summary(explanation)
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
-#> 
-#> ── Estimated Shapley values 
+#>
+#> ── Estimated Shapley values
 #>    explain_id   none Solar.R   Wind   Temp  Month
 #>         <int> <char>  <char> <char> <char> <char>
 #> 1:          1  43.09   12.31   2.78 -27.98  -2.07
@@ -257,7 +262,7 @@ summary(explanation)
 #> 4:          4  43.09   -0.95  -4.18 -14.06  -6.80
 #> 5:          5  43.09    4.06  -2.07 -11.94 -12.02
 #> 6:          6  43.09   -0.29  -7.28 -13.46  -6.50
-#> ── Estimated MSEv 
+#> ── Estimated MSEv
 #> Estimated MSE of v(S) = 208 (with sd = 116)
 
 # Finally, we plot the resulting explanations
@@ -286,39 +291,39 @@ sage_explanation <- explain(
   y_explain = data[ind_x_explain, get(y_var)],
   seed = 1
 )
-#> 
+#>
 #> ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
-#> 
-#> 
+#>
+#>
 #> ── Explanation overview ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> • Model class: <xgboost>
-#> 
+#>
 #> • v(S) estimation class: Monte Carlo integration
-#> 
+#>
 #> • Approach: empirical
-#> 
+#>
 #> • Procedure: Non-iterative
-#> 
+#>
 #> • Number of Monte Carlo integration samples: 1000
-#> 
+#>
 #> • Number of feature-wise Shapley values: 4
-#> 
+#>
 #> • Number of observations to explain: 6
-#> 
+#>
 #> • Computations (temporary) saved at:
 #> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ── Main computation started ──
-#> 
-#> 
-#> 
+#>
+#>
+#>
 #> ℹ Using 16 of 16 coalitions.
 
 # Print the SAGE values

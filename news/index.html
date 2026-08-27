@@ -58,6 +58,7 @@
 <code><a href="../reference/explain.html">explain()</a></code> now warns when the <code>vaeac</code> approach is combined with a serializing parallelization backend (a <code>future</code> <code>multisession</code> or <code>cluster</code> plan) with more than one worker, since <code>torch</code> objects are external pointers that cannot be exported to separate R processes (which otherwise fails with an “external pointer is not valid” error). Use a forking plan (<code>future::plan(future::multicore)</code>) or run sequentially. (<a href="https://github.com/NorskRegnesentral/shapr/pull/507" class="external-link">#507</a>) ### Development workflow</li>
 <li>Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
 <li>Added pre-PR workflow scripts (<code>dev/prepare-pr</code>, <code>dev/check-pr</code>, <code>dev/publish-pr</code>) with <code>dev/pr-workflow.md</code> for automated and agent-assisted PR readiness checks; consolidated development scripts under <code>dev/</code>. (<a href="https://github.com/NorskRegnesentral/shapr/pull/494" class="external-link">#494</a>)</li>
+<li>Strengthened the compute/memory benchmark framework with coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. (branch: bench)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="bug-fixes-1-0-8-9004">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-8-9004"></a></h4>
@@ -79,6 +80,7 @@
 <div class="section level4">
 <h4 id="documentation-1-0-8-9004">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-8-9004"></a></h4>
 <ul><li>Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation (<a href="https://github.com/NorskRegnesentral/shapr/pull/493" class="external-link">#493</a>).</li>
+<li>Updated computational benchmark reporting to use wall time measured directly around <code><a href="../reference/explain.html">explain()</a></code> rather than fresh-process runtime, while retaining harness timings as diagnostics. (branch: bench)</li>
 </ul></div>
 <div class="section level4">
 <h4 id="python-1-0-8-9004">Python<a class="anchor" aria-label="anchor" href="#python-1-0-8-9004"></a></h4>

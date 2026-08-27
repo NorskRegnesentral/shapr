@@ -4,6 +4,8 @@
 
 - [Asymmetric and causal Shapley value
   explanations](https://norskregnesentral.github.io/shapr/articles/asymmetric_causal.md):
+- [Computational cost
+  benchmarks](https://norskregnesentral.github.io/shapr/articles/benchmarks.md):
 - [\`shapr\`: Explaining individual machine learning predictions with
   Shapley
   values](https://norskregnesentral.github.io/shapr/articles/general_usage.md):
