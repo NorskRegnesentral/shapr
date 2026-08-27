@@ -3,14 +3,24 @@
 A self-contained framework to measure **CPU time** and **peak RAM** of
 `shapr::explain()` across the package's many settings, on a single machine.
 
+The completed study contains 2,278 successful runs across 789 configurations
+and all 11 built-in estimation approaches. It covers synthetic numeric, mixed,
+and categorical data while varying the main problem dimensions, batching and
+parallelism controls, prediction models, and approach-specific settings. The
+[computational cost benchmark article](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)
+on the `shapr` website is the canonical summary of its results, practical
+guidance, scope, and limitations.
+
 The goal is **cost**: how fast and memory-hungry each approach is, and how that
 scales with user-controlled arguments. Approximation error is not measured by
 the shipped studies, but the machinery to add such a study is included — see
 [Accuracy studies](#accuracy-studies).
 
-Everything is driven by editable YAML config files in [`config/`](config/).
-Findings from the complete study are summarized in
-[`BENCHMARK_FINDINGS.md`](BENCHMARK_FINDINGS.md).
+This README documents both the reusable benchmark framework and the precise
+design, configuration, and outputs of the completed study. It also explains
+how to rerun the study or extend it with new approaches, configurations, and
+experiments. Everything is driven by editable YAML config files in
+[`config/`](config/).
 
 ---
 
@@ -273,7 +283,6 @@ benchmarks/
     *.shapley.rds         accuracy studies only: saved Shapley values (committed)
     *.json                generated per-run artefacts (git-ignored)
   logs/                   generated run logs (git-ignored)
-  BENCHMARK_FINDINGS.md   cross-study conclusions and user guidance
 ```
 
 Per run the orchestrator writes `results/<study>/<id>.json` (R-side result),
@@ -322,11 +331,15 @@ regenerate as needed too.
 
 ## Accuracy studies
 
-The shipped studies measure cost only. To weigh a coalition / Monte Carlo
-budget against approximation quality instead, the framework can run an
-**accuracy study**: a grid of candidate budgets scored against a high-budget
-reference. No such study is part of the current snapshot, but the machinery is
-in place.
+The results presented in the
+[published benchmark article](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)
+measure computational cost only: they do not include approximation-error or
+accuracy results. No accuracy study is part of the current committed snapshot.
+
+To weigh a coalition or Monte Carlo budget against approximation quality, the
+framework can run an optional **accuracy study**: a grid of candidate budgets
+scored against a high-budget reference. The machinery is in place for such
+studies, but their results are not currently published on the `shapr` website.
 
 Write a config with two blocks whose names `R/accuracy.R` looks for, and set
 `save_explanations: [true]` on both so each run writes its Shapley matrix to

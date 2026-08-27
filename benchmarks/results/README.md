@@ -33,8 +33,9 @@ dense-batch memory calibration, and prediction models (`linear`, `xgb`, and
 `xgb_large`). Superseded `extra_*` studies, and the Gaussian accuracy/cost
 interaction surface, are not part of the active configuration or result tree.
 
-See [`../BENCHMARK_FINDINGS.md`](../BENCHMARK_FINDINGS.md) for cross-study
-findings, user guidance, and limitations.
+See the published
+[computational cost benchmark article](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)
+for cross-study findings, user guidance, and limitations.
 
 Run `Rscript benchmarks/R/audit_findings.R` from the repository root to verify
-the snapshot invariants and reproduce the numerical tables used in the report.
+the snapshot invariants and reproduce the numerical tables used in the article.

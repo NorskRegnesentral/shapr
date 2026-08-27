@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # audit_findings.R — reproduce the numerical tables and integrity checks used
-# by BENCHMARK_FINDINGS.md from the committed curated result snapshot.
+# by the published benchmark article from the committed curated result snapshot.
 
 suppressMessages({
   library(data.table)
