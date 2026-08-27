@@ -116,9 +116,32 @@ cores), `batches` (the `min_n_batches` lever), and — for factor-supporting
 approaches — a `dataset` sweep over the four mixed settings + categorical.
 `gaussian` additionally carries the `grouping` / `group_size` studies, the
 `highdim_cap` cube-size study, and a `parallel_backend` (multisession vs
-multicore) study. Approach-specific blocks add `empirical.type`, the six
-regression `variants` (GAM-like & xgboost × none/light/cv),
+multicore) study. Approach-specific blocks add `empirical.type`, the regression
+`variants` described below,
 `regression.surrogate_n_comb`, and the five vaeac hyperparameters.
+
+### Regression variants
+
+The `regression_variant` values in the benchmark results identify registered
+estimator and tuning recipes. The `smooth_*` and `xgb_*` variants are used by
+`regression_separate`; `surrogate_none` is used by `regression_surrogate`.
+Their exact executable definitions are in
+[`regression_variants()`](R/registry.R#L25-L102).
+
+| Variant | Regression approach | Estimator and tuning recipe |
+|---|---|---|
+| [`smooth_none`](R/registry.R#L28-L34) | `regression_separate` | Natural-spline preprocessing (3 degrees of freedom) followed by linear regression, with no tuning. |
+| [`smooth_light`](R/registry.R#L35-L45) | `regression_separate` | Natural splines followed by ridge regression; tunes 3 penalty values using 2-fold cross-validation. |
+| [`smooth_cv`](R/registry.R#L46-L58) | `regression_separate` | Natural splines followed by elastic-net regression; tunes 5 penalties and 3 mixture values using 5-fold cross-validation. |
+| [`xgb_none`](R/registry.R#L60-L67) | `regression_separate` | XGBoost with 50 trees and maximum tree depth 3, with no tuning. |
+| [`xgb_light`](R/registry.R#L68-L78) | `regression_separate` | XGBoost; tunes 2 tree counts and 2 maximum depths using 2-fold cross-validation. |
+| [`xgb_cv`](R/registry.R#L79-L91) | `regression_separate` | XGBoost; tunes 3 tree counts, 3 maximum depths, and 2 learning rates using 5-fold cross-validation. |
+| [`surrogate_none`](R/registry.R#L93-L100) | `regression_surrogate` | A single XGBoost surrogate model with 50 trees and maximum tree depth 3, with no tuning. |
+
+The suffixes therefore describe the tuning budget: `_none` uses fixed
+hyperparameters, `_light` uses a small grid with 2-fold cross-validation, and
+`_cv` uses a larger grid with 5-fold cross-validation. These are benchmark
+recipes rather than additional `shapr` approaches.
 
 Approaches: `independence`, `gaussian`, `copula`, `empirical`, `timeseries`,
 `ctree`, `arf`, `categorical`, `vaeac`, `regression_separate`,

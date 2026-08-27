@@ -213,9 +213,15 @@ column_guide_names[extra_computation_columns] <- sprintf(
   '<a href="../reference/get_extra_comp_args_default.html"><code>%s</code></a>',
   column_display_names[extra_computation_columns]
 )
+column_guide_descriptions <- column_descriptions
+column_guide_descriptions["approach_args"] <- paste0(
+  column_guide_descriptions["approach_args"],
+  ' <a href="https://github.com/NorskRegnesentral/shapr/blob/master/benchmarks/README.md#regression-variants">',
+  "See the regression variant reference.</a>"
+)
 column_guide <- data.frame(
   Column = unname(column_guide_names),
-  Description = unname(column_descriptions),
+  Description = unname(column_guide_descriptions),
   check.names = FALSE
 )
 
