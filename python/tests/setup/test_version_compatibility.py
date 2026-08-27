@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
+import pyshapr
 from pyshapr import _rutils
 
 
@@ -79,3 +80,14 @@ def test_importr_checks_only_shapr(monkeypatch):
 
     assert _rutils._importr("utils", robjects, importr) is imported_package
     version_warning.assert_not_called()
+
+
+def test_accessing_explain_initializes_r(monkeypatch):
+    """Importing the public explain attribute initializes the R backend."""
+    explain_impl = Mock()
+    ensure_r_ready = Mock()
+    monkeypatch.setattr(pyshapr, "_explain_impl", explain_impl)
+    monkeypatch.setattr(pyshapr, "ensure_r_ready", ensure_r_ready)
+
+    assert pyshapr.__getattr__("explain") is explain_impl
+    ensure_r_ready.assert_called_once_with()

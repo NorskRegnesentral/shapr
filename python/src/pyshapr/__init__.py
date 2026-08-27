@@ -1,6 +1,10 @@
 import contextlib
 from importlib import import_module
 from importlib.metadata import PackageNotFoundError, version
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ._explain import explain
 
 # Lightweight public re-export (no R dependency)
 from . import datasets
@@ -46,10 +50,12 @@ def ensure_r_ready() -> bool:
     return True
 
 
-def explain(*args, **kwargs):
-    """Lazily initialize R/shapr then call the real explain()."""
-    ensure_r_ready()
-    return _explain_impl(*args, **kwargs)
+def __getattr__(name: str) -> Any:
+    if name == "explain":
+        ensure_r_ready()
+        return _explain_impl
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 # Import the Shapr class (lazy import to avoid R dependency issues)

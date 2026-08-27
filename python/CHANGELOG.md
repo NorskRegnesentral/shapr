@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   available. Added a capability-based error for SAGE when the installed `shapr` does not expose
   its SAGE API, preventing it from silently returning local SHAP values instead. The compatibility
   message records the `shapr` version used to develop the `pyshapr` release and gives an update command.
+  The check runs when `explain` is imported or first accessed; plain `import pyshapr` remains lightweight.
   (branch: feature/pyshapr-shapr-version-compatibility)
 - Added support for computing SAGE values (Shapley Additive Global importancE) via the new `explain()`
   arguments `scope` and `y_explain`. Set `scope="global"` to compute SAGE values. A custom Python loss

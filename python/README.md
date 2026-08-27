@@ -43,10 +43,12 @@ Rscript -e 'pak::pak("NorskRegnesentral/shapr")'
 ```
 
 The current development version of `pyshapr` is developed with `shapr 1.0.8.9005`. When
-`pyshapr` loads with `shapr 1.0.8` or older, it emits a `ShaprVersionWarning` that identifies
-the unavailable functionality while allowing supported SHAP functionality to run. Requesting
-SAGE with a `shapr` version that does not expose the SAGE API raises an error because such a
-version can silently return local SHAP values instead of SAGE values.
+`explain` is imported or first accessed, `pyshapr` loads the R backend and checks its version.
+With `shapr 1.0.8` or older, it emits a `ShaprVersionWarning` that identifies the unavailable
+functionality while allowing supported SHAP functionality to run. Requesting SAGE with a
+`shapr` version that does not expose the SAGE API raises an error because such a version can
+silently return local SHAP values instead of SAGE values. A plain `import pyshapr` remains
+lightweight and does not initialize R.
 
 ### 2. Ensure R is discoverable (R_HOME and PATH)
 
