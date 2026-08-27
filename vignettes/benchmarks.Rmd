@@ -252,8 +252,18 @@ discrete_slider_map <- paste(
   }, character(1)),
   collapse = ", "
 )
+choice_filter_widths <- c(dataset = "12rem", approach = "14rem", approach_args = "24rem")
+choice_filter_width_map <- paste(
+  sprintf(
+    "%d: \"%s\"",
+    match(names(choice_filter_widths), names(benchmark_results)) - 1,
+    unname(choice_filter_widths)
+  ),
+  collapse = ", "
+)
 benchmark_table_callback <- DT::JS(paste0(
   "function(settings, json) {",
+  "var choiceFilterWidths = {", choice_filter_width_map, "};",
   "var discreteValues = {", discrete_slider_map, "};",
   "var columnTooltips = {", column_tooltip_map, "};",
   "var table = this.api();",
@@ -264,6 +274,14 @@ benchmark_table_callback <- DT::JS(paste0(
   "var columnName = table.settings()[0].aoColumns[columnIndex].sTitle;",
   "var tooltip = columnTooltips[columnName];",
   "if (tooltip) $(this.header()).attr('title', tooltip);",
+  "});",
+  "};",
+  "var applyChoiceFilterWidths = function() {",
+  "Object.keys(choiceFilterWidths).forEach(function(columnIndex) {",
+  "var visibleIndex = table.column.index('toVisible', Number(columnIndex));",
+  "if (visibleIndex === null) return;",
+  "$header.find('tr').eq(1).children().eq(visibleIndex).children('div').eq(1)",
+  ".css({width: choiceFilterWidths[columnIndex], minWidth: ''});",
   "});",
   "};",
   "var applyDiscreteSliders = function() {",
@@ -334,12 +352,14 @@ benchmark_table_callback <- DT::JS(paste0(
   "table.on('column-sizing.dt.benchmarkFilters column-visibility.dt.benchmarkFilters', function() {",
   "window.setTimeout(function() {",
   "applyHeaderTooltips();",
+  "applyChoiceFilterWidths();",
   "applyDiscreteSliders();",
   "syncFixedFilterCells();",
   "}, 75);",
   "});",
   "window.setTimeout(function() {",
   "applyHeaderTooltips();",
+  "applyChoiceFilterWidths();",
   "applyDiscreteSliders();",
   "syncFixedFilterCells();",
   "}, 0);",
@@ -369,6 +389,26 @@ n_configurations <- nrow(benchmark_results)
 
 .benchmark-table-wide .dataTables_wrapper {
   width: 100%;
+}
+
+.benchmark-table-wide .dataTables_scrollBody table.dataTable {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.benchmark-table-wide .dataTables_scrollHead .selectize-control.multi .selectize-input.has-items {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  white-space: normal;
+}
+
+.benchmark-table-wide .dataTables_scrollHead .selectize-control.multi .selectize-input.has-items > .item {
+  max-width: 100%;
+}
+
+.benchmark-table-wide table.dataTable.stripe > tbody > tr.odd > * {
+  background-color: var(--bs-tertiary-bg);
 }
 
 .benchmark-table-wide .dt-buttons,
@@ -597,7 +637,7 @@ approach-specific arguments to `explain()` through `...`; see the
 
 ## Explore all results
 
-The table below combines every committed approach-level `summary.csv`. Each row
+The table below combines the benchmark results for the various approaches. Each row
 is one configuration aggregated over its replicates. The retained experiments
 cover `r paste(sort(unique(benchmark_results$n_features)), collapse = ", ")`
 features, with available values varying by approach. Use the controls above each
@@ -644,7 +684,7 @@ DT::datatable(
   class = "stripe hover compact nowrap",
   width = "100%",
   options = list(
-    dom = "Bfrtip",
+    dom = "Blfrtip",
     buttons = list(
       "copy",
       list(extend = "csv", filename = "shapr-benchmark-summary"),
