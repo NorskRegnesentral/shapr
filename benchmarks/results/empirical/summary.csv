@@ -63,7 +63,7 @@ numeric,empirical,12,128,50,10,Inf,1000000,1,multisession,1,2500,25,FALSE,FALSE,
 numeric,empirical,20,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,5.927,0.04,5.895,255.6,256.1,7.731,0.886,1
 numeric,empirical,12,128,250,32,Inf,1000000,4,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,5.279,0.011,1.824,1140.7,1140.7,7.724,0.775,1
 numeric,empirical,16,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,5.628,0.016,5.576,249.9,250.2,7.436,0.888,1
-numeric,empirical,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,empirical_type,empirical.type=fixed_sigma,,,3,5.639,0.151,5.596,247.2,247.3,7.285,0.883,1
+numeric,empirical,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,empirical_type,empirical.type=fixed_sigma,,,3,5.372,0.136,5.341,247.2,247.3,7.278,0.881,1
 numeric,empirical,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,5.417,0.045,5.385,246.1,246.7,7.217,0.884,1
 numeric,empirical,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,5.391,0.015,5.36,246.6,246.7,7.212,0.886,1
 numeric,empirical,12,128,250,10,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,highdim_cap,,,,3,5.386,0.015,5.352,245.9,247.1,7.186,0.883,1

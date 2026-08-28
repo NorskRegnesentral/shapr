@@ -23,8 +23,8 @@ numeric,arf,12,128,1000,10,Inf,1000000,1,multisession,1,500,25,FALSE,FALSE,2,def
 mixed_mc_fl,arf,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,dataset,,,,3,34.666,0.281,36.673,705,729.5,36.712,0.042,1
 numeric,arf,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_arf_iterative_budget_1,source,3,32.499,2.241,31.141,1114.4,1119.2,34.66,0.089,4
 numeric,arf,12,128,250,10,Inf,1000000,1,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,31.891,0.747,31.192,858.9,874.6,33.992,0.088,1
-numeric,arf,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_arf_iterative_budget_2,dependent,3,30.831,3.21,29.176,1266.4,1557.7,33.002,0.092,1
-numeric,arf,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_arf_iterative_budget_1,dependent,3,28.857,1.86,27.373,1237.4,1350.7,31.048,0.092,1
+numeric,arf,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_arf_iterative_budget_2,dependent,3,30.266,3.843,29.066,1293.6,1456.8,32.427,0.089,1
+numeric,arf,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_arf_iterative_budget_1,dependent,3,29.05,2.284,27.221,1220,1237,31.201,0.091,1
 numeric,arf,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,28.912,0.306,27.055,1374.9,1448.7,31.046,0.087,1
 numeric,arf,12,256,250,32,Inf,1000000,16,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,realistic_medium,,,,2,26.799,0.588,5.59,8560.4,8576.5,30.538,0.088,1
 numeric,arf,12,128,250,128,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,27.49,0.148,27.256,315.2,316.6,29.523,0.087,1

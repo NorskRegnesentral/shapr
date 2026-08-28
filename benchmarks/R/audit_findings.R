@@ -94,18 +94,30 @@ parallel_case <- function(study_name, subset_expression, label) {
 }
 
 parallel_table <- data.table::rbindlist(list(
-  parallel_case("gaussian", "grepl('realistic_heavy', sweep) & min_n_batches == 32",
-    "Gaussian / 32 batches"),
-  parallel_case("empirical", "sweep == 'realistic_heavy' & min_n_batches == 8",
-    "Empirical / 8 batches"),
-  parallel_case("ctree", "sweep == 'realistic_heavy' & min_n_batches == 32",
-    "CTree / 32 batches"),
-  parallel_case("arf", "sweep == 'realistic_heavy' & min_n_batches == 32",
-    "ARF / 32 batches"),
-  parallel_case("timeseries", "grepl('realistic_heavy', sweep) & min_n_batches == 8",
-    "Timeseries / 8 batches"),
-  parallel_case("vaeac", "grepl('realistic_explanation', sweep) & min_n_batches == 16",
-    "VAEAC explanation-heavy / 16 batches")
+  parallel_case(
+    "gaussian", "grepl('realistic_heavy', sweep) & min_n_batches == 32",
+    "Gaussian / 32 batches"
+  ),
+  parallel_case(
+    "empirical", "sweep == 'realistic_heavy' & min_n_batches == 8",
+    "Empirical / 8 batches"
+  ),
+  parallel_case(
+    "ctree", "sweep == 'realistic_heavy' & min_n_batches == 32",
+    "CTree / 32 batches"
+  ),
+  parallel_case(
+    "arf", "sweep == 'realistic_heavy' & min_n_batches == 32",
+    "ARF / 32 batches"
+  ),
+  parallel_case(
+    "timeseries", "grepl('realistic_heavy', sweep) & min_n_batches == 8",
+    "Timeseries / 8 batches"
+  ),
+  parallel_case(
+    "vaeac", "grepl('realistic_explanation', sweep) & min_n_batches == 16",
+    "VAEAC explanation-heavy / 16 batches"
+  )
 ), use.names = TRUE)
 
 #### Gaussian memory cap -----------------------------------------------------
@@ -185,11 +197,11 @@ expected_parallel <- data.table::data.table(
   workers = c(rep(c(1L, 4L, 8L, 16L), 5), 1L, 4L, 16L),
   elapsed_seconds = c(
     34.5, 14.3, 11.3, 10.1, 77.6, 25.2, 16.9, 16.9, 252.2, 72.1, 43.6, 28.8,
-    363.5, 116.4, 73.7, 60.9, 250.7, 78.5, 49.8, 49.8, 289.8, 208.3, 189.7
+    363.5, 116.4, 73.7, 60.9, 251.5, 75.3, 49.5, 49.7, 290.5, 209.1, 189.9
   ),
   peak_ram_mb = c(
     592, 2236, 4116, 7263, 1548, 5133, 8892, 9391, 747, 2860, 5241, 9989,
-    3793, 12981, 24452, 44733, 11810, 47148, 71477, 72050, 3376, 10488, 17475
+    3793, 12981, 24452, 44733, 11858, 47144, 71282, 71895, 2836, 9817, 20936
   )
 )
 assert_table(parallel_table, expected_parallel, "parallel table")
@@ -198,25 +210,25 @@ expected_memory <- data.table::data.table(
   max_batch_cube_size = rep(c(1e6, 4e6, 16e6, 64e6, Inf), each = 2),
   workers = rep(c(1L, 4L), 5),
   actual_batches = rep(c(342L, 79L, 20L, 8L, 8L), each = 2),
-  elapsed_seconds = c(31.1, 13.4, 36.6, 15.0, 34.1, 15.3, 32.1, 14.8, 32.0, 14.8),
-  peak_ram_mb = c(367, 1568, 425, 2057, 748, 2728, 1473, 5260, 1462, 5233)
+  elapsed_seconds = c(29.9, 13.3, 36.4, 14.6, 33.9, 15.0, 32.1, 14.8, 32.0, 14.8),
+  peak_ram_mb = c(360, 1457, 413, 1887, 730, 2728, 1477, 5237, 1462, 5233)
 )
 assert_table(memory_table, expected_memory, "memory-cap table")
 
 expected_prediction <- data.table::data.table(
   model_variant = rep(c("linear", "xgb", "xgb_large"), each = 3),
   workers = rep(c(1L, 4L, 16L), 3),
-  explain_seconds = c(8.28, 4.54, 4.18, 10.59, 6.36, 5.75, 50.36, 18.03, 13.24),
-  peak_ram_mb = c(300, 1236, 3580, 369, 1756, 5269, 373, 1742, 5336),
-  speedup = c(1.00, 1.82, 1.98, 1.00, 1.67, 1.84, 1.00, 2.79, 3.80)
+  explain_seconds = c(8.21, 4.51, 4.06, 10.44, 6.38, 5.44, 50.02, 17.09, 15.54),
+  peak_ram_mb = c(300, 1120, 3221, 343, 1579, 4839, 350, 1616, 4900),
+  speedup = c(1.00, 1.82, 2.02, 1.00, 1.64, 1.92, 1.00, 2.93, 3.22)
 )
 assert_table(prediction_table, expected_prediction, "prediction-model table")
 
 expected_variability <- data.table::data.table(
   replicates = c(2L, 3L),
   configurations = c(89L, 700L),
-  median_relative_iqr = c(0.0033, 0.0073),
-  p90_relative_iqr = c(0.0133, 0.0195)
+  median_relative_iqr = c(0.0029, 0.0074),
+  p90_relative_iqr = c(0.0103, 0.0195)
 )
 assert_table(variability_table, expected_variability, "replicate-variability values")
 
