@@ -27,7 +27,10 @@ class ShaprVersionError(RuntimeError):
 
 
 def _version_tuple(package_version: str) -> tuple[int, ...]:
-    return tuple(int(part) for part in re.split(r"[.-]", package_version))
+    parts = [int(part) for part in re.findall(r"\d+", package_version)]
+    while parts and parts[-1] == 0:
+        parts.pop()
+    return tuple(parts)
 
 
 def _format_features(features: tuple[str, ...]) -> str:
