@@ -276,6 +276,14 @@
 <h3 id="error-handling">Error Handling<a class="anchor" aria-label="anchor" href="#error-handling"></a></h3>
 <ul><li>Raise <code>ValueError</code> for invalid arguments, <code>TypeError</code> for type mismatches.</li>
 <li>Provide informative messages that match the R error text where possible.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="shapr-compatibility-policy">shapr Compatibility Policy<a class="anchor" aria-label="anchor" href="#shapr-compatibility-policy"></a></h3>
+<ul><li>
+<code>python/src/pyshapr/compatibility.toml</code> is the source of truth for the current <code>shapr</code> compatibility metadata used by runtime warnings and the generated table in <code>python/README.md</code>.</li>
+<li>When preparing a Python release or changing <code>shapr</code> compatibility, update the TOML values and run <code>cd python &amp;&amp; python scripts/update_compatibility_table.py</code>. Do not edit the generated README table or duplicate those values in <code>_rutils.py</code>.</li>
+<li>Keep capability-based safety guards in Python code. In particular, SAGE support must still be checked from the installed <code>shapr</code> API because version metadata alone cannot prevent silent local-SHAP fallback.</li>
+<li>Keep <code>compatibility.toml</code> declared as package data and verify it is present in built distributions.</li>
 </ul><hr></div>
 </div>
 <div class="section level2">
@@ -306,6 +314,7 @@
 <li><label><input type="checkbox">Imports are explicit and grouped stdlib, third-party, local.</label></li>
 <li><label><input type="checkbox">Python R-bridging goes through <code>_rutils._importr</code> and <code>utils.py2r</code> / <code>r2py</code>.</label></li>
 <li><label><input type="checkbox">Public API functions return structured objects, not raw dictionaries.</label></li>
+<li><label><input type="checkbox">Python release preparation updates <code>python/src/pyshapr/compatibility.toml</code>, regenerates the README compatibility table, and reviews whether unavailable functionality needs a targeted capability guard.</label></li>
 </ul></div>
 <div class="section level3">
 <h3 id="changelog-and-versioning">Changelog And Versioning<a class="anchor" aria-label="anchor" href="#changelog-and-versioning"></a></h3>
