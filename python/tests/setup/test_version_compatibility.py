@@ -1,6 +1,11 @@
 """Tests for pyshapr and shapr version compatibility checks."""
 
+import subprocess
+import sys
+import tomllib
 import warnings
+from importlib.resources import files
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -8,6 +13,8 @@ import pytest
 
 import pyshapr
 from pyshapr import _rutils
+
+PYTHON_ROOT = Path(__file__).resolve().parents[2]
 
 
 @pytest.mark.parametrize("installed_version", ["1.0.5", "1.0.8"])
@@ -38,6 +45,46 @@ def test_newer_shapr_version_does_not_warn(installed_version):
         _rutils._warn_if_shapr_version_lacks_full_support(shapr_package)
 
     assert not recorded_warnings
+
+
+def test_compatibility_policy_is_available_as_package_data():
+    """The installed package exposes the policy used by runtime checks."""
+    policy_resource = files("pyshapr").joinpath("compatibility.toml")
+
+    with policy_resource.open("rb") as policy_file:
+        policy = tomllib.load(policy_file)
+
+    assert policy["schema_version"] == 1
+    assert policy["shapr"]["developed_with"] == _rutils.SHAPR_VERSION_USED_FOR_DEVELOPMENT
+    assert (
+        policy["shapr"]["recent_features_require_newer_than"]
+        == _rutils.RECENT_FEATURES_REQUIRE_NEWER_THAN
+    )
+
+
+def test_compatibility_policy_is_in_distribution_configuration():
+    """Wheel and source distribution configuration include the policy."""
+    with (PYTHON_ROOT / "pyproject.toml").open("rb") as pyproject_file:
+        pyproject = tomllib.load(pyproject_file)
+
+    package_data = pyproject["tool"]["setuptools"]["package-data"]["pyshapr"]
+    manifest = (PYTHON_ROOT / "MANIFEST.in").read_text(encoding="utf-8")
+
+    assert "compatibility.toml" in package_data
+    assert "recursive-include src/pyshapr *.toml" in manifest
+
+
+def test_readme_compatibility_table_is_current():
+    """The committed README table matches the packaged compatibility policy."""
+    result = subprocess.run(
+        [sys.executable, "scripts/update_compatibility_table.py", "--check"],
+        cwd=PYTHON_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
 
 
 def test_sage_requires_supported_shapr_capability():
@@ -82,12 +129,25 @@ def test_importr_checks_only_shapr(monkeypatch):
     version_warning.assert_not_called()
 
 
-def test_accessing_explain_initializes_r(monkeypatch):
-    """Importing the public explain attribute initializes the R backend."""
+def test_calling_explain_initializes_r(monkeypatch):
+    """Calling the public explain proxy initializes R and delegates the call."""
     explain_impl = Mock()
     ensure_r_ready = Mock()
     monkeypatch.setattr(pyshapr, "_explain_impl", explain_impl)
     monkeypatch.setattr(pyshapr, "ensure_r_ready", ensure_r_ready)
 
-    assert pyshapr.__getattr__("explain") is explain_impl
+    pyshapr.explain("model", scope="local")
+
     ensure_r_ready.assert_called_once_with()
+    explain_impl.assert_called_once_with("model", scope="local")
+
+
+def test_importing_explain_does_not_initialize_r(monkeypatch):
+    """Importing the public explain proxy remains independent of R."""
+    ensure_r_ready = Mock()
+    monkeypatch.setattr(pyshapr, "ensure_r_ready", ensure_r_ready)
+
+    from pyshapr import explain
+
+    assert explain is pyshapr.explain
+    ensure_r_ready.assert_not_called()

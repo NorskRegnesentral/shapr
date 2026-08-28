@@ -18,12 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   through the wrapper). No functional change. (branch: robustify-high-dim)
 
 ### Added
-- Added a load-time compatibility warning when the installed `shapr` R package does not provide
+- Added a first-use compatibility warning when the installed `shapr` R package does not provide
   all functionality documented by the current `pyshapr` version. Existing functionality remains
   available. Added a capability-based error for SAGE when the installed `shapr` does not expose
   its SAGE API, preventing it from silently returning local SHAP values instead. The compatibility
-  message records the `shapr` version used to develop the `pyshapr` release and gives an update command.
-  The check runs when `explain` is imported or first accessed; plain `import pyshapr` remains lightweight.
+  policy is maintained in a packaged TOML file that also generates the README compatibility table.
+  The warning records the `shapr` version used to develop the `pyshapr` release and gives an update
+  command. The check runs when `explain()` is first called; importing `pyshapr` or `explain` remains lightweight.
   (branch: feature/pyshapr-shapr-version-compatibility)
 - Added support for computing SAGE values (Shapley Additive Global importancE) via the new `explain()`
   arguments `scope` and `y_explain`. Set `scope="global"` to compute SAGE values. A custom Python loss

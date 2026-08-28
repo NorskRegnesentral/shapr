@@ -63,6 +63,9 @@ package-dir = { "" = "src" }
 where = ["src"]
 include = ["pyshapr*"]
 
+[tool.setuptools.package-data]
+pyshapr = ["compatibility.toml"]
+
 [tool.setuptools.dynamic]
 # (none needed now)
 

@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import re
+import tomllib
 import warnings
 from collections.abc import Sequence
 from importlib.metadata import PackageNotFoundError, version
+from importlib.resources import files
 from pathlib import Path
 from typing import Any
 
-RECENT_FEATURES_REQUIRE_NEWER_THAN = "1.0.8"
-SHAPR_VERSION_USED_FOR_DEVELOPMENT = "1.0.8.9005"
+with files("pyshapr").joinpath("compatibility.toml").open("rb") as compatibility_file:
+    _compatibility = tomllib.load(compatibility_file)["shapr"]
+
+RECENT_FEATURES_REQUIRE_NEWER_THAN = _compatibility["recent_features_require_newer_than"]
+SHAPR_VERSION_USED_FOR_DEVELOPMENT = _compatibility["developed_with"]
+UNAVAILABLE_FEATURES = tuple(_compatibility["unavailable_features"])
 _checked_shapr_versions: set[str] = set()
 
 
@@ -24,6 +30,14 @@ def _version_tuple(package_version: str) -> tuple[int, ...]:
     return tuple(int(part) for part in re.split(r"[.-]", package_version))
 
 
+def _format_features(features: tuple[str, ...]) -> str:
+    if len(features) == 1:
+        return features[0]
+    if len(features) == 2:
+        return " and ".join(features)
+    return f"{', '.join(features[:-1])}, and {features[-1]}"
+
+
 def _warn_if_shapr_version_lacks_full_support(shapr_package: Any) -> None:
     installed_version = str(shapr_package.__version__)
     if _version_tuple(installed_version) > _version_tuple(RECENT_FEATURES_REQUIRE_NEWER_THAN):
@@ -37,7 +51,7 @@ def _warn_if_shapr_version_lacks_full_support(shapr_package: Any) -> None:
     warnings.warn(
         f"pyshapr {pyshapr_version} was developed with shapr "
         f"{SHAPR_VERSION_USED_FOR_DEVELOPMENT}, but shapr {installed_version} is installed. "
-        f"ARF and SAGE require a shapr version newer than "
+        f"{_format_features(UNAVAILABLE_FEATURES)} require a shapr version newer than "
         f"{RECENT_FEATURES_REQUIRE_NEWER_THAN} and are unavailable; other "
         "functionality may still work. "
         "Update shapr from R with pak::pak('NorskRegnesentral/shapr').",

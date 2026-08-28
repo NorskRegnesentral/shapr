@@ -119,7 +119,7 @@ for file in "${changed_files[@]}"; do
   esac
 
   case "$file" in
-    python/src/*|python/tests/*|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
+    python/src/*|python/tests/*|python/scripts/*|python/MANIFEST.in|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
       python_changed=true
       ;;
   esac
@@ -233,6 +233,8 @@ fi
 
 if [ "$python_changed" = true ]; then
   if [ -d python ]; then
+    run_check "Python compatibility table" bash -c \
+      'cd python && uv run --locked python scripts/update_compatibility_table.py --check'
     run_check "Python format check" bash -c 'cd python && uv run --locked ruff format --check'
     run_check "Python lint" bash -c 'cd python && uv run --locked ruff check'
     if [ "$with_python_localonly" = true ]; then
