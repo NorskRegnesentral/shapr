@@ -17,14 +17,14 @@ numeric,regression_surrogate,12,128,50,10,Inf,1000000,1,multisession,1,20000,25,
 numeric,regression_surrogate,12,128,250,32,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,8.998,0.045,3.17,1520.2,1522.3,12.524,0.848,1
 numeric,regression_surrogate,12,1024,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_2,source,3,9.551,0.078,8.647,1207.9,1207.9,12.458,0.945,1
 numeric,regression_surrogate,12,128,250,8,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,8.908,0.039,3.182,1519,1519.3,12.405,0.851,1
-numeric,regression_surrogate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_2,dependent,3,9.272,0.134,8.361,1325.5,1325.5,12.084,0.829,1
+numeric,regression_surrogate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_2,dependent,3,9.357,0.108,8.531,1197.2,1197.4,12.134,0.818,1
 numeric,regression_surrogate,12,512,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,5.87,0.069,5.331,784.5,785.1,8.676,0.94,1
 numeric,regression_surrogate,12,128,250,10,Inf,1000000,1,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,5.453,0.046,4.831,807.3,807.8,8.262,0.942,1
 numeric,regression_surrogate,12,128,50,10,Inf,1000000,1,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,5.443,0.059,4.864,807.2,807.3,8.198,0.937,1
 numeric,regression_surrogate,12,128,250,128,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,4.481,0.048,4.306,464.3,464.4,7.276,0.939,1
 numeric,regression_surrogate,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_1,source,3,4.24,0.018,3.987,559.9,559.9,7.03,0.937,1
 numeric,regression_surrogate,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,4.161,0.029,3.926,559.5,559.8,6.934,0.948,1
-numeric,regression_surrogate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_1,dependent,3,4.248,0.051,4.026,565.4,565.7,6.905,0.824,1
+numeric,regression_surrogate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_surrogate_iterative_budget_1,dependent,3,4.258,0.039,4.001,575.6,575.7,6.914,0.82,1
 mixed_mc_ml,regression_surrogate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,dataset,,,,3,4.94,0.037,4.656,538.7,538.7,6.829,0.077,1
 numeric,regression_surrogate,20,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,3.749,0.012,3.526,512.8,513,6.5,0.939,1
 numeric,regression_surrogate,16,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,3.602,0.035,3.411,490.3,491.6,6.376,0.943,1

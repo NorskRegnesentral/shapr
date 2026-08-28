@@ -21,6 +21,9 @@ three replicates by default, two for VAEAC, and two for the added expensive ARF
 and timeseries realistic-workload blocks. Warm-up runs are not part of the
 configuration or result set.
 
+Every retained peak RAM value uses cgroup-v2 `memory.peak`; the published
+snapshot does not contain process-tree RSS fallback measurements.
+
 All iterative-pair dependents use the coalition budget currently recorded by
 their source. The final validation found no mismatched pairs, so every retained
 pair is included in its approach summary.

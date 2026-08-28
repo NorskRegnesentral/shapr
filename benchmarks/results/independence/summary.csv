@@ -23,8 +23,8 @@ numeric,independence,12,128,250,128,Inf,1000000,8,multisession,1,1000,25,FALSE,F
 numeric,independence,12,128,250,32,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,3.736,0.007,1.575,679.3,680,6.151,0.788,1
 numeric,independence,12,128,1000,10,Inf,1000000,1,multisession,1,500,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,4.32,0.032,4.25,298,298.5,6.126,0.884,1
 numeric,independence,12,128,250,8,Inf,1000000,32,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,2.962,0.021,1.63,3525,3525.2,6.078,0.761,1
-numeric,independence,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_1,dependent,3,4.12,0.004,4.039,315.6,317,6.063,0.795,1
-numeric,independence,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_2,dependent,3,4.109,0.023,4.029,315.7,315.8,6.034,0.782,1
+numeric,independence,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_2,dependent,3,4.148,0.047,4.07,282.4,282.6,6.056,0.794,1
+numeric,independence,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_1,dependent,3,4.102,0.022,3.993,281.9,282.1,6.026,0.793,1
 numeric,independence,12,1024,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_2,source,3,4.163,0.032,4.069,274.1,274.2,6.022,0.896,1
 numeric,independence,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_independence_iterative_budget_1,source,3,4.058,0.064,3.976,274,274.5,5.877,0.891,1
 numeric,independence,12,128,250,8,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,3.37,0.021,1.579,705.5,707.4,5.774,0.784,1

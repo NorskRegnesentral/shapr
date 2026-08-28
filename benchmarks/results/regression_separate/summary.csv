@@ -5,14 +5,14 @@ numeric,regression_separate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,F
 numeric,regression_separate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,variants,variant=smooth_light,,,3,72.039,0.46,71.881,354.1,354.8,74.794,0.088,1
 numeric,regression_separate,12,512,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,17.465,0.046,17.31,417.9,418.5,20.253,0.947,1
 numeric,regression_separate,12,1024,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_2,source,3,15.138,0.992,14.986,414.6,414.9,17.894,0.952,3
-numeric,regression_separate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_2,dependent,3,12.695,0.377,12.583,412.3,416.8,15.357,0.806,1
+numeric,regression_separate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_2,dependent,3,12.697,0.388,12.596,351,353,15.347,0.811,1
 numeric,regression_separate,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,TRUE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_1,source,3,10.853,0.844,10.72,406.9,419.5,13.657,0.95,2
-numeric,regression_separate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_1,dependent,3,9.749,0.05,9.6,409.9,410.1,12.404,0.811,1
 numeric,regression_separate,12,128,250,128,Inf,1000000,32,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,7.932,0.035,2.684,8915.5,8919,12.384,0.853,1
 numeric,regression_separate,12,128,250,32,Inf,1000000,32,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,7.911,0.031,2.668,8842.5,8845.9,12.376,0.832,1
 numeric,regression_separate,12,256,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,9.587,0.078,9.485,362.2,362.3,12.316,0.933,1
+numeric,regression_separate,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_regression_separate_iterative_budget_1,dependent,3,9.627,0.049,9.497,380,381.1,12.272,0.821,1
 numeric,regression_separate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,variants,variant=smooth_none,,,3,9.033,0.018,8.928,382.7,384,11.807,0.918,1
-numeric,regression_separate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,variants,variant=xgb_none,,,3,9.086,0.493,8.836,334.6,335.1,11.679,0.068,1
+numeric,regression_separate,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,variants,variant=xgb_none,,,3,9.086,0.034,8.836,334.1,335.1,11.718,0.068,1
 numeric,regression_separate,12,128,250,128,Inf,1000000,16,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,5.74,0.089,2.31,5322.1,5323.2,9.628,0.851,1
 numeric,regression_separate,12,128,250,128,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,6.17,0.019,1.986,1002.1,1003.2,9.627,0.861,1
 numeric,regression_separate,12,128,250,32,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,6.104,0.039,1.988,1001.6,1002,9.592,0.859,1
