@@ -39,10 +39,11 @@ Runtime is measured directly around
 [`shapr::explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md).
 This timing excludes preparing the benchmark data and fitting the
 models. Peak RAM is the highest memory used during the full benchmark
-run, including loaded data, the fitted prediction model, and workers. To
-limit compute time, some of the most expensive VAEAC, ARF, and
-timeseries configurations were run twice; all other configurations were
-run three times.
+run, including loaded data, the fitted prediction model, and workers.
+Every retained peak RAM measurement uses cgroup-v2 `memory.peak`, which
+captures the full process group. To limit compute time, some of the most
+expensive VAEAC, ARF, and timeseries configurations were run twice; all
+other configurations were run three times.
 
 The full design, execution framework, committed CSV files, and numerical
 audit are available in the [benchmark

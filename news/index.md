@@ -51,10 +51,13 @@
   agent-assisted PR readiness checks; consolidated development scripts
   under `dev/`.
   ([\#494](https://github.com/NorskRegnesentral/shapr/pull/494))
-- Strengthened the compute/memory benchmark framework with
-  coalition-budget validation for iterative pairs, corrected
-  process-tree RAM polling, and optional realistic parallel-workload
-  studies. (branch: bench)
+- Added a full computational benchmark suite for runtime and peak RAM
+  across the supported approaches and representative workloads, together
+  with a pkgdown article presenting the retained results. The benchmark
+  framework includes coalition-budget validation for iterative pairs,
+  corrected process-tree RAM polling, and optional realistic
+  parallel-workload studies.
+  ([\#510](https://github.com/NorskRegnesentral/shapr/pull/510))
 
 #### Bug fixes
 
@@ -114,7 +117,9 @@
   directly around
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)
   rather than fresh-process runtime, while retaining harness timings as
-  diagnostics. (branch: bench)
+  diagnostics, and refreshed the retained results so all published peak
+  RAM values use cgroup-v2 `memory.peak`.
+  ([\#511](https://github.com/NorskRegnesentral/shapr/pull/511))
 
 #### Python
 
