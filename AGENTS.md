@@ -267,6 +267,16 @@ the preferred local workflow for snapshot updates in this repository.
 - Raise `ValueError` for invalid arguments, `TypeError` for type mismatches.
 - Provide informative messages that match the R error text where possible.
 
+### shapr Compatibility Policy
+- `python/src/pyshapr/compatibility.toml` is the source of truth for the current `shapr` compatibility metadata used
+  by runtime warnings and the generated table in `python/README.md`.
+- When preparing a Python release or changing `shapr` compatibility, update the TOML values and run
+  `cd python && python scripts/update_compatibility_table.py`. Do not edit the generated README table or duplicate
+  those values in `_rutils.py`.
+- Keep capability-based safety guards in Python code. In particular, SAGE support must still be checked from the
+  installed `shapr` API because version metadata alone cannot prevent silent local-SHAP fallback.
+- Keep `compatibility.toml` declared as package data and verify it is present in built distributions.
+
 ---
 
 ## PR Readiness Checklist
@@ -297,6 +307,8 @@ files.
 - [ ] Imports are explicit and grouped stdlib, third-party, local.
 - [ ] Python R-bridging goes through `_rutils._importr` and `utils.py2r` / `r2py`.
 - [ ] Public API functions return structured objects, not raw dictionaries.
+- [ ] Python release preparation updates `python/src/pyshapr/compatibility.toml`, regenerates the README compatibility
+  table, and reviews whether unavailable functionality needs a targeted capability guard.
 
 ### Changelog And Versioning
 - [ ] `NEWS.md` has a brief entry under the current development version for R-facing or developer-facing changes.

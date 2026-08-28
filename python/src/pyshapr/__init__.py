@@ -4,7 +4,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 # Lightweight public re-export (no R dependency)
 from . import datasets
-from ._rutils import get_package_lib_loc
+from ._rutils import _importr
 
 __all__ = ["Shapr", "datasets", "ensure_r_ready", "explain"]
 
@@ -25,7 +25,6 @@ def ensure_r_ready() -> bool:
 
     try:
         import rpy2.robjects as _ro
-        from rpy2.robjects.packages import importr
     except Exception as e:
         raise ImportError(
             "pyshapr requires rpy2 and a working R installation.\n"
@@ -33,11 +32,7 @@ def ensure_r_ready() -> bool:
         ) from e
 
     try:
-        lib_loc = get_package_lib_loc(_ro, "shapr")
-        if lib_loc:
-            importr("shapr", lib_loc=lib_loc)
-        else:
-            importr("shapr")
+        _importr("shapr", robjects_module=_ro)
     except Exception as e:
         raise ImportError(
             "The R package 'shapr' is not installed or not found.\n"
@@ -52,7 +47,7 @@ def ensure_r_ready() -> bool:
 
 
 def explain(*args, **kwargs):
-    """Lazily initialize R/shapr then call the real explain()."""
+    """Lazily initialize R/shapr, then call the real explain implementation."""
     ensure_r_ready()
     return _explain_impl(*args, **kwargs)
 

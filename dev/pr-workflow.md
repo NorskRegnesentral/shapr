@@ -48,8 +48,9 @@ This stage may edit files.
    - R package metadata: `DESCRIPTION`, `NAMESPACE`, `NEWS.md`, `.Rbuildignore`
    - Python wrapper code: `python/src/`
    - Python tests and snapshots: `python/tests/`
-   - Python documentation and metadata: `python/README.md`, `python/CHANGELOG.md`, `python/pyproject.toml`,
-     `python/uv.lock`
+    - Python documentation and metadata: `python/README.md`, `python/CHANGELOG.md`, `python/MANIFEST.in`,
+       `python/pyproject.toml`, `python/uv.lock`
+    - Python development tooling: `python/scripts/`
    - CI and development tooling: `.github/`, `.vscode/`, `AGENTS.md`, `dev/`, `inst/devel/`
 3. State the detected scope in chat before making non-mechanical edits if the scope is unclear or broad.
 
@@ -60,6 +61,8 @@ Run `dev/prepare-pr` for mechanical readiness edits:
 - style changed R-like files with `styler`
 - run `devtools::document()` when R package files indicate documentation may need regeneration
 - format Python code with `ruff format` when Python files changed
+- regenerate the Python README compatibility table from `python/src/pyshapr/compatibility.toml` when Python files
+   changed
 
 After running it, inspect and summarize any files modified by formatting or documentation generation.
 
@@ -193,6 +196,9 @@ Do not bump versions mechanically for every PR.
 - Bump the R package version only when preparing a release, beginning a new development cycle, or when the user asks.
 - `python/pyproject.toml` should usually stay unchanged during normal development.
 - Bump the Python package version only when preparing a Python package release or when the user asks.
+- For every Python package release, update and review `python/src/pyshapr/compatibility.toml`, then regenerate the
+   README compatibility table. Confirm that the policy names functionality unavailable on older `shapr` versions.
+   Add a feature-specific guard only when the older R backend could fail unclearly or return incorrect results.
 - `NEWS.md` and `python/CHANGELOG.md` should describe **significant** user-facing changes, developer-facing workflow
   changes, bug fixes, and notable compatibility changes. Aim for one entry per meaningful change, not one entry per
   file touched. Omit internal refactors, config tweaks, and mechanical moves that do not affect how contributors or

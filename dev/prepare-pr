@@ -12,6 +12,7 @@ Applies mechanical pre-PR readiness edits:
   - styles changed R-like files with styler
   - runs devtools::document() when R package source/documentation files changed
   - formats Python files with ruff when Python files changed
+  - regenerates the Python compatibility table when Python files changed
 
 This command may modify files. It does not update NEWS/changelog/version files
 by itself; those require AI or human judgment following dev/pr-workflow.md.
@@ -83,7 +84,7 @@ for file in "${changed_files[@]}"; do
   esac
 
   case "$file" in
-    python/src/*|python/tests/*|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
+    python/src/*|python/tests/*|python/scripts/*|python/MANIFEST.in|python/pyproject.toml|python/README.md|python/CHANGELOG.md|python/uv.lock)
       python_changed=true
       ;;
   esac
@@ -122,6 +123,14 @@ else
 fi
 
 if [ "$python_changed" = true ]; then
+  echo "### Regenerating Python compatibility table"
+  if [ -d python ]; then
+    (cd python && uv run --locked python scripts/update_compatibility_table.py)
+  else
+    echo "Skipped: python/ directory not found."
+  fi
+  echo
+
   echo "### Formatting Python"
   if [ -d python ]; then
     (cd python && uv run --locked ruff format)

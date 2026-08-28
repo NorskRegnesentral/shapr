@@ -9,7 +9,7 @@ import rpy2.robjects as ro
 from rpy2.rinterface import NA, NULL
 from rpy2.robjects.vectors import BoolVector, FloatVector, ListVector, StrVector
 
-from pyshapr._rutils import _importr
+from pyshapr._rutils import _check_shapr_feature_support, _importr
 from pyshapr.explanation import Shapr
 from pyshapr.utils import py2r, r2py, recurse_r_tree
 
@@ -212,6 +212,8 @@ def explain(
       - "internal": dict with the different parameters, data, functions and other output used internally.
       - "timing": dict containing timing information for the different parts of the computation.
     """
+
+    _check_shapr_feature_support(shapr, scope)
 
     init_time = base.Sys_time()  # datetime.now()
 
