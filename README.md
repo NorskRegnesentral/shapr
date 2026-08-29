@@ -24,10 +24,26 @@ See the pkgdown site at
 for a complete introduction with examples and documentation of the
 package.
 
-See the [computational cost
-benchmarks](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)
-for practical runtime and memory guidance across the available
-approaches and an interactive results table.
+`shapr` provides several approaches for estimating the contribution
+functions $v(S)$, with different trade-offs in runtime, memory use, and
+estimation accuracy.
+
+For practical guidance on computational cost, see the [computational
+cost
+benchmarks](https://norskregnesentral.github.io/shapr/articles/benchmarks.html),
+which compare runtime and memory use across the available approaches and
+include an interactive results table.
+
+When selecting an approach based on estimation accuracy, we recommend
+comparing plausible candidates using the [$\operatorname{MSE}_{v}$
+evaluation
+criterion](https://norskregnesentral.github.io/shapr/articles/general_usage.html#MSEv)
+when computationally feasible. For general guidance on identifying
+plausible candidates, see Section 6 of [Olsen et
+al. (2024)](https://doi.org/10.1007/s10618-024-01016-z). A few key
+findings and clearly labeled rules of thumb are also summarized in
+[Choosing a conditional
+approach](https://norskregnesentral.github.io/shapr/articles/general_usage.html#choosing-a-conditional-approach).
 
 For an overview of the methodology and capabilities of the package (per
 `shapr` v1.0.8), see the software paper Jullum et al.
@@ -230,6 +246,8 @@ explanation <- explain(
 #>
 #>
 #> ℹ Using 16 of 16 coalitions.
+#>
+#> ℹ Coalitions split into 10 batches (mean 1.6 per batch).
 
 # Print the Shapley values for the observations to explain.
 print(explanation)
@@ -329,6 +347,8 @@ sage_explanation <- explain(
 #>
 #>
 #> ℹ Using 16 of 16 coalitions.
+#>
+#> ℹ Coalitions split into 10 batches (mean 1.6 per batch).
 
 # Print the SAGE values
 print(sage_explanation)
