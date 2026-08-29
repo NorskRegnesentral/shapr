@@ -721,6 +721,28 @@ explanation_timeseries <- explain(
 ```
 
 
+## Choosing a conditional approach {#choosing-a-conditional-approach}
+
+`shapr` provides several approaches for estimating the contribution functions
+$v(S)$, with different trade-offs in estimation accuracy and computational
+cost.
+For practical guidance on runtime and memory use, see the
+[computational cost benchmarks](https://norskregnesentral.github.io/shapr/articles/benchmarks.html),
+which compare the available approaches and other arguments.
+When computationally feasible, we recommend comparing candidates on the
+data at hand using the [$\operatorname{MSE}_{v}$ evaluation criterion](#MSEv).
+Section 6 of
+[Olsen et al. (2024)](https://doi.org/10.1007/s10618-024-01016-z)
+provides general guidance that can help identify plausible candidates,
+and is the recommended source -- below we only provide a brief summary.
+Olsen et al. (2024) found that `independence` is preferable only when
+all feature dependence is absent or negligible.
+Otherwise, a correctly or nearly
+correctly specified parametric approach, such as `gaussian` or `copula`, generally performed best.
+When reasonable parametric assumptions were unavailable, the studied generative approaches, `ctree` and `vaeac`, or
+a suitably flexible `regression_separate` approach were often good alternatives.
+Note that the newer `arf` approach was not evaluated by Olsen et al. (2024).
+
 ## MSEv evaluation criterion {#MSEv}
 We can use the $\operatorname{MSE}_{v}$ criterion proposed by @frye2020shapley,
 and later used by, e.g., @olsen2022using and @olsen2024comparative, to evaluate
