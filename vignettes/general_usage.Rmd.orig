@@ -1,5 +1,5 @@
 ---
-title: "`shapr`: Explaining individual machine learning predictions with Shapley values"
+title: "shapr: Explaining individual machine learning predictions with Shapley values"
 author: "Martin Jullum, Camilla Lingjærde, Lars Henry Berge Olsen & Nikolai Sellereite"
 output:
   rmarkdown::html_vignette:
@@ -8,7 +8,7 @@ output:
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{`shapr`: Explaining individual machine learning predictions with Shapley values}
+  %\VignetteIndexEntry{shapr: Explaining individual machine learning predictions with Shapley values}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   markdown:
