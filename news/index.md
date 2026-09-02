@@ -120,6 +120,10 @@
   diagnostics, and refreshed the retained results so all published peak
   RAM values use cgroup-v2 `memory.peak`.
   ([\#511](https://github.com/NorskRegnesentral/shapr/pull/511))
+- Added practical guidance in README and general usage vignette for
+  choosing conditional approaches, covering computational cost, the MSEv
+  evaluation criterion, and recommendations from Olsen et al. (2024).
+  ([\#513](https://github.com/NorskRegnesentral/shapr/pull/513))
 
 #### Python
 

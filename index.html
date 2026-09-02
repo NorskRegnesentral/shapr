@@ -70,7 +70,9 @@
 <!-- badges: start -->
 
 <p>See the pkgdown site at <a href="https://norskregnesentral.github.io/shapr/">norskregnesentral.github.io/shapr/</a> for a complete introduction with examples and documentation of the package.</p>
-<p>See the <a href="https://norskregnesentral.github.io/shapr/articles/benchmarks.html">computational cost benchmarks</a> for practical runtime and memory guidance across the available approaches and an interactive results table.</p>
+<p><code>shapr</code> provides several approaches for estimating the contribution functions <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>, with different trade-offs in runtime, memory use, and estimation accuracy.</p>
+<p>For practical guidance on computational cost, see the <a href="https://norskregnesentral.github.io/shapr/articles/benchmarks.html">computational cost benchmarks</a>, which compare runtime and memory use across the available approaches and include an interactive results table.</p>
+<p>When selecting an approach based on estimation accuracy, we recommend comparing plausible candidates using the <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#MSEv"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_{v}</annotation></semantics></math> evaluation criterion</a> when computationally feasible. For general guidance on identifying plausible candidates, see Section 6 of <a href="https://doi.org/10.1007/s10618-024-01016-z" class="external-link">Olsen et al. (2024)</a>. A few key findings and clearly labeled rules of thumb are also summarized in <a href="https://norskregnesentral.github.io/shapr/articles/general_usage.html#choosing-a-conditional-approach">Choosing a conditional approach</a>.</p>
 <p>For an overview of the methodology and capabilities of the package (per <code>shapr</code> v1.0.8), see the software paper Jullum et al. (<a href="#ref-jullum2025shapr">2025</a>), available as a preprint <a href="https://arxiv.org/abs/2504.01842" class="external-link">here</a>.</p>
 <div class="section level2">
 <h2 id="news">NEWS<a class="anchor" aria-label="anchor" href="#news"></a>
@@ -113,10 +115,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To install the development version of <code>shapr</code>, available on GitHub, use</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To also install all dependencies, use</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -214,6 +216,8 @@
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Print the Shapley values for the observations to explain.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
@@ -304,6 +308,8 @@
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Print the SAGE values</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sage_explanation</span><span class="op">)</span></span>

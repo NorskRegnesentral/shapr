@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>`shapr`: Explaining individual machine learning predictions with Shapley values • shapr</title>
+<title>shapr: Explaining individual machine learning predictions with Shapley values • shapr</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="`shapr`: Explaining individual machine learning predictions with Shapley values">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="shapr: Explaining individual machine learning predictions with Shapley values">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -68,7 +68,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>`shapr`: Explaining individual machine learning predictions with Shapley values</h1>
+      <h1>shapr: Explaining individual machine learning predictions with Shapley values</h1>
                         <h4 data-toc-skip class="author">Martin Jullum,
 Camilla Lingjærde, Lars Henry Berge Olsen &amp; Nikolai Sellereite</h4>
             
@@ -1146,6 +1146,31 @@ necessary).</p>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="choosing-a-conditional-approach">Choosing a conditional approach<a class="anchor" aria-label="anchor" href="#choosing-a-conditional-approach"></a>
+</h3>
+<p><code>shapr</code> provides several approaches for estimating the
+contribution functions
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>S</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">v(S)</annotation></semantics></math>,
+with different trade-offs in estimation accuracy and computational cost.
+For practical guidance on runtime and memory use, see the <a href="https://norskregnesentral.github.io/shapr/articles/benchmarks.html">computational
+cost benchmarks</a>, which compare the available approaches and other
+arguments. When computationally feasible, we recommend comparing
+candidates on the data at hand using the <a href="#MSEv"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_{v}</annotation></semantics></math>
+evaluation criterion</a>. Section 6 of <a href="https://doi.org/10.1007/s10618-024-01016-z" class="external-link">Olsen et
+al. (2024)</a> provides general guidance that can help identify
+plausible candidates, and is the recommended source; below we only
+provide a brief summary. Olsen et al. (2024) found that
+<code>independence</code> is preferable only when all feature dependence
+is absent or negligible. Otherwise, a correctly or nearly correctly
+specified parametric approach, such as <code>gaussian</code> or
+<code>copula</code>, generally performed best. When reasonable
+parametric assumptions were unavailable, the studied generative
+approaches, <code>ctree</code> and <code>vaeac</code>, or a suitably
+flexible <code>regression_separate</code> approach were often good
+alternatives. Note that the newer <code>arf</code> approach was not
+evaluated by Olsen et al. (2024).</p>
+</div>
 <div class="section level3">
 <h3 id="MSEv">MSEv evaluation criterion<a class="anchor" aria-label="anchor" href="#MSEv"></a>
 </h3>
