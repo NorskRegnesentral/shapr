@@ -31,6 +31,9 @@ uv sync
 
 # Minimal test-only environment used by CI
 uv sync --no-default-groups --group test
+
+# Alternative using pip (v25.1+)
+python -m pip install -e . --group test
 ```
 
 ### Run all tests

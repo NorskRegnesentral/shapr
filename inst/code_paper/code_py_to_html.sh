@@ -6,7 +6,7 @@ set -euo pipefail
 # pip install jupyter jupytext nbconvert
 
 ## The code_py.py script ends by listing session information, provided by the session_info package, which needs
-## to be installed alongside shaprpy. session_info can be installed by running:
+## to be installed alongside pyshapr. session_info can be installed by running:
 # pip install session_info
 
 ## Run the below command in the terminal from this script's folder to generate the code_py.html from code_py.py:

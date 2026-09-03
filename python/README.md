@@ -78,11 +78,31 @@ pip install pyshapr
 ```
 
 #### Local development install (for contributors)
-If you have cloned the repository and want to install in development mode for local changes, navigate to the `./python` directory and run:
+If you have cloned the repository, navigate to the `./python` directory and create the complete development
+environment with:
+
 ```bash
-pip install -e .
+uv sync
 ```
-The `-e` flag installs in editable mode, allowing local code changes to be reflected immediately.
+
+This installs `pyshapr` in editable mode together with the default development dependencies. To install only
+`pyshapr` and its runtime dependencies, without any dependency groups, run:
+
+```bash
+uv sync --no-default-groups
+```
+
+Alternatively, create a runtime-only editable installation with pip:
+
+```bash
+python -m pip install -e .
+```
+
+Alternatively, install the complete development environment with pip (v25.1+):
+
+```bash
+python -m pip install -e . --group dev
+```
 
 ---
 
