@@ -25,10 +25,12 @@ tests/
 ### Install test dependencies
 ```bash
 cd python
-uv sync --extra test
 
-# Alternative editable install with pip
-pip install -e ".[test]"
+# Full local development environment
+uv sync
+
+# Minimal test-only environment used by CI
+uv sync --no-default-groups --group test
 ```
 
 ### Run all tests

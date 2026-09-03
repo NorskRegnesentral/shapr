@@ -47,6 +47,7 @@ Install the additional Python packages needed for the reproduction scripts:
 ```bash
 pip install xgboost session_info jupyter jupytext nbconvert ipykernel
 ```
+
 **Note:**
 The `jupyter`, `jupytext`, `nbconvert`, and `ipykernel` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code. The Python code itself does not require these packages.
 

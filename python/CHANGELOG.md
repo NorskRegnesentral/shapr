@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Removed the obsolete `numpy<2.5` constraint now that current `numba` releases support NumPy 2.5.
   Python 3.11 continues to resolve to the newest compatible NumPy release. (branch: code_paper_fixes)
+- Configured the default uv development environment with the test and code-paper tools while keeping these
+  tools out of pyshapr's runtime dependencies. (branch: code_paper_fixes)
 - Expanded the `extra_computation_args`, `iterative_args` and `output_args` docstrings in `explain()` to list
   the keys forwarded to shapr's `get_extra_comp_args_default()`, `get_iterative_args_default()` and
   `get_output_args_default()` (e.g. `semi_deterministic_sampling`, `max_batch_cube_size`, `convergence_tol`,
