@@ -139,6 +139,7 @@ library(data.table)
 
 x_explain &lt;- fread(file.path(&quot;data_and_models&quot;, &quot;x_explain.csv&quot;))
 x_train &lt;- fread(file.path(&quot;data_and_models&quot;, &quot;x_train.csv&quot;))
+y_explain &lt;- unlist(fread(file.path(&quot;data_and_models&quot;, &quot;y_explain.csv&quot;)))
 y_train &lt;- unlist(fread(file.path(&quot;data_and_models&quot;, &quot;y_train.csv&quot;)))
 model &lt;- readRDS(file.path(&quot;data_and_models&quot;, &quot;model.rds&quot;))
 
@@ -207,9 +208,9 @@ print(exp_40_indep, what = &quot;MSEv&quot;)
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Summary of Shapley value explanation ────────────────────────────────────────
 </code></pre>
-<pre><code>## • Computed with `shapr::explain()` in 12.1 seconds, started 2026-09-03 11:44:12
+<pre><code>## • Computed with `shapr::explain()` in 12.1 seconds, started 2026-09-03 14:35:13
 </code></pre>
 <pre><code>## • Model class: &lt;xgboost&gt;
 </code></pre>
@@ -227,7 +228,8 @@ print(exp_40_indep, what = &quot;MSEv&quot;)
 </code></pre>
 <pre><code>## • Number of coalitions used: 40 (of total 128)
 </code></pre>
-<pre><code>## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33ff13dd3.rds'
+<pre><code>## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c674748c4d5.rds'
 </code></pre>
 <pre><code>## 
 </code></pre>
@@ -284,8 +286,9 @@ exp_iter_ctree &lt;- explain(model = model,
                           seed = 1)
 </code></pre>
 <pre><code>## 
-## ── Starting `shapr::explain()` at 2026-09-03 11:44:24 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ── Starting `shapr::explain()` at 2026-09-03 14:35:25 ──────────────────────────
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
+##   therefore set to `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: &lt;xgboost&gt;
@@ -295,11 +298,12 @@ exp_iter_ctree &lt;- explain(model = model,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33aceddda.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c673d0c4bea.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## ℹ Coalitions split into 10 batches (mean 6.6 per batch). 
 ## 
@@ -309,7 +313,7 @@ exp_iter_ctree &lt;- explain(model = model,
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## ℹ Coalitions split into 10 batches (mean 9 per batch). 
 ## 
@@ -380,13 +384,13 @@ print(exp_g_reg, what = &quot;MSEv&quot;)
 </code></pre>
 <pre><code>##              init_time            end_time total_time_secs total_time_str
 ##                 &lt;POSc&gt;              &lt;POSc&gt;           &lt;num&gt;         &lt;char&gt;
-## 1: 2026-09-03 11:44:42 2026-09-03 11:44:44            2.28    2.3 seconds
+## 1: 2026-09-03 14:35:43 2026-09-03 14:35:45            2.24    2.2 seconds
 </code></pre>
 <pre><code class="language-r">print(exp_g_reg_tuned, what = &quot;timing_summary&quot;)
 </code></pre>
 <pre><code>##              init_time            end_time total_time_secs total_time_str
 ##                 &lt;POSc&gt;              &lt;POSc&gt;           &lt;num&gt;         &lt;char&gt;
-## 1: 2026-09-03 11:44:44 2026-09-03 11:44:50            5.72    5.7 seconds
+## 1: 2026-09-03 14:35:45 2026-09-03 14:35:51            5.73    5.7 seconds
 </code></pre>
 <pre><code class="language-r"># Waterfall plot for the best one
 plot(exp_g_reg_tuned,
@@ -394,6 +398,23 @@ plot(exp_g_reg_tuned,
      plot_type = &quot;waterfall&quot;)
 </code></pre>
 <p><img src="data:image/png;base64,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" alt="plot of chunk fig-waterfall_group" /></p>
+<pre><code class="language-r">### SAGE values
+exp_sage &lt;- explain(model = model,
+                    x_explain = x_explain,
+                    x_train = x_train,
+                    approach = &quot;gaussian&quot;,
+                    phi0 = mean(y_train),
+                    scope = &quot;global&quot;,
+                    y_explain = y_explain,
+                    verbose = NULL,
+                    seed = 1)
+
+print(exp_sage)
+</code></pre>
+<pre><code>##    explain_id     none   trend cosyear sinyear   temp  atemp windspeed    hum
+##         &lt;int&gt;    &lt;num&gt;   &lt;num&gt;   &lt;num&gt;   &lt;num&gt;  &lt;num&gt;  &lt;num&gt;     &lt;num&gt;  &lt;num&gt;
+## 1:          1 -4107542 1528570  399274   21910 668114 530828     88649 387220
+</code></pre>
 <pre><code class="language-r">#### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding
@@ -461,11 +482,12 @@ exp_fc_ar &lt;- explain_forecast(model = model_ar,
 </code></pre>
 <pre><code>## 
 </code></pre>
-<pre><code>## ── Starting `shapr::explain_forecast()` at 2026-09-03 11:45:22 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<pre><code>## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:37 ─────────────────
 </code></pre>
 <pre><code>## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
+##   therefore set to `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -486,7 +508,8 @@ exp_fc_ar &lt;- explain_forecast(model = model_ar,
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33943de3f.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c6742ff75a6.rds'
 ## 
 ## 
 ## 
@@ -530,9 +553,10 @@ exp_fc_arimax &lt;- explain_forecast(model = model_arimax,
                                   seed = 1)
 </code></pre>
 <pre><code>## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-03 11:45:23 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:38 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+##   therefore set to `2^n_groups = 4`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: &lt;Arima&gt;
@@ -542,7 +566,8 @@ exp_fc_arimax &lt;- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a3355e802.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c6715fff5b6.rds'
 ## 
 ## ── Main computation started ──
 ## 

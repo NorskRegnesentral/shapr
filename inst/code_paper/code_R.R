@@ -26,6 +26,7 @@ library(shapr)
 
 x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
 x_train <- fread(file.path("data_and_models", "x_train.csv"))
+y_explain <- unlist(fread(file.path("data_and_models", "y_explain.csv")))
 y_train <- unlist(fread(file.path("data_and_models", "y_train.csv")))
 model <- readRDS(file.path("data_and_models", "model.rds"))
 
@@ -160,6 +161,19 @@ plot(exp_g_reg_tuned,
 ggplot2::ggsave(file.path("paper_figures", "waterfall_group.pdf"), width = 7, height = 4)
 
 #+
+### SAGE values
+exp_sage <- explain(model = model,
+                    x_explain = x_explain,
+                    x_train = x_train,
+                    approach = "gaussian",
+                    phi0 = mean(y_train),
+                    scope = "global",
+                    y_explain = y_explain,
+                    verbose = NULL,
+                    seed = 1)
+
+print(exp_sage)
+
 #### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding

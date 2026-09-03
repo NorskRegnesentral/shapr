@@ -32,6 +32,7 @@ library(shapr)
 
 x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
 x_train <- fread(file.path("data_and_models", "x_train.csv"))
+y_explain <- unlist(fread(file.path("data_and_models", "y_explain.csv")))
 y_train <- unlist(fread(file.path("data_and_models", "y_train.csv")))
 model <- readRDS(file.path("data_and_models", "model.rds"))
 
@@ -121,11 +122,11 @@ summary(exp_40_ctree)
 ```
 
 ```
-## ── Summary of Shapley value explanation ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Summary of Shapley value explanation ────────────────────────────────────────
 ```
 
 ```
-## • Computed with `shapr::explain()` in 12.1 seconds, started 2026-09-03 11:44:12
+## • Computed with `shapr::explain()` in 12.1 seconds, started 2026-09-03 14:35:13
 ```
 
 ```
@@ -161,7 +162,8 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33ff13dd3.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c674748c4d5.rds'
 ```
 
 ```
@@ -234,8 +236,9 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ## 
-## ── Starting `shapr::explain()` at 2026-09-03 11:44:24 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+## ── Starting `shapr::explain()` at 2026-09-03 14:35:25 ──────────────────────────
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
+##   therefore set to `2^n_features = 128`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: <xgboost>
@@ -245,11 +248,12 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33aceddda.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c673d0c4bea.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
-## ── Iteration 4 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 4 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new. 
 ## ℹ Coalitions split into 10 batches (mean 6.6 per batch). 
 ## 
@@ -259,7 +263,7 @@ exp_iter_ctree <- explain(model = model,
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
-## ── Iteration 5 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Iteration 5 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new. 
 ## ℹ Coalitions split into 10 batches (mean 9 per batch). 
 ## 
@@ -348,7 +352,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-03 11:44:42 2026-09-03 11:44:44            2.28    2.3 seconds
+## 1: 2026-09-03 14:35:43 2026-09-03 14:35:45            2.24    2.2 seconds
 ```
 
 ``` r
@@ -358,7 +362,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-03 11:44:44 2026-09-03 11:44:50            5.72    5.7 seconds
+## 1: 2026-09-03 14:35:45 2026-09-03 14:35:51            5.73    5.7 seconds
 ```
 
 ``` r
@@ -370,6 +374,27 @@ plot(exp_g_reg_tuned,
 
 ![plot of chunk fig-waterfall_group](html_figures/fig-waterfall_group-1.png)
 
+
+``` r
+### SAGE values
+exp_sage <- explain(model = model,
+                    x_explain = x_explain,
+                    x_train = x_train,
+                    approach = "gaussian",
+                    phi0 = mean(y_train),
+                    scope = "global",
+                    y_explain = y_explain,
+                    verbose = NULL,
+                    seed = 1)
+
+print(exp_sage)
+```
+
+```
+##    explain_id     none   trend cosyear sinyear   temp  atemp windspeed    hum
+##         <int>    <num>   <num>   <num>   <num>  <num>  <num>     <num>  <num>
+## 1:          1 -4107542 1528570  399274   21910 668114 530828     88649 387220
+```
 
 ``` r
 #### Causal and asymmetric Shapley values ####
@@ -449,13 +474,14 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2026-09-03 11:45:22 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:37 ─────────────────
 ```
 
 ```
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
-## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
+##   therefore set to `2^n_features = 4`.
 ## 
 ## 
 ## ── Explanation overview ──
@@ -476,7 +502,8 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## 
 ## • Number of observations to explain: 2
 ## 
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a33943de3f.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c6742ff75a6.rds'
 ## 
 ## 
 ## 
@@ -528,9 +555,10 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 
 ```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-03 11:45:23 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:38 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+##   therefore set to `2^n_groups = 4`.
 ## ── Explanation overview ──
 ## 
 ## • Model class: <Arima>
@@ -540,7 +568,8 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of Monte Carlo integration samples: 1000
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
-## • Computations (temporary) saved at: '/tmp/RtmpC1IORc/shapr_obj_32f5a3355e802.rds'
+## • Computations (temporary) saved at:
+## '/tmp/RtmpKZM0qI/shapr_obj_338c6715fff5b6.rds'
 ## 
 ## ── Main computation started ──
 ## 
