@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 ## This bash script requires jupytext and nbconvert to be installed. They can be installed using:
 # pip install jupyter jupytext nbconvert
 
@@ -16,14 +18,14 @@ NOTEBOOK="code_py.ipynb"
 EXECUTED_NOTEBOOK="code_py_executed.ipynb"
 HTMLFILE="code_py.html"
 
-# Step 0: Check for required packages and provide installation commands if missing
-REQUIRED_PACKAGES=("jupyter" "jupytext" "nbconvert")
-for PACKAGE in "${REQUIRED_PACKAGES[@]}"; do
-    if ! python3 -m pip show "$PACKAGE" > /dev/null 2>&1; then
-        echo "Package '$PACKAGE' is not installed. You can install it by running:"
-        echo "python3 -m pip install --user $PACKAGE"
-    fi
-done
+# Step 0: Check for required commands
+if ! command -v jupytext > /dev/null 2>&1 ||
+   ! command -v jupyter > /dev/null 2>&1 ||
+   ! jupyter nbconvert --version > /dev/null 2>&1; then
+  echo "Required Jupyter tools are unavailable. Install them with:"
+  echo "python3 -m pip install --user jupyter jupytext nbconvert ipykernel"
+  exit 1
+fi
 
 # Step 1: Convert .py to .ipynb
 echo "Converting $PYFILE to notebook..."
@@ -31,7 +33,8 @@ jupytext "$PYFILE" --to notebook -o "$NOTEBOOK"
 
 # Step 2: Execute the notebook
 echo "Executing notebook..."
-jupyter nbconvert --to notebook --execute "$NOTEBOOK" --output "$EXECUTED_NOTEBOOK"
+jupyter nbconvert --to notebook --execute "$NOTEBOOK" --output "$EXECUTED_NOTEBOOK" \
+  --KernelManager.transport=ipc
 
 # Step 3: Convert executed notebook to HTML
 echo "Exporting to HTML..."
