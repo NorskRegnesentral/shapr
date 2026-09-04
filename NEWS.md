@@ -2,7 +2,7 @@
 [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
-# shapr 1.0.8.9004
+# shapr 1.1.0
 
 ### New features
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
