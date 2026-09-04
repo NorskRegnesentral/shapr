@@ -61,6 +61,10 @@
 
 #### Bug fixes
 
+- Updated the bundled code-paper models for current `xgboost`
+  compatibility and made Python reproduction checks use the active
+  Jupyter tools with local IPC kernel transport. (branch:
+  code_paper_fixes)
 - Fixed a bug in the `vaeac` approach where an all-categorical data set
   whose features all have the same number of levels was encoded
   incorrectly, causing a torch `index ... is out of bounds` error.

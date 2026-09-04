@@ -13,6 +13,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Removed the obsolete `numpy<2.5` constraint now that current `numba`
+  releases support NumPy 2.5. Python 3.11 continues to resolve to the
+  newest compatible NumPy release. (branch: code_paper_fixes)
+- Configured the default uv development environment with the test and
+  code-paper tools while keeping these tools out of pyshapr’s runtime
+  dependencies. (branch: code_paper_fixes)
 - Expanded the `extra_computation_args`, `iterative_args` and
   `output_args` docstrings in
   [`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md)

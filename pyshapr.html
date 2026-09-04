@@ -104,56 +104,61 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">pip</span> install pyshapr</span></code></pre></div>
 <div class="section level4">
 <h4 id="local-development-install-for-contributors">Local development install (for contributors)<a class="anchor" aria-label="anchor" href="#local-development-install-for-contributors"></a></h4>
-<p>If you have cloned the repository and want to install in development mode for local changes, navigate to the <code>./python</code> directory and run:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code></pre></div>
-<p>The <code>-e</code> flag installs in editable mode, allowing local code changes to be reflected immediately.</p>
+<p>If you have cloned the repository, navigate to the <code>./python</code> directory and create the complete development environment with:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="ex">uv</span> sync</span></code></pre></div>
+<p>This installs <code>pyshapr</code> in editable mode together with the default development dependencies. To install only <code>pyshapr</code> and its runtime dependencies, without any dependency groups, run:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--no-default-groups</span></span></code></pre></div>
+<p>Alternatively, create a runtime-only editable installation with pip:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-e</span> .</span></code></pre></div>
+<p>Alternatively, install the complete development environment with pip (v25.1+):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pip install <span class="at">-e</span> . <span class="at">--group</span> dev</span></code></pre></div>
 <hr></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="quick-demo">Quick Demo<a class="anchor" aria-label="anchor" href="#quick-demo"></a></h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="im">from</span> pyshapr <span class="im">import</span> explain</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="im">from</span> pyshapr.datasets <span class="im">import</span> load_california_housing</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Load example data</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>dfx_train, dfx_explain, dfy_train, dfy_explain <span class="op">=</span> load_california_housing()</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># Fit a model</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co"># Explain predictions</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    x_train<span class="op">=</span>dfx_train,</span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_explain,</span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>)</span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co"># Get a summary object with computation details</span></span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>summary <span class="op">=</span> explanation.summary()</span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="bu">print</span>(summary)  <span class="co"># Displays a formatted summary (also available directly via explanation.summary())</span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a></span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co"># Access specific summary attributes (available with tab-completion in Jupyter)</span></span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>summary[<span class="st">'approach'</span>]     <span class="co"># Approach used</span></span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>summary[<span class="st">'timing_summary'</span>][<span class="st">'total_time_secs'</span>]  <span class="co"># Total computation time</span></span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co"># Extract one or more specific result objects directly</span></span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>explanation.get_results(<span class="st">"proglang"</span>) <span class="co"># Programming language used (Python/R)</span></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>explanation.get_results(<span class="st">"approach"</span>) <span class="co"># Approach used</span></span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>explanation.get_results().keys()  <span class="co"># All available result objects</span></span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co"># Convert to a SHAP Explanation object</span></span>
-<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
-<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a></span>
-<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="im">import</span> shap</span>
-<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="im">from</span> pyshapr <span class="im">import</span> explain</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="im">from</span> pyshapr.datasets <span class="im">import</span> load_california_housing</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co"># Load example data</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>dfx_train, dfx_explain, dfy_train, dfy_explain <span class="op">=</span> load_california_housing()</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co"># Fit a model</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>model <span class="op">=</span> RandomForestRegressor()</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>model.fit(dfx_train, dfy_train.values.flatten())</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Explain predictions</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>explanation <span class="op">=</span> explain(</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>    x_train<span class="op">=</span>dfx_train,</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_explain,</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>)</span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co"># Get a summary object with computation details</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>summary <span class="op">=</span> explanation.summary()</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="bu">print</span>(summary)  <span class="co"># Displays a formatted summary (also available directly via explanation.summary())</span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co"># Access specific summary attributes (available with tab-completion in Jupyter)</span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>summary[<span class="st">'approach'</span>]     <span class="co"># Approach used</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>summary[<span class="st">'timing_summary'</span>][<span class="st">'total_time_secs'</span>]  <span class="co"># Total computation time</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co"># Extract one or more specific result objects directly</span></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>explanation.get_results(<span class="st">"proglang"</span>) <span class="co"># Programming language used (Python/R)</span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>explanation.get_results(<span class="st">"approach"</span>) <span class="co"># Approach used</span></span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>explanation.get_results().keys()  <span class="co"># All available result objects</span></span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="co"># Convert to a SHAP Explanation object</span></span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a></span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a><span class="im">import</span> shap</span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>
@@ -179,15 +184,15 @@
 <div class="section level2">
 <h2 id="sage-values">SAGE Values<a class="anchor" aria-label="anchor" href="#sage-values"></a></h2>
 <p><code>pyshapr</code> can also compute <strong>SAGE</strong> (Shapley Additive Global importancE) values, which explain the model’s global loss rather than individual predictions. Pass <code>scope="global"</code> together with the observed responses <code>y_explain</code>. By default the loss is log-loss for binary 0/1 responses and MSE otherwise; a custom Python loss can be supplied via <code>extra_computation_args={"global_loss_func": my_loss}</code>, where <code>my_loss(y, pred)</code> returns a single number. The per-observation Shapley values computed alongside the SAGE values are available through <code>explanation.get_shap_values_est()</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>explanation <span class="op">=</span> pyshapr.explain(</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    x_train<span class="op">=</span>x_train,</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    x_explain<span class="op">=</span>x_explain,</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    phi0<span class="op">=</span>y_train.mean().item(),</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    scope<span class="op">=</span><span class="st">"global"</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    y_explain<span class="op">=</span>y_explain,</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>explanation <span class="op">=</span> pyshapr.explain(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    x_train<span class="op">=</span>x_train,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    x_explain<span class="op">=</span>x_explain,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>    phi0<span class="op">=</span>y_train.mean().item(),</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>    scope<span class="op">=</span><span class="st">"global"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    y_explain<span class="op">=</span>y_explain,</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>)</span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h2>
