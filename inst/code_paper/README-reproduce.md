@@ -47,6 +47,7 @@ Install the additional Python packages needed for the reproduction scripts:
 ```bash
 pip install xgboost session_info jupyter jupytext nbconvert ipykernel
 ```
+
 **Note:**
 The `jupyter`, `jupytext`, `nbconvert`, and `ipykernel` packages are only needed to run the `code_py_to_html.sh` bash script that generates the HTML file from the Python code. The Python code itself does not require these packages.
 
@@ -58,6 +59,7 @@ The `jupyter`, `jupytext`, `nbconvert`, and `ipykernel` packages are only needed
 
 The script `R_prep_data_and_model.R` prepares the data and models used in the examples.
 Running this script is optional, since the prepared data and models are already included in the `data_and_models` folder.
+The bundled model files were generated with version 3.2.1.1 of the R `xgboost` package.
 
 To run the preparation script from the command line, use
 ```bash
