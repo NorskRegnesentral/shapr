@@ -2,6 +2,6 @@ schema_version = 1
 
 [shapr]
 minimum_supported = "1.0.5"
-developed_with = "1.0.8.9005"
+developed_with = "1.1.0"
 recent_features_require_newer_than = "1.0.8"
 unavailable_features = ["ARF", "SAGE"]

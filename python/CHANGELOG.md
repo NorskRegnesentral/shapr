@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Updated the compatibility policy for the `shapr` 1.1.0 CRAN release and changed backend update
+  guidance from the GitHub development version to CRAN. (branch: release/1.1.0)
 - Removed the obsolete `numpy<2.5` constraint now that current `numba` releases support NumPy 2.5.
   Python 3.11 continues to resolve to the newest compatible NumPy release. (branch: code_paper_fixes)
 - Configured the default uv development environment with the test and code-paper tools while keeping these

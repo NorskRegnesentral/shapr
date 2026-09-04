@@ -57,7 +57,7 @@ def _warn_if_shapr_version_lacks_full_support(shapr_package: Any) -> None:
         f"{_format_features(UNAVAILABLE_FEATURES)} require a shapr version newer than "
         f"{RECENT_FEATURES_REQUIRE_NEWER_THAN} and are unavailable; other "
         "functionality may still work. "
-        "Update shapr from R with pak::pak('NorskRegnesentral/shapr').",
+        "Update shapr from R with install.packages('shapr').",
         ShaprVersionWarning,
         stacklevel=3,
     )
@@ -71,7 +71,7 @@ def _check_shapr_feature_support(shapr_package: Any, scope: str) -> None:
     raise ShaprVersionError(
         f"shapr {installed_version} does not support SAGE (`scope='global'`). Without this "
         "check, it can return local SHAP values instead of SAGE values. Update shapr from R with "
-        "pak::pak('NorskRegnesentral/shapr')."
+        "install.packages('shapr')."
     )
 
 

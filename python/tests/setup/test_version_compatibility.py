@@ -24,11 +24,10 @@ def test_shapr_version_without_full_support_warns(monkeypatch, installed_version
     shapr_package = SimpleNamespace(__version__=installed_version)
 
     expected_message = (
-        "pyshapr 0.5.1 was developed with shapr 1.0.8.9005, but shapr "
+        "pyshapr 0.5.1 was developed with shapr 1.1.0, but shapr "
         f"{installed_version} is installed. ARF and SAGE require a shapr version newer than "
         "1.0.8 and are unavailable; other functionality may still work. "
-        "Update shapr from R with "
-        "pak::pak('NorskRegnesentral/shapr')."
+        "Update shapr from R with install.packages('shapr')."
     )
     with pytest.warns(_rutils.ShaprVersionWarning) as recorded_warnings:
         _rutils._warn_if_shapr_version_lacks_full_support(shapr_package)
@@ -36,7 +35,7 @@ def test_shapr_version_without_full_support_warns(monkeypatch, installed_version
     assert str(recorded_warnings[0].message) == expected_message
 
 
-@pytest.mark.parametrize("installed_version", ["1.0.8.9000", "1.0.8-9001", "1.0.9"])
+@pytest.mark.parametrize("installed_version", ["1.0.8.9000", "1.0.8-9001", "1.0.9", "1.1.0"])
 def test_newer_shapr_version_does_not_warn(installed_version):
     """Development and later release versions load without a general warning."""
     shapr_package = SimpleNamespace(__version__=installed_version)
