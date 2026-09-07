@@ -178,7 +178,7 @@ asymmetric causal sampling ([#435](https://github.com/NorskRegnesentral/shapr/pu
 * Rename vaeac plotting functions ([#428](https://github.com/NorskRegnesentral/shapr/pull/428))
 * Move explain() arguments `paired_shap_sampling` and `kernelSHAP_reweighting` into `extra_computation_args` ([#428](https://github.com/NorskRegnesentral/shapr/pull/428))
 * Improved and unified the documentation ([#427](https://github.com/NorskRegnesentral/shapr/pull/427))
-* Remove seed argument from the boostrap function as its better handled by the mother function ([#427](https://github.com/NorskRegnesentral/shapr/pull/427))
+* Remove seed argument from the bootstrap function as it is better handled by the mother function ([#427](https://github.com/NorskRegnesentral/shapr/pull/427))
 * Renamed various internal functions to be consistent with names in the rest of the package ([#427](https://github.com/NorskRegnesentral/shapr/pull/427))
 * Remove MSEv from explain_forecast (as it was only supported for horizon=1). Should return in a more general manner in the future ([#427](https://github.com/NorskRegnesentral/shapr/pull/427))
 * Improve efficiency of coalition sampling code and move to string sampling ([#426](https://github.com/NorskRegnesentral/shapr/pull/426))

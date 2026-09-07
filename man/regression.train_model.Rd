@@ -46,7 +46,7 @@ and see the vignette for how to add new/own models. Note, to make it easier to c
 example, \verb{"parsnip::rand_forest(mtry = hardhat::tune(), trees = 100, engine = "ranger", mode = "regression")"}
 is also a valid input. It is essential to include the package prefix if the package is not loaded.}
 
-\item{regression.tune}{Logical (default is \code{FALSE}). If \code{TRUE}, then we are to tune the hyperparemeters based on
+\item{regression.tune}{Logical (default is \code{FALSE}). If \code{TRUE}, then we are to tune the hyperparameters based on
 the values provided in \code{regression.tune_values}. Note that no checks are conducted as this is checked earlier in
 \code{setup_approach.regression_separate} and \code{setup_approach.regression_surrogate}.}
 
