@@ -127,22 +127,22 @@ explanation = explain(
     x_explain=dfx_explain,
     approach="gaussian",
     phi0=dfy_train.mean().item(),
-    seed=1
+    seed=1,
 )
 
-explanation.print() # Print the Shapley values
+explanation.print()  # Print the Shapley values
 
 # Get a summary object with computation details
 summary = explanation.summary()
 print(summary)  # Displays a formatted summary (also available directly via explanation.summary())
 
 # Access specific summary attributes (available with tab-completion in Jupyter)
-summary['approach']     # Approach used
-summary['timing_summary']['total_time_secs']  # Total computation time
+summary["approach"]  # Approach used
+summary["timing_summary"]["total_time_secs"]  # Total computation time
 
 # Extract one or more specific result objects directly
-explanation.get_results("proglang") # Programming language used (Python/R)
-explanation.get_results("approach") # Approach used
+explanation.get_results("proglang")  # Programming language used (Python/R)
+explanation.get_results("approach")  # Approach used
 explanation.get_results().keys()  # All available result objects
 
 # Plotting (requires the 'shap' library)
@@ -150,8 +150,8 @@ explanation.get_results().keys()  # All available result objects
 shap_exp = explanation.to_shap()
 
 import shap
-shap.plots.waterfall(shap_exp[0]) # Plot the first observation
 
+shap.plots.waterfall(shap_exp[0])  # Plot the first observation
 ```
 
 ---
