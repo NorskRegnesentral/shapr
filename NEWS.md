@@ -10,25 +10,23 @@
 * The basic verbose output now reports how many batches the coalitions are split into and the mean number of coalitions per batch. ([#504](https://github.com/NorskRegnesentral/shapr/pull/504))
 * Added support for SAGE (Shapley Additive Global importancE) values via the new `scope` and `y_explain` arguments to `explain()`. Set `scope = "global"` to explain the model's global loss (using `extra_computation_args$global_loss_func`, defaulting to log-loss for binary 0/1 responses and MSE otherwise) instead of individual predictions, and plot the result with `plot()` using `plot_type = "bar"` or `"waterfall"`. `scope = "global"` also works together with grouping (`group`), causal Shapley values (`causal_ordering`/`confounding`), and asymmetric Shapley values (`asymmetric`). ([#503](https://github.com/NorskRegnesentral/shapr/pull/503))
 * `explain()` now warns when the `vaeac` approach is combined with a serializing parallelization backend (a `future` `multisession` or `cluster` plan) with more than one worker, since `torch` objects are external pointers that cannot be exported to separate R processes (which otherwise fails with an "external pointer is not valid" error). Use a forking plan (`future::plan(future::multicore)`) or run sequentially. ([#507](https://github.com/NorskRegnesentral/shapr/pull/507))
-### Development workflow
-* Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
-* Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
-* Added a full computational benchmark suite for runtime and peak RAM across the supported approaches and representative workloads, together with a pkgdown article presenting the retained results. The benchmark framework includes coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. ([#510](https://github.com/NorskRegnesentral/shapr/pull/510))
+
 
 ### Bug fixes
-* Updated the bundled code-paper models for current `xgboost` compatibility and made Python reproduction checks use the active Jupyter tools with local IPC kernel transport. (branch: code_paper_fixes)
+* Updated the bundled code-paper models for current `xgboost` compatibility and made Python reproduction checks use the active Jupyter tools with local IPC kernel transport. ([#515](https://github.com/NorskRegnesentral/shapr/pull/515))
 * Fixed a bug in the `vaeac` approach where an all-categorical data set whose features all have the same number of levels was encoded incorrectly, causing a torch `index ... is out of bounds` error. `vaeac_preprocess_data()` used `sapply(data, levels)`, which simplifies to a matrix (instead of a per-feature list) when every feature is a factor with the same number of levels, corrupting `one_hot_max_sizes`. ([#506](https://github.com/NorskRegnesentral/shapr/pull/506))
 * Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features could ignore `max_n_coalitions` and enumerate all `2^n_features` coalitions (an incorrect exact-computation threshold of `n_shapley_values^2` instead of `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo` `Cube::init()` failures in high dimensions. ([#505](https://github.com/NorskRegnesentral/shapr/pull/505))
 * Fixed handling of ordered factor features by treating them as factors in feature specifications and adding stricter checks for malformed feature specification lists. ([#495](https://github.com/NorskRegnesentral/shapr/pull/495))
 * Fixed `cli::cli_progress_step()` reporting artificially short timings for the v(S) computation step by passing `.envir = parent.frame()` to bind the progress bar's lifetime to the correct calling environment. ([#496](https://github.com/NorskRegnesentral/shapr/pull/496))
 
-### Tests
+
+### Development and testing
+* Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
+* Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
+* Added a full computational benchmark suite for runtime and peak RAM across the supported approaches and representative workloads, together with a pkgdown article presenting the retained results. The benchmark framework includes coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. ([#510](https://github.com/NorskRegnesentral/shapr/pull/510))
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 * Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
-
-### Continuous integration
 * Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
-* Added manually triggered pkgdown previews at branch-specific GitHub Pages URLs. (branch: ci/pkgdown-preview)
 
 ### Documentation
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
