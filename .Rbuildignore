@@ -21,6 +21,7 @@
 ^CRAN-SUBMISSION$
 ^.Rprofile
 ^python$
+^python-shim$
 ^vignettes/general_usage\.Rmd\.orig$
 ^vignettes/vaeac\.Rmd\.orig$
 ^vignettes/regression\.Rmd\.orig$
