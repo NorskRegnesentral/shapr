@@ -30,7 +30,8 @@
 ^vignettes/cache_vaeac/*$
 ^vignettes/cache_regression/*$
 ^vignettes/cache_asymmetric_causal/*$
-^tests/testthat/_snaps/*$ # Uncomment when submitting to CRAN to reduce filesize
+# Exclude snapshots when submitting to CRAN to reduce file size.
+^tests/testthat/_snaps/*$
 ^inst/code_paper/*$
 ^inst/demo/*$
 ^inst/joss_paper/*$
