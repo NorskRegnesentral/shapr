@@ -213,7 +213,7 @@ explanation <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-09-07 13:48:51 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #>
@@ -237,7 +237,7 @@ explanation <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
+#> '/tmp/RtmpLesmqX/shapr_obj_5faabee9ad4.rds'
 #>
 #>
 #>
@@ -264,7 +264,7 @@ print(explanation)
 summary(explanation)
 #>
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23
+#> • Computed with `shapr::explain()` in 2.5 seconds, started 2026-09-07 13:48:51
 #> • Model class: <xgboost>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: empirical
@@ -274,7 +274,7 @@ summary(explanation)
 #> • Number of observations to explain: 6
 #> • Number of coalitions used: 16 (of total 16)
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'
+#> '/tmp/RtmpLesmqX/shapr_obj_5faabee9ad4.rds'
 #>
 #> ── Estimated Shapley values
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -314,7 +314,7 @@ sage_explanation <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-09-07 13:49:00 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #>
@@ -338,7 +338,7 @@ sage_explanation <- explain(
 #> • Number of observations to explain: 6
 #>
 #> • Computations (temporary) saved at:
-#> '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'
+#> '/tmp/RtmpLesmqX/shapr_obj_5faab493d0654.rds'
 #>
 #>
 #>
