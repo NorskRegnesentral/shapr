@@ -1701,7 +1701,7 @@ sage_explanation <- explain(
   seed = 1
 )
 #>
-#> ── Starting `shapr::explain()` at 2026-06-24 14:45:26 ───────────────────────────────
+#> ── Starting `shapr::explain()` at 2026-07-06 17:03:15 ───────────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore
 #>   set to `2^n_features = 32`.
 #>
@@ -1724,7 +1724,7 @@ sage_explanation <- explain(
 #>
 #> • Number of observations to explain: 105
 #>
-#> • Computations (temporary) saved at: '/tmp/RtmpbjHlWY/shapr_obj_1670a1272246d5.rds'
+#> • Computations (temporary) saved at: '/tmp/RtmpopEt5D/shapr_obj_3f7df57fdcf75.rds'
 #>
 #>
 #>
