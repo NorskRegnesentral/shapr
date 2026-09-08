@@ -9,10 +9,10 @@ for details).
 
 The majority of our tests use snapshots to check result reproducibility.
 These snapshot tests are excluded from CRAN-mode checks.
-Our test environment includes both CRAN-mode and non-CRAN-mode checks.
+Our test environments include both CRAN-mode and non-CRAN-mode checks.
 Locally, tests are also run both with and without suggested packages.
 
-### Checks with `--as-cran` (snapshot tests excluded)
+### CRAN-mode checks (snapshot tests excluded)
 
 * Local Ubuntu 24.04.4, R 4.6.1 (release)
 * win-builder, R devel, release, and oldrelease
@@ -21,8 +21,7 @@ Locally, tests are also run both with and without suggested packages.
 * R-hub macOS Sequoia 15.7.9, R devel
 * R-hub Clang ASAN on Ubuntu 22.04.5, R devel
 
-
-### Checks without `--as-cran`
+### Non-CRAN-mode checks (snapshot tests included)
 
 These checks include snapshot tests.
 
