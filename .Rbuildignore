@@ -31,8 +31,6 @@
 ^vignettes/cache_vaeac/*$
 ^vignettes/cache_regression/*$
 ^vignettes/cache_asymmetric_causal/*$
-# Exclude snapshots when submitting to CRAN to reduce file size.
-^tests/testthat/_snaps/*$
 ^inst/code_paper/*$
 ^inst/demo/*$
 ^inst/joss_paper/*$
@@ -43,3 +41,5 @@
 ^\.venv$
 ^\.vscode$
 ^AGENTS\.md$
+# Uncomment the below line for CRAN/win-builder only (snapshot tests skipped):
+# ^tests/testthat/_snaps/*$
