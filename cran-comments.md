@@ -47,4 +47,15 @@ compiler-injected `-mno-omit-leaf-frame-pointer` flag on Ubuntu.
 The win-builder and R-hub checks produced no ERRORs, WARNINGs, or NOTEs.
 
 ## Reverse dependencies
-To be updated with the reverse-dependency check results before submission.
+
+We checked all 5 reverse dependencies (`futurize`, `MLwrap`, `nestedcv`, and
+`rtemis` from CRAN; `XAItest` from Bioconductor), comparing the CRAN release
+(1.0.8) with this release (1.1.0).
+
+* We saw 0 new problems
+* We failed to check 0 packages
+
+We also repeated the check for `nestedcv` after installing its unavailable
+suggested package `CORElearn`, and the check for `XAItest` after installing
+packages used by its check-time code but absent from its package metadata.
+These supplemental checks found no new problems.
