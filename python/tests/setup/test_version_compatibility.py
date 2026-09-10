@@ -27,7 +27,7 @@ def test_shapr_version_without_full_support_warns(monkeypatch, installed_version
         "pyshapr 0.5.1 was developed with shapr 1.1.0, but shapr "
         f"{installed_version} is installed. ARF and SAGE require a shapr version newer than "
         "1.0.8 and are unavailable; other functionality may still work. "
-        "Update shapr from R with install.packages('shapr')."
+        "Update shapr from R with `install.packages('shapr')`."
     )
     with pytest.warns(_rutils.ShaprVersionWarning) as recorded_warnings:
         _rutils._warn_if_shapr_version_lacks_full_support(shapr_package)
