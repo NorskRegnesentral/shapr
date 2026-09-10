@@ -126,7 +126,7 @@ summary(exp_40_ctree)
 ```
 
 ```
-## • Computed with `shapr::explain()` in 12.2 seconds, started 2026-09-09 15:13:49
+## • Computed with `shapr::explain()` in 12.3 seconds, started 2026-09-10 13:53:06
 ```
 
 ```
@@ -163,7 +163,7 @@ summary(exp_40_ctree)
 
 ```
 ## • Computations (temporary) saved at:
-## '/tmp/Rtmpz5KCx9/shapr_obj_1c6aed2bec533e.rds'
+## '/tmp/RtmpLUEJSP/shapr_obj_2374592814efae.rds'
 ```
 
 ```
@@ -236,7 +236,7 @@ exp_iter_ctree <- explain(model = model,
 
 ```
 ##
-## ── Starting `shapr::explain()` at 2026-09-09 15:14:01 ──────────────────────────
+## ── Starting `shapr::explain()` at 2026-09-10 13:53:19 ──────────────────────────
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
 ##   therefore set to `2^n_features = 128`.
 ## ── Explanation overview ──
@@ -249,13 +249,13 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
 ## • Computations (temporary) saved at:
-## '/tmp/Rtmpz5KCx9/shapr_obj_1c6aed380c3cfb.rds'
+## '/tmp/RtmpLUEJSP/shapr_obj_2374592d1feb67.rds'
 ##
 ## ── Iterative computation started ──
 ##
 ## ── Iteration 4 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 66 of 128 coalitions, 26 new.
-## ℹ Coalitions split into 10 batches (mean 6.6 per batch).
+## ℹ Coalitions split into 10 batches (mean 2.6 per batch).
 ##
 ## ── Convergence info
 ## ℹ Not converged after 66 coalitions:
@@ -265,7 +265,7 @@ exp_iter_ctree <- explain(model = model,
 ##
 ## ── Iteration 5 ─────────────────────────────────────────────────────────────────
 ## ℹ Using 90 of 128 coalitions, 24 new.
-## ℹ Coalitions split into 10 batches (mean 9 per batch).
+## ℹ Coalitions split into 10 batches (mean 2.4 per batch).
 ##
 ## ── Convergence info
 ## ✔ Iterative Shapley value estimation stopped at 90 coalitions after 5 iterations, due to:
@@ -352,7 +352,7 @@ print(exp_g_reg, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-09 15:14:19 2026-09-09 15:14:22            2.27    2.3 seconds
+## 1: 2026-09-10 13:53:37 2026-09-10 13:53:39            2.31    2.3 seconds
 ```
 
 ``` r
@@ -362,7 +362,7 @@ print(exp_g_reg_tuned, what = "timing_summary")
 ```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-09 15:14:22 2026-09-09 15:14:27            5.73    5.7 seconds
+## 1: 2026-09-10 13:53:39 2026-09-10 13:53:45            5.66    5.7 seconds
 ```
 
 ``` r
@@ -474,7 +474,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ```
 
 ```
-## ── Starting `shapr::explain_forecast()` at 2026-09-09 15:15:14 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-10 13:54:31 ─────────────────
 ```
 
 ```
@@ -503,7 +503,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## • Number of observations to explain: 2
 ##
 ## • Computations (temporary) saved at:
-## '/tmp/Rtmpz5KCx9/shapr_obj_1c6aed6d2d0ab8.rds'
+## '/tmp/RtmpLUEJSP/shapr_obj_23745940e3382a.rds'
 ##
 ##
 ##
@@ -555,7 +555,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 
 ```
 ##
-## ── Starting `shapr::explain_forecast()` at 2026-09-09 15:15:15 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-10 13:54:32 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
 ##   therefore set to `2^n_groups = 4`.
@@ -569,12 +569,12 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
 ## • Computations (temporary) saved at:
-## '/tmp/Rtmpz5KCx9/shapr_obj_1c6aed77fc693a.rds'
+## '/tmp/RtmpLUEJSP/shapr_obj_2374596e61eb2.rds'
 ##
 ## ── Main computation started ──
 ##
 ## ℹ Using 4 of 4 coalitions.
-## ℹ Coalitions split into 4 batches (mean 1.5 per batch).
+## ℹ Coalitions split into 4 batches (mean 1 per batch).
 ```
 
 ``` r
@@ -601,7 +601,7 @@ sessionInfo()
 ```
 ## R version 4.6.1 (2026-06-24)
 ## Platform: x86_64-pc-linux-gnu
-## Running under: Ubuntu 24.04.4 LTS
+## Running under: Ubuntu 24.04.5 LTS
 ##
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/atlas/libblas.so.3.10.3

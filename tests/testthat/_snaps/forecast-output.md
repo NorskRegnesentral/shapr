@@ -106,15 +106,15 @@
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 512 coalitions, 10 new. 
-      i Coalitions split into 10 batches (mean 2.5 per batch). 
+      i Coalitions split into 10 batches (mean 1 per batch). 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 60 of 512 coalitions, 50 new. 
-      i Coalitions split into 10 batches (mean 13.9 per batch). 
+      i Coalitions split into 10 batches (mean 5 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 150 of 512 coalitions, 90 new. 
-      i Coalitions split into 10 batches (mean 29.2 per batch). 
+      i Coalitions split into 10 batches (mean 9 per batch). 
     Output
          explain_idx horizon  none Temp.1  Temp.2 Temp.3 Wind.1  Wind.2   Wind.3
                <int>   <int> <num>  <num>   <num>  <num>  <num>   <num>    <num>
@@ -160,19 +160,19 @@
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 16 coalitions, 10 new. 
-      i Coalitions split into 10 batches (mean 2.8 per batch). 
+      i Coalitions split into 10 batches (mean 1 per batch). 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 12 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 17 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 14 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 19.5 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 16 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 22 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none   Temp    Wind Solar.R   Ozone
                <int>   <int> <num>  <num>   <num>   <num>   <num>
@@ -246,7 +246,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 2 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>
@@ -322,7 +322,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 1.5 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>
@@ -359,7 +359,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 1.5 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none  Group1 Group2
                <int>   <int> <num>   <num>  <num>

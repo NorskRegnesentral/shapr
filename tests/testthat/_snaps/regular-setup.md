@@ -1211,31 +1211,31 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
-      i Coalitions split into 4 batches (mean 3 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 3 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 24 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 4 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Iteration 6 -----------------------------------------------------------------
       i Using 28 of 32 coalitions, 4 new. 
-      i Coalitions split into 4 batches (mean 7 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
       
       -- Iteration 7 -----------------------------------------------------------------
       i Using 30 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 15 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 8 -----------------------------------------------------------------
       i Using 32 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 16 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp   Month    Day
               <int> <num>   <num>   <num>  <num>   <num>  <num>

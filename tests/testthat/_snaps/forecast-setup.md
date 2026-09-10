@@ -146,7 +146,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 2 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none  Temp   Wind
                <int>   <int> <num> <num>  <num>
