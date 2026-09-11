@@ -187,20 +187,23 @@ main <- function() {
     has_bash <- "bash_wall_secs" %in% names(ok)
     has_load <- "data_load_secs" %in% names(ok)
     has_iter <- "n_iterations" %in% names(ok)
-    summary <- ok[, {
-      s <- list(
-        n = .N,
-        wall_median = round(median(wall_secs), 3),
-        wall_iqr = round(IQR(wall_secs), 3),
-        cpu_user_median = round(median(cpu_user_secs), 3),
-        ram_mb_median = if (all(is.na(peak_ram_mb))) NA_real_ else round(median(peak_ram_mb, na.rm = TRUE), 1),
-        ram_mb_max = if (all(is.na(peak_ram_mb))) NA_real_ else round(max(peak_ram_mb, na.rm = TRUE), 1)
-      )
-      if (has_bash) s$bash_wall_median <- round(median(bash_wall_secs, na.rm = TRUE), 3)
-      if (has_load) s$data_load_median <- round(median(data_load_secs, na.rm = TRUE), 3)
-      if (has_iter) s$n_iterations_median <- round(median(n_iterations, na.rm = TRUE), 1)
-      s
-    }, by = by_cols]
+    summary <- ok[,
+      {
+        s <- list(
+          n = .N,
+          wall_median = round(median(wall_secs), 3),
+          wall_iqr = round(IQR(wall_secs), 3),
+          cpu_user_median = round(median(cpu_user_secs), 3),
+          ram_mb_median = if (all(is.na(peak_ram_mb))) NA_real_ else round(median(peak_ram_mb, na.rm = TRUE), 1),
+          ram_mb_max = if (all(is.na(peak_ram_mb))) NA_real_ else round(max(peak_ram_mb, na.rm = TRUE), 1)
+        )
+        if (has_bash) s$bash_wall_median <- round(median(bash_wall_secs, na.rm = TRUE), 3)
+        if (has_load) s$data_load_median <- round(median(data_load_secs, na.rm = TRUE), 3)
+        if (has_iter) s$n_iterations_median <- round(median(n_iterations, na.rm = TRUE), 1)
+        s
+      },
+      by = by_cols
+    ]
     sort_col <- if (has_bash) "bash_wall_median" else "wall_median"
     setorderv(summary, sort_col, order = -1L)
     fwrite(summary, file.path(rdir, "summary.csv"))
@@ -219,8 +222,10 @@ main <- function() {
   if (!is.null(summary)) {
     cat("Wrote:", file.path(rdir, "summary.csv"), "\n\n")
     cat("Slowest configurations (median seconds):\n")
-    show_cols <- intersect(c("approach", "dataset", "sweep", "n_train", "n_MC_samples",
-      "workers", "bash_wall_median", "wall_median", "ram_mb_median"), names(summary))
+    show_cols <- intersect(c(
+      "approach", "dataset", "sweep", "n_train", "n_MC_samples",
+      "workers", "bash_wall_median", "wall_median", "ram_mb_median"
+    ), names(summary))
     print(utils::head(summary[, ..show_cols], 15))
   }
 }

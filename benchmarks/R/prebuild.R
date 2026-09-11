@@ -43,8 +43,10 @@ main <- function() {
     run_data <- build_run_data(cfg, ds, nf, nt, n_explain = 1)
     variant <- combos$model_variant[i]
     invisible(get_model(cfg, ds, run_data$x_train, run_data$y_train, variant))
-    cat(sprintf("  [%d/%d] %s model=%s n_features=%s n_train=%s\n",
-      i, nrow(combos), ds, variant, nf, nt))
+    cat(sprintf(
+      "  [%d/%d] %s model=%s n_features=%s n_train=%s\n",
+      i, nrow(combos), ds, variant, nf, nt
+    ))
   }
   cat("Prebuild complete.\n")
 }
