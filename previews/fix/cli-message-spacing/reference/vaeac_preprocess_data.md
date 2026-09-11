@@ -1,0 +1,54 @@
+# Preprocess Data for the vaeac approach
+
+vaeac only supports numerical values. This function converts categorical
+features to numerics with class labels 1,2,...,K, and keeps track of the
+map between the original and new class labels. It also computes the
+one_hot_max_sizes.
+
+## Usage
+
+``` r
+vaeac_preprocess_data(
+  data,
+  log_exp_cont_feat = FALSE,
+  normalize = TRUE,
+  norm_mean = NULL,
+  norm_std = NULL
+)
+```
+
+## Arguments
+
+- data:
+
+  matrix/data.frame/data.table containing the training data. Only the
+  features and not the response.
+
+- log_exp_cont_feat:
+
+  Boolean. If we are to log transform all continuous features before
+  sending the data to vaeac. vaeac creates unbounded values, so if the
+  continuous features are strictly positive, as for Burr and Abalone
+  data, it can be advantageous to log-transform the data to unbounded
+  form before using vaeac. If TRUE, then `vaeac_postprocess_data` will
+  take the exp of the results to get back to strictly positive values.
+
+- norm_mean:
+
+  Torch tensor (optional). A 1D array containing the means of the
+  columns of `x_torch`.
+
+- norm_std:
+
+  Torch tensor (optional). A 1D array containing the stds of the columns
+  of `x_torch`.
+
+## Value
+
+list containing data which can be used in vaeac, maps between original
+and new class names for categorical features, one_hot_max_sizes, and
+list of information about the data.
+
+## Author
+
+Lars Henry Berge Olsen
