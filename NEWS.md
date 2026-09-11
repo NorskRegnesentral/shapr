@@ -13,6 +13,7 @@
 
 
 ### Bug fixes
+* Avoided extra blank lines in knitted informational output by using CLI display messages consistently, while preserving preformatted tables and message suppression. (branch: fix/cli-message-spacing)
 * Updated the bundled code-paper models for current `xgboost` compatibility and made Python reproduction checks use the active Jupyter tools with local IPC kernel transport. ([#515](https://github.com/NorskRegnesentral/shapr/pull/515))
 * Fixed a bug in the `vaeac` approach where an all-categorical data set whose features all have the same number of levels was encoded incorrectly, causing a torch `index ... is out of bounds` error. `vaeac_preprocess_data()` used `sapply(data, levels)`, which simplifies to a matrix (instead of a per-feature list) when every feature is a factor with the same number of levels, corrupting `one_hot_max_sizes`. ([#506](https://github.com/NorskRegnesentral/shapr/pull/506))
 * Fixed a bug where non-iterative estimation (`iterative = FALSE`) with a moderate number of features could ignore `max_n_coalitions` and enumerate all `2^n_features` coalitions (an incorrect exact-computation threshold of `n_shapley_values^2` instead of `2^n_shapley_values`), causing severe slowdowns and `RcppArmadillo` `Cube::init()` failures in high dimensions. ([#505](https://github.com/NorskRegnesentral/shapr/pull/505))

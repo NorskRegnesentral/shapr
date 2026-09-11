@@ -371,9 +371,7 @@ print_iter <- function(internal) {
       msg <- paste0(msg, "estimated Shapley values (sd)")
     }
 
-    # Send it to rlang::inform (bypassing cli-formatting) to print correctly
-    # Cannot use print as it does not obey suppressMessages()
-    rlang::inform(paste0("\n", msg, "\n", formatted_shapley_info))
+    cli::cli_verbatim(paste0("\n", msg, "\n", formatted_shapley_info))
   }
 }
 

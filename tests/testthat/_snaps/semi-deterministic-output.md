@@ -7,7 +7,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -139,7 +140,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is
+        therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       

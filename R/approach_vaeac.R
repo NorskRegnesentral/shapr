@@ -899,7 +899,7 @@ vaeac_train_model_continue <- function(explanation,
   if (!is.null(checkpoint$x_train) && !is.null(x_train)) {
     if ("basic" %in% verbose) {
       msg <- "The `vaeac` model includes data and `x_train` was provided to this function. We only use `x_train`."
-      cli::cli_inform(c("i" = msg))
+      cli::cli_bullets(c("i" = msg))
     }
   }
   if (is.null(x_train)) x_train <- checkpoint$x_train
@@ -1347,7 +1347,7 @@ vaeac_check_epoch_values <- function(epochs, epochs_initiation_phase, epochs_ear
         "No early stopping as `vaeac.epochs_early_stopping` (", epochs_early_stopping, ") is larger than ",
         "`vaeac.epochs` (", epochs, ")."
       )
-      cli::cli_inform(c("i" = msg))
+      cli::cli_bullets(c("i" = msg))
     }
   }
 
@@ -1461,7 +1461,7 @@ vaeac_check_cuda <- function(cuda, verbose) {
     cuda <- FALSE
     if ("basic" %in% verbose) {
       msg <- "Cuda/GPU is not available ({.pkg shapr} uses CPU instead)."
-      cli::cli_inform(c("i" = msg), immediate. = TRUE)
+      cli::cli_bullets(c("i" = msg))
     }
   }
 
@@ -1502,7 +1502,7 @@ vaeac_check_save_parameters <- function(save_data, epochs, save_every_nth_epoch,
         "Having `save_data = TRUE` and `save_every_nth_epoch = ", save_every_nth_epoch, "` might require ",
         "a lot of disk storage if `x_train` (", x_train_size, ") is large."
       )
-      cli::cli_inform(c("i" = msg))
+      cli::cli_bullets(c("i" = msg))
     }
   }
 }
@@ -2475,7 +2475,7 @@ vaeac_save_state <- function(state_list, file_name, return_state = FALSE) {
 #' @keywords internal
 #' @author Lars Henry Berge Olsen
 vaeac_print_train_summary <- function(best_epoch, best_epoch_running, last_state) {
-  rlang::inform(sprintf(
+  cli::cli_verbatim(sprintf(
     "\nResults of the `vaeac` training process:
 Best epoch:             %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
 Best running avg epoch: %d. \tVLB = %.3f \tIWAE = %.3f \tIWAE_running = %.3f
@@ -2862,7 +2862,7 @@ plot_vaeac_imputed_ggpairs <- function(
   if (!explanation$internal$parameters$exact || explanation$internal$parameters$is_groupwise) {
     msg1 <- "The vaeac model has not been trained on the empty colition, hence, the figure can be missleading."
     msg2 <- "The figure is only reasonable if `n_combintations = NULL` and `group = NULL` in the explanation call."
-    cli::cli_inform(c("i" = msg1, " " = msg2))
+    cli::cli_bullets(c("i" = msg1, " " = msg2))
   }
 
   # Extract the vaeac list from the explanation list
