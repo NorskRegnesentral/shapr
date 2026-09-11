@@ -316,21 +316,6 @@ The data.table version and OpenMP/BLAS environment limits are recorded too.
 Other OpenMP libraries can also respond to `OMP_NUM_THREADS`, so this is not
 a guarantee that only data.table changes its parallelism.
 
-Historically the launcher also fixed `OMP_NUM_THREADS=1`, which caps current
-data.table installations at one thread even when more are requested. The 92
-original higher-thread runs did not record effective counts and cannot establish
-data.table thread scaling. A targeted correction reruns those rows and 32 matched
-one-thread references on the same current package installation. Until that rerun
-is complete and audited, the historical thread-scaling limitation still applies.
-The separate multi-process `future` sweeps were not disabled by this cap.
-
-For a targeted rerun, archive the original results and remove only the selected
-run JSON files and their memory/time/log sidecars. Then use, for example,
-`bin/orchestrate.sh config/gaussian.yml --existing-grid --run-ids=40,41,42`.
-This preserves the saved grid IDs, seeds, and original relative run order;
-existing result JSON files are still skipped. Selected iterative dependents
-require their source results to be available. Do not combine this option with
-`--retry-timeouts`, which clears markers across the whole study.
 Runs are executed in dependency-aware randomised order with a short cooldown to reduce
 thermal drift (this box uses the `schedutil` governor) correlating with any one
 dimension.

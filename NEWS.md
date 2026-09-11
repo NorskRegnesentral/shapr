@@ -2,11 +2,6 @@
 [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
-# shapr (development version)
-
-### Development and testing
-* Corrected per-run OpenMP limits in the benchmark launcher, recorded and checked effective data.table thread limits, and added targeted reruns that preserve existing grid IDs. (branch: fix/benchmark-datatable-threads)
-
 # shapr 1.1.0
 
 ### New features
@@ -28,7 +23,7 @@
 ### Development and testing
 * Added repository-wide agent instructions, VS Code tasks, and snapshot-safe local testing helpers ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Added pre-PR workflow scripts (`dev/prepare-pr`, `dev/check-pr`, `dev/publish-pr`) with `dev/pr-workflow.md` for automated and agent-assisted PR readiness checks; consolidated development scripts under `dev/`. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
-* Added a full computational benchmark suite for runtime and peak RAM usage across the supported approaches and representative workloads, together with a pkgdown article presenting the retained results. The benchmark framework includes coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. ([#510](https://github.com/NorskRegnesentral/shapr/pull/510))
+* Added a full computational benchmark suite for runtime and peak RAM usage across the supported approaches and representative workloads, together with a pkgdown article presenting the retained results. The benchmark framework includes coalition-budget validation for iterative pairs, corrected process-tree RAM polling, and optional realistic parallel-workload studies. ([#510](https://github.com/NorskRegnesentral/shapr/pull/510)) (branch: fix/benchmark-datatable-threads)
 * Skip `vdiffr` plot snapshot tests on R < 4.5.0 to avoid spurious failures caused by formatting changes in older R versions. ([#494](https://github.com/NorskRegnesentral/shapr/pull/494))
 * Added macOS-only smoke tests for the `"arf"` and `"vaeac"` approaches that verify `explain()` runs without errors and that the returned Shapley values satisfy the efficiency property, providing platform coverage for the snapshot tests skipped on macOS. ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 * Added scheduled/manual maintenance runs for R CMD check and Python tests, and updated Python testing to use `uv` with Python 3.14 ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).

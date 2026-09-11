@@ -184,8 +184,8 @@ expected_reference <- data.table::data.table(
     "gaussian", "copula", "independence", "regression_surrogate", "categorical",
     "regression_separate", "empirical", "arf", "ctree", "timeseries", "vaeac"
   ),
-  explain_seconds = c(2.302, 3.168, 3.184, 3.311, 4.038, 5.412, 5.417, 17.127, 17.337, 58.983, 1159.353),
-  peak_ram_mb = c(273.1, 283.3, 258.8, 462.1, 278.2, 308.6, 246.1, 775.2, 357.3, 1301.2, 542.7)
+  explain_seconds = c(2.305, 3.069, 3.250, 3.444, 3.914, 5.112, 5.612, 17.598, 18.172, 60.002, 1200.216),
+  peak_ram_mb = c(305.7, 293.3, 293.9, 445.3, 289.5, 329.4, 283.2, 765.2, 362.1, 1411.9, 519.9)
 )
 assert_table(reference_table, expected_reference, "reference table")
 
@@ -227,8 +227,8 @@ assert_table(prediction_table, expected_prediction, "prediction-model table")
 expected_variability <- data.table::data.table(
   replicates = c(2L, 3L),
   configurations = c(89L, 700L),
-  median_relative_iqr = c(0.0029, 0.0074),
-  p90_relative_iqr = c(0.0103, 0.0195)
+  median_relative_iqr = c(0.0031, 0.0075),
+  p90_relative_iqr = c(0.0122, 0.0202)
 )
 assert_table(variability_table, expected_variability, "replicate-variability values")
 

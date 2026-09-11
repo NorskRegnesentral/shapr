@@ -46,25 +46,16 @@ RDIR="$ROOT/R"
 RSCRIPT="${RSCRIPT:-Rscript}"
 
 RETRY_TIMEOUTS=false
-EXISTING_GRID=false
-RUN_IDS=""
 CONFIG=""
 for arg in "$@"; do
   case "$arg" in
     --retry-timeouts) RETRY_TIMEOUTS=true ;;
-    --existing-grid) EXISTING_GRID=true ;;
-    --run-ids=*) RUN_IDS="${arg#*=}" ;;
     *) CONFIG="$arg" ;;
   esac
 done
 
 if [[ -z "$CONFIG" ]]; then
-  echo "Usage: $0 <config.yml> [--retry-timeouts] [--existing-grid] [--run-ids=1,2,3]" >&2
-  exit 1
-fi
-
-if [[ -n "$RUN_IDS" && ( "$EXISTING_GRID" != "true" || "$RETRY_TIMEOUTS" == "true" ) ]]; then
-  echo "--run-ids requires --existing-grid and cannot be combined with --retry-timeouts." >&2
+  echo "Usage: $0 <config.yml> [--retry-timeouts]" >&2
   exit 1
 fi
 
@@ -77,9 +68,7 @@ LOGS="$ROOT/logs/$STUDY"
 mkdir -p "$RESULTS" "$LOGS"
 
 # --- 1. Build the grid ------------------------------------------------------
-if [[ "$EXISTING_GRID" != "true" ]]; then
-  "$RSCRIPT" "$RDIR/grid.R" --config "$CONFIG" || { echo "grid build failed" >&2; exit 1; }
-fi
+"$RSCRIPT" "$RDIR/grid.R" --config "$CONFIG" || { echo "grid build failed" >&2; exit 1; }
 
 GRID="$RESULTS/grid.csv"
 META="$RESULTS/run_meta.json"
@@ -92,17 +81,6 @@ TIMEOUT="$(read_meta timeout_sec)"
 TIME_BUDGET="$(read_meta time_budget_sec)"
 AGG_EVERY="$(read_meta aggregate_every)"
 RUN_ORDER="$(read_meta run_order)"
-if [[ -n "$RUN_IDS" ]]; then
-  RUN_ORDER="$("$RSCRIPT" -e '
-    args <- commandArgs(TRUE)
-    ids <- as.integer(strsplit(args[1], ",", fixed = TRUE)[[1]])
-    grid <- data.table::fread(args[2])
-    run_order <- jsonlite::fromJSON(args[3])$run_order
-    stopifnot(length(ids) > 0, !anyNA(ids), !anyDuplicated(ids),
-      all(ids %in% grid$id), all(ids %in% run_order))
-    cat(run_order[run_order %in% ids])
-  ' "$RUN_IDS" "$GRID" "$META")" || exit 1
-fi
 [[ -n "$TIMEOUT" && "$TIMEOUT" != "0" ]] || TIMEOUT=600
 [[ "$AGG_EVERY" =~ ^[0-9]+$ ]] || AGG_EVERY=0
 [[ "$TIME_BUDGET" =~ ^[0-9]+$ ]] || TIME_BUDGET=0
