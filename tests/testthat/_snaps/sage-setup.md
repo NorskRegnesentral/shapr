@@ -104,7 +104,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$global_loss_func` must be `NULL` or a function of exactly two arguments.
@@ -122,7 +123,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
     Condition
       Error in `check_extra_computation_args()`:
       ! `extra_computation_args$global_loss_func` must be `NULL` or a function of exactly two arguments.
