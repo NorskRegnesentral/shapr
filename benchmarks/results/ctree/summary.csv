@@ -33,13 +33,13 @@ numeric,ctree,12,128,1000,10,Inf,1000000,1,multisession,1,500,25,FALSE,FALSE,2,d
 numeric,ctree,16,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,19.526,0.132,19.357,371.4,372,21.398,0.082,1
 numeric,ctree,12,256,250,8,Inf,1000000,4,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,realistic_medium,,,,3,18.208,0.532,2.804,3335.9,3459.8,21.38,0.088,1
 numeric,ctree,12,256,250,32,Inf,1000000,4,multisession,1,5000,25,FALSE,FALSE,2,default,FALSE,realistic_medium,,,,3,17.878,0.356,2.811,1991.9,2003.1,21.011,0.083,1
+numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,18.172,0.297,18.065,362.1,362.5,20.289,0.105,1
+numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.877,1.049,18.462,365.3,365.5,20.019,0.105,1
 numeric,ctree,12,128,250,25,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,17.735,0.069,17.627,339.8,345.1,19.611,0.081,1
 numeric,ctree,12,128,250,32,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,17.553,0.1,17.45,341.6,343.1,19.421,0.081,1
-numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,17.337,0.245,17.22,357.3,357.9,19.188,0.081,1
-numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.306,0.229,17.159,356.9,358.9,19.186,0.08,1
-numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.265,0.174,17.144,357.6,357.8,19.131,0.081,1
+numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.259,0.109,18.698,366.3,367.9,19.325,0.103,1
 numeric,ctree,12,128,250,1,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,17.182,0.071,16.852,734,734.2,19.095,0.081,1
-numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.148,0.243,17.018,357,357.6,19.016,0.081,1
+numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,16.869,0.401,19.207,366.1,373.6,18.96,0.106,1
 numeric,ctree,12,128,250,8,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,16.884,0.046,16.75,369.7,370.7,18.739,0.081,1
 numeric,ctree,12,128,250,5,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,16.557,0.139,16.351,410.8,412.7,18.448,0.081,1
 numeric,ctree,12,128,250,10,Inf,1000000,1,multisession,1,500,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,16.352,0.148,16.221,347.4,349.6,18.225,0.08,1

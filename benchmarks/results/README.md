@@ -5,7 +5,8 @@ study. Each current approach has:
 
 - `grid.csv`: the planned configurations;
 - `results.csv`: one row per completed run, including status and metadata;
-- `summary.csv`: median and IQR summaries over successful measured runs.
+- `summary.csv`: runtime median/IQR and peak-RAM median/max over successful
+	measured runs, plus diagnostic summaries.
 
 An accuracy study would additionally carry `accuracy_results.csv`,
 `accuracy_summary.csv`, and the `*.shapley.rds` matrices those metrics are
@@ -17,9 +18,8 @@ git-ignored because they are generated, granular, and substantially larger.
 ## Status
 
 The curated snapshot contains all 2,278 planned runs, all successful. It uses
-three replicates by default, two for VAEAC, and two for the added expensive ARF
-and timeseries realistic-workload blocks. Warm-up runs are not part of the
-configuration or result set.
+three replicates by default, two for VAEAC, and two for the expensive ARF
+and timeseries realistic-workload blocks.
 
 Every retained peak RAM value uses cgroup-v2 `memory.peak`; the published
 snapshot does not contain process-tree RSS fallback measurements.

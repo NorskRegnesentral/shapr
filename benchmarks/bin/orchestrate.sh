@@ -16,9 +16,8 @@
 #   4. Aggregate everything (R/aggregate.R) -> results/<study>/results.csv
 #
 # Each config runs in its own process so there is no cross-run caching, no warm
-# heap, and no reused future workers. BLAS/OpenMP are pinned to 1 thread so the
-# ONLY parallelism is the swept future worker count + the swept data.table
-# thread count.
+# heap, and no reused future workers. BLAS limits stay at 1; each run's OpenMP
+# limit matches its requested data.table threads and can affect other OpenMP users.
 #
 # Timeout handling: a run exceeding `timeout_sec` (from run_meta.json) is killed
 # and gets an <id>.json marker with status="timeout" so resume skips it. Use
@@ -33,7 +32,7 @@
 # ============================================================================
 set -uo pipefail
 
-# --- Single-threaded BLAS/OpenMP/data.table (see README) --------------------
+# --- Single-threaded defaults; run-specific OpenMP limit below -------------
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
@@ -218,11 +217,15 @@ EOF
     return 0
   fi
 
+  local dt_threads
+  dt_threads="$(grid_field "$id" dt_threads)"
+  [[ "$dt_threads" =~ ^[1-9][0-9]*$ ]] || { echo "Invalid dt_threads for id $id" >&2; return 1; }
   local start end elapsed rc timed_out=false resource_killed=false
   start="$(date +%s.%N)"
 
   if [[ "$RAM_METHOD" == "poll" ]]; then
     setsid timeout --signal=TERM "$TIMEOUT" \
+      env OMP_NUM_THREADS="$dt_threads" \
       "$RSCRIPT" "$RDIR/run_one.R" --config "$CONFIG" --id "$id" "${extra_args[@]}" \
       >"$log" 2>&1 &
     local rpid=$!
@@ -235,6 +238,7 @@ EOF
     local unit="shaprbench-${STUDY}-${id}-$$"
     systemd-run --user --scope --quiet --unit="$unit" \
       -- timeout --signal=TERM "$TIMEOUT" \
+      env OMP_NUM_THREADS="$dt_threads" \
       "$RSCRIPT" "$RDIR/run_one.R" --config "$CONFIG" --id "$id" "${extra_args[@]}" \
       >"$log" 2>&1 &
     local rpid=$!
@@ -330,7 +334,7 @@ for id in $RUN_ORDER; do
     fi
   fi
 
-  run_id "$id"
+  run_id "$id" || exit 1
   completed=$((completed + 1))
 
   # Periodic re-aggregation so results.csv / summary.csv stay current during a

@@ -39,8 +39,7 @@ parse_args <- function() {
   )
 }
 
-# Configure threading so the ONLY parallelism is the future workers + the swept
-# data.table thread count.
+# Configure future workers and the requested data.table thread limit.
 setup_threads <- function(dt_threads, backend, workers) {
   data.table::setDTthreads(dt_threads)
   if (workers > 1) {
@@ -77,37 +76,10 @@ parse_approach_args <- function(s) {
   return(out)
 }
 
-# Build an intentionally more expensive version of shapr's native prediction
-# function. Optional prediction-cost studies use this to vary model-evaluation
-# cost while returning exactly the same predictions.
-make_repeated_predict_model <- function(model, repeats) {
-  native_predict <- getFromNamespace("get_predict_model", "shapr")(
-    predict_model = NULL,
-    model = model
-  )
-  force(native_predict)
-  force(repeats)
-  return(function(model, newdata) {
-    prediction <- NULL
-    for (i in seq_len(repeats)) {
-      prediction <- native_predict(model, newdata)
-    }
-    return(prediction)
-  })
-}
-
 # Build the explain() argument list for a grid row. `coalitions_override` (if
 # > 0) replaces max_n_coalitions (used for the iterative `dependent` run).
 build_explain_args <- function(cfg, row, run_data, model, coalitions_override = NA_integer_) {
   approach_args <- parse_approach_args(row$approach_args)
-
-  prediction_repeats <- approach_args[["benchmark.prediction_repeats"]] %||% 1
-  approach_args[["benchmark.prediction_repeats"]] <- NULL
-  if (!is.numeric(prediction_repeats) || length(prediction_repeats) != 1 ||
-    prediction_repeats < 1 || prediction_repeats != as.integer(prediction_repeats)) {
-    stop("benchmark.prediction_repeats must be a positive integer")
-  }
-  prediction_repeats <- as.integer(prediction_repeats)
 
   # Named regression variant -> merge its (complex) explain args from registry.
   variant_args <- list()
@@ -125,8 +97,10 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     max_nc <- coalitions_override
   }
   if (is.na(max_nc) || max_nc < 0) {
-    stop("max_n_coalitions is the dependent-pair sentinel (-1) but no valid ",
-      "--max-n-coalitions override was supplied")
+    stop(
+      "max_n_coalitions is the dependent-pair sentinel (-1) but no valid ",
+      "--max-n-coalitions override was supplied"
+    )
   }
 
   # Batching controls. `max_batch_cube_size` (default 1e6 in shapr) caps
@@ -155,10 +129,6 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     verbose = NULL,
     seed = cfg$seed + row$id
   )
-  if (prediction_repeats > 1L) {
-    base_args$predict_model <- make_repeated_predict_model(model, prediction_repeats)
-  }
-
   # Feature grouping (group sweep): partition features into groups of
   # `group_size` consecutive columns. group_size is a swept grid dimension;
   # fall back to the config-level / default value for older grids.
@@ -188,8 +158,10 @@ main <- function() {
 
   result <- c(
     list(id = a$id, study = cfg$study),
-    row[c("sweep", "rep", grid_dimensions(), "approach_args",
-      "pair_role", "coalitions_from")],
+    row[c(
+      "sweep", "rep", grid_dimensions(), "approach_args",
+      "pair_role", "coalitions_from"
+    )],
     list(coalitions_override = if (is.na(a$max_n_coalitions)) NA_integer_ else a$max_n_coalitions),
     run_metadata()
   )
@@ -206,10 +178,22 @@ main <- function() {
     return(invisible())
   }
 
-  setup_threads(row$dt_threads, row$backend, row$workers)
-
   res <- tryCatch(
     {
+      setup_threads(row$dt_threads, row$backend, row$workers)
+      result$dt_threads_effective_before <- data.table::getDTthreads()
+      result$omp_num_threads <- Sys.getenv("OMP_NUM_THREADS")
+      result$omp_thread_limit <- Sys.getenv("OMP_THREAD_LIMIT")
+      result$openblas_num_threads <- Sys.getenv("OPENBLAS_NUM_THREADS")
+      result$mkl_num_threads <- Sys.getenv("MKL_NUM_THREADS")
+      result$data_table_version <- as.character(utils::packageVersion("data.table"))
+      result$shapr_library_path <- find.package("shapr")
+      if (result$dt_threads_effective_before != row$dt_threads) {
+        stop(
+          "Requested data.table threads: ", row$dt_threads,
+          "; effective: ", result$dt_threads_effective_before
+        )
+      }
       # Load pre-processed data + cached model (timed separately).
       load0 <- Sys.time()
       run_data <- build_run_data(cfg, row$dataset, row$n_features, row$n_train, row$n_explain)
@@ -226,9 +210,15 @@ main <- function() {
       expl <- do.call(shapr::explain, explain_args)
       cpu1 <- proc.time()
       wall1 <- Sys.time()
+      result$dt_threads_effective_after <- data.table::getDTthreads()
+      if (result$dt_threads_effective_after != row$dt_threads) {
+        stop("Effective data.table thread count changed during explain()")
+      }
 
-      list(expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
-        load_secs = load_secs)
+      list(
+        expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
+        load_secs = load_secs
+      )
     },
     error = function(e) e
   )
@@ -261,9 +251,11 @@ main <- function() {
   }
 
   jsonlite::write_json(result, out_path, auto_unbox = TRUE, pretty = TRUE, null = "null")
-  cat(sprintf("[id %d] %s  approach=%s dataset=%s  %s\n",
+  cat(sprintf(
+    "[id %d] %s  approach=%s dataset=%s  %s\n",
     a$id, result$status, row$approach, row$dataset,
-    if (!is.null(result$wall_secs)) sprintf("%.2fs", result$wall_secs) else ""))
+    if (!is.null(result$wall_secs)) sprintf("%.2fs", result$wall_secs) else ""
+  ))
 }
 
 main()
