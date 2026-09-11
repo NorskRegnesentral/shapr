@@ -16,7 +16,7 @@ as well as depends-only and sanitizer checks.
 
 Snapshot tests are excluded and suggested packages are included.
 
-* Local Ubuntu 24.04.4, R 4.6.1 (release)
+* Local Ubuntu 24.04.5, R 4.6.1 (release)
 * win-builder, R devel, release, and oldrelease
 * R-hub Ubuntu 24.04.4, R devel
 * R-hub Windows Server 2022, R devel
@@ -26,7 +26,7 @@ Snapshot tests are excluded and suggested packages are included.
 
 Snapshot tests and suggested packages are included.
 
-* Local Ubuntu 24.04.4, R 4.6.1 (release)
+* Local Ubuntu 24.04.5, R 4.6.1 (release)
 * GHA Ubuntu, R devel, release, oldrel-1, and oldrel-2
 * GHA Windows, R release
 * GHA macOS, R release
@@ -35,7 +35,7 @@ Snapshot tests and suggested packages are included.
 
 Both checks excluded snapshot tests without explicitly passing `--as-cran`.
 
-* Local Ubuntu 24.04.4, R 4.6.1 (release): depends-only check without suggested packages
+* Local Ubuntu 24.04.5, R 4.6.1 (release): depends-only check without suggested packages
 * R-hub Clang ASAN on Ubuntu 22.04.5, R devel: CRAN-like check with suggested packages
 
 ## Current R CMD check results
