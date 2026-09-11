@@ -15,7 +15,7 @@
 # */
 
 #+ echo=FALSE
-knitr::opts_chunk$set(fig.path = "html_figures/")
+knitr::opts_chunk$set(fig.path = "html_figures/", collapse = TRUE)
 #+
 
 #### Loads packages, reads data and models created by R_prep_data_and_model.R ####
