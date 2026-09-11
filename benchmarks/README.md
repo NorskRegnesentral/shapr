@@ -1,6 +1,6 @@
 # shapr compute & memory benchmark study
 
-A self-contained framework to measure **CPU time** and **peak RAM** of
+A self-contained framework to measure **wall time** and **peak RAM** of
 `shapr::explain()` across the package's many settings, on a single machine.
 
 The completed study contains 2,278 successful runs across 789 configurations
@@ -32,15 +32,15 @@ cd benchmarks
 # run ONE approach's study (grid -> prebuild -> timed runs -> aggregate)
 bin/orchestrate.sh config/gaussian.yml
 
-# run the WHOLE suite, one approach at a time (cheapest first, vaeac last)
-bin/run_week.sh
+# run the WHOLE suite, one approach at a time (vaeac last)
+bin/run_suite.sh
 
 # run just a few approaches
-bin/run_week.sh gaussian empirical ctree
+bin/run_suite.sh gaussian empirical ctree
 
 # re-attempt only the runs previously killed by the per-run timeout
 # (raise timeout_sec in common.yml first to give them more time)
-bin/run_week.sh --retry-timeouts
+bin/run_suite.sh --retry-timeouts
 bin/orchestrate.sh config/vaeac.yml --retry-timeouts
 ```
 
@@ -48,8 +48,10 @@ Results land in `results/<approach>/results.csv` (one row per run) and
 `results/<approach>/summary.csv` (median/IQR per configuration). The compact
 `grid.csv`, `results.csv`, and `summary.csv` files are committed as the study
 record. Per-run JSON artefacts remain local and git-ignored. Runs are
-**resumable** — re-running skips configs that already have a result file, and
-each study stops launching new runs once its `time_budget_sec` is used up.
+**resumable with an unchanged grid** — re-running skips configs that already
+have a result file, and each study stops launching new runs once its
+`time_budget_sec` is used up. See [Re-running / extending](#re-running--extending)
+before running over the curated snapshot or changing a completed study's grid.
 
 The orchestrator first builds the grid, then **pre-builds every dataset pool
 and prediction model** (`R/prebuild.R`) so that model fitting is excluded from
@@ -108,7 +110,8 @@ A block is one of:
   a 1-D sweep; two or three entries form a 2-D/3-D grid. Dimensions:
   `n_train`, `n_MC_samples`, `max_n_coalitions`, `n_features` (numeric only),
   `n_explain`, `min_n_batches`, `max_batch_size`, `max_batch_cube_size`,
-  `workers`, `backend`, `dt_threads`, `group`, `group_size`, `dataset`.
+  `workers`, `backend`, `dt_threads`, `group`, `group_size`, `dataset`,
+  `model_variant`, `save_explanations`, `approach`, `iterative`.
 - **`approach_args:`** — a cross-product over approach-specific arguments
   (`empirical.type`, `vaeac.depth/width/epochs/latent_dim/n_vaeacs_initialize`,
   `regression.surrogate_n_comb`, or a named regression `variant` from
@@ -162,7 +165,7 @@ Only `gaussian`/`copula`/`empirical` use the dense-array cube-size cap.
 ### Datasets (numeric, four mixed, categorical)
 
 - `numeric` — all numeric features (AR(1)-correlated), up to 30 columns. Works
-  with every approach.
+  with every approach except `categorical`.
 - `mixed_fc_fl`, `mixed_fc_ml`, `mixed_mc_fl`, `mixed_mc_ml` — numeric + factor
   features spanning **f**ew/**m**any factor **c**olumns x **f**ew/**m**any
   **l**evels. All belong to the `mixed` family. For factor-supporting approaches.
@@ -170,17 +173,19 @@ Only `gaussian`/`copula`/`empirical` use the dense-array cube-size cap.
 
 Models (keyed by dataset *family*): **xgboost** for `numeric`; **ranger** for
 `mixed`/`categorical` (ranger handles factors natively). Models are pre-built
-and cached by `R/prebuild.R` and **excluded** from the measured time.
+and cached by `R/prebuild.R` and **excluded** from the measured time. Gaussian's
+`prediction_model` block also compares a linear model and a larger XGBoost
+model with the baseline XGBoost model.
 
 ---
 
 ## Design
 
 Every study is **one approach** described by a list of `blocks` (see above).
-There is a single design — no separate OAT vs factorial files — because a block
-is flexible enough to express both a 1-D one-at-a-time sweep and a small
-factorial grid. Slow approaches simply use coarser block levels, and set
-fewer/lighter blocks.
+Each block expresses a one-dimensional sweep, a cross-product of several
+dimensions, or an iterative/fixed-budget pair. Slow approaches use coarser
+levels and fewer or lighter blocks. All retained experiments are defined in
+the 11 approach configs; optional accuracy studies use the same block format.
 
 ---
 
@@ -215,8 +220,6 @@ blocks:
       n_features: [12, 20, 30]
       max_n_coalitions: [128, 512]
       max_batch_cube_size: [1e6, Inf]
-  - name: empirical_type                 # an approach-argument sweep
-    approach_args: {empirical.type: [fixed_sigma, AICc_each_k, AICc_full]}
   - name: iterative_budget               # source/dependent pair
     pair: iterative
     grid: {max_n_coalitions: [256, 1024]}
@@ -271,9 +274,11 @@ benchmarks/
     aggregate.R    merge results (+ *.time.json, *.mem.json) -> results.csv + summary.csv
     accuracy.R     score saved explanations against a high-budget reference
                    (opt-in; run manually after orchestrate.sh)
+    audit_findings.R verify the committed snapshot and published numerical tables
   bin/
     orchestrate.sh run ONE approach (grid -> prebuild -> timed runs -> aggregate)
-    run_week.sh    run the whole suite, one approach at a time (cheapest first)
+    run_suite.sh   run the whole suite, one approach at a time
+    status.sh      report progress from local per-run artefacts
   data/                   generated datasets/models (git-ignored)
   results/<study>/
     grid.csv              generated study grid (committed)
@@ -305,13 +310,30 @@ framework also falls back to session polling automatically).
 
 ## Re-running / extending
 
-- **Whole suite**: `bin/run_week.sh` runs every approach in turn (cheapest
-  first). Add approach names to run only some: `bin/run_week.sh gaussian ctree`.
-- **Resume**: just re-run `orchestrate.sh` / `run_week.sh`; existing
-  `results/<study>/<id>.json` files are skipped. Delete a study's
-  `results/<study>/` folder to start it over.
+The committed CSVs are a historical snapshot, not a resume checkpoint for a
+changed design. The Gaussian grid retains IDs 481–507 for the prediction-model
+block after excluded experiments were removed. Regenerating it assigns those
+runs IDs 406–432 instead. All run settings and iterative pairings match, but
+`run_one.R` seeds each run with `seed + id`, so those 27 runs also get different
+seeds on a fresh run. The other ten grids regenerate with identical IDs.
+
+Before rerunning the curated Gaussian study, or editing any completed study's
+blocks, move its existing `results/<study>/` and `logs/<study>/` directories to
+an archive outside this folder. Start with empty output directories; do not mix
+old per-run JSON files with a regenerated, renumbered grid. Rerunning writes new
+CSV aggregates and does not reproduce the original measurements exactly.
+
+- **Audit the published snapshot**: `Rscript R/audit_findings.R` verifies the
+  retained counts, paired budgets, and numerical tables without running benchmarks.
+- **Monitor local runs**: `bin/status.sh` reads per-run JSON artefacts; it does
+  not display progress from the committed CSVs alone.
+- **Whole suite**: `bin/run_suite.sh` runs every approach in the configured
+  order. Add approach names to run only some: `bin/run_suite.sh gaussian ctree`.
+- **Resume**: just re-run `orchestrate.sh` / `run_suite.sh`; existing
+  `results/<study>/<id>.json` files are skipped when the grid is unchanged.
+  Each invocation starts a new `time_budget_sec` window per study.
 - **Retry timeouts**: `bin/orchestrate.sh config/<approach>.yml --retry-timeouts`
-  (or `bin/run_week.sh --retry-timeouts`) deletes previous `timeout` markers and
+  (or `bin/run_suite.sh --retry-timeouts`) deletes previous `timeout` markers and
   re-attempts only those runs — typically after raising `timeout_sec`.
 - **Re-aggregate only**: `Rscript R/aggregate.R --config config/<approach>.yml`.
 - **New sweep / grid point**: add or extend a block's `grid:` (or
@@ -390,5 +412,8 @@ Points to respect when designing one:
 - The reference is itself an approximation, so the result measures convergence
   toward the approach's own high-budget answer — not accuracy against the true
   conditional distribution.
+- Within each approach, keep the dataset, training data, feature columns,
+  prediction model, grouping, and approach settings fixed across candidates and
+  references. The scorer pools references by approach, not by these settings.
 - Candidate `n_explain` must not exceed the reference's; the first rows are
   compared.

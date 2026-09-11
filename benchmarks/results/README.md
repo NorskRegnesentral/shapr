@@ -28,13 +28,17 @@ All iterative-pair dependents use the coalition budget currently recorded by
 their source. The final validation found no mismatched pairs, so every retained
 pair is included in its approach summary.
 
-Obsolete `oat_*` and `factorial_*` experiments from an earlier study design are
-not part of the committed snapshot.
-
 The approach grids include the retained realistic parallel workloads,
 dense-batch memory calibration, and prediction models (`linear`, `xgb`, and
-`xgb_large`). Superseded `extra_*` studies, and the Gaussian accuracy/cost
-interaction surface, are not part of the active configuration or result tree.
+`xgb_large`). Only the 11 retained approach studies belong in this snapshot.
+Optional accuracy-study support remains in `R/accuracy.R` and the benchmark
+README, separate from these published cost results.
+
+Gaussian's prediction-model runs retain their original IDs 481–507. The gap
+marks excluded experiments, not missing results. The current config regenerates
+the same settings with IDs 406–432, which also changes their `seed + id` random
+seeds. Preserve this snapshot and start in empty output directories when
+rerunning that study; see the benchmark README for resume precautions.
 
 See the published
 [computational cost benchmark article](https://norskregnesentral.github.io/shapr/articles/benchmarks.html)

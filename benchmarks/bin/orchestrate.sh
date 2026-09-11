@@ -2,7 +2,7 @@
 # ============================================================================
 # orchestrate.sh — run a full benchmark study, one isolated R process per config.
 #
-#   benchmarks/bin/orchestrate.sh config/oat_quick.yml [--retry-timeouts]
+#   benchmarks/bin/orchestrate.sh config/gaussian.yml [--retry-timeouts]
 #
 # Steps:
 #   1. Build the run grid (R/grid.R)   -> results/<study>/grid.csv + run_meta.json

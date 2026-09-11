@@ -9,7 +9,7 @@
 # overhead. Model FITTING is done up front by prebuild.R and is therefore
 # excluded from the measured process (run_one only reads the cached model).
 #
-# Usage: Rscript R/run_one.R --config config/oat_quick.yml --id 42
+# Usage: Rscript R/run_one.R --config config/gaussian.yml --id 42
 #        [--max-n-coalitions N]   (override; used for iterative `dependent` runs)
 
 suppressMessages({

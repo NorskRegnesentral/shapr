@@ -3,7 +3,7 @@
 # into results/<study>/results.csv and a small summary.csv (median/IQR per
 # configuration over measured replicates).
 #
-# Usage: Rscript R/aggregate.R --config config/oat_quick.yml
+# Usage: Rscript R/aggregate.R --config config/gaussian.yml
 
 suppressMessages({
   library(data.table)

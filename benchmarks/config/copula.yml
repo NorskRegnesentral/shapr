@@ -3,8 +3,8 @@
 #
 # copula is a sampling approach with cost similar to gaussian and, like gaussian
 # and empirical, it uses the dense per-batch array subject to max_batch_cube_size
-# — so it gets the cube-size cap study too. Same OAT battery as gaussian minus
-# the grouping study (gaussian covers grouping). Inherits the 12-hour timeout
+# — so it gets the cube-size cap study too. Includes the numeric core blocks,
+# without grouping (gaussian covers grouping). Inherits the 12-hour timeout
 # and 96-hour budget from common.yml.
 #
 # Run with:  bin/orchestrate.sh config/copula.yml

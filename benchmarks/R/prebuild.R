@@ -4,7 +4,7 @@
 # ever READ cached objects. This keeps model FITTING out of the bash-level
 # whole-Rscript timing.
 #
-# Usage: Rscript R/prebuild.R --config config/oat_quick.yml
+# Usage: Rscript R/prebuild.R --config config/gaussian.yml
 
 suppressMessages({
   library(data.table)
