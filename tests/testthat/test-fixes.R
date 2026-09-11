@@ -28,10 +28,10 @@ test_that("vaeac one_hot_max_sizes is correct for all-categorical data with unif
   expect_equal(pp$one_hot_max_sizes, rep(as.integer(n_levels), n_features))
 })
 
-test_that("check_computability warns when vaeac is combined with a serializing future plan", {
+test_that("check_computability rejects future-batched vaeac with a serializing future plan", {
   skip_if_not_installed("future")
 
-  make_internal <- function(approach) {
+  make_internal <- function(approach, vS_batching_method = "future") {
     list(parameters = list(
       is_groupwise = FALSE,
       max_n_coalitions = 32L,
@@ -41,7 +41,8 @@ test_that("check_computability warns when vaeac is combined with a serializing f
       approach = approach,
       causal_sampling = FALSE,
       asymmetric = FALSE,
-      max_n_coalitions_causal = NULL
+      max_n_coalitions_causal = NULL,
+      extra_computation_args = list(vS_batching_method = vS_batching_method)
     ))
   }
 
@@ -52,10 +53,13 @@ test_that("check_computability warns when vaeac is combined with a serializing f
   future::plan("sequential")
   expect_no_warning(check_computability(make_internal("vaeac")))
 
-  # multisession (serializing) with >1 worker: warn for vaeac, since torch objects are external
-  # pointers that cannot be exported to separate R processes. Snapshot the exact warning message.
+  # multisession (serializing) with >1 worker: abort for vaeac, since torch objects are external
+  # pointers that cannot be exported to separate R processes. Snapshot the exact error message.
   future::plan(future::multisession, workers = 2)
-  expect_snapshot(check_computability(make_internal("vaeac")))
+  expect_snapshot(check_computability(make_internal("vaeac")), error = TRUE)
+
+  # A serializing plan is harmless when batching is explicitly sequential.
+  expect_no_error(check_computability(make_internal("vaeac", vS_batching_method = "forloop")))
 
   # ...but not for a non-torch approach under the same plan.
   expect_no_warning(check_computability(make_internal("gaussian")))

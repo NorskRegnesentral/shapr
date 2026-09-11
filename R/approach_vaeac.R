@@ -18,10 +18,11 @@
 #'  [shapr::vaeac_get_extra_para_default()] for description of possible additional parameters and their default values.
 #'
 #' @section VAEAC parallelization:
-#' The `vaeac` approach uses `torch` objects backed by external pointers. These objects cannot be exported to separate
-#' R processes, so serializing [future::future] backends such as `multisession` and `cluster` are unsupported with more
-#' than one worker. Use `future::plan(future::multicore)` where forking is available, or run `vaeac` sequentially.
-#' Forking is unavailable on Windows and within RStudio.
+#' The `vaeac` approach relies on `torch` external pointers that cannot be exported to separate R processes, so
+#' [future::future] `multisession` and `cluster` plans with multiple workers are unsupported. The only parallel option
+#' is `future::plan(future::multicore)` (unavailable on Windows and within RStudio).
+#' For sequential computation, use `future::plan(future::sequential)` or set
+#' `extra_computation_args = list(vS_batching_method = "forloop")` in [explain()].
 #'
 #' @inheritParams default_doc_export
 #'

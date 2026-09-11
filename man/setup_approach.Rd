@@ -325,10 +325,11 @@ for more information about the different approaches.
 }
 \section{VAEAC parallelization}{
 
-The \code{vaeac} approach uses \code{torch} objects backed by external pointers. These objects cannot be exported to separate
-R processes, so serializing \link[future:future]{future::future} backends such as \code{multisession} and \code{cluster} are unsupported with more
-than one worker. Use \code{future::plan(future::multicore)} where forking is available, or run \code{vaeac} sequentially.
-Forking is unavailable on Windows and within RStudio.
+The \code{vaeac} approach relies on \code{torch} external pointers that cannot be exported to separate R processes, so
+\link[future:future]{future::future} \code{multisession} and \code{cluster} plans with multiple workers are unsupported. The only parallel option
+is \code{future::plan(future::multicore)} (unavailable on Windows and within RStudio).
+For sequential computation, use \code{future::plan(future::sequential)} or set
+\code{extra_computation_args = list(vS_batching_method = "forloop")} in \code{\link[=explain]{explain()}}.
 }
 
 \references{

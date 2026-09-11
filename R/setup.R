@@ -1522,6 +1522,7 @@ check_computability <- function(internal) {
   n_groups <- internal$parameters$n_groups
   exact <- internal$parameters$exact
   approach <- internal$parameters$approach
+  vS_batching_method <- internal$parameters$extra_computation_args$vS_batching_method
   causal_sampling <- internal$parameters$causal_sampling # NULL if regular/symmetric Shapley values
   asymmetric <- internal$parameters$asymmetric # NULL if regular/symmetric Shapley values
   max_n_coalitions_causal <- internal$parameters$max_n_coalitions_causal # NULL if regular/symmetric Shapley values
@@ -1589,24 +1590,27 @@ check_computability <- function(internal) {
     }
   }
 
-  # The `vaeac` approach uses `torch`, whose model/tensor objects are external pointers that cannot be
-  # exported to separate R processes. Warn early if a serializing multi-worker `future` plan
-  # (multisession/cluster) is active, as it fails with "external pointer is not valid" during v(S)
-  # computation. Forking (multicore) or sequential estimation work.
+  # The `vaeac` approach uses `torch`, whose model/tensor objects cannot be exported to separate R processes.
+  # Abort early if a serializing multi-worker `future` plan (multisession/cluster) is active.
   if (any(grepl("vaeac", approach, fixed = TRUE)) &&
+    vS_batching_method == "future" &&
     future::nbrOfWorkers() > 1L &&
     inherits(future::plan(), c("multisession", "cluster"))) {
-    cli::cli_warn(
+    cli::cli_abort(
       c(
         "!" = paste0(
-          "The {.val vaeac} approach uses {.pkg torch} models, whose objects are external pointers that ",
-          "cannot be exported to {.pkg future} {.val multisession}/{.val cluster} workers."
+          "The {.val vaeac} approach relies on {.pkg torch} external pointers that cannot be exported to separate ",
+          "R processes, so {.pkg future} {.val multisession} and {.val cluster} plans are unsupported."
         ),
-        "x" = "This will fail with an 'external pointer is not valid' error during the v(S) computation.",
-        "i" = "Use a forking plan instead ({.code future::plan(future::multicore)}) or run sequentially.",
-        " " = "Forking is unavailable on Windows and within RStudio; run {.val vaeac} sequentially there."
-      ),
-      immediate. = TRUE
+        "i" = paste0(
+          "The only parallel option is {.code future::plan(future::multicore)}, which is unavailable on Windows ",
+          "and within RStudio."
+        ),
+        "i" = paste0(
+          "For sequential computation, use {.code future::plan(future::sequential)} or set ",
+          "{.code extra_computation_args = list(vS_batching_method = \"forloop\")} in {.fn explain}."
+        )
+      )
     )
   }
 }

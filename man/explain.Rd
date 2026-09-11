@@ -454,9 +454,11 @@ Shapley values (\code{asymmetric}). See \code{vignette("general_usage", package 
 
 The package allows parallelized computation with progress updates through the tightly connected
 \link[future:future]{future::future} and \link[progressr:progressr]{progressr::progressr} packages.
-The \code{vaeac} approach cannot use serializing \code{future} backends such as \code{multisession} or \code{cluster} with more than one
-worker because its \code{torch} objects cannot be exported to separate R processes. Use
-\code{future::plan(future::multicore)} where forking is available (not Windows or RStudio), or run \code{vaeac} sequentially.
+The \code{vaeac} approach relies on \code{torch} external pointers that cannot be exported to separate R processes, so
+\code{future} \code{multisession} and \code{cluster} plans with multiple workers are unsupported. The only parallel option is
+\code{future::plan(future::multicore)} (unavailable on Windows and within RStudio).
+For sequential computation, use \code{future::plan(future::sequential)} or set
+\code{extra_computation_args = list(vS_batching_method = "forloop")}.
 See the examples below.
 For iterative estimation (\code{iterative=TRUE}), intermediate results may be printed to the console
 (according to the \code{verbose} argument).
