@@ -97,8 +97,10 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     max_nc <- coalitions_override
   }
   if (is.na(max_nc) || max_nc < 0) {
-    stop("max_n_coalitions is the dependent-pair sentinel (-1) but no valid ",
-      "--max-n-coalitions override was supplied")
+    stop(
+      "max_n_coalitions is the dependent-pair sentinel (-1) but no valid ",
+      "--max-n-coalitions override was supplied"
+    )
   }
 
   # Batching controls. `max_batch_cube_size` (default 1e6 in shapr) caps
@@ -156,8 +158,10 @@ main <- function() {
 
   result <- c(
     list(id = a$id, study = cfg$study),
-    row[c("sweep", "rep", grid_dimensions(), "approach_args",
-      "pair_role", "coalitions_from")],
+    row[c(
+      "sweep", "rep", grid_dimensions(), "approach_args",
+      "pair_role", "coalitions_from"
+    )],
     list(coalitions_override = if (is.na(a$max_n_coalitions)) NA_integer_ else a$max_n_coalitions),
     run_metadata()
   )
@@ -185,8 +189,10 @@ main <- function() {
       result$data_table_version <- as.character(utils::packageVersion("data.table"))
       result$shapr_library_path <- find.package("shapr")
       if (result$dt_threads_effective_before != row$dt_threads) {
-        stop("Requested data.table threads: ", row$dt_threads,
-          "; effective: ", result$dt_threads_effective_before)
+        stop(
+          "Requested data.table threads: ", row$dt_threads,
+          "; effective: ", result$dt_threads_effective_before
+        )
       }
       # Load pre-processed data + cached model (timed separately).
       load0 <- Sys.time()
@@ -209,8 +215,10 @@ main <- function() {
         stop("Effective data.table thread count changed during explain()")
       }
 
-      list(expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
-        load_secs = load_secs)
+      list(
+        expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
+        load_secs = load_secs
+      )
     },
     error = function(e) e
   )
@@ -243,9 +251,11 @@ main <- function() {
   }
 
   jsonlite::write_json(result, out_path, auto_unbox = TRUE, pretty = TRUE, null = "null")
-  cat(sprintf("[id %d] %s  approach=%s dataset=%s  %s\n",
+  cat(sprintf(
+    "[id %d] %s  approach=%s dataset=%s  %s\n",
     a$id, result$status, row$approach, row$dataset,
-    if (!is.null(result$wall_secs)) sprintf("%.2fs", result$wall_secs) else ""))
+    if (!is.null(result$wall_secs)) sprintf("%.2fs", result$wall_secs) else ""
+  ))
 }
 
 main()
