@@ -457,7 +457,7 @@ check_data <- function(internal) {
         "`get_model_specs` function to {.fn shapr::explain}."
       )
       msg2 <- "Consistency checks between model and data are therefore disabled."
-      cli::cli_inform(c("i" = msg1, " " = msg2))
+      cli::cli_bullets(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -466,7 +466,7 @@ check_data <- function(internal) {
       msg1 <- "Feature names extracted from the model contain `NA`."
       msg2 <- "Consistency checks between model and data are therefore disabled."
 
-      cli::cli_inform(c("i" = msg1, " " = msg2))
+      cli::cli_bullets(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs <- x_train_feature_specs
@@ -474,7 +474,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature classes extracted from the model contain `NA`."
       msg2 <- "Assuming feature classes from the data are correct."
-      cli::cli_inform(c("i" = msg1, " " = msg2))
+      cli::cli_bullets(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs$classes <- x_train_feature_specs$classes
@@ -483,7 +483,7 @@ check_data <- function(internal) {
     if ("basic" %in% verbose) {
       msg1 <- "Feature factor levels extracted from the model contain `NA`."
       msg2 <- "Assuming feature factor levels from the data are correct."
-      cli::cli_inform(c("i" = msg1, " " = msg2))
+      cli::cli_bullets(c("i" = msg1, " " = msg2))
     }
 
     model_feature_specs$factor_levels <- x_train_feature_specs$factor_levels
@@ -623,7 +623,7 @@ get_extra_parameters <- function(internal, type) {
     if (is.null(names(group))) {
       if ("basic" %in% verbose) {
         msg <- "Group names not provided. Assigning them the default names 'group1', 'group2', 'group3' etc."
-        cli::cli_inform(c("i" = msg))
+        cli::cli_bullets(c("i" = msg))
       }
       names(group) <- paste0("group", seq_along(group))
     }
@@ -943,7 +943,7 @@ adjust_max_n_coalitions <- function(internal) {
           "`max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ",
           "ordering (", max_n_coalitions_causal, "), and is therefore set to ", max_n_coalitions_causal, "."
         )
-        cli::cli_inform(c("i" = msg))
+        cli::cli_bullets(c("i" = msg))
       }
     }
 
@@ -958,7 +958,7 @@ adjust_max_n_coalitions <- function(internal) {
             "so few unique causal coalitions that we should use all to get reliable results."
           )
           msg2 <- paste0("`max_n_coalitions` is therefore set to ", max_n_coalitions_causal, ".")
-          cli::cli_inform(c("i" = msg1, " " = msg2))
+          cli::cli_bullets(c("i" = msg1, " " = msg2))
         }
       } else {
         max_n_coalitions <- min(10, n_shapley_values + 1, max_n_coalitions_causal)
@@ -969,7 +969,7 @@ adjust_max_n_coalitions <- function(internal) {
             ", max_n_coalitions_causal = ", max_n_coalitions_causal, ")`, which will result in unreliable results."
           )
           msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1, max_n_coalitions_causal), ".")
-          cli::cli_inform(c("i" = msg1, " " = msg2))
+          cli::cli_bullets(c("i" = msg1, " " = msg2))
         }
       }
     }
@@ -985,7 +985,7 @@ adjust_max_n_coalitions <- function(internal) {
             "`max_n_coalitions` is `NULL` or larger than `2^n_features = ", 2^n_features, "`, ",
             "and is therefore set to `2^n_features = ", 2^n_features, "`."
           )
-          cli::cli_inform(c("i" = msg))
+          cli::cli_bullets(c("i" = msg))
         }
       }
       # Set max_n_coalitions to lower bound
@@ -998,7 +998,7 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_features, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("`max_n_coalitions` is therefore set to `2^n_features = ", 2^n_features, "`.")
-            cli::cli_inform(c("i" = msg1, " " = msg2))
+            cli::cli_bullets(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_features + 1)
@@ -1008,7 +1008,7 @@ adjust_max_n_coalitions <- function(internal) {
               "which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", min(10, n_features + 1), ".")
-            cli::cli_inform(c("i" = msg1, " " = msg2))
+            cli::cli_bullets(c("i" = msg1, " " = msg2))
           }
         }
       }
@@ -1021,7 +1021,7 @@ adjust_max_n_coalitions <- function(internal) {
             "`max_n_coalitions` is `NULL` or larger than `2^n_groups = ", 2^n_shapley_values, "`, ",
             "and is therefore set to `2^n_groups = ", 2^n_shapley_values, "`."
           )
-          cli::cli_inform(c("i" = msg))
+          cli::cli_bullets(c("i" = msg))
         }
       }
       # Set max_n_coalitions to lower bound
@@ -1034,7 +1034,7 @@ adjust_max_n_coalitions <- function(internal) {
               2^n_shapley_values, ") that we should use all to get reliable results."
             )
             msg2 <- paste0("`max_n_coalitions` is therefore set to `2^n_groups = ", 2^n_shapley_values, "`.")
-            cli::cli_inform(c("i" = msg1, " " = msg2))
+            cli::cli_bullets(c("i" = msg1, " " = msg2))
           }
         } else {
           max_n_coalitions <- min(10, n_shapley_values + 1)
@@ -1044,7 +1044,7 @@ adjust_max_n_coalitions <- function(internal) {
               " which will result in unreliable results."
             )
             msg2 <- paste0("It is therefore set to ", min(10, n_shapley_values + 1), ".")
-            cli::cli_inform(c("i" = msg1, " " = msg2))
+            cli::cli_bullets(c("i" = msg1, " " = msg2))
           }
         }
       }
@@ -1936,7 +1936,7 @@ cap_dense_batch_size <- function(internal, per_coalition_size) {
 
   if (max_coalitions_per_batch < max_batch_size) {
     if (!is.null(verbose) && "basic" %in% verbose) {
-      cli::cli_inform(c(
+      cli::cli_bullets(c(
         "i" = paste0(
           "Capped {.arg max_batch_size} from {.val {max_batch_size}} to {.val {max_coalitions_per_batch}} so each ",
           "batch array stays under {.arg max_batch_cube_size} = {.val {max_batch_cube_size}} elements."

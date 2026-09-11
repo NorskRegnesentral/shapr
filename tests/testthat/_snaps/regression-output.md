@@ -7,7 +7,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -55,7 +56,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -116,7 +118,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+        therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -147,7 +150,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -179,7 +183,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -211,7 +216,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -242,7 +248,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -273,7 +280,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -304,7 +312,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -335,7 +344,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -366,7 +376,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
     Condition
       Warning:
       ! Iterative estimation of Shapley values are not supported for approach = regression_surrogate. Setting iterative = FALSE.
@@ -401,7 +412,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -492,7 +504,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+        therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -523,7 +536,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -554,7 +568,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -585,7 +600,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       

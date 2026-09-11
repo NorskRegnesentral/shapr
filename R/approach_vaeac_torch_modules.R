@@ -1147,7 +1147,7 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
       if (!self$output) {
         if (self$verbose) {
           msg <- paste0("Inserting data to memory layer `self$id = ", self$id, "`.")
-          cli::cli_inform(c("i" = msg))
+          cli::cli_bullets(c("i" = msg))
         }
 
         # Insert the input into the storage list which is in the shared environment of the memory_layer class.
@@ -1160,7 +1160,7 @@ memory_layer <- function(id, shared_env, output = FALSE, add = FALSE, verbose = 
           msg <- paste0(
             "Extracting data to memory layer `self$id = ", self$id, "`. Using concatination = ", !self$add, "."
           )
-          cli::cli_inform(c("i" = msg))
+          cli::cli_bullets(c("i" = msg))
         }
 
         # Check that the memory layer has data is stored in it. If not, then thorw error.
