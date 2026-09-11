@@ -40,11 +40,8 @@ Both checks excluded snapshot tests without explicitly passing `--as-cran`.
 
 ## Current R CMD check results
 
-There were no ERRORs or WARNINGs, and all snapshot tests passed locally and on
-GHA. The local `R CMD check --as-cran` produced one NOTE caused by the
-compiler-injected `-mno-omit-leaf-frame-pointer` flag on Ubuntu.
-
-The win-builder and R-hub checks produced no ERRORs, WARNINGs, or NOTEs.
+There were no ERRORs, WARNINGs or NOTEs, and all snapshot tests passed locally and on
+GHA.
 
 ## Reverse dependencies
 
