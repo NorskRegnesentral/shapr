@@ -53,19 +53,6 @@ paths:
   logs_dir: logs        # per-run stdout/stderr
 
 # ---------------------------------------------------------------------------
-# Thread / BLAS controls.
-#
-# IMPORTANT: orchestrate.sh exports OMP_NUM_THREADS / OPENBLAS_NUM_THREADS /
-# MKL_NUM_THREADS = 1 so that BLAS is single-threaded. This guarantees the ONLY
-# sources of parallelism are the swept `future` worker count ("workers") and
-# data.table thread count ("dt_threads"). Do not raise these BLAS limits unless
-# you specifically want to study BLAS threading.
-# ---------------------------------------------------------------------------
-controls:
-  blas_threads: 1
-  dt_threads: 1         # data.table::setDTthreads() inside each run
-
-# ---------------------------------------------------------------------------
 # Peak-RAM measurement.
 #   method: poll   -> external /proc process-session RSS sampler (captures
 #                     detached future workers). Portable, sampled at roughly
