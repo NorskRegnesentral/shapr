@@ -3,7 +3,8 @@ skip_on_cran()
 test_that("explanation and summary messages retain their spacing when knitted", {
   skip_if_not_installed("knitr")
 
-  withr::local_options(list(cli.width = 120, cli.num_colors = 1))
+  previous_options <- options(cli.width = 120, cli.num_colors = 1)
+  on.exit(options(previous_options), add = TRUE)
   run_explanation <- function(verbose = c("basic", "shapley")) {
     return(explain(
       model = model_lm_numeric,
