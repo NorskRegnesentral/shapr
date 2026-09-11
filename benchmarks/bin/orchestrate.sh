@@ -32,7 +32,7 @@
 # ============================================================================
 set -uo pipefail
 
-# --- Single-threaded BLAS/OpenMP/data.table (see README) --------------------
+# --- Single-threaded defaults; run-specific OpenMP limit below -------------
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1

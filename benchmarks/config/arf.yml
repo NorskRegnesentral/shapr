@@ -54,7 +54,7 @@ blocks:
       dataset: [mixed_fc_fl, mixed_fc_ml, mixed_mc_fl, mixed_mc_ml, categorical]
 
   # Realistic workloads are substantially more expensive for ARF, so Option C
-  # keeps these added blocks at two replicates while the core blocks use three.
+  # keeps these blocks at two replicates while the core blocks use three.
   - name: realistic_medium
     replicates: 2
     grid:

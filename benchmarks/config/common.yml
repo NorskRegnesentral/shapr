@@ -55,7 +55,7 @@ paths:
 # ---------------------------------------------------------------------------
 # Peak-RAM measurement.
 #   method: poll   -> external /proc process-session RSS sampler (captures
-#                     detached future workers). Portable, sampled at roughly
+#                     detached future workers). Linux-only, sampled at roughly
 #                     poll_interval_ms resolution.
 #           cgroup -> run under `systemd-run --user --scope` and read cgroup-v2
 #                     memory.peak (exact, catches transient spikes).

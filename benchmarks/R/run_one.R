@@ -76,37 +76,10 @@ parse_approach_args <- function(s) {
   return(out)
 }
 
-# Build an intentionally more expensive version of shapr's native prediction
-# function. Optional prediction-cost studies use this to vary model-evaluation
-# cost while returning exactly the same predictions.
-make_repeated_predict_model <- function(model, repeats) {
-  native_predict <- getFromNamespace("get_predict_model", "shapr")(
-    predict_model = NULL,
-    model = model
-  )
-  force(native_predict)
-  force(repeats)
-  return(function(model, newdata) {
-    prediction <- NULL
-    for (i in seq_len(repeats)) {
-      prediction <- native_predict(model, newdata)
-    }
-    return(prediction)
-  })
-}
-
 # Build the explain() argument list for a grid row. `coalitions_override` (if
 # > 0) replaces max_n_coalitions (used for the iterative `dependent` run).
 build_explain_args <- function(cfg, row, run_data, model, coalitions_override = NA_integer_) {
   approach_args <- parse_approach_args(row$approach_args)
-
-  prediction_repeats <- approach_args[["benchmark.prediction_repeats"]] %||% 1
-  approach_args[["benchmark.prediction_repeats"]] <- NULL
-  if (!is.numeric(prediction_repeats) || length(prediction_repeats) != 1 ||
-    prediction_repeats < 1 || prediction_repeats != as.integer(prediction_repeats)) {
-    stop("benchmark.prediction_repeats must be a positive integer")
-  }
-  prediction_repeats <- as.integer(prediction_repeats)
 
   # Named regression variant -> merge its (complex) explain args from registry.
   variant_args <- list()
@@ -154,10 +127,6 @@ build_explain_args <- function(cfg, row, run_data, model, coalitions_override = 
     verbose = NULL,
     seed = cfg$seed + row$id
   )
-  if (prediction_repeats > 1L) {
-    base_args$predict_model <- make_repeated_predict_model(model, prediction_repeats)
-  }
-
   # Feature grouping (group sweep): partition features into groups of
   # `group_size` consecutive columns. group_size is a swept grid dimension;
   # fall back to the config-level / default value for older grids.
