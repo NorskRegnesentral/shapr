@@ -2,6 +2,11 @@
 [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
+# shapr (development version)
+
+### Development and testing
+* Corrected per-run OpenMP limits in the benchmark launcher, recorded and checked effective data.table thread limits, and added targeted reruns that preserve existing grid IDs. (branch: fix/benchmark-datatable-threads)
+
 # shapr 1.1.0
 
 ### New features

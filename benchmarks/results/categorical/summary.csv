@@ -29,12 +29,12 @@ categorical,categorical,12,128,250,8,Inf,1000000,4,multisession,1,1000,25,FALSE,
 categorical,categorical,12,128,250,32,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,4.637,0.019,5.254,281.6,286.1,5.547,0.048,1
 categorical,categorical,12,128,250,25,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,4.404,0.105,4.947,280.4,280.7,5.3,0.047,1
 categorical,categorical,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_categorical_iterative_budget_2,dependent,3,4.298,0.07,4.822,279.8,294.1,5.208,0.045,1
+categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.989,0.077,5.763,291.9,295.5,5.123,0.059,1
+categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.957,0.073,5.067,284.7,296.4,5.084,0.061,1
 categorical,categorical,12,128,250,2,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,4.13,0.127,4.498,378.3,378.4,5.05,0.047,1
-categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,4.085,0.085,4.589,278.8,279,4.989,0.045,1
-categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,4.038,0.016,4.547,278.2,278.6,4.979,0.045,1
-categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,4.048,0.048,4.549,277.9,280.2,4.954,0.046,1
+categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,coalitions,,,,3,3.914,0.028,4.465,289.5,306,5.021,0.059,1
+categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.887,0.121,4.616,286.6,294.4,5.001,0.062,1
 categorical,categorical,12,128,250,10,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,4.053,0.035,4.563,278.3,283.2,4.948,0.047,1
-categorical,categorical,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,4.027,0.081,4.531,278.9,280.8,4.93,0.048,1
 categorical,categorical,12,128,250,8,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,4.015,0.034,4.502,279.4,279.6,4.913,0.047,1
 categorical,categorical,12,128,250,1,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,4.022,0.054,4.376,396.9,402.7,4.912,0.045,1
 categorical,categorical,12,-1,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,iterative_budget,,iter_categorical_iterative_budget_1,dependent,3,4.036,0.043,4.552,277.6,278.8,4.912,0.045,1

@@ -40,12 +40,12 @@ numeric,arf,12,128,250,25,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default
 numeric,arf,16,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,20.495,0.246,19.064,970.3,985.5,22.594,0.087,1
 numeric,arf,12,128,250,32,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,19.976,0.149,19.648,410.8,438.9,22.017,0.087,1
 numeric,arf,12,128,250,1,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,18.71,0.11,15.603,3315.8,3467.4,21.015,0.087,1
-numeric,arf,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.36,0.339,16.723,768.4,775.6,19.461,0.09,1
-numeric,arf,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,17.127,0.177,16.308,775.2,821.1,19.232,0.088,1
-numeric,arf,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,17.051,0.399,16.197,799.2,807.3,19.148,0.088,1
+numeric,arf,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,17.598,0.382,16.911,765.2,815.8,19.77,0.094,1
+numeric,arf,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,16.942,0.116,18.959,750.4,787.9,19.15,0.096,1
 numeric,arf,12,128,250,128,Inf,1000000,2,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,16.114,0.296,2.794,798.5,806,19.063,0.092,1
-numeric,arf,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,16.93,0.109,16.067,832.8,867,19.016,0.088,1
 numeric,arf,12,128,250,8,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,16.58,0.187,15.67,908.7,951.9,18.688,0.088,1
+numeric,arf,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,16.415,0.143,22.109,777.7,794,18.595,0.094,1
+numeric,arf,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,15.839,0.169,26.722,803.8,804.2,18.087,0.1,1
 numeric,arf,12,128,250,5,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,15.756,0.496,14.832,1252.5,1300.7,17.914,0.088,1
 numeric,arf,12,128,250,10,Inf,1000000,1,multisession,1,500,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,15.673,0.289,14.729,738.7,753.5,17.765,0.088,1
 numeric,arf,8,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,13.891,0.233,13.461,582.8,608.4,15.98,0.088,1

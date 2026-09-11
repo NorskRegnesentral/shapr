@@ -46,12 +46,12 @@ numeric,copula,12,128,250,32,Inf,1000000,4,multisession,1,1000,25,FALSE,FALSE,2,
 numeric,copula,12,128,50,10,Inf,1000000,1,multisession,1,2500,25,FALSE,FALSE,2,default,FALSE,scale_train_mc,,,,3,3.635,0.023,3.61,246.8,247.1,5.441,0.883,1
 numeric,copula,16,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,3.471,0.018,3.376,279,279.1,5.27,0.883,1
 numeric,copula,12,128,250,2,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,3.461,0.022,3.276,363,363.1,5.265,0.891,1
+numeric,copula,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.1,0.008,5.186,293.6,294.1,5.071,0.816,1
+numeric,copula,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.097,0.068,3.715,293.4,294.2,5.066,0.831,1
+numeric,copula,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.085,0.017,8.1,294.7,295,5.065,0.826,1
+numeric,copula,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,3.069,0.007,2.985,293.3,293.3,5.001,0.814,1
 numeric,copula,12,128,250,50,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,3.193,0.039,3.157,249.3,249.8,4.98,0.884,1
 numeric,copula,12,128,250,5,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,batches,,,,3,3.147,0.018,3.082,293.2,293.4,4.968,0.885,1
-numeric,copula,12,128,250,10,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,features,,,,3,3.168,0.022,3.086,283.3,283.3,4.967,0.886,1
-numeric,copula,12,128,250,10,Inf,1000000,1,multisession,4,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.148,0.016,3.069,283.4,283.8,4.948,0.887,1
-numeric,copula,12,128,250,10,Inf,1000000,1,multisession,8,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.139,0.023,3.055,283.4,283.6,4.942,0.883,1
-numeric,copula,12,128,250,10,Inf,1000000,1,multisession,2,1000,25,FALSE,FALSE,2,default,FALSE,dt_threads,,,,3,3.133,0.032,3.06,282.9,283,4.934,0.88,1
 numeric,copula,12,128,250,10,Inf,Inf,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,highdim_cap,,,,3,3.124,0.027,3.047,283.4,283.5,4.929,0.879,1
 numeric,copula,12,128,250,8,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,3.116,0.032,3.049,283.2,283.5,4.929,0.884,1
 numeric,copula,12,128,250,32,Inf,1000000,1,multisession,1,1000,25,FALSE,FALSE,2,default,FALSE,parallel,,,,3,3.068,0.019,3.028,252.4,252.5,4.882,0.883,1

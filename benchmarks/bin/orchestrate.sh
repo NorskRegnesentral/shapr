@@ -16,9 +16,8 @@
 #   4. Aggregate everything (R/aggregate.R) -> results/<study>/results.csv
 #
 # Each config runs in its own process so there is no cross-run caching, no warm
-# heap, and no reused future workers. BLAS/OpenMP are pinned to 1 thread so the
-# ONLY parallelism is the swept future worker count + the swept data.table
-# thread count.
+# heap, and no reused future workers. BLAS limits stay at 1; each run's OpenMP
+# limit matches its requested data.table threads and can affect other OpenMP users.
 #
 # Timeout handling: a run exceeding `timeout_sec` (from run_meta.json) is killed
 # and gets an <id>.json marker with status="timeout" so resume skips it. Use
@@ -47,16 +46,25 @@ RDIR="$ROOT/R"
 RSCRIPT="${RSCRIPT:-Rscript}"
 
 RETRY_TIMEOUTS=false
+EXISTING_GRID=false
+RUN_IDS=""
 CONFIG=""
 for arg in "$@"; do
   case "$arg" in
     --retry-timeouts) RETRY_TIMEOUTS=true ;;
+    --existing-grid) EXISTING_GRID=true ;;
+    --run-ids=*) RUN_IDS="${arg#*=}" ;;
     *) CONFIG="$arg" ;;
   esac
 done
 
 if [[ -z "$CONFIG" ]]; then
-  echo "Usage: $0 <config.yml> [--retry-timeouts]" >&2
+  echo "Usage: $0 <config.yml> [--retry-timeouts] [--existing-grid] [--run-ids=1,2,3]" >&2
+  exit 1
+fi
+
+if [[ -n "$RUN_IDS" && ( "$EXISTING_GRID" != "true" || "$RETRY_TIMEOUTS" == "true" ) ]]; then
+  echo "--run-ids requires --existing-grid and cannot be combined with --retry-timeouts." >&2
   exit 1
 fi
 
@@ -69,7 +77,9 @@ LOGS="$ROOT/logs/$STUDY"
 mkdir -p "$RESULTS" "$LOGS"
 
 # --- 1. Build the grid ------------------------------------------------------
-"$RSCRIPT" "$RDIR/grid.R" --config "$CONFIG" || { echo "grid build failed" >&2; exit 1; }
+if [[ "$EXISTING_GRID" != "true" ]]; then
+  "$RSCRIPT" "$RDIR/grid.R" --config "$CONFIG" || { echo "grid build failed" >&2; exit 1; }
+fi
 
 GRID="$RESULTS/grid.csv"
 META="$RESULTS/run_meta.json"
@@ -82,6 +92,17 @@ TIMEOUT="$(read_meta timeout_sec)"
 TIME_BUDGET="$(read_meta time_budget_sec)"
 AGG_EVERY="$(read_meta aggregate_every)"
 RUN_ORDER="$(read_meta run_order)"
+if [[ -n "$RUN_IDS" ]]; then
+  RUN_ORDER="$("$RSCRIPT" -e '
+    args <- commandArgs(TRUE)
+    ids <- as.integer(strsplit(args[1], ",", fixed = TRUE)[[1]])
+    grid <- data.table::fread(args[2])
+    run_order <- jsonlite::fromJSON(args[3])$run_order
+    stopifnot(length(ids) > 0, !anyNA(ids), !anyDuplicated(ids),
+      all(ids %in% grid$id), all(ids %in% run_order))
+    cat(run_order[run_order %in% ids])
+  ' "$RUN_IDS" "$GRID" "$META")" || exit 1
+fi
 [[ -n "$TIMEOUT" && "$TIMEOUT" != "0" ]] || TIMEOUT=600
 [[ "$AGG_EVERY" =~ ^[0-9]+$ ]] || AGG_EVERY=0
 [[ "$TIME_BUDGET" =~ ^[0-9]+$ ]] || TIME_BUDGET=0
@@ -218,11 +239,15 @@ EOF
     return 0
   fi
 
+  local dt_threads
+  dt_threads="$(grid_field "$id" dt_threads)"
+  [[ "$dt_threads" =~ ^[1-9][0-9]*$ ]] || { echo "Invalid dt_threads for id $id" >&2; return 1; }
   local start end elapsed rc timed_out=false resource_killed=false
   start="$(date +%s.%N)"
 
   if [[ "$RAM_METHOD" == "poll" ]]; then
     setsid timeout --signal=TERM "$TIMEOUT" \
+      env OMP_NUM_THREADS="$dt_threads" \
       "$RSCRIPT" "$RDIR/run_one.R" --config "$CONFIG" --id "$id" "${extra_args[@]}" \
       >"$log" 2>&1 &
     local rpid=$!
@@ -235,6 +260,7 @@ EOF
     local unit="shaprbench-${STUDY}-${id}-$$"
     systemd-run --user --scope --quiet --unit="$unit" \
       -- timeout --signal=TERM "$TIMEOUT" \
+      env OMP_NUM_THREADS="$dt_threads" \
       "$RSCRIPT" "$RDIR/run_one.R" --config "$CONFIG" --id "$id" "${extra_args[@]}" \
       >"$log" 2>&1 &
     local rpid=$!
@@ -330,7 +356,7 @@ for id in $RUN_ORDER; do
     fi
   fi
 
-  run_id "$id"
+  run_id "$id" || exit 1
   completed=$((completed + 1))
 
   # Periodic re-aggregation so results.csv / summary.csv stay current during a

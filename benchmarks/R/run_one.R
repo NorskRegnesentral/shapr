@@ -39,8 +39,7 @@ parse_args <- function() {
   )
 }
 
-# Configure threading so the ONLY parallelism is the future workers + the swept
-# data.table thread count.
+# Configure future workers and the requested data.table thread limit.
 setup_threads <- function(dt_threads, backend, workers) {
   data.table::setDTthreads(dt_threads)
   if (workers > 1) {
@@ -206,10 +205,20 @@ main <- function() {
     return(invisible())
   }
 
-  setup_threads(row$dt_threads, row$backend, row$workers)
-
   res <- tryCatch(
     {
+      setup_threads(row$dt_threads, row$backend, row$workers)
+      result$dt_threads_effective_before <- data.table::getDTthreads()
+      result$omp_num_threads <- Sys.getenv("OMP_NUM_THREADS")
+      result$omp_thread_limit <- Sys.getenv("OMP_THREAD_LIMIT")
+      result$openblas_num_threads <- Sys.getenv("OPENBLAS_NUM_THREADS")
+      result$mkl_num_threads <- Sys.getenv("MKL_NUM_THREADS")
+      result$data_table_version <- as.character(utils::packageVersion("data.table"))
+      result$shapr_library_path <- find.package("shapr")
+      if (result$dt_threads_effective_before != row$dt_threads) {
+        stop("Requested data.table threads: ", row$dt_threads,
+          "; effective: ", result$dt_threads_effective_before)
+      }
       # Load pre-processed data + cached model (timed separately).
       load0 <- Sys.time()
       run_data <- build_run_data(cfg, row$dataset, row$n_features, row$n_train, row$n_explain)
@@ -226,6 +235,10 @@ main <- function() {
       expl <- do.call(shapr::explain, explain_args)
       cpu1 <- proc.time()
       wall1 <- Sys.time()
+      result$dt_threads_effective_after <- data.table::getDTthreads()
+      if (result$dt_threads_effective_after != row$dt_threads) {
+        stop("Effective data.table thread count changed during explain()")
+      }
 
       list(expl = expl, wall0 = wall0, wall1 = wall1, cpu0 = cpu0, cpu1 = cpu1,
         load_secs = load_secs)
