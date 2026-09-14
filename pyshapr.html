@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,12 +80,12 @@
 <th>Full feature support</th>
 <th>Limited support</th>
 </tr></thead><tbody><tr><td><code>1.0.5</code></td>
-<td><code>1.0.8.9005</code></td>
+<td><code>1.1.0</code></td>
 <td><code>shapr &gt; 1.0.8</code></td>
 <td>
 <code>shapr &lt;= 1.0.8</code>: ARF and SAGE unavailable</td>
-</tr></tbody></table><!-- END GENERATED SHAPR COMPATIBILITY --><p>Until the next CRAN release of <code>shapr</code>, install the development version from GitHub using:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'pak::pak("NorskRegnesentral/shapr")'</span></span></code></pre></div>
+</tr></tbody></table><!-- END GENERATED SHAPR COMPATIBILITY --><p>Install <code>shapr</code> 1.1.0 or later from CRAN using:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'install.packages("shapr", repos = "https://cloud.r-project.org")'</span></span></code></pre></div>
 <p>When <code><a href="reference/explain.html">explain()</a></code> is first called, <code>pyshapr</code> loads the R backend and checks its version. For a version in the limited-support range, it emits a <code>ShaprVersionWarning</code> that identifies the unavailable functionality while allowing supported SHAP functionality to run. Requesting SAGE with a <code>shapr</code> version that does not expose the SAGE API raises an error because such a version can silently return local SHAP values instead of SAGE values. Importing <code>pyshapr</code> or <code>explain</code> remains lightweight and does not initialize R.</p>
 </div>
 <div class="section level3">
@@ -135,22 +135,22 @@
 <span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>    x_explain<span class="op">=</span>dfx_explain,</span>
 <span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>    approach<span class="op">=</span><span class="st">"gaussian"</span>,</span>
 <span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>    phi0<span class="op">=</span>dfy_train.mean().item(),</span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>    seed<span class="op">=</span><span class="dv">1</span>,</span>
 <span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>)</span>
 <span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>explanation.<span class="bu">print</span>() <span class="co"># Print the Shapley values</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>explanation.<span class="bu">print</span>()  <span class="co"># Print the Shapley values</span></span>
 <span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a></span>
 <span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co"># Get a summary object with computation details</span></span>
 <span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>summary <span class="op">=</span> explanation.summary()</span>
 <span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="bu">print</span>(summary)  <span class="co"># Displays a formatted summary (also available directly via explanation.summary())</span></span>
 <span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a></span>
 <span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co"># Access specific summary attributes (available with tab-completion in Jupyter)</span></span>
-<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>summary[<span class="st">'approach'</span>]     <span class="co"># Approach used</span></span>
-<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>summary[<span class="st">'timing_summary'</span>][<span class="st">'total_time_secs'</span>]  <span class="co"># Total computation time</span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a>summary[<span class="st">"approach"</span>]  <span class="co"># Approach used</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a>summary[<span class="st">"timing_summary"</span>][<span class="st">"total_time_secs"</span>]  <span class="co"># Total computation time</span></span>
 <span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a></span>
 <span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co"># Extract one or more specific result objects directly</span></span>
-<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>explanation.get_results(<span class="st">"proglang"</span>) <span class="co"># Programming language used (Python/R)</span></span>
-<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>explanation.get_results(<span class="st">"approach"</span>) <span class="co"># Approach used</span></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>explanation.get_results(<span class="st">"proglang"</span>)  <span class="co"># Programming language used (Python/R)</span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>explanation.get_results(<span class="st">"approach"</span>)  <span class="co"># Approach used</span></span>
 <span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>explanation.get_results().keys()  <span class="co"># All available result objects</span></span>
 <span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a></span>
 <span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co"># Plotting (requires the 'shap' library)</span></span>
@@ -158,7 +158,8 @@
 <span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>shap_exp <span class="op">=</span> explanation.to_shap()</span>
 <span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a></span>
 <span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a><span class="im">import</span> shap</span>
-<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>]) <span class="co"># Plot the first observation</span></span></code></pre></div>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>shap.plots.waterfall(shap_exp[<span class="dv">0</span>])  <span class="co"># Plot the first observation</span></span></code></pre></div>
 <hr></div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a></h2>

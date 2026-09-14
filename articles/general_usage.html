@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -651,6 +651,11 @@ argument. Allowed values are <code>"gaussian"</code>,
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Attaching package: 'data.table'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:base':</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;     %notin%</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"airquality"</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">)</span></span>
@@ -690,38 +695,25 @@ argument. Allowed values are <code>"gaussian"</code>,
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:27:53 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:15:37 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2fab7fb1.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901536180.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Printing the Shapley values for the test data.</span></span>
 <span><span class="co"># For more information about the interpretation of the values in the table, see</span></span>
@@ -769,37 +761,25 @@ the points are colored by the feature value of that instance:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:37 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:15:53 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 111</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f19e122ee.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969904a42b460.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_plot</span>, plot_type <span class="op">=</span> <span class="st">"beeswarm"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_general_usage/plot-beeswarm-1.webp"></p>
 <p>The <code>plot_type = "scatter"</code> plots the feature values on
@@ -841,37 +821,25 @@ following manner:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:48 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:04 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f65403eaf.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990593635a6.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
@@ -895,37 +863,25 @@ trees in the following manner. The default values are based on <span class="cita
 <span>  ctree.minbucket <span class="op">=</span> <span class="fl">20</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:50 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:06 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f46ce773f.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990a7fab87.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span><span class="co"># Default parameters (based on (Hothorn, 2006)) are:</span></span>
 <span><span class="co"># mincriterion = 0.95</span></span>
 <span><span class="co"># minsplit = 20</span></span>
@@ -948,38 +904,25 @@ number of trees.</p>
 <span>  arf.parallel_gen <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-13 23:22:01 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:07 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: arf</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpbqmUD6/shapr_obj_2cf0145ecf8d57.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907d08e309.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_arf</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_general_usage/arf-1.webp"></p>
@@ -1015,37 +958,25 @@ categorical approach as follows:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:51 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:10 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: categorical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f69c35225.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901fd48561.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span></code></pre></div>
 <p>Shapley values can be used to explain any predictive model. For
 predictive models taking time series as input,
 <code>approach="timeseries"</code> can be used. In such models, joint
@@ -1109,43 +1040,29 @@ necessary).</p>
 <span>  group <span class="op">=</span> <span class="va">group_ts</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 08:18:13 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:10 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 16`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_groups = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;lm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: timeseries</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of group-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Feature groups: S1: {"X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"};</span></span>
 <span><span class="co">#&gt; S2: {"X11", "X12", "X13", "X14", "X15", "X16", "X17", "X18", "X19", "X20"}; S3:</span></span>
 <span><span class="co">#&gt; {"X21", "X22", "X23", "X24", "X25", "X26", "X27", "X28", "X29", "X30"}; S4: {"X31",</span></span>
 <span><span class="co">#&gt; "X32", "X33", "X34", "X35", "X36", "X37", "X38", "X39", "X40"}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpXO5NQl/shapr_obj_38af44566284d8.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969903857d8f2.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="choosing-a-conditional-approach">Choosing a conditional approach<a class="anchor" aria-label="anchor" href="#choosing-a-conditional-approach"></a>
 </h3>
@@ -1339,37 +1256,25 @@ combining them into lists.</p>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:55 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:13 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: independence</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f7d6d6256.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699087aa2e7.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Empirical approach</span></span>
 <span><span class="va">explanation_empirical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1382,8 +1287,10 @@ combining them into lists.</p>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:00:56 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:14 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1393,11 +1300,12 @@ combining them into lists.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f4de35e91.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969904d51740.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Gaussian 1e1 approach</span></span>
 <span><span class="va">explanation_gaussian_1e1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1410,8 +1318,10 @@ combining them into lists.</p>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:00 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:18 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1421,11 +1331,12 @@ combining them into lists.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 10</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f7d87be68.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901ac6916e.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Gaussian 1e2 approach</span></span>
 <span><span class="va">explanation_gaussian_1e2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1438,8 +1349,10 @@ combining them into lists.</p>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:01 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:18 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1449,11 +1362,12 @@ combining them into lists.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f2f0f8c3f.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969902c90225d.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Combined approach</span></span>
 <span><span class="va">explanation_combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1466,8 +1380,10 @@ combining them into lists.</p>
 <span>  n_MC_samples <span class="op">=</span> <span class="fl">1e2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:01 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:19 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1477,11 +1393,12 @@ combining them into lists.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 25</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f49d7edaa.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907e0c6de2.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Create a list of explanations with names</span></span>
 <span><span class="va">explanation_list_named</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -1608,7 +1525,7 @@ with six or more features (or feature groups), and can always be
 manually overridden by setting <code>iterative = FALSE</code> in the
 <code><a href="../reference/explain.html">explain()</a></code> function. The idea behind iterative estimation is
 to estimate sufficiently accurate Shapley value estimates faster. First,
-an initial number of coalitions is sampled, then, bootsrapping is used
+an initial number of coalitions is sampled, then, bootstrapping is used
 to estimate the variance of the Shapley values. A convergence criterion
 is used to determine if the variances of the Shapley values are
 sufficiently small. If the variances are too high, we estimate the
@@ -1682,57 +1599,38 @@ estimation procedure.</p>
 <span>  iterative_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>convergence_tol <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:06 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:23 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f200c3dba.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907015a7aa.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Iteration 1 ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 6 of 32 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1.5 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Iteration 2 ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 8 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Iteration 3 ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Iteration 4 ────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 14 of 32 coalitions, 2 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 14 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 1 per batch).</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary, Printing, and Result Extraction<a class="anchor" aria-label="anchor" href="#summary"></a>
@@ -1791,7 +1689,7 @@ explanation object <code>ex</code> computed above.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ex</span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Summary of Shapley value explanation ─────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with `shapr::explain()` in 3.7 seconds, started 2026-06-03 15:01:06</span></span>
+<span><span class="co">#&gt; • Computed with `shapr::explain()` in 4 seconds, started 2026-09-11 16:16:23</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
@@ -1800,7 +1698,7 @@ explanation object <code>ex</code> computed above.</p>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 14 (of total 32)</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f200c3dba.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907015a7aa.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Convergence info</span></span>
 <span><span class="co">#&gt; ✔ Iterative Shapley value estimation stopped at 14 coalitions after 4 iterations, due to:</span></span>
@@ -1824,9 +1722,7 @@ explanation object <code>ex</code> computed above.</p>
 <span><span class="co">#&gt; 5: 0.99 (0.72)</span></span>
 <span><span class="co">#&gt; 6: 0.81 (0.61)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Estimated MSEv</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; Estimated MSE of v(S) = 176 (with sd = 13)</span></span>
 <span></span>
 <span><span class="co"># When assigned, it returns a summary.shapr object with all components available for</span></span>
@@ -1852,7 +1748,7 @@ explanation object <code>ex</code> computed above.</p>
 <span><span class="co">#&gt; 5:          5     0 2.30995 1.9036 0.61982 1.63183 0.71767</span></span>
 <span><span class="co">#&gt; 6:          6     0 1.02353 0.9635 0.65412 0.75063 0.61376</span></span>
 <span><span class="va">summary_ex</span><span class="op">$</span><span class="va">timing_summary</span><span class="op">$</span><span class="va">total_time_secs</span> <span class="co"># Total computation time in seconds</span></span>
-<span><span class="co">#&gt; [1] 3.6603</span></span>
+<span><span class="co">#&gt; [1] 4.0278</span></span>
 <span><span class="va">summary_ex</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">n_MC_samples</span> <span class="co"># Number of Monte Carlo samples used</span></span>
 <span><span class="co">#&gt; [1] 1000</span></span>
 <span></span>
@@ -1943,44 +1839,33 @@ responses and mean squared error otherwise.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-24 14:45:26 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:27 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 105</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpbjHlWY/shapr_obj_1670a1272246d5.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901f29b22c.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 32 of 32 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 30 batches (mean 1.1 per batch).</span></span>
 <span></span>
 <span><span class="co"># The estimated SAGE values (a single, global explanation)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sage_explanation</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp  Month   Day</span></span>
-<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt; &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          1 -1136     120   490   496 -0.798  28.2</span></span>
+<span><span class="co">#&gt;    explain_id  none Solar.R  Wind  Temp Month   Day</span></span>
+<span><span class="co">#&gt;         &lt;int&gt; &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          1 -1136     118   490   499 -2.87  28.8</span></span>
 <span></span>
 <span><span class="co"># SAGE values are visualized with bar and waterfall plots</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sage_explanation</span>, plot_type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span></span></code></pre></div>
@@ -2076,38 +1961,25 @@ Windows and within RStudio.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-13 23:22:07 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:31 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpbqmUD6/shapr_obj_2cf01444c7b9bf.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699035ba4712.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 32 of 32 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 3.2 per batch).</span></span>
 <span></span>
 <span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">old_future_plan</span><span class="op">)</span> <span class="co"># To return to the previous computation plan</span></span></code></pre></div>
 </div>
@@ -2256,37 +2128,25 @@ features.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:12 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:34 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical, copula, and gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f6dce2aa5.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969903db848c4.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span><span class="co"># Plot the resulting explanations for observations 1 and 6, excluding</span></span>
 <span><span class="co"># the no-covariate effect</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_combined</span>, bar_plot_phi0 <span class="op">=</span> <span class="cn">FALSE</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2305,37 +2165,25 @@ features:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:14 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:36 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: ctree, ctree, and empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f2fc78f40.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990428d6005.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="explain-groups-of-features">Explain groups of features<a class="anchor" aria-label="anchor" href="#explain-groups-of-features"></a>
@@ -2364,39 +2212,26 @@ predictions in terms of groups of features is very easy using
 <span>  group <span class="op">=</span> <span class="va">group_list</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:15 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:37 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set</span></span>
+<span><span class="co">#&gt;   to `2^n_groups = 4`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of group-wise Shapley values: 2</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Feature groups: A: {"Temp", "Month"}; B: {"Wind", "Solar.R"}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f7daaedd1.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969904099cde7.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 4 of 4 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 2 per batch).</span></span>
 <span><span class="co"># Prints the group-wise explanations</span></span>
 <span><span class="va">explanation_group</span></span>
 <span><span class="co">#&gt;    explain_id  none     A      B</span></span>
@@ -2468,7 +2303,7 @@ these functions and a minimal version which skips the
 to the same airquality data set as used above.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gbm-developers.github.io/gbm/" class="external-link">gbm</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loaded gbm 2.2.3</span></span>
+<span><span class="co">#&gt; Loaded gbm 2.3.1</span></span>
 <span><span class="co">#&gt; This version of gbm is no longer under development. Consider transitioning to gbm3, https://github.com/gbm-developers/gbm3</span></span>
 <span></span>
 <span><span class="va">formula_gbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">as.formula</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">y_var</span>, <span class="st">"~"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x_var</span>, collapse <span class="op">=</span> <span class="st">"+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -2520,37 +2355,25 @@ to the same airquality data set as used above.</p>
 <span>  get_model_specs <span class="op">=</span> <span class="va">MY_get_model_specs</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:17 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:39 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;gbm&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f4782db7c.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699014752b89.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2578,11 +2401,13 @@ to the same airquality data set as used above.</p>
 <span>  predict_model <span class="op">=</span> <span class="va">MY_MINIMAL_predict_model</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:01:21 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs`</span></span>
-<span><span class="co">#&gt;   function to `shapr::explain()`.</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:42 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ You passed a model to `shapr::explain()` which is not natively supported, and did</span></span>
+<span><span class="co">#&gt;   not supply a `get_model_specs` function to `shapr::explain()`.</span></span>
 <span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;gbm&gt;</span></span>
@@ -2592,11 +2417,12 @@ to the same airquality data set as used above.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpIOXT2V/shapr_obj_329d9f3ac0c753.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901cfaff2.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Plot results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explanation_custom_minimal</span>, index_x_explain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -2656,37 +2482,25 @@ outlined below.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:02:14 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:47 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;workflow&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb24c8db760.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906c0ec0.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># See that the Shapley value explanations are identical too</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">$</span><span class="va">shapley_values_est</span>, <span class="va">explanation_tidymodels</span><span class="op">$</span><span class="va">shapley_values_est</span><span class="op">)</span></span>
@@ -2732,37 +2546,25 @@ function, while the extra parameters are included in a named list called
 <span>  vaeac.n_vaeacs_initialize <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:02:17 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:16:50 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb25171072e.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699075b7f2d4.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span></code></pre></div>
 <p>We can look at the training and validation errors for the trained
 <code>vaeac</code> model and see that <code>vaeac.epochs = 3</code> is
 likely too few epochs, as it still seems like the <code>vaeac</code>
@@ -2805,37 +2607,25 @@ set it so low here to make the vignette faster to build.</p>
 <span>  vaeac.extra_parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>vaeac.epochs_early_stopping <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-03 15:02:34 ─────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:17:07 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: vaeac</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 100</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb211fc3268.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699049767d72.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span></code></pre></div>
 <p>Can compare with the previous version and see that the results are
 more stable now.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
@@ -2909,7 +2699,7 @@ long-running computations.</p>
 <span>  iterative <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:27:58 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:17:29 ───────────────────────────────</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
@@ -2920,24 +2710,29 @@ long-running computations.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2fad7c63.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699017e0ae8e.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 6 of 32 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1.5 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 8 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 12 of 32 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 18 of 32 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 6 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 32 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="co"># Using the ex_init object to continue the computation with 4 more coalition samples</span></span>
 <span><span class="va">ex_further</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -2952,7 +2747,7 @@ long-running computations.</p>
 <span>  prev_shapr_object <span class="op">=</span> <span class="va">ex_init</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:28:03 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:17:35 ───────────────────────────────</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
@@ -2963,11 +2758,12 @@ long-running computations.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7dbd305c.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906d9f913e.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 24 of 32 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">ex_further_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_results.html">get_results</a></span><span class="op">(</span><span class="va">ex_further</span>, what <span class="op">=</span> <span class="st">"saving_path"</span><span class="op">)</span> <span class="co"># Gets path to the saved intermediate estimation object</span></span>
 <span></span>
@@ -2984,38 +2780,25 @@ long-running computations.</p>
 <span>  prev_shapr_object <span class="op">=</span> <span class="va">ex_further_path</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:28:04 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:17:36 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d480f1fbd.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907aab1760.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 26 of 32 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 26 of 32 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 1 per batch).</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -3093,39 +2876,27 @@ rather than each lag of each variable. This can be done by setting
 <span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-06-03 15:03:04 ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-09-11 16:17:37 ──────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature names extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 4`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;Arima&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 2</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 2</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb2438038e7.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699057051eee.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 4 of 4 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 2 per batch).</span></span>
 <span><span class="va">explanation_forecast</span></span>
 <span><span class="co">#&gt;    explain_idx horizon   none    Y.1     Y.2</span></span>
 <span><span class="co">#&gt;          &lt;int&gt;   &lt;int&gt;  &lt;num&gt;  &lt;num&gt;   &lt;num&gt;</span></span>
@@ -3199,39 +2970,27 @@ possible to explain each variable separately.</p>
 <span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-06-03 15:03:07 ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-09-11 16:17:40 ──────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature names extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 4`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;ar&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 2</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 1</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb23b1388c3.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699053beab3.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 4 of 4 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 2 batches (mean 2 per batch).</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation_forecast</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon  none Temp.1 Temp.2</span></span>
@@ -3290,39 +3049,27 @@ during the forecasting period.</p>
 <span>  group_lags <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-06-03 15:03:09 ────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain_forecast()` at 2026-09-11 16:17:41 ──────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature names extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Consistency checks between model and data are therefore disabled.</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 32`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;ar&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 1</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb28c53ea9.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906258f445.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 32 of 32 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 3.2 per batch).</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">explanation_forecast</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    explain_idx horizon  none Temp.1 Temp.2 Wind.1 Wind.F1 Wind.F2</span></span>
@@ -3332,8 +3079,9 @@ during the forecasting period.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation_forecast</span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Summary of Shapley value explanation ───────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with `shapr::explain_forecast()` in 3.5 seconds, started 2026-06-03 15:03:09</span></span>
+<span><span class="co">#&gt; ── Summary of Shapley value explanation ─────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Computed with `shapr::explain_forecast()` in 3.7 seconds, started 2026-09-11</span></span>
+<span><span class="co">#&gt; 16:17:41</span></span>
 <span><span class="co">#&gt; • Model class: &lt;ar&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
@@ -3342,7 +3090,7 @@ during the forecasting period.</p>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 5</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 1</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 32 (of total 32)</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpRxBWws/shapr_obj_32adb28c53ea9.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906258f445.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Estimated Shapley values</span></span>
 <span><span class="co">#&gt;    explain_idx horizon   none Temp.1 Temp.2 Wind.1 Wind.F1 Wind.F2</span></span>

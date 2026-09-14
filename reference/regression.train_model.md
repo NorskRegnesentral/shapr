@@ -69,7 +69,7 @@ regression.train_model(
 - regression.tune:
 
   Logical (default is `FALSE`). If `TRUE`, then we are to tune the
-  hyperparemeters based on the values provided in
+  hyperparameters based on the values provided in
   `regression.tune_values`. Note that no checks are conducted as this is
   checked earlier in `setup_approach.regression_separate` and
   `setup_approach.regression_surrogate`.

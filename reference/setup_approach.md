@@ -447,13 +447,16 @@ Updated internal object with the approach set up.
 
 ## VAEAC parallelization
 
-The `vaeac` approach uses `torch` objects backed by external pointers.
-These objects cannot be exported to separate R processes, so serializing
+The `vaeac` approach relies on `torch` external pointers that cannot be
+exported to separate R processes, so
 [future::future](https://future.futureverse.org/reference/future.html)
-backends such as `multisession` and `cluster` are unsupported with more
-than one worker. Use `future::plan(future::multicore)` where forking is
-available, or run `vaeac` sequentially. Forking is unavailable on
-Windows and within RStudio.
+`multisession` and `cluster` plans with multiple workers are
+unsupported. The only parallel option is
+`future::plan(future::multicore)` (unavailable on Windows and within
+RStudio). For sequential computation, use
+`future::plan(future::sequential)` or set
+`extra_computation_args = list(vS_batching_method = "forloop")` in
+[`explain()`](https://norskregnesentral.github.io/shapr/reference/explain.md).
 
 ## References
 

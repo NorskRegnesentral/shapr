@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -581,60 +581,42 @@ used.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:41:56 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:38:44 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d15682a5b.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699075aeb0d5.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 20 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 68 of 128 coalitions, 22 new.</span></span>
+<span><span class="co">#&gt; ℹ Using 70 of 128 coalitions, 24 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 24 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_sym_con</span><span class="op">[[</span><span class="st">"ctree"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -649,11 +631,12 @@ used.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:42:08 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:38:55 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -663,27 +646,33 @@ used.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d5b17ab4f.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969902612c563.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 70 of 128 coalitions, 24 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 94 of 128 coalitions, 24 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 108 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.4 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_sym_con</span><span class="op">[[</span><span class="st">"xgboost"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -698,11 +687,12 @@ used.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:43:35 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:40:22 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -711,30 +701,37 @@ used.</p>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3adf1601.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906a4dac8b.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 70 of 128 coalitions, 24 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 94 of 128 coalitions, 24 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 110 of 128 coalitions, 16 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 7 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 114 of 128 coalitions, 4 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 114 of 128 coalitions, 4 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 4 batches (mean 1 per batch).</span></span></code></pre></div>
 <p>We can then look at the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">MSE</mi><mo>⁡</mo></mrow><mi>v</mi></msub><annotation encoding="application/x-tex">\operatorname{MSE}_v</annotation></semantics></math>
 evaluation scores to compare the approaches. All approaches are
@@ -743,9 +740,9 @@ approach.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_sym_con</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             MSEv MSEv_sd Time (secs)</span></span>
-<span><span class="co">#&gt; gaussian 1101051   71271       12.17</span></span>
-<span><span class="co">#&gt; ctree    1060934   63108       86.50</span></span>
-<span><span class="co">#&gt; xgboost  1090931   58988       18.60</span></span></code></pre></div>
+<span><span class="co">#&gt; gaussian 1093465   71390       11.45</span></span>
+<span><span class="co">#&gt; ctree    1060934   63108       86.60</span></span>
+<span><span class="co">#&gt; xgboost  1090931   58988       16.71</span></span></code></pre></div>
 <p>We can then plot the Shapley values for the six explicands chosen
 above.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -785,52 +782,36 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:43:55 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:40:41 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d129269c2.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969904d5cf394.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 13 of 20 coalitions, 13 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 11 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 7 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_asym_con</span><span class="op">[[</span><span class="st">"gaussian_non_iterative"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -846,11 +827,14 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:43:59 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:40:44 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -862,11 +846,12 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d1b1d6ff6.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699048a11d52.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 20 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 18 batches (mean 1.1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_asym_con</span><span class="op">[[</span><span class="st">"ctree"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -881,11 +866,12 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:44:01 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:40:46 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -897,15 +883,17 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7bb4ea4.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906c310757.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 13 of 20 coalitions, 13 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.3 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 7 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_asym_con</span><span class="op">[[</span><span class="st">"xgboost"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -920,11 +908,12 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">NULL</span> <span class="co"># Default value</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:44:19 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:41:04 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -935,15 +924,17 @@ use <code>causal_ordering = list(1, c(2, 3), c(4:7))</code>.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7ff95b8.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990d3293ba.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 13 of 20 coalitions, 13 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.3 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 7 batches (mean 1 per batch).</span></span></code></pre></div>
 <p>The asymmetric conditional Shapley value framework is faster as we
 only consider
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>20</mn><annotation encoding="application/x-tex">20</annotation></semantics></math>
@@ -953,10 +944,10 @@ coalitions (see code below).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_asym_con</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                          MSEv MSEv_sd Time (secs)</span></span>
-<span><span class="co">#&gt; gaussian               339662   38586        3.74</span></span>
-<span><span class="co">#&gt; gaussian_non_iterative 339521   38588        1.75</span></span>
-<span><span class="co">#&gt; ctree                  282686   32264       17.71</span></span>
-<span><span class="co">#&gt; xgboost                321763   39778        3.50</span></span>
+<span><span class="co">#&gt; gaussian               338742   38645        3.86</span></span>
+<span><span class="co">#&gt; gaussian_non_iterative 340201   38237        1.78</span></span>
+<span><span class="co">#&gt; ctree                  282686   32264       17.39</span></span>
+<span><span class="co">#&gt; xgboost                321763   39778        3.67</span></span>
 <span></span>
 <span><span class="co"># Look at the number of coalitions considered. Decreased from 128 to 20.</span></span>
 <span><span class="va">explanation_sym_con</span><span class="op">$</span><span class="va">gaussian</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">max_n_coalitions</span></span>
@@ -1091,59 +1082,41 @@ due to different sampling setups/orders.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:44:25 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:41:10 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed,</span></span>
 <span><span class="co">#&gt; hum}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d267fb4a5.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699051a66930.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 20 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="co"># Here we sample from the marginals of the training data</span></span>
 <span><span class="va">explanation_sym_marg</span><span class="op">[[</span><span class="st">"independence_marg"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1159,11 +1132,12 @@ due to different sampling setups/orders.</p>
 <span>  confounding <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:44:36 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:41:20 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1176,18 +1150,21 @@ due to different sampling setups/orders.</p>
 <span><span class="co">#&gt; • Causal ordering: {trend, cosyear, sinyear, temp, atemp, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {trend, cosyear, sinyear, temp, atemp, windspeed,</span></span>
 <span><span class="co">#&gt; hum}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0decfaecb.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699074979cd3.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2 per batch).</span></span>
 <span></span>
 <span><span class="co"># Here we use the conditional Shapley value framework with the `independence`</span></span>
 <span><span class="co"># approach</span></span>
@@ -1201,11 +1178,12 @@ due to different sampling setups/orders.</p>
 <span>  approach <span class="op">=</span> <span class="st">"independence"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:44:45 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:41:29 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1215,25 +1193,28 @@ due to different sampling setups/orders.</p>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d30c92495.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699065710e47.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.4 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2 per batch).</span></span></code></pre></div>
 <p>We can look at the beeswarm plots</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_sym_marg</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      MSEv MSEv_sd Time (secs)</span></span>
-<span><span class="co">#&gt; gaussian          1396525  109151       10.88</span></span>
-<span><span class="co">#&gt; independence_marg 1390794  107977        8.82</span></span>
-<span><span class="co">#&gt; independence_con  1390287  107899       14.09</span></span>
+<span><span class="co">#&gt; gaussian          1396383  109134       10.16</span></span>
+<span><span class="co">#&gt; independence_marg 1390794  107977        8.88</span></span>
+<span><span class="co">#&gt; independence_con  1390287  107899       14.51</span></span>
 <span></span>
 <span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_sym_marg</span>, title <span class="op">=</span> <span class="st">"Symmetric marginal Shapley values"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_asymmetric_causal/explanation_sym_mar_beeswarm-1.webp"></p>
@@ -1290,44 +1271,31 @@ applicable.</p>
 <span>  exact <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:45:00 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:41:45 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3e9a65dc.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907d080a94.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 128 of 128 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 126 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="co"># Look at the sampling steps for the third coalition (S = {2})</span></span>
 <span><span class="va">explanation_sym_cau</span><span class="op">$</span><span class="va">gaussian</span><span class="op">$</span><span class="va">internal</span><span class="op">$</span><span class="va">iter_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">S_causal_steps_strings</span><span class="op">$</span><span class="va">id_coalition_3</span></span>
@@ -1347,11 +1315,14 @@ applicable.</p>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:45:33 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:42:15 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_features = 128`.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1363,23 +1334,26 @@ applicable.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2dfef3fd.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969905e43d85f.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 20 batches (mean 1 per batch).</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_MSEv_scores_and_time</span><span class="op">(</span><span class="va">explanation_sym_cau</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             MSEv MSEv_sd Time (secs)</span></span>
-<span><span class="co">#&gt; gaussian 1147280   83432       32.29</span></span>
-<span><span class="co">#&gt; copula   1166326   86145       27.63</span></span>
+<span><span class="co">#&gt; gaussian 1147000   83388       29.92</span></span>
+<span><span class="co">#&gt; copula   1164823   86140       31.41</span></span>
 <span><span class="fu">plot_beeswarms</span><span class="op">(</span><span class="va">explanation_sym_cau</span>, title <span class="op">=</span> <span class="st">"Symmetric causal Shapley values"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure_asymmetric_causal/explanation_sym_cau_beeswarm-1.webp"></p>
 </div>
@@ -1405,54 +1379,37 @@ are faster as the number of coalitions is reduced.</p>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:46:01 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:42:47 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d43249e33.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969901b44eccf.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 13 of 20 coalitions, 13 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 11 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 7 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="co"># Use the copula approach</span></span>
 <span><span class="va">explanation_asym_cau</span><span class="op">[[</span><span class="st">"copula"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1468,11 +1425,14 @@ are faster as the number of coalitions is reduced.</p>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:46:05 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:42:51 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1485,15 +1445,17 @@ are faster as the number of coalitions is reduced.</p>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d29463708.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969906795996b.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 13 of 20 coalitions, 13 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 11 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Using 20 of 20 coalitions, 7 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 7 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="co"># Use the vaeac approach</span></span>
 <span><span class="va">explanation_asym_cau</span><span class="op">[[</span><span class="st">"vaeac"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -1510,11 +1472,12 @@ are faster as the number of coalitions is reduced.</p>
 <span>  confounding <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
 <span> <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:46:11 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:42:58 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (20), and is therefore set to 20.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1527,17 +1490,18 @@ are faster as the number of coalitions is reduced.</p>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d3d5bfa87.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969902b7ee4da.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 20 of 20 coalitions.</span></span></code></pre></div>
+<span><span class="co">#&gt; ℹ Using 20 of 20 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 2 per batch).</span></span></code></pre></div>
 <p>We can look at the elapsed time. See the <a href="#Implementation_details">implementation details</a> for an
 explanation.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">print_time</span><span class="op">(</span><span class="va">explanation_asym_cau</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      gaussian copula  vaeac</span></span>
-<span><span class="co">#&gt; [1,]   4.1969  5.746 382.59</span></span></code></pre></div>
+<span><span class="co">#&gt; [1,]    4.311 6.2075 410.11</span></span></code></pre></div>
 <p>We can then plot the beeswarm plots.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot the beeswarm plots</span></span>
@@ -1860,68 +1824,50 @@ that the elapsed times are approximately halved, too.</p>
 <span>  max_n_coalitions <span class="op">=</span> <span class="fl">64</span> <span class="co"># Instead of 128</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:52:41 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:49:53 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 7</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0de81c898.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969902a5fab1.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iterative computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 1 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 14 of 128 coalitions, 14 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 2 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 26 of 128 coalitions, 12 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 12 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 3 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 46 of 128 coalitions, 20 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 20 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 4 ──────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 50 of 128 coalitions, 4 new.</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Using 52 of 128 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 6 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Iteration 5 ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 58 of 128 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 6 batches (mean 1 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ℹ Using 52 of 128 coalitions, 2 new.</span></span>
+<span><span class="co">#&gt; ── Iteration 6 ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ Using 64 of 128 coalitions, 6 new.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 6 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_n_coal</span><span class="op">[[</span><span class="st">"asym_cau_gaussian_10"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
@@ -1938,9 +1884,12 @@ that the elapsed times are approximately halved, too.</p>
 <span>  iterative <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># Due to small number of coalitions</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:52:57 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:15 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -1953,11 +1902,12 @@ that the elapsed times are approximately halved, too.</p>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 20</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp, atemp, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0de93b100.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990397a6a71.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 10 of 10 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 8 batches (mean 1.2 per batch).</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Convergence info</span></span>
 <span><span class="co">#&gt; ✔ Iterative Shapley value estimation stopped at 10 coalitions after 1 iterations, due to:</span></span>
@@ -1998,9 +1948,9 @@ that the elapsed times are approximately halved, too.</p>
 <span><span class="va">explanation_n_coal</span> <span class="op">&lt;-</span> <span class="va">explanation_n_coal</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu">print_time</span><span class="op">(</span><span class="va">explanation_n_coal</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      sym_cau_gaussian_64 sym_cau_gaussian_all_128 asym_cau_gaussian_10</span></span>
-<span><span class="co">#&gt; [1,]              16.375                   32.292               2.0282</span></span>
+<span><span class="co">#&gt; [1,]              22.162                   29.919               2.2186</span></span>
 <span><span class="co">#&gt;      asym_cau_gaussian_all_20</span></span>
-<span><span class="co">#&gt; [1,]                   4.1969</span></span></code></pre></div>
+<span><span class="co">#&gt; [1,]                    4.311</span></span></code></pre></div>
 <p>We can then plot the beeswarm plots and the Shapley values for the
 six selected explicands. We see that there are only minuscule
 differences between the Shapley values we obtain when we use all the
@@ -2066,47 +2016,33 @@ Shapley value frameworks.</p>
 <span>    iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:53:03 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:21 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_groups = 64`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: gaussian</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of group-wise Shapley values: 6</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"};</span></span>
 <span><span class="co">#&gt; temp_group: {"temp", "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend, cosyear, sinyear, temp_group, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Components with confounding: {trend, cosyear, sinyear, temp_group, windspeed, hum}</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d1fefe725.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990319f3d1e.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 64 of 64 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 62 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_group_gaussian</span><span class="op">[[</span><span class="st">"symmetric_conditional"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -2124,11 +2060,14 @@ Shapley value frameworks.</p>
 <span>    iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:53:11 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:30 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_groups = 64`.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -2140,11 +2079,12 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; • Feature groups: trend: {"trend"}; cosyear: {"cosyear"}; sinyear: {"sinyear"};</span></span>
 <span><span class="co">#&gt; temp_group: {"temp", "atemp"}; windspeed: {"windspeed"}; hum: {"hum"}</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0dd67bd76.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969907eb870.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 64 of 64 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 62 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_group_gaussian</span><span class="op">[[</span><span class="st">"asymmetric_conditional"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -2162,11 +2102,14 @@ Shapley value frameworks.</p>
 <span>    iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:53:16 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:35 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (12), and is therefore set to 12.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -2180,11 +2123,12 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 12</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d719cde56.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_2969905a5e20ec.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 12 of 12 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_group_gaussian</span><span class="op">[[</span><span class="st">"symmetric_causal"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -2202,11 +2146,14 @@ Shapley value frameworks.</p>
 <span>    iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:53:17 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:36 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 64`, and is therefore</span></span>
 <span><span class="co">#&gt;   set to `2^n_groups = 64`.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -2220,11 +2167,12 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; • Number of observations to explain: 144</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d7f049fd8.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_29699065bcc3d6.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 64 of 64 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 62 batches (mean 1 per batch).</span></span>
 <span></span>
 <span><span class="va">explanation_group_gaussian</span><span class="op">[[</span><span class="st">"asymmetric_causal"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/explain.html">explain</a></span><span class="op">(</span></span>
@@ -2242,11 +2190,14 @@ Shapley value frameworks.</p>
 <span>    iterative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-06-04 09:53:30 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 16:50:50 ───────────────────────────────</span></span>
 <span><span class="co">#&gt; ℹ Feature classes extracted from the model contain `NA`.</span></span>
 <span><span class="co">#&gt;   Assuming feature classes from the data are correct.</span></span>
 <span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting</span></span>
 <span><span class="co">#&gt;   the causal ordering (12), and is therefore set to 12.</span></span>
+<span><span class="co">#&gt; ℹ Capped `max_batch_size` from 10 to 1 so each batch array stays under</span></span>
+<span><span class="co">#&gt;   `max_batch_cube_size` = 1e+06 elements.</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
@@ -2261,18 +2212,19 @@ Shapley value frameworks.</p>
 <span><span class="co">#&gt; • Number of asymmetric coalitions: 12</span></span>
 <span><span class="co">#&gt; • Causal ordering: {trend}, {cosyear, sinyear}, {temp_group, windspeed, hum}</span></span>
 <span><span class="co">#&gt; • Components with confounding: {cosyear, sinyear}</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmplCNqcR/shapr_obj_39ed0d2395b3c1.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/Rtmpm1XyJq/shapr_obj_296990153d4b7f.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 12 of 12 coalitions.</span></span>
+<span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.2 per batch).</span></span>
 <span></span>
 <span><span class="co"># Look at the elapsed times (symmetric takes the longest time)</span></span>
 <span><span class="fu">print_time</span><span class="op">(</span><span class="va">explanation_group_gaussian</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      symmetric_marginal symmetric_conditional asymmetric_conditional</span></span>
-<span><span class="co">#&gt; [1,]             8.1288                5.3239                 1.1134</span></span>
+<span><span class="co">#&gt; [1,]             8.6392                5.2876                 1.1202</span></span>
 <span><span class="co">#&gt;      symmetric_causal asymmetric_causal</span></span>
-<span><span class="co">#&gt; [1,]            13.28            2.0672</span></span></code></pre></div>
+<span><span class="co">#&gt; [1,]           14.017            1.6073</span></span></code></pre></div>
 <p>We can then make the beeswarm plots and Shapley value plots for the
 six selected explicands. For the beeswarm plots, we set
 <code>include_group_feature_means = TRUE</code> to make the plots. This

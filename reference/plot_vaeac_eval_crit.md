@@ -198,46 +198,5 @@ if (requireNamespace("xgboost", quietly = TRUE) &&
     ggplot2::scale_color_brewer(palette = "Set1") +
     ggplot2::theme_minimal()
 }
-#> 
-#> ── Starting `shapr::explain()` at 2026-09-04 10:08:03 ──────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
-#>   therefore set to `2^n_features = 16`.
-#> 
-#> ── Explanation overview ──
-#> 
-#> • Model class: <xgboost>
-#> • v(S) estimation class: Monte Carlo integration
-#> • Approach: vaeac
-#> • Procedure: Non-iterative
-#> • Number of Monte Carlo integration samples: 1
-#> • Number of feature-wise Shapley values: 4
-#> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: /tmp/RtmpSunBY4/shapr_obj_1c105c79d1d6.rds
-#> 
-#> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
-#> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
-#> 
-#> ── Starting `shapr::explain()` at 2026-09-04 10:08:14 ──────────────────────────
-#> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
-#>   therefore set to `2^n_features = 16`.
-#> 
-#> ── Explanation overview ──
-#> 
-#> • Model class: <xgboost>
-#> • v(S) estimation class: Monte Carlo integration
-#> • Approach: vaeac
-#> • Procedure: Non-iterative
-#> • Number of Monte Carlo integration samples: 1
-#> • Number of feature-wise Shapley values: 4
-#> • Number of observations to explain: 6
-#> • Computations (temporary) saved at: /tmp/RtmpSunBY4/shapr_obj_1c1061c2ad4b.rds
-#> 
-#> ── Main computation started ──
-#> 
-#> ℹ Using 16 of 16 coalitions. 
-#> ℹ Coalitions split into 10 batches (mean 1.6 per batch). 
-
 # }
 ```

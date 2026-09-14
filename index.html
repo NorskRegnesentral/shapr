@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">shapr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.8.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,10 +115,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To install the development version of <code>shapr</code>, available on GitHub, use</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span><span class="op">)</span></span></code></pre></div>
 <p>To also install all dependencies, use</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"NorskRegnesentral/shapr"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -183,40 +183,24 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-07-06 15:16:23 ──────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span></span>
-<span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 13:08:40 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpcavhZb/shapr_obj_27367819d6e358.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Print the Shapley values for the observations to explain.</span></span>
@@ -233,8 +217,8 @@
 <span><span class="co"># Provide a formatted summary of the shapr object</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">explanation</span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Summary of Shapley value explanation ────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; • Computed with `shapr::explain()` in 2.5 seconds, started 2026-07-06 15:16:23</span></span>
+<span><span class="co">#&gt; ── Summary of Shapley value explanation ─────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; • Computed with `shapr::explain()` in 3 seconds, started 2026-09-11 13:08:40</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
@@ -243,8 +227,7 @@
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
 <span><span class="co">#&gt; • Number of coalitions used: 16 (of total 16)</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d57a3dbee.rds'</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpcavhZb/shapr_obj_27367819d6e358.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Estimated Shapley values</span></span>
 <span><span class="co">#&gt;    explain_id   none Solar.R   Wind   Temp  Month</span></span>
@@ -255,6 +238,7 @@
 <span><span class="co">#&gt; 4:          4  43.09   -0.95  -4.18 -14.06  -6.80</span></span>
 <span><span class="co">#&gt; 5:          5  43.09    4.06  -2.07 -11.94 -12.02</span></span>
 <span><span class="co">#&gt; 6:          6  43.09   -0.29  -7.28 -13.46  -6.50</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Estimated MSEv</span></span>
 <span><span class="co">#&gt; Estimated MSE of v(S) = 208 (with sd = 116)</span></span>
 <span></span>
@@ -275,40 +259,24 @@
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-07-06 15:16:29 ──────────────────────────</span></span>
-<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is</span></span>
-<span><span class="co">#&gt;   therefore set to `2^n_features = 16`.</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; ── Starting `shapr::explain()` at 2026-09-11 13:08:50 ───────────────────────────────</span></span>
+<span><span class="co">#&gt; ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore</span></span>
+<span><span class="co">#&gt;   set to `2^n_features = 16`.</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Explanation overview ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Model class: &lt;xgboost&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • v(S) estimation class: Monte Carlo integration</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Approach: empirical</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Procedure: Non-iterative</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of Monte Carlo integration samples: 1000</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of feature-wise Shapley values: 4</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; • Number of observations to explain: 6</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; • Computations (temporary) saved at:</span></span>
-<span><span class="co">#&gt; '/tmp/RtmpJjhNN2/shapr_obj_2cd6d2777ad60.rds'</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; • Computations (temporary) saved at: '/tmp/RtmpcavhZb/shapr_obj_2736783535bdc8.rds'</span></span>
 <span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ── Main computation started ──</span></span>
 <span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Using 16 of 16 coalitions.</span></span>
-<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; ℹ Coalitions split into 10 batches (mean 1.6 per batch).</span></span>
 <span></span>
 <span><span class="co"># Print the SAGE values</span></span>
