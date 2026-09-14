@@ -135,6 +135,8 @@
       "compute_sd",
       "min_n_batches",
       "max_batch_size",
+      "max_batch_cube_size",
+      "global_loss_func",
       "saving_path",
       "coalitions_str",
       "cond",

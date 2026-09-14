@@ -15,7 +15,3 @@ results/*/*
 !results/*/accuracy_results.csv
 !results/*/accuracy_summary.csv
 !results/*/*.shapley.rds
-
-# Obsolete experiments from the earlier OAT/factorial study design.
-results/oat_*/
-results/factorial_*/

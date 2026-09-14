@@ -986,7 +986,7 @@ plot_MSEv_eval_crit(explanation_list_named) +
 Iterative estimation is the default when computing Shapley values with six or more features (or feature groups), and
 can always be manually overridden by setting `iterative = FALSE` in the `explain()` function.
 The idea behind iterative estimation is to estimate sufficiently accurate Shapley value estimates faster.
-First, an initial number of coalitions is sampled, then, bootsrapping is used to estimate the variance of the Shapley
+First, an initial number of coalitions is sampled, then, bootstrapping is used to estimate the variance of the Shapley
 values.
 A convergence criterion is used to determine if the variances of the Shapley values are sufficiently small.
 If the variances are too high, we estimate the number of required samples to reach convergence, and thereby add more coalitions.

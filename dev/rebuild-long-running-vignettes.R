@@ -107,6 +107,19 @@ fix_cli_info_newlines <- function(file) {
   return(sum(changed))
 }
 
+strip_output_trailing_whitespace <- function(file) {
+  lines <- readLines(file, warn = FALSE)
+  fixed_lines <- lines
+  changed <- startsWith(lines, "#>") & grepl("[[:space:]]+$", lines)
+
+  if (any(changed)) {
+    fixed_lines[changed] <- sub("[[:space:]]+$", "", fixed_lines[changed])
+    writeLines(fixed_lines, file)
+  }
+
+  return(sum(changed))
+}
+
 scan_rendered_vignette_errors <- function(file) {
   error_pattern <- "^(#>\\s*)?(Error in|Error:|Execution halted|Quitting from lines|Backtrace:|Traceback)"
   lines <- readLines(file, warn = FALSE)
@@ -156,6 +169,11 @@ for (vignette in vignettes) {
   n_cli_newlines_fixed <- fix_cli_info_newlines(output)
   if (n_cli_newlines_fixed > 0) {
     message("Fixed ", n_cli_newlines_fixed, " missing CLI newline(s) in ", output)
+  }
+
+  n_trailing_whitespace_fixed <- strip_output_trailing_whitespace(output)
+  if (n_trailing_whitespace_fixed > 0) {
+    message("Stripped trailing whitespace from ", n_trailing_whitespace_fixed, " output line(s) in ", output)
   }
 
   rendered_error_findings <- c(rendered_error_findings, scan_rendered_vignette_errors(output))

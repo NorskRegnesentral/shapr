@@ -7,7 +7,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -41,7 +42,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -74,7 +76,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -95,7 +98,7 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 8 coalitions, 3 new. 
-      i Coalitions split into 3 batches (mean 2.7 per batch). 
+      i Coalitions split into 3 batches (mean 1 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp  Month    Day
               <int> <num>   <num>   <num>  <num>  <num>  <num>
@@ -112,7 +115,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -144,7 +148,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -178,7 +183,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -212,7 +218,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -247,7 +254,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -282,7 +290,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -351,7 +360,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -386,7 +396,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -421,7 +432,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -455,7 +467,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -489,7 +502,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -523,7 +537,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is
+        therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -558,7 +573,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is
+        therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -624,7 +640,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -658,7 +675,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -680,31 +698,31 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
-      i Coalitions split into 4 batches (mean 3 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 3 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 24 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 4 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Iteration 6 -----------------------------------------------------------------
       i Using 28 of 32 coalitions, 4 new. 
-      i Coalitions split into 4 batches (mean 7 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
       
       -- Iteration 7 -----------------------------------------------------------------
       i Using 30 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 15 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 8 -----------------------------------------------------------------
       i Using 32 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 16 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp    Day Month_factor
               <int> <num>   <num>   <num>  <num>  <num>        <num>
@@ -721,7 +739,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -756,7 +775,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -791,7 +811,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than the number of coalitions respecting the causal ordering (8), and is therefore set to 8.
+      i `max_n_coalitions` is `NULL` or larger than the number of coalitions
+        respecting the causal ordering (8), and is therefore set to 8.
       
       -- Explanation overview --
       
@@ -812,7 +833,7 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 8 coalitions, 3 new. 
-      i Coalitions split into 3 batches (mean 2.7 per batch). 
+      i Coalitions split into 3 batches (mean 1 per batch). 
     Output
          explain_id  none Solar.R    Wind   Temp     Day Month_factor
               <int> <num>   <num>   <num>  <num>   <num>        <num>
@@ -829,7 +850,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+        therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -863,7 +885,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+        therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       
@@ -886,23 +909,23 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 10 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 5 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 12 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 6 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 14 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 7 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 6 -----------------------------------------------------------------
       i Using 16 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 8 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
     Output
          explain_id  none Month_factor Ozone_sub30_factor Solar.R_factor Wind_factor
               <int> <num>        <num>              <num>          <num>       <num>
@@ -919,7 +942,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is therefore set to `2^n_features = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
+        therefore set to `2^n_features = 16`.
       
       -- Explanation overview --
       

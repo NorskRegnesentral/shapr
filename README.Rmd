@@ -14,6 +14,10 @@ knitr::opts_chunk$set(
   out.width = "100%",
   tidy = "styler"
 )
+
+knitr::knit_hooks$set(document = function(document) {
+  return(gsub("[[:blank:]]+\n", "\n", document))
+})
 ```
 
 # shapr <img src="man/figures/nrlogo_new.jpg" align="right" height="100"/>

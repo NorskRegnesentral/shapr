@@ -1,24 +1,23 @@
 #!/usr/bin/env bash
 # ============================================================================
-# run_week.sh — run the full per-approach benchmark suite in sequence.
+# run_suite.sh - run the full per-approach benchmark suite in sequence.
 #
-#   benchmarks/bin/run_week.sh [--retry-timeouts] [approach ...]
+#   benchmarks/bin/run_suite.sh [--retry-timeouts] [approach ...]
 #
 # Each approach is its own study (config/<approach>.yml) and carries its own
 # per-run timeout and per-approach wall-clock budget (time_budget_sec, default
-# 24 h) from common.yml, enforced by orchestrate.sh. Studies run one after
-# another, cheapest approaches first so useful results arrive early and the
-# expensive vaeac study runs last.
+# 96 h) from common.yml, enforced by orchestrate.sh. Studies run one after
+# another, inexpensive approaches first and vaeac last.
 #
 # Everything is RESUMABLE: re-running skips runs that already have a result
-# file, and skips whole studies quickly once their budget window is used up.
+# file. Each invocation starts a new per-study budget window.
 # Pass --retry-timeouts to re-attempt runs previously killed by the per-run
 # timeout (raise `timeout_sec` in common.yml first to give them more time).
 #
 # Examples:
-#   bin/run_week.sh                          # all approaches, default order
-#   bin/run_week.sh gaussian empirical       # just these two
-#   bin/run_week.sh --retry-timeouts vaeac   # retry vaeac's timed-out runs
+#   bin/run_suite.sh                          # all approaches, default order
+#   bin/run_suite.sh gaussian empirical       # just these two
+#   bin/run_suite.sh --retry-timeouts vaeac    # retry vaeac's timed-out runs
 # ============================================================================
 set -uo pipefail
 
@@ -26,7 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 ORCH="$SCRIPT_DIR/orchestrate.sh"
 
-# Default order: cheapest first, vaeac (by far the most expensive) last.
+# Default order: inexpensive approaches first, vaeac last.
 DEFAULT_ORDER=(
   gaussian
   independence
@@ -56,7 +55,7 @@ for name in "${CONFIGS[@]}"; do
   cfg="$ROOT/config/$name.yml"
   [[ -f "$cfg" ]] || cfg="$name"    # allow passing an explicit path
   if [[ ! -f "$cfg" ]]; then
-    echo "run_week: config not found for '$name' — skipping." >&2
+    echo "run_suite: config not found for '$name' - skipping." >&2
     continue
   fi
   echo
@@ -64,9 +63,9 @@ for name in "${CONFIGS[@]}"; do
   echo "# $(date '+%F %T')  starting study: $name"
   echo "############################################################"
   "$ORCH" "$cfg" ${PASSTHRU[@]+"${PASSTHRU[@]}"} \
-    || echo "run_week: study '$name' exited non-zero (continuing)."
+    || echo "run_suite: study '$name' exited non-zero (continuing)."
 done
 
 elapsed=$(( $(date +%s) - overall_start ))
-printf 'run_week: all requested studies done in %dh%02dm.\n' \
+printf 'run_suite: all requested studies done in %dh%02dm.\n' \
   $((elapsed / 3600)) $(((elapsed % 3600) / 60))

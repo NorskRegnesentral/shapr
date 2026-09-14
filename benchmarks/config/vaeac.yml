@@ -1,11 +1,10 @@
 # ============================================================================
 # vaeac.yml — per-approach cost study for the `vaeac` approach.
 #
-# vaeac is BY FAR the most expensive approach (~150–1170 s per run at the quick
-# scale; training the variational autoencoder dominates). It therefore gets
-# COARSE grids and only 2 replicates (each run is already long), with a real
-# wall-clock budget so it cannot overrun the week. One study = one approach = a
-# list of `blocks`. Anything set here overrides common.yml.
+# Training the variational autoencoder makes vaeac expensive, so this study uses
+# coarse grids and two replicates, with a per-study wall-clock budget. One study
+# is one approach described by a list of `blocks`. Anything set here overrides
+# common.yml.
 #
 # Run with:  bin/orchestrate.sh config/vaeac.yml
 # ============================================================================
@@ -19,7 +18,7 @@ replicates: 2
 # more expensive than the other approaches.
 
 blocks:
-  # ---- Core OAT battery (coarse levels, since vaeac is expensive) -----------
+  # ---- Core blocks (coarse levels, since vaeac is expensive) ---------------
   - name: scale_train_mc
     grid:
       n_train: [1000, 5000]
@@ -41,7 +40,6 @@ blocks:
     grid:
       dt_threads: [1, 4]
 
-  # Parallel scaling combined with batching (workers need batches to be useful).
   # Parallel scaling combined with batching. vaeac uses torch, whose objects are
   # external pointers that cannot be serialized to `multisession` workers ("external
   # pointer is not valid"); it must use forking (`multicore`) or run sequentially.

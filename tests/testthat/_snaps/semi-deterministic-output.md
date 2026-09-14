@@ -7,7 +7,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is therefore set to `2^n_features = 32`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 32`, and is
+        therefore set to `2^n_features = 32`.
       
       -- Explanation overview --
       
@@ -45,7 +46,7 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 32 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Convergence info 
       i Not converged after 8 coalitions:
@@ -67,7 +68,7 @@
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 12 of 32 coalitions, 4 new. 
-      i Coalitions split into 4 batches (mean 3 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
       
       -- Convergence info 
       i Not converged after 12 coalitions:
@@ -89,7 +90,7 @@
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 18 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 3 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Convergence info 
       i Not converged after 18 coalitions:
@@ -111,7 +112,7 @@
       
       -- Iteration 5 -----------------------------------------------------------------
       i Using 24 of 32 coalitions, 6 new. 
-      i Coalitions split into 6 batches (mean 4 per batch). 
+      i Coalitions split into 6 batches (mean 1 per batch). 
       
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 24 coalitions after 5 iterations, due to:
@@ -139,7 +140,8 @@
     Message
       
       -- Starting `shapr::explain()` -------------------------------------------------
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is therefore set to `2^n_groups = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 8`, and is
+        therefore set to `2^n_groups = 8`.
       
       -- Explanation overview --
       
@@ -173,7 +175,7 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 8 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 8 coalitions after 2 iterations, due to:
@@ -238,7 +240,7 @@
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 8 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 4 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Convergence info 
       i Not converged after 8 coalitions:
@@ -254,7 +256,7 @@
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 10 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 5 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Convergence info 
       i Not converged after 10 coalitions:
@@ -270,7 +272,7 @@
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 12 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 6 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Convergence info 
       v Iterative Shapley value estimation stopped at 12 coalitions after 4 iterations, due to:

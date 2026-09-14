@@ -102,41 +102,49 @@ export(vaeac_train_model)
 export(vaeac_train_model_continue)
 export(weight_matrix)
 importFrom(Rcpp,sourceCpp)
-importFrom(data.table,":=")
-importFrom(data.table,as.data.table)
-importFrom(data.table,between)
-importFrom(data.table,copy)
-importFrom(data.table,data.table)
-importFrom(data.table,fread)
-importFrom(data.table,fwrite)
-importFrom(data.table,is.data.table)
-importFrom(data.table,month)
-importFrom(data.table,rbindlist)
-importFrom(data.table,setcolorder)
-importFrom(data.table,setkey)
-importFrom(data.table,setnames)
-importFrom(data.table,uniqueN)
-importFrom(data.table,year)
-importFrom(graphics,hist)
-importFrom(graphics,plot)
-importFrom(graphics,rect)
-importFrom(stats,as.formula)
-importFrom(stats,contrasts)
-importFrom(stats,embed)
-importFrom(stats,formula)
-importFrom(stats,median)
-importFrom(stats,model.frame)
-importFrom(stats,model.matrix)
-importFrom(stats,predict)
-importFrom(stats,pt)
-importFrom(stats,qt)
-importFrom(stats,rnorm)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(utils,capture.output)
-importFrom(utils,head)
-importFrom(utils,methods)
-importFrom(utils,modifyList)
-importFrom(utils,relist)
-importFrom(utils,tail)
+importFrom(data.table,
+  ":=",
+  as.data.table,
+  between,
+  copy,
+  data.table,
+  fread,
+  fwrite,
+  is.data.table,
+  month,
+  rbindlist,
+  setcolorder,
+  setkey,
+  setnames,
+  uniqueN,
+  year
+)
+importFrom(graphics,
+  hist,
+  plot,
+  rect
+)
+importFrom(stats,
+  as.formula,
+  contrasts,
+  embed,
+  formula,
+  median,
+  model.frame,
+  model.matrix,
+  predict,
+  pt,
+  qt,
+  rnorm,
+  sd,
+  setNames
+)
+importFrom(utils,
+  capture.output,
+  head,
+  methods,
+  modifyList,
+  relist,
+  tail
+)
 useDynLib(shapr, .registration = TRUE)

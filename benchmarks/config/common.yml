@@ -1,13 +1,13 @@
 # ============================================================================
 # common.yml — shared settings for ALL benchmark studies
 #
-# Every study config (oat_quick.yml, factorial_weekend.yml, ...) is merged on
+# Every approach config (gaussian.yml, empirical.yml, ...) is merged on
 # top of this file. Anything you set in a study config OVERRIDES the value here.
 # Edit this file to change machine-wide defaults (model, datasets, baseline).
 # ============================================================================
 
 # Global RNG seed. Each run derives a per-run seed from this + the config id, so
-# runs are reproducible and replicates of the same config are identical.
+# rerunning the same id uses the same seed; replicates have distinct ids/seeds.
 seed: 2025
 
 # Number of measured replicates per configuration (median/IQR reported).
@@ -53,21 +53,9 @@ paths:
   logs_dir: logs        # per-run stdout/stderr
 
 # ---------------------------------------------------------------------------
-# Thread / BLAS controls.
-#
-# IMPORTANT: orchestrate.sh exports OMP_NUM_THREADS / OPENBLAS_NUM_THREADS /
-# MKL_NUM_THREADS = 1 so that BLAS is single-threaded. This guarantees the ONLY
-# source of parallelism is the `future` worker count we sweep ("workers"). Do
-# not raise these unless you specifically want to study BLAS threading.
-# ---------------------------------------------------------------------------
-controls:
-  blas_threads: 1
-  dt_threads: 1         # data.table::setDTthreads() inside each run
-
-# ---------------------------------------------------------------------------
 # Peak-RAM measurement.
 #   method: poll   -> external /proc process-session RSS sampler (captures
-#                     detached future workers). Portable, sampled at roughly
+#                     detached future workers). Linux-only, sampled at roughly
 #                     poll_interval_ms resolution.
 #           cgroup -> run under `systemd-run --user --scope` and read cgroup-v2
 #                     memory.peak (exact, catches transient spikes).
@@ -167,9 +155,9 @@ datasets:
 # ---------------------------------------------------------------------------
 # Baseline reference configuration.
 #
-# In the OAT design, every run starts from this baseline and changes ONE
-# dimension at a time. In the factorial design, dimensions not listed under
-# `factors` fall back to these values (unless overridden in `fixed`).
+# Each named block varies the dimensions listed under `grid` and the settings
+# under `approach_args`. Other dimensions retain these baseline values, with
+# study-level overrides for approach, dataset, and model_variant.
 #
 # max_batch_size = Inf means the batch count is governed by min_n_batches, but
 # only until shapr's max_batch_cube_size cap engages: in high dimensions that

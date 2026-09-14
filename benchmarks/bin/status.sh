@@ -7,8 +7,8 @@
 #
 # For each study (results/<approach>/) it reports how many runs are done out of
 # the planned total (from run_meta.json), the status breakdown (ok / timeout /
-# error / skipped), the median wall time and max RAM seen so far (from the
-# incrementally-updated summary.csv), and when the most recent run finished.
+# error / skipped), and when the most recent run finished. This reads local
+# per-run artefacts; it is not a viewer for the committed CSV-only snapshot.
 # ============================================================================
 set -uo pipefail
 shopt -s nullglob
@@ -68,8 +68,8 @@ pct=0
 [[ "$grand_total" -gt 0 ]] && pct=$((100 * grand_done / grand_total))
 printf "%-22s %5d/%-4d  (%d%%)\n" "TOTAL" "$grand_done" "$grand_total" "$pct"
 
-# Show whether an orchestrate/run_week process is currently active.
-if pgrep -af "run_one.R|orchestrate.sh|run_week.sh" >/dev/null 2>&1; then
+# Show whether an orchestrate/run_suite process is currently active.
+if pgrep -af "run_one.R|orchestrate.sh|run_suite.sh" >/dev/null 2>&1; then
   echo
   echo "Active:"
   pgrep -af "run_one.R" | sed 's/.*--config \(\S*\).*--id \([0-9]*\).*/  running \1 id \2/' | head -3

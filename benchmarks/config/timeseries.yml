@@ -2,7 +2,7 @@
 # timeseries.yml — cost study for the `timeseries` approach (numeric-only).
 #
 # The timeseries approach treats the (AR(1)-correlated) numeric features as an
-# ordered series. Standard OAT battery, no approach-specific knobs and no
+# ordered series. Standard core blocks, no approach-specific knobs and no
 # cube-size cap (it does not use the dense-array code path). Inherits the
 # 12-hour timeout and 96-hour budget.
 #

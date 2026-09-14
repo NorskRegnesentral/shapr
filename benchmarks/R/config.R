@@ -1,6 +1,6 @@
 # config.R — load and merge benchmark YAML configuration files.
 #
-# A study config (e.g. config/oat_quick.yml) is deep-merged on top of
+# A study config (e.g. config/gaussian.yml) is deep-merged on top of
 # config/common.yml, with the study file taking precedence. The result is a
 # plain list used by grid.R, run_one.R and aggregate.R.
 

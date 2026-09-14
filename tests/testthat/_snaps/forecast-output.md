@@ -9,7 +9,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
+        therefore set to `2^n_features = 4`.
       
       -- Explanation overview --
       
@@ -46,7 +47,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is therefore set to `2^n_features = 128`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
+        therefore set to `2^n_features = 128`.
       
       -- Explanation overview --
       
@@ -106,15 +108,15 @@
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 512 coalitions, 10 new. 
-      i Coalitions split into 10 batches (mean 2.5 per batch). 
+      i Coalitions split into 10 batches (mean 1 per batch). 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 60 of 512 coalitions, 50 new. 
-      i Coalitions split into 10 batches (mean 13.9 per batch). 
+      i Coalitions split into 10 batches (mean 5 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 150 of 512 coalitions, 90 new. 
-      i Coalitions split into 10 batches (mean 29.2 per batch). 
+      i Coalitions split into 10 batches (mean 9 per batch). 
     Output
          explain_idx horizon  none Temp.1  Temp.2 Temp.3 Wind.1  Wind.2   Wind.3
                <int>   <int> <num>  <num>   <num>  <num>  <num>   <num>    <num>
@@ -144,7 +146,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 16`, and is therefore set to `2^n_groups = 16`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 16`, and is
+        therefore set to `2^n_groups = 16`.
       
       -- Explanation overview --
       
@@ -160,19 +163,19 @@
       
       -- Iteration 1 -----------------------------------------------------------------
       i Using 10 of 16 coalitions, 10 new. 
-      i Coalitions split into 10 batches (mean 2.8 per batch). 
+      i Coalitions split into 10 batches (mean 1 per batch). 
       
       -- Iteration 2 -----------------------------------------------------------------
       i Using 12 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 17 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 3 -----------------------------------------------------------------
       i Using 14 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 19.5 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
       
       -- Iteration 4 -----------------------------------------------------------------
       i Using 16 of 16 coalitions, 2 new. 
-      i Coalitions split into 2 batches (mean 22 per batch). 
+      i Coalitions split into 2 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none   Temp    Wind Solar.R   Ozone
                <int>   <int> <num>  <num>   <num>   <num>   <num>
@@ -194,7 +197,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is therefore set to `2^n_features = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
+        therefore set to `2^n_features = 4`.
       
       -- Explanation overview --
       
@@ -231,7 +235,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+        therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
@@ -246,7 +251,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 2 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>
@@ -268,7 +273,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 8`, and is therefore set to `2^n_features = 8`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_features = 8`, and is
+        therefore set to `2^n_features = 8`.
       
       -- Explanation overview --
       
@@ -305,7 +311,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+        therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
@@ -322,7 +329,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 1.5 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none    Temp   Wind
                <int>   <int> <num>   <num>  <num>
@@ -342,7 +349,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+        therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
       
@@ -359,7 +367,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 1.5 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none  Group1 Group2
                <int>   <int> <num>   <num>  <num>

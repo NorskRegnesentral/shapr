@@ -10,9 +10,11 @@
     Message
       
       -- Starting `shapr::explain_forecast()` ----------------------------------------
-      i You passed a model to `shapr::explain()` which is not natively supported, and did not supply a `get_model_specs` function to `shapr::explain()`.
+      i You passed a model to `shapr::explain()` which is not natively supported, and
+        did not supply a `get_model_specs` function to `shapr::explain()`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is therefore set to `2^n_groups = 4`.
+      i `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+        therefore set to `2^n_groups = 4`.
     Condition
       Error in `get_predict_model()`:
       ! You passed a model to `shapr::explain()` that is not natively supported and did not supply a 'predict_model' function to `shapr::explain()`. See the documentation of `shapr::explain()` or the `vignette(shapr::general_usage)` vignette for more information on how to run shapr with custom models.
@@ -107,7 +109,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `max_n_coalitions` is smaller than `max(10, n_features + 1 = 8)`, which will result in unreliable results.
+      i `max_n_coalitions` is smaller than `max(10, n_features + 1 = 8)`, which will
+        result in unreliable results.
         It is therefore set to 8.
     Condition
       Error in `check_iterative_args()`:
@@ -130,7 +133,8 @@
       -- Starting `shapr::explain_forecast()` ----------------------------------------
       i Feature names extracted from the model contain `NA`.
         Consistency checks between model and data are therefore disabled.
-      i `n_groups` is smaller than or equal to 3, meaning there are so few unique coalitions (4) that we should use all to get reliable results.
+      i `n_groups` is smaller than or equal to 3, meaning there are so few unique
+        coalitions (4) that we should use all to get reliable results.
         `max_n_coalitions` is therefore set to `2^n_groups = 4`.
       
       -- Explanation overview --
@@ -146,7 +150,7 @@
       -- Main computation started --
       
       i Using 4 of 4 coalitions. 
-      i Coalitions split into 4 batches (mean 2 per batch). 
+      i Coalitions split into 4 batches (mean 1 per batch). 
     Output
          explain_idx horizon  none  Temp   Wind
                <int>   <int> <num> <num>  <num>

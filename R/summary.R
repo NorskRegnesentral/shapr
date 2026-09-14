@@ -161,9 +161,7 @@ print.summary.shapr <- function(x, ...) {
 
   cli::cli_h3(msg)
 
-  # Using rlang::inform (bypassing cli-formatting) to print correctly
-  # Cannot use print as it does not obey suppressMessages()
-  rlang::inform(pd$formatted_shapley_info)
+  cli::cli_verbatim(pd$formatted_shapley_info)
 
   # MSEv info (only when using explain())
   if (x$calling_function == "explain") {

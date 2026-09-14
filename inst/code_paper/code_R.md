@@ -10,24 +10,16 @@
 
 
 ``` r
+
 #### Loads packages, reads data and models created by R_prep_data_and_model.R ####
 
 library(xgboost)
 library(data.table)
-```
-
-```
 ## 
 ## Attaching package: 'data.table'
-```
-
-```
 ## The following object is masked from 'package:base':
 ## 
 ##     %notin%
-```
-
-``` r
 library(shapr)
 
 x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
@@ -49,6 +41,7 @@ progressr::handlers(global = TRUE)
 ```
 
 ``` r
+
 #### Example code in Section 3 ####
 
 # 40 indep
@@ -75,29 +68,15 @@ exp_40_ctree <- explain(model = model,
 
 
 print(exp_40_indep, what = "MSEv")
-```
-
-```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
 ## 1: 1520051  100972
-```
-
-``` r
 print(exp_40_ctree, what = "MSEv")
-```
-
-```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
 ## 1: 1169051   70910
-```
 
-``` r
 print(exp_40_ctree)
-```
-
-```
 ##      explain_id  none trend cosyear sinyear  temp atemp windspeed     hum
 ##           <int> <num> <num>   <num>   <num> <num> <num>     <num>   <num>
 ##   1:          1  4537 -2049   -1018    86.9  -244  -226     211.2 -435.45
@@ -111,83 +90,27 @@ print(exp_40_ctree)
 ## 144:        144  4537  1241    -320    67.3   366   286     559.7 -327.90
 ## 145:        145  4537   611    -111    67.0 -1173  -777     262.0  257.07
 ## 146:        146  4537  -612    -960   165.2  -856  -995     820.6 -555.63
-```
 
-``` r
 summary(exp_40_ctree)
-```
-
-```
 ## 
-```
-
-```
 ## ── Summary of Shapley value explanation ────────────────────────────────────────
-```
-
-```
-## • Computed with `shapr::explain()` in 12.1 seconds, started 2026-09-03 14:35:13
-```
-
-```
+## • Computed with `shapr::explain()` in 12.7 seconds, started 2026-09-11 16:00:44
 ## • Model class: <xgboost>
-```
-
-```
 ## • v(S) estimation class: Monte Carlo integration
-```
-
-```
 ## • Approach: ctree
-```
-
-```
 ## • Procedure: Iterative
-```
-
-```
 ## • Number of Monte Carlo integration samples: 1000
-```
-
-```
 ## • Number of feature-wise Shapley values: 7
-```
-
-```
 ## • Number of observations to explain: 146
-```
-
-```
 ## • Number of coalitions used: 40 (of total 128)
-```
-
-```
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpKZM0qI/shapr_obj_338c674748c4d5.rds'
-```
-
-```
+## '/tmp/RtmpaO75Lr/shapr_obj_29480c643dd9fe.rds'
 ## 
-```
-
-```
 ## ── Convergence info
-```
-
-```
 ## ✔ Iterative Shapley value estimation stopped at 40 coalitions after 3 iterations, due to:
 ## Maximum number of coalitions (40) reached!
-```
-
-```
 ## 
-```
-
-```
 ## ── Estimated Shapley values (sd in parentheses)
-```
-
-```
 ##      explain_id       none             trend           cosyear          sinyear
 ##           <int>     <char>            <char>            <char>           <char>
 ##   1:          1 4536.6 (0) -2049.45 ( 79.55) -1017.54 ( 82.19)   86.86 ( 92.42)
@@ -215,13 +138,9 @@ summary(exp_40_ctree)
 ## 145: -1173.21 (179.02)  -777.21 (127.05)   262.03 ( 97.27)   257.07 ( 67.83)
 ## 146:  -855.83 (244.94)  -995.38 (160.22)   820.56 (205.24)  -555.63 (142.21)
 ## 
-## 
-## ── Estimated MSEv 
-## 
+## ── Estimated MSEv
 ## Estimated MSE of v(S) = 1169051 (with sd = 70910)
-```
 
-``` r
 ### Continued estimation
 exp_iter_ctree <- explain(model = model,
                           x_explain = x_explain,
@@ -232,13 +151,11 @@ exp_iter_ctree <- explain(model = model,
                           ctree.sample = FALSE,
                           verbose = c("basic", "convergence"),
                           seed = 1)
-```
-
-```
 ## 
-## ── Starting `shapr::explain()` at 2026-09-03 14:35:25 ──────────────────────────
+## ── Starting `shapr::explain()` at 2026-09-11 16:00:57 ──────────────────────────
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
 ##   therefore set to `2^n_features = 128`.
+## 
 ## ── Explanation overview ──
 ## 
 ## • Model class: <xgboost>
@@ -249,33 +166,33 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpKZM0qI/shapr_obj_338c673d0c4bea.rds'
+## '/tmp/RtmpaO75Lr/shapr_obj_29480c16318e98.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
 ## ── Iteration 4 ─────────────────────────────────────────────────────────────────
-## ℹ Using 66 of 128 coalitions, 26 new. 
-## ℹ Coalitions split into 10 batches (mean 6.6 per batch). 
+## ℹ Using 66 of 128 coalitions, 26 new.
+## ℹ Coalitions split into 10 batches (mean 2.6 per batch).
 ## 
-## ── Convergence info 
+## ── Convergence info
 ## ℹ Not converged after 66 coalitions:
 ## Current convergence measure: 0.043 [needs 0.02]
 ## Estimated remaining coalitions: 62
 ## (Conservatively) adding about 40% of that (24 coalitions) in the next iteration.
 ## 
 ## ── Iteration 5 ─────────────────────────────────────────────────────────────────
-## ℹ Using 90 of 128 coalitions, 24 new. 
-## ℹ Coalitions split into 10 batches (mean 9 per batch). 
+## ℹ Using 90 of 128 coalitions, 24 new.
+## ℹ Coalitions split into 10 batches (mean 2.4 per batch).
 ## 
-## ── Convergence info 
+## ── Convergence info
 ## ✔ Iterative Shapley value estimation stopped at 90 coalitions after 5 iterations, due to:
 ## Standard deviation convergence threshold (0.02) reached: 0.019!
-```
 
-``` r
+
 ### Plotting
 
 library(ggplot2)
+
 ```
 
 ``` r
@@ -327,42 +244,22 @@ exp_g_reg_tuned <- explain(model = model,
                            seed = 1)
 
 print(exp_g_reg, what = "MSEv")
-```
-
-```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
 ## 1: 1392003   93288
-```
-
-``` r
 print(exp_g_reg_tuned, what = "MSEv")
-```
-
-```
 ##       MSEv MSEv_sd
 ##      <num>   <num>
 ## 1: 1367885   92316
-```
 
-``` r
 print(exp_g_reg, what = "timing_summary")
-```
-
-```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-03 14:35:43 2026-09-03 14:35:45            2.24    2.2 seconds
-```
-
-``` r
+## 1: 2026-09-11 16:01:22 2026-09-11 16:01:24            2.25    2.3 seconds
 print(exp_g_reg_tuned, what = "timing_summary")
-```
-
-```
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-03 14:35:45 2026-09-03 14:35:51            5.73    5.7 seconds
+## 1: 2026-09-11 16:01:24 2026-09-11 16:01:29            5.58    5.6 seconds
 ```
 
 ``` r
@@ -388,15 +285,10 @@ exp_sage <- explain(model = model,
                     seed = 1)
 
 print(exp_sage)
-```
-
-```
 ##    explain_id     none   trend cosyear sinyear   temp  atemp windspeed    hum
 ##         <int>    <num>   <num>   <num>   <num>  <num>  <num>     <num>  <num>
 ## 1:          1 -4107542 1528570  399274   21910 668114 530828     88649 387220
-```
 
-``` r
 #### Causal and asymmetric Shapley values ####
 
 # Specify the causal ordering and confounding
@@ -433,6 +325,7 @@ for (i in seq_along(exp_names)) {
                          print_ggplot = FALSE) +
     ggplot2::ggtitle(exp_names[i]) + ggplot2::ylim(-3700, 3700)
 }
+
 ```
 
 ``` r
@@ -467,61 +360,32 @@ exp_fc_ar <- explain_forecast(model = model_ar,
                               phi0 = phi0_ar,
                               group_lags = FALSE,
                               seed = 1)
-```
-
-```
 ## 
-```
-
-```
-## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:37 ─────────────────
-```
-
-```
+## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:15 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
 ##   therefore set to `2^n_features = 4`.
 ## 
-## 
 ## ── Explanation overview ──
 ## 
-## 
-## 
 ## • Model class: <ar>
-## 
 ## • v(S) estimation class: Monte Carlo integration
-## 
 ## • Approach: empirical
-## 
 ## • Procedure: Non-iterative
-## 
 ## • Number of Monte Carlo integration samples: 1000
-## 
 ## • Number of feature-wise Shapley values: 2
-## 
 ## • Number of observations to explain: 2
-## 
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpKZM0qI/shapr_obj_338c6742ff75a6.rds'
-## 
-## 
+## '/tmp/RtmpaO75Lr/shapr_obj_29480c32fd530d.rds'
 ## 
 ## ── Main computation started ──
 ## 
-## 
-## 
-## ℹ Using 4 of 4 coalitions. 
-## 
+## ℹ Using 4 of 4 coalitions.
 ## ℹ Coalitions split into 2 batches (mean 2 per batch).
-```
 
-``` r
 # Summary of Shapley value computation
 print(exp_fc_ar)
-```
-
-```
 ##    explain_idx horizon  none temp.1 temp.2
 ##          <int>   <int> <num>  <num>  <num>
 ## 1:         730       1  15.3  -5.98  -4.67
@@ -530,9 +394,7 @@ print(exp_fc_ar)
 ## 4:         731       2  15.3  -7.35  -4.46
 ## 5:         730       3  15.3  -5.28  -4.10
 ## 6:         731       3  15.3  -6.90  -4.18
-```
 
-``` r
 # Fit ARIMA(2,0,0)-model
 model_arimax <- arima(data_fit$temp,
                       order = c(2, 0, 0),
@@ -551,14 +413,13 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
                                   phi0 = phi0_arimax,
                                   group_lags = TRUE,
                                   seed = 1)
-```
-
-```
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-03 14:36:38 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:16 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
-##   Consistency checks between model and data are therefore disabled.ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
+##   Consistency checks between model and data are therefore disabled.
+## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
 ##   therefore set to `2^n_groups = 4`.
+## 
 ## ── Explanation overview ──
 ## 
 ## • Model class: <Arima>
@@ -569,39 +430,30 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpKZM0qI/shapr_obj_338c6715fff5b6.rds'
+## '/tmp/RtmpaO75Lr/shapr_obj_29480c1c62346d.rds'
 ## 
 ## ── Main computation started ──
 ## 
-## ℹ Using 4 of 4 coalitions. 
-## ℹ Coalitions split into 4 batches (mean 1.5 per batch).
-```
+## ℹ Using 4 of 4 coalitions.
+## ℹ Coalitions split into 4 batches (mean 1 per batch).
 
-``` r
 # Print the Shapley values
 print(exp_fc_arimax)
-```
-
-```
 ##    explain_idx horizon  none  temp windspeed
 ##          <int>   <int> <num> <num>     <num>
 ## 1:         729       1  15.3 -8.90     -1.05
 ## 2:         729       2  15.3 -8.59     -2.11
-```
 
-``` r
 #### Wrapping up ####
+
 ```
 
 
 ``` r
 sessionInfo()
-```
-
-```
 ## R version 4.6.1 (2026-06-24)
 ## Platform: x86_64-pc-linux-gnu
-## Running under: Ubuntu 24.04.4 LTS
+## Running under: Ubuntu 24.04.5 LTS
 ## 
 ## Matrix products: default
 ## BLAS:   /usr/lib/x86_64-linux-gnu/atlas/libblas.so.3.10.3 
@@ -623,7 +475,7 @@ sessionInfo()
 ## 
 ## other attached packages:
 ## [1] patchwork_1.3.2     ggplot2_4.0.3       progressr_1.0.0    
-## [4] future_1.75.0       shapr_1.0.8.9005    data.table_1.18.6.1
+## [4] future_1.75.0       shapr_1.1.0         data.table_1.18.6.1
 ## [7] xgboost_3.2.1.1    
 ## 
 ## loaded via a namespace (and not attached):
@@ -648,7 +500,7 @@ sessionInfo()
 ## [55] ggbeeswarm_0.7.3    timechange_0.4.0    globals_0.19.1     
 ## [58] otel_0.2.0          nnet_7.3-21         timeDate_4052.112  
 ## [61] zoo_1.9-0           ragg_1.5.2          workflows_1.3.0    
-## [64] urca_1.3-4          evaluate_1.0.5      knitr_1.51         
+## [64] urca_1.3-4          evaluate_1.0.5      knitr_1.52         
 ## [67] hardhat_1.4.3       rsample_1.3.2       rlang_1.3.0        
 ## [70] Rcpp_1.1.2          glue_1.8.1          ipred_0.9-16       
 ## [73] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2

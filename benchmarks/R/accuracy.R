@@ -1,10 +1,10 @@
 #!/usr/bin/env Rscript
-# accuracy.R — post-processing stage for the accuracy study (config/accuracy.yml).
+# accuracy.R — post-processing stage for an optional user-defined accuracy study.
 # Compares the saved Shapley matrices of each `accuracy_cost` run with the mean
 # of the `accuracy_reference` runs of the same approach, and aggregates the
 # resulting accuracy/cost surface.
 #
-# Usage: Rscript R/accuracy.R --config config/accuracy.yml
+# Usage: Rscript R/accuracy.R --config config/<study>.yml
 
 suppressMessages({
   library(data.table)

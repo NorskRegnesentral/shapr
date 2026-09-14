@@ -2,7 +2,7 @@
 # independence.yml — cost study for the `independence` approach.
 #
 # independence is parameter-free and supports every dataset family, so besides
-# the standard numeric OAT battery it runs the `dataset` sweep across all four
+# the standard numeric core blocks it runs the `dataset` sweep across all four
 # mixed settings and the categorical data. Baseline stays numeric (to line up
 # with the gaussian/numeric reference). Inherits the 12-hour timeout and
 # 96-hour budget.
