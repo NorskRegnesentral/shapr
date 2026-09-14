@@ -26,7 +26,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/NorskRegnesentral/shapr/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/NorskRegnesentral/shapr/blob/v1.1.0/inst/CITATION)
 
 Martin Jullum, Lars Henry Berge Olsen, Jon Lachmann, Annabelle
 Redelmeier (2025). “shapr: Explaining Machine Learning Models with
