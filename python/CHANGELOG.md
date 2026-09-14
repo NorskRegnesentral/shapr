@@ -9,19 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-14
+
 ### Changed
 - Updated the compatibility policy for the `shapr` 1.1.0 CRAN release and changed backend update
   guidance from the GitHub development version to CRAN. ([#517](https://github.com/NorskRegnesentral/shapr/pull/517))
 - Removed the obsolete `numpy<2.5` constraint now that current `numba` releases support NumPy 2.5.
-  Python 3.11 continues to resolve to the newest compatible NumPy release. (branch: code_paper_fixes)
+  Python 3.11 continues to resolve to the newest compatible NumPy release. ([#515](https://github.com/NorskRegnesentral/shapr/pull/515))
 - Configured the default uv development environment with the test and code-paper tools while keeping these
-  tools out of pyshapr's runtime dependencies. (branch: code_paper_fixes)
+  tools out of pyshapr's runtime dependencies. ([#515](https://github.com/NorskRegnesentral/shapr/pull/515))
 - Expanded the `extra_computation_args`, `iterative_args` and `output_args` docstrings in `explain()` to list
   the keys forwarded to shapr's `get_extra_comp_args_default()`, `get_iterative_args_default()` and
   `get_output_args_default()` (e.g. `semi_deterministic_sampling`, `max_batch_cube_size`, `convergence_tol`,
-  `saving_path`). No functional change; these keys were already accepted via the generic dict. (branch: robustify-high-dim)
+  `saving_path`). No functional change; these keys were already accepted via the generic dict. ([#504](https://github.com/NorskRegnesentral/shapr/pull/504))
 - Documented the `"timeseries"` approach as supported in the `approach` docstring and README (verified to work
-  through the wrapper). No functional change. (branch: robustify-high-dim)
+  through the wrapper). No functional change. ([#504](https://github.com/NorskRegnesentral/shapr/pull/504))
 
 ### Added
 - Added a first-use compatibility warning when the installed `shapr` R package does not provide
@@ -37,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   function can be passed through `extra_computation_args={"global_loss_func": my_loss}` and is bridged into
   the R computation. Added the `Shapr.get_shap_values_est()` accessor for the per-observation Shapley values
   computed alongside the SAGE values, and made `Shapr.to_shap()` SAGE-aware (returns the single global loss
-  explanation). (branch: sage)
+  explanation). ([#503](https://github.com/NorskRegnesentral/shapr/pull/503))
 
 ## [0.5.1] - 2026-06-24
 
