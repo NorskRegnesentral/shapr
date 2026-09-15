@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyshapr"
-version = "0.5.1"
+version = "0.6.0"
 description = "Python wrapper for the R package shapr (via rpy2)"
 readme = "README.md"
 license = { file = "LICENSE.md" }
