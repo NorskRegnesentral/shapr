@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.0] - 2026-09-14
+## [0.6.0] - 2026-09-15
 
 ### Changed
 - Updated the compatibility policy for the `shapr` 1.1.0 CRAN release and changed backend update
