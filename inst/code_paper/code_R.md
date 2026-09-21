@@ -94,7 +94,7 @@ print(exp_40_ctree)
 summary(exp_40_ctree)
 ## 
 ## ── Summary of Shapley value explanation ────────────────────────────────────────
-## • Computed with `shapr::explain()` in 12.7 seconds, started 2026-09-11 16:00:44
+## • Computed with `shapr::explain()` in 12.9 seconds, started 2026-09-17 10:21:02
 ## • Model class: <xgboost>
 ## • v(S) estimation class: Monte Carlo integration
 ## • Approach: ctree
@@ -104,7 +104,7 @@ summary(exp_40_ctree)
 ## • Number of observations to explain: 146
 ## • Number of coalitions used: 40 (of total 128)
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c643dd9fe.rds'
+## '/tmp/RtmpZUlmNN/shapr_obj_6f0583deb00be.rds'
 ## 
 ## ── Convergence info
 ## ✔ Iterative Shapley value estimation stopped at 40 coalitions after 3 iterations, due to:
@@ -152,7 +152,7 @@ exp_iter_ctree <- explain(model = model,
                           verbose = c("basic", "convergence"),
                           seed = 1)
 ## 
-## ── Starting `shapr::explain()` at 2026-09-11 16:00:57 ──────────────────────────
+## ── Starting `shapr::explain()` at 2026-09-17 10:21:15 ──────────────────────────
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
 ##   therefore set to `2^n_features = 128`.
 ## 
@@ -166,7 +166,7 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c16318e98.rds'
+## '/tmp/RtmpZUlmNN/shapr_obj_6f058e28f700.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
@@ -255,11 +255,11 @@ print(exp_g_reg_tuned, what = "MSEv")
 print(exp_g_reg, what = "timing_summary")
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-11 16:01:22 2026-09-11 16:01:24            2.25    2.3 seconds
+## 1: 2026-09-17 10:21:35 2026-09-17 10:21:37            2.32    2.3 seconds
 print(exp_g_reg_tuned, what = "timing_summary")
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-11 16:01:24 2026-09-11 16:01:29            5.58    5.6 seconds
+## 1: 2026-09-17 10:21:37 2026-09-17 10:21:43            5.61    5.6 seconds
 ```
 
 ``` r
@@ -361,7 +361,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
                               group_lags = FALSE,
                               seed = 1)
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:15 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-17 10:22:33 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -377,7 +377,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## • Number of feature-wise Shapley values: 2
 ## • Number of observations to explain: 2
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c32fd530d.rds'
+## '/tmp/RtmpZUlmNN/shapr_obj_6f058253767a7.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -414,7 +414,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
                                   group_lags = TRUE,
                                   seed = 1)
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:16 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-09-17 10:22:34 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
@@ -430,7 +430,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c1c62346d.rds'
+## '/tmp/RtmpZUlmNN/shapr_obj_6f0581894c82b.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -456,8 +456,8 @@ sessionInfo()
 ## Running under: Ubuntu 24.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/atlas/libblas.so.3.10.3 
-## LAPACK: /usr/lib/x86_64-linux-gnu/atlas/liblapack.so.3.10.3;  LAPACK version 3.11.0
+## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
