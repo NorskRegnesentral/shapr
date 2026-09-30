@@ -68,7 +68,7 @@ explanation <- explain(
   n_MC_samples = 1e2
 )
 #> 
-#> ── Starting `shapr::explain()` at 2026-09-14 08:10:02 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-09-30 20:17:29 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -81,7 +81,7 @@ explanation <- explain(
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
-#> • Computations (temporary) saved at: /tmp/RtmpM5fwip/shapr_obj_19344d2efd58.rds
+#> • Computations (temporary) saved at: /tmp/Rtmpeph0ch/shapr_obj_64d974a18d3d.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -92,7 +92,7 @@ explanation <- explain(
 summary(explanation)
 #> 
 #> ── Summary of Shapley value explanation ────────────────────────────────────────
-#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-09-14 08:10:02
+#> • Computed with `shapr::explain()` in 0.4 seconds, started 2026-09-30 20:17:29
 #> • Model class: <lm>
 #> • v(S) estimation class: Monte Carlo integration
 #> • Approach: gaussian
@@ -101,7 +101,7 @@ summary(explanation)
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 3
 #> • Number of coalitions used: 16 (of total 16)
-#> • Computations (temporary) saved at: /tmp/RtmpM5fwip/shapr_obj_19344d2efd58.rds
+#> • Computations (temporary) saved at: /tmp/Rtmpeph0ch/shapr_obj_64d974a18d3d.rds
 #> 
 #> ── Estimated Shapley values 
 #>    explain_id   none Solar.R   Wind   Temp  Month
@@ -120,11 +120,11 @@ expl_summary <- summary(explanation) # print(expl_summary) provides the formatte
 expl_summary$shapley_est # Estimated Shapley values
 #>    explain_id     none   Solar.R       Wind       Temp        Month
 #>         <int>    <num>     <num>      <num>      <num>        <num>
-#> 1:          1 42.78704  2.422441 -20.220654  -7.241425  0.005011148
-#> 2:          2 42.78704 -3.135589   7.859349  -9.889042  0.134730248
+#> 1:          1 42.78704  2.422441 -20.220654  -7.241425  0.005011147
+#> 2:          2 42.78704 -3.135589   7.859349  -9.889042  0.134730247
 #> 3:          3 42.78704  5.649030  -5.659119 -26.174630 -0.929656487
 expl_summary$timing_summary$total_time_secs # Total computation time
-#> [1] 0.3729296
+#> [1] 0.3946245
 expl_summary$approach # Approach used
 #> [1] "gaussian"
 # }
