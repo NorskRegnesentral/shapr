@@ -35,8 +35,7 @@ which compare runtime and memory use across the available approaches and
 include an interactive results table.
 
 When selecting an approach based on estimation accuracy, we recommend
-comparing plausible candidates using the [$\operatorname{MSE}_{v}$
-evaluation
+comparing plausible candidates using the [`MSE_v` evaluation
 criterion](https://norskregnesentral.github.io/shapr/articles/general_usage.html#MSEv)
 when computationally feasible. For general guidance on identifying
 plausible candidates, see Section 6 of [Olsen et
