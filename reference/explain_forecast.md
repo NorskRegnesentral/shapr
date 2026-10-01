@@ -648,7 +648,7 @@ explain_forecast(
   group_lags = FALSE
 )
 #> 
-#> ── Starting `shapr::explain_forecast()` at 2026-09-30 20:16:51 ─────────────────
+#> ── Starting `shapr::explain_forecast()` at 2026-10-01 06:56:42 ─────────────────
 #> ℹ Feature names extracted from the model contain `NA`.
 #>   Consistency checks between model and data are therefore disabled.
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -663,7 +663,7 @@ explain_forecast(
 #> • Number of Monte Carlo integration samples: 1000
 #> • Number of feature-wise Shapley values: 2
 #> • Number of observations to explain: 2
-#> • Computations (temporary) saved at: /tmp/Rtmpeph0ch/shapr_obj_64d9200b60cd.rds
+#> • Computations (temporary) saved at: /tmp/RtmpysontH/shapr_obj_24e56ff48da.rds
 #> 
 #> ── Main computation started ──
 #> 
