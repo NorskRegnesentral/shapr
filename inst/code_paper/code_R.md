@@ -5,7 +5,8 @@
 # shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python
 
 # Requires the following R packages (from CRAN)
-# shapr, xgboost, data.table, future, progressr, knitr, ggplot2, patchwork
+# shapr, xgboost, data.table, future, progressr, knitr, markdown, ggplot2, ggbeeswarm, patchwork,
+# party, parsnip, recipes, workflows, tune, forecast
 ```
 
 
@@ -13,14 +14,14 @@
 
 #### Loads packages, reads data and models created by R_prep_data_and_model.R ####
 
-library(xgboost)
-library(data.table)
+library("xgboost")
+library("data.table")
 ## 
 ## Attaching package: 'data.table'
 ## The following object is masked from 'package:base':
 ## 
 ##     %notin%
-library(shapr)
+library("shapr")
 
 x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
 x_train <- fread(file.path("data_and_models", "x_train.csv"))
@@ -30,8 +31,8 @@ model <- readRDS(file.path("data_and_models", "model.rds"))
 
 
 # Load packages and sets up parallel processing
-library(future)
-library(progressr)
+library("future")
+library("progressr")
 future::plan(multisession, workers = 4)
 ```
 
@@ -94,7 +95,7 @@ print(exp_40_ctree)
 summary(exp_40_ctree)
 ## 
 ## ── Summary of Shapley value explanation ────────────────────────────────────────
-## • Computed with `shapr::explain()` in 12.7 seconds, started 2026-09-11 16:00:44
+## • Computed with `shapr::explain()` in 13.1 seconds, started 2026-10-02 20:22:20
 ## • Model class: <xgboost>
 ## • v(S) estimation class: Monte Carlo integration
 ## • Approach: ctree
@@ -104,7 +105,7 @@ summary(exp_40_ctree)
 ## • Number of observations to explain: 146
 ## • Number of coalitions used: 40 (of total 128)
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c643dd9fe.rds'
+## '/tmp/RtmpM6NFMN/shapr_obj_3cc5932dbe8904.rds'
 ## 
 ## ── Convergence info
 ## ✔ Iterative Shapley value estimation stopped at 40 coalitions after 3 iterations, due to:
@@ -152,7 +153,7 @@ exp_iter_ctree <- explain(model = model,
                           verbose = c("basic", "convergence"),
                           seed = 1)
 ## 
-## ── Starting `shapr::explain()` at 2026-09-11 16:00:57 ──────────────────────────
+## ── Starting `shapr::explain()` at 2026-10-02 20:22:33 ──────────────────────────
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 128`, and is
 ##   therefore set to `2^n_features = 128`.
 ## 
@@ -166,7 +167,7 @@ exp_iter_ctree <- explain(model = model,
 ## • Number of feature-wise Shapley values: 7
 ## • Number of observations to explain: 146
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c16318e98.rds'
+## '/tmp/RtmpM6NFMN/shapr_obj_3cc59344923.rds'
 ## 
 ## ── Iterative computation started ──
 ## 
@@ -191,7 +192,7 @@ exp_iter_ctree <- explain(model = model,
 
 ### Plotting
 
-library(ggplot2)
+library("ggplot2")
 
 ```
 
@@ -255,11 +256,11 @@ print(exp_g_reg_tuned, what = "MSEv")
 print(exp_g_reg, what = "timing_summary")
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-11 16:01:22 2026-09-11 16:01:24            2.25    2.3 seconds
+## 1: 2026-10-02 20:22:54 2026-10-02 20:22:56            2.27    2.3 seconds
 print(exp_g_reg_tuned, what = "timing_summary")
 ##              init_time            end_time total_time_secs total_time_str
 ##                 <POSc>              <POSc>           <num>         <char>
-## 1: 2026-09-11 16:01:24 2026-09-11 16:01:29            5.58    5.6 seconds
+## 1: 2026-10-02 20:22:56 2026-10-02 20:23:02            5.92    5.9 seconds
 ```
 
 ``` r
@@ -330,7 +331,7 @@ for (i in seq_along(exp_names)) {
 
 ``` r
 # Use the patchwork package to combine the plots
-library(patchwork)
+library("patchwork")
 patchwork::wrap_plots(plot_list, nrow = 1) +
   patchwork::plot_layout(guides = "collect")
 ```
@@ -361,7 +362,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
                               group_lags = FALSE,
                               seed = 1)
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:15 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-10-02 20:23:53 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 4`, and is
@@ -377,7 +378,7 @@ exp_fc_ar <- explain_forecast(model = model_ar,
 ## • Number of feature-wise Shapley values: 2
 ## • Number of observations to explain: 2
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c32fd530d.rds'
+## '/tmp/RtmpM6NFMN/shapr_obj_3cc59317f87c5c.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -414,7 +415,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
                                   group_lags = TRUE,
                                   seed = 1)
 ## 
-## ── Starting `shapr::explain_forecast()` at 2026-09-11 16:02:16 ─────────────────
+## ── Starting `shapr::explain_forecast()` at 2026-10-02 20:23:53 ─────────────────
 ## ℹ Feature names extracted from the model contain `NA`.
 ##   Consistency checks between model and data are therefore disabled.
 ## ℹ `max_n_coalitions` is `NULL` or larger than `2^n_groups = 4`, and is
@@ -430,7 +431,7 @@ exp_fc_arimax <- explain_forecast(model = model_arimax,
 ## • Number of group-wise Shapley values: 2
 ## • Number of observations to explain: 1
 ## • Computations (temporary) saved at:
-## '/tmp/RtmpaO75Lr/shapr_obj_29480c1c62346d.rds'
+## '/tmp/RtmpM6NFMN/shapr_obj_3cc593616f7a99.rds'
 ## 
 ## ── Main computation started ──
 ## 
@@ -456,8 +457,8 @@ sessionInfo()
 ## Running under: Ubuntu 24.04.5 LTS
 ## 
 ## Matrix products: default
-## BLAS:   /usr/lib/x86_64-linux-gnu/atlas/libblas.so.3.10.3 
-## LAPACK: /usr/lib/x86_64-linux-gnu/atlas/liblapack.so.3.10.3;  LAPACK version 3.11.0
+## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -475,34 +476,33 @@ sessionInfo()
 ## 
 ## other attached packages:
 ## [1] patchwork_1.3.2     ggplot2_4.0.3       progressr_1.0.0    
-## [4] future_1.75.0       shapr_1.1.0         data.table_1.18.6.1
+## [4] future_1.76.0       shapr_1.1.0         data.table_1.18.6.1
 ## [7] xgboost_3.2.1.1    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] gtable_0.3.6        beeswarm_0.4.0      xfun_0.60          
+##  [1] gtable_0.3.6        beeswarm_0.4.0      xfun_0.61          
 ##  [4] recipes_1.4.0       lattice_0.23-1      vctrs_0.7.3        
 ##  [7] tools_4.6.1         generics_0.1.4      parallel_4.6.1     
 ## [10] tibble_3.3.1        pkgconfig_2.0.3     Matrix_1.7-6       
 ## [13] RColorBrewer_1.1-3  S7_0.2.2            lifecycle_1.0.5    
-## [16] compiler_4.6.1      farver_2.1.2        textshaping_1.0.5  
-## [19] codetools_0.2-20    vipor_0.4.7         DiceDesign_1.10    
-## [22] class_7.3-24        tune_2.1.0          prodlim_2026.03.11 
-## [25] pillar_1.11.1       furrr_0.4.0         tidyr_1.3.2        
-## [28] MASS_7.3-66         gower_1.0.2         yardstick_1.4.0    
-## [31] rpart_4.1.27        nlme_3.1-171        parallelly_1.48.0  
-## [34] lava_1.9.3          fracdiff_1.5-4      dials_1.4.4        
-## [37] tidyselect_1.2.1    digest_0.6.39       dplyr_1.2.1        
-## [40] purrr_1.2.2         listenv_1.0.0       labeling_0.4.3     
-## [43] splines_4.6.1       parsnip_1.6.0       grid_4.6.1         
-## [46] colorspace_2.1-3    cli_3.6.6           magrittr_2.0.5     
-## [49] survival_3.8-11     future.apply_1.20.2 withr_3.0.3        
-## [52] scales_1.4.0        forecast_9.0.2      lubridate_1.9.5    
-## [55] ggbeeswarm_0.7.3    timechange_0.4.0    globals_0.19.1     
-## [58] otel_0.2.0          nnet_7.3-21         timeDate_4052.112  
-## [61] zoo_1.9-0           ragg_1.5.2          workflows_1.3.0    
-## [64] urca_1.3-4          evaluate_1.0.5      knitr_1.52         
-## [67] hardhat_1.4.3       rsample_1.3.2       rlang_1.3.0        
-## [70] Rcpp_1.1.2          glue_1.8.1          ipred_0.9-16       
-## [73] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.2
+## [16] compiler_4.6.1      farver_2.1.2        codetools_0.2-20   
+## [19] vipor_0.4.7         DiceDesign_1.10     class_7.3-24       
+## [22] tune_2.1.0          prodlim_2026.03.11  pillar_1.11.1      
+## [25] furrr_0.4.0         tidyr_1.3.2         MASS_7.3-66        
+## [28] gower_1.0.2         yardstick_1.4.0     rpart_4.1.27       
+## [31] nlme_3.1-171        parallelly_1.48.0   lava_1.9.3         
+## [34] fracdiff_1.5-4      dials_1.4.4         tidyselect_1.2.1   
+## [37] digest_0.6.39       dplyr_1.2.1         purrr_1.2.2        
+## [40] listenv_1.0.0       labeling_0.4.3      splines_4.6.1      
+## [43] parsnip_1.6.1       grid_4.6.1          colorspace_2.1-3   
+## [46] cli_3.6.6           magrittr_2.0.5      survival_3.8-12    
+## [49] future.apply_1.20.2 withr_3.0.3         scales_1.4.0       
+## [52] forecast_9.0.2      lubridate_1.9.5     ggbeeswarm_0.7.3   
+## [55] timechange_0.4.0    globals_0.19.1      nnet_7.3-21        
+## [58] timeDate_4052.112   zoo_1.9-1           workflows_1.3.0    
+## [61] urca_1.3-4          evaluate_1.0.5      knitr_1.52         
+## [64] hardhat_1.4.3       rsample_1.3.2       rlang_1.3.0        
+## [67] Rcpp_1.1.2          glue_1.8.1          ipred_0.9-16       
+## [70] jsonlite_2.0.0      R6_2.6.1
 ```
 

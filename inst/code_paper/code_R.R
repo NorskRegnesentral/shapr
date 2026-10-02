@@ -2,7 +2,8 @@
 # shapr: Explaining Machine Learning Models with Conditional Shapley Values in R and Python
 
 # Requires the following R packages (from CRAN)
-# shapr, xgboost, data.table, future, progressr, knitr, ggplot2, patchwork
+# shapr, xgboost, data.table, future, progressr, knitr, markdown, ggplot2, ggbeeswarm, patchwork,
+# party, parsnip, recipes, workflows, tune, forecast
 
 # /*
 # The lines below have already been run to save data/models for eased reproducibility:
@@ -20,9 +21,9 @@ knitr::opts_chunk$set(fig.path = "html_figures/", collapse = TRUE)
 
 #### Loads packages, reads data and models created by R_prep_data_and_model.R ####
 
-library(xgboost)
-library(data.table)
-library(shapr)
+library("xgboost")
+library("data.table")
+library("shapr")
 
 x_explain <- fread(file.path("data_and_models", "x_explain.csv"))
 x_train <- fread(file.path("data_and_models", "x_train.csv"))
@@ -32,8 +33,8 @@ model <- readRDS(file.path("data_and_models", "model.rds"))
 
 
 # Load packages and sets up parallel processing
-library(future)
-library(progressr)
+library("future")
+library("progressr")
 future::plan(multisession, workers = 4)
 #+ echo=FALSE
 # When calling progressr::handlers(global = TRUE) from within knitr::spin("code_R.R"), we get
@@ -93,7 +94,7 @@ exp_iter_ctree <- explain(model = model,
 
 ### Plotting
 
-library(ggplot2)
+library("ggplot2")
 
 #+ fig-scatter_ctree, fig.width=7, fig.height=3
 plot(exp_iter_ctree,
@@ -213,7 +214,7 @@ for (i in seq_along(exp_names)) {
 
 #+ fig-beeswarm_caus_asym, fig.width=14, fig.height=4, fig.scale=0.9
 # Use the patchwork package to combine the plots
-library(patchwork)
+library("patchwork")
 patchwork::wrap_plots(plot_list, nrow = 1) +
   patchwork::plot_layout(guides = "collect")
 
