@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Switched the package license metadata to an SPDX expression (`license = "MIT"`, `license-files`) and
-  removed the deprecated license classifier. No functional changes. (branch: release/pyshapr-0.6.1)
+  removed the deprecated license classifier. No functional changes. ([#525](https://github.com/NorskRegnesentral/shapr/pull/525))
 
 ## [0.6.0] - 2026-09-15
 
