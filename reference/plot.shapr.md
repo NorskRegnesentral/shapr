@@ -277,7 +277,7 @@ if (requireNamespace("party", quietly = TRUE)) {
     ggplot2::xlab("Variable")
 }
 #> 
-#> ── Starting `shapr::explain()` at 2026-10-01 07:14:23 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-10-02 13:44:16 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -290,7 +290,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/Rtmp5kzbRp/shapr_obj_190d4dce7cd1.rds
+#> • Computations (temporary) saved at: /tmp/RtmpiCM7Tn/shapr_obj_1980128a8faa.rds
 #> 
 #> ── Main computation started ──
 #> 
@@ -305,7 +305,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 
 
 #> 
-#> ── Starting `shapr::explain()` at 2026-10-01 07:14:33 ──────────────────────────
+#> ── Starting `shapr::explain()` at 2026-10-02 13:44:26 ──────────────────────────
 #> ℹ `max_n_coalitions` is `NULL` or larger than `2^n_features = 16`, and is
 #>   therefore set to `2^n_features = 16`.
 #> 
@@ -318,7 +318,7 @@ if (requireNamespace("party", quietly = TRUE)) {
 #> • Number of Monte Carlo integration samples: 100
 #> • Number of feature-wise Shapley values: 4
 #> • Number of observations to explain: 50
-#> • Computations (temporary) saved at: /tmp/Rtmp5kzbRp/shapr_obj_190d343ae6.rds
+#> • Computations (temporary) saved at: /tmp/RtmpiCM7Tn/shapr_obj_198041a0f84f.rds
 #> 
 #> ── Main computation started ──
 #> 

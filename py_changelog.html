@@ -51,9 +51,16 @@
 <p>All notable changes to the Python <code>pyshapr</code> library will be documented in this file. Changes to the underlying <code>shapr</code> R package is documented in <a href="https://norskregnesentral.github.io/shapr/news/index.html">shapr CHANGELOG</a></p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/" class="external-link">Keep a Changelog</a>, and this project adheres to <a href="https://semver.org/spec/v2.0.0.html" class="external-link">Semantic Versioning</a>.</p>
 <div class="section level2">
-<h2 id="id_060---2026-09-15">[0.6.0] - 2026-09-15<a class="anchor" aria-label="anchor" href="#id_060---2026-09-15"></a></h2>
+<h2 id="id_061---2026-10-02">[0.6.1] - 2026-10-02<a class="anchor" aria-label="anchor" href="#id_061---2026-10-02"></a></h2>
 <div class="section level3">
 <h3 id="changed">Changed<a class="anchor" aria-label="anchor" href="#changed"></a></h3>
+<ul><li>Switched the package license metadata to an SPDX expression (<code>license = "MIT"</code>, <code>license-files</code>) and removed the deprecated license classifier. No functional changes. (<a href="https://github.com/NorskRegnesentral/shapr/pull/525" class="external-link">#525</a>)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_060---2026-09-15">[0.6.0] - 2026-09-15<a class="anchor" aria-label="anchor" href="#id_060---2026-09-15"></a></h2>
+<div class="section level3">
+<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
 <ul><li>Updated the compatibility policy for the <code>shapr</code> 1.1.0 CRAN release and changed backend update guidance from the GitHub development version to CRAN. (<a href="https://github.com/NorskRegnesentral/shapr/pull/517" class="external-link">#517</a>)</li>
 <li>Removed the obsolete <code>numpy&lt;2.5</code> constraint now that current <code>numba</code> releases support NumPy 2.5. Python 3.11 continues to resolve to the newest compatible NumPy release. (<a href="https://github.com/NorskRegnesentral/shapr/pull/515" class="external-link">#515</a>)</li>
 <li>Configured the default uv development environment with the test and code-paper tools while keeping these tools out of pyshapr’s runtime dependencies. (<a href="https://github.com/NorskRegnesentral/shapr/pull/515" class="external-link">#515</a>)</li>
@@ -76,7 +83,7 @@
 <div class="section level2">
 <h2 id="id_050---2026-06-23">[0.5.0] - 2026-06-23<a class="anchor" aria-label="anchor" href="#id_050---2026-06-23"></a></h2>
 <div class="section level3">
-<h3 id="changed-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1"></a></h3>
+<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
 <ul><li>
 <strong>Renamed the package from <code>shaprpy</code> to <code>pyshapr</code></strong> (both the PyPI distribution name and the import name). Update installs to <code>pip install pyshapr</code> and imports to <code>import pyshapr</code>. This is the first release published under the <code>pyshapr</code> name. The previous <code>shaprpy</code> package remains available on PyPI for a transition period as a thin compatibility shim (released as <code>shaprpy 0.4.4</code>) that depends on and forwards to <code>pyshapr</code>.</li>
 </ul></div>
@@ -89,7 +96,7 @@
 <li>Added an <code>arf</code>/<code>vaeac</code> end-to-end example script for numerical and mixed categorical feature sets.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-2">Changed<a class="anchor" aria-label="anchor" href="#changed-2"></a></h3>
+<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
 <ul><li>Updated documentation to explicitly list <code>arf</code> and <code>vaeac</code> as supported approaches.</li>
 <li>Updated local <code>vaeac</code> snapshot tests to pass <code>vaeac_*</code> arguments directly to <code><a href="reference/explain.html">explain()</a></code>.</li>
 <li>Made the <code>python/</code> package pass <code>ruff check</code> and <code>ruff format</code>.</li>
@@ -130,7 +137,7 @@
 <li>Adjusted the unit tests to cover the new <code>ShaprSummary</code> class functionality</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-3">Changed<a class="anchor" aria-label="anchor" href="#changed-3"></a></h3>
+<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
 <ul><li>Update <code>class_exploration.py</code> example to demonstrate the new <code>ShaprSummary</code> class</li>
 </ul></div>
 </div>
@@ -151,7 +158,7 @@
 <li>Added comprehensive unit and snapshot tests covering all approaches and full functionality, including categorical features and causal ordering</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-4">Changed<a class="anchor" aria-label="anchor" href="#changed-4"></a></h3>
+<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: <code><a href="reference/explain.html">explain()</a></code> function now returns a <code>Shapr</code> object instead of a plain dictionary</li>
 <li>Restructured internal module organization with private <code>_explain.py</code> and <code>_rutils.py</code> modules</li>
@@ -177,7 +184,7 @@
 <li>Input validation tests for error handling</li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-5">Changed<a class="anchor" aria-label="anchor" href="#changed-5"></a></h3>
+<h3 id="changed-6">Changed<a class="anchor" aria-label="anchor" href="#changed-6"></a></h3>
 <ul><li>
 <strong>BREAKING</strong>: Minimum Python version requirement increased from 3.8+ to 3.10+</li>
 <li>Updated package classifiers to reflect Python 3.10+ requirement</li>
