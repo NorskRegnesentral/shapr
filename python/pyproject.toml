@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyshapr"
-version = "0.6.0"
+version = "0.6.1"
 description = "Python wrapper for the R package shapr (via rpy2)"
 readme = "README.md"
-license = { file = "LICENSE.md" }
+license = "MIT"
+license-files = ["LICENSE.md"]
 authors = [
   { name = "Martin Jullum" },
   { name = "Lars Henry Berge Olsen" },
@@ -22,7 +23,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: POSIX :: Linux",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering :: Artificial Intelligence"
