@@ -7,6 +7,12 @@ Changes to the underlying `shapr` R package is documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-10-02
+
+### Changed
+- Switched the package license metadata to an SPDX expression (`license = "MIT"`, `license-files`) and
+  removed the deprecated license classifier. No functional changes. (branch: release/pyshapr-0.6.1)
+
 ## [0.6.0] - 2026-09-15
 
 ### Changed
