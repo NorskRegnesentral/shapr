@@ -2,10 +2,14 @@
 [pyshapr CHANGELOG](https://norskregnesentral.github.io/shapr/py_changelog.html).
 
 
+# shapr 1.1.0.9001
+
+### New features
+* Support group-wise bar and waterfall plots for mixed data, and uncolored beeswarm plots via `beeswarm_color_by_feature = FALSE`. Fix group counts and ties in top-k plots. (branch: martin/group-plotting-geneshap)
+
 # shapr 1.1.0
 
 ### New features
-* Support group-wise bar and waterfall plots for mixed data, and uncolored beeswarm plots via `beeswarm_color_by_feature = FALSE`. Fix group counts in top-k plot labels. (branch: martin/group-plotting-geneshap)
 * Added the `"arf"` approach for conditional sampling with adversarial random forests via the `arf` package ([#497](https://github.com/NorskRegnesentral/shapr/pull/497))
 * Added the `extra_computation_args$max_batch_cube_size` argument, which caps the dense per-batch array of the `gaussian`, `copula` and `empirical` approaches by automatically using more batches in high-dimensional settings, avoiding the `RcppArmadillo` `Cube::init(): requested size is too large` failure and often reducing runtime. For `gaussian`/`copula` the array has `n_MC_samples * n_explain * coalitions_per_batch * n_features` elements, and for `empirical` it is the distance array with `n_train * n_explain * coalitions_per_batch` elements. Defaults to `1e6` elements. ([#504](https://github.com/NorskRegnesentral/shapr/pull/504))
 * The basic verbose output now reports how many batches the coalitions are split into and the mean number of coalitions per batch. ([#504](https://github.com/NorskRegnesentral/shapr/pull/504), [#517](https://github.com/NorskRegnesentral/shapr/pull/517))

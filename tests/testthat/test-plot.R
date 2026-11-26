@@ -311,3 +311,37 @@ test_that("plot_SV_several_approaches_explanations", {
     )
   )
 })
+
+grouped_mixed <- explain(
+  testing = TRUE,
+  model = model_lm_mixed,
+  x_explain = x_explain_mixed,
+  x_train = x_train_mixed,
+  approach = "independence",
+  group = list(A = c("Solar.R", "Wind"), B = c("Temp", "Day"), C = "Month_factor"),
+  phi0 = p0,
+  seed = 1,
+  verbose = NULL
+)
+
+test_that("grouped bar plot", {
+  vdiffr::expect_doppelganger(
+    title = "grouped_bar_plot",
+    fig = plot(grouped_mixed, index_x_explain = 1, top_k_features = 1)
+  )
+
+  tied <- grouped_mixed
+  tied$shapley_values_est <- data.table::copy(tied$shapley_values_est)
+  tied$shapley_values_est[, c("A", "B", "C") := list(1, 1, 1)]
+  p <- plot(tied, index_x_explain = 1, top_k_features = 1, print_ggplot = FALSE)
+  expect_equal(p$data[variable == "rest", phi], 2)
+})
+
+test_that("grouped beeswarm plot", {
+  skip_if_not_installed("ggbeeswarm")
+  vdiffr::expect_doppelganger(
+    title = "grouped_beeswarm_plot",
+    fig = plot(grouped_mixed, plot_type = "beeswarm", beeswarm_color_by_feature = FALSE)
+  )
+  expect_error(plot(grouped_mixed, plot_type = "beeswarm"), "beeswarm_color_by_feature = FALSE")
+})

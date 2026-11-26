@@ -278,9 +278,9 @@ plot.shapr <- function(x,
 
   # For group-wise Shapley values, we check if we are to take the mean over grouped features
   if (is_groupwise) {
-    if (is.na(include_group_feature_means) ||
-      !is.logical(include_group_feature_means) ||
-      length(include_group_feature_means) > 1) {
+    if (!is.logical(include_group_feature_means) ||
+      length(include_group_feature_means) != 1 ||
+      is.na(include_group_feature_means)) {
       cli::cli_abort("`include_group_feature_means` must be single logical.")
     }
     if (!include_group_feature_means &&
@@ -401,7 +401,8 @@ plot.shapr <- function(x,
       )
     }
 
-    dt_plot <- order_for_plot(dt_plot, n_plot_features, bar_plot_order, top_k_features)
+    rest_label <- paste(n_plot_features - top_k_features, if (is_groupwise) "other groups" else "other features")
+    dt_plot <- order_for_plot(dt_plot, rest_label, bar_plot_order, top_k_features)
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
@@ -420,7 +421,7 @@ plot.shapr <- function(x,
     }
     if (top_k_features < n_plot_features) { # if there is a "rest" of collapsed lower-rank features
       desc_labels <- c(
-        paste(n_plot_features - top_k_features, "other features"),
+        rest_label,
         desc_labels
       )
     }
@@ -593,11 +594,11 @@ make_scatter_plot <- function(dt_plot, scatter_features, scatter_hist, col, fact
   return(gg)
 }
 
-order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) {
+order_for_plot <- function(dt_plot, rest_label, bar_plot_order, top_k_features) {
   if (bar_plot_order == "largest_first") {
-    dt_plot[variable != "none", rank := data.table::frank(-abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank := data.table::frank(-abs(phi), ties.method = "first"), by = "id"]
   } else if (bar_plot_order == "smallest_first") {
-    dt_plot[variable != "none", rank := data.table::frank(abs(phi)), by = "id"]
+    dt_plot[variable != "none", rank := data.table::frank(abs(phi), ties.method = "first"), by = "id"]
   } else if (bar_plot_order == "original") {
     dt_plot[variable != "none", rank := seq_along(phi), by = "id"]
   }
@@ -607,7 +608,7 @@ order_for_plot <- function(dt_plot, N_features, bar_plot_order, top_k_features) 
   dt_plot[rank > top_k_features, phi := sum(phi), by = id]
   dt_plot[rank > top_k_features, variable := "rest", by = id]
   dt_plot[variable == "rest", rank := min(rank), by = id]
-  dt_plot[variable == "rest", description := paste(N_features - top_k_features, "other features")]
+  dt_plot[variable == "rest", description := rest_label]
   dt_plot[variable == "rest", sign := ifelse(phi < 0, "Decreases", "Increases")]
   dt_plot <- unique(dt_plot)
 
