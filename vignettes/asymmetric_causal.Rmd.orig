@@ -243,6 +243,8 @@ library(shapr)
 library(GGally)
 library(ggpubr)
 library(gridExtra)
+# The igraph and dagitty packages are also needed (called with `::`) in the
+# section on specifying the causal chain graph with graph packages
 
 
 
