@@ -334,7 +334,12 @@ test_that("grouped bar plot", {
   tied$shapley_values_est <- data.table::copy(tied$shapley_values_est)
   tied$shapley_values_est[, c("A", "B", "C") := list(1, 1, 1)]
   p <- plot(tied, index_x_explain = 1, top_k_features = 1, print_ggplot = FALSE)
-  expect_equal(p$data[variable == "rest", phi], 2)
+  waterfall <- plot(grouped_mixed, plot_type = "waterfall", index_x_explain = 1, print_ggplot = FALSE)
+  comparison <- plot_SV_several_approaches(list(independence = grouped_mixed), print_ggplot = FALSE)
+  expect_equal(
+    list(p$data[variable == "rest", phi], p$labels$x, p$labels$y, waterfall$labels$x, comparison$labels$x),
+    list(2, "Group", "Group contribution", "Group", "Group")
+  )
 })
 
 test_that("grouped beeswarm plot", {

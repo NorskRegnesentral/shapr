@@ -377,6 +377,7 @@ plot.shapr <- function(x,
     # Only plot the desired observations
     dt_plot <- dt_plot[id %in% index_x_explain]
     gg <- make_scatter_plot(dt_plot, scatter_features, scatter_hist, col, factor_features)
+    if (is_groupwise) gg <- gg + ggplot2::labs(x = "Mean feature values")
   } else if (plot_type == "beeswarm") {
     gg <- make_beeswarm_plot(dt_plot,
       col,
@@ -436,6 +437,10 @@ plot.shapr <- function(x,
       gg <- make_bar_plot(dt_plot, bar_plot_phi0, col, breaks, desc_labels, is_global)
     } else if (plot_type == "waterfall") {
       gg <- make_waterfall_plot(dt_plot, expected, col, digits, bar_plot_order, breaks, desc_labels, is_global)
+    }
+    if (is_groupwise) {
+      gg <- gg + ggplot2::labs(x = "Group")
+      if (plot_type == "bar") gg <- gg + ggplot2::labs(y = "Group contribution")
     }
   }
 
@@ -753,6 +758,7 @@ make_beeswarm_plot <- function(dt_plot,
       barwidth = 0.5, barheight = 10
     ))
 
+  color_label <- if (x$internal$parameters$is_groupwise) "Mean feature \n value" else "Feature \n value"
   if (length(col) == 3) { # check is col-parameter is the default
     gg <- gg +
       ggplot2::scale_color_gradient2(
@@ -761,7 +767,7 @@ make_beeswarm_plot <- function(dt_plot,
         breaks = c(0, 1),
         limits = c(0, 1),
         labels = c("Low", "High"),
-        name = "Feature \n value"
+        name = color_label
       )
   } else if (length(col) == 2) { # allow user to specify three colors
     gg <- gg +
@@ -771,7 +777,7 @@ make_beeswarm_plot <- function(dt_plot,
         breaks = c(0, 1),
         limits = c(0, 1),
         labels = c("Low", "High"),
-        name = "Feature \n value"
+        name = color_label
       )
   }
 
@@ -1828,6 +1834,7 @@ plot_SV_several_approaches <- function(explanation_list,
   # Get the breaks and direction for the fill aesthetic
   breaks <- if (horizontal_bars) rev(levels(dt_Shapley_values_long$.method)) else levels(dt_Shapley_values_long$.method)
   direction <- if (horizontal_bars) -1 else 1
+  is_groupwise <- explanation_list[[1]]$internal$parameters$is_groupwise
 
   # Plot --------------------------------------------------------------------------------
   figure <- ggplot2::ggplot(dt_Shapley_values_long, ggplot2::aes(x = .description, y = .phi))
@@ -1840,8 +1847,16 @@ plot_SV_several_approaches <- function(explanation_list,
     ) +
     ggplot2::facet_wrap(~.header, scales = facet_scales, labeller = "label_value", ncol = facet_ncol) +
     ggplot2::labs(
-      x = "Feature and value",
-      y = bquote("Feature contribution (Shapley value" ~ phi[j] * ")"),
+      x = if (is_groupwise) {
+        if (include_group_feature_means) "Group and mean feature value" else "Group"
+      } else {
+        "Feature and value"
+      },
+      y = if (is_groupwise) {
+        bquote("Group contribution (Shapley value" ~ phi[j] * ")")
+      } else {
+        bquote("Feature contribution (Shapley value" ~ phi[j] * ")")
+      },
       fill = "Method"
     ) +
     ggplot2::guides(x = ggplot2::guide_axis(n.dodge = axis_labels_n_dodge, angle = axis_labels_rotate_angle)) +

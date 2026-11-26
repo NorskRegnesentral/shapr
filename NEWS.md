@@ -6,6 +6,7 @@
 
 ### New features
 * Support group-wise bar and waterfall plots for mixed data, and uncolored beeswarm plots via `beeswarm_color_by_feature = FALSE`. Fix group counts and ties in top-k plots. (branch: martin/group-plotting-geneshap)
+* Label group-wise plot axes and contributions as groups, and identify group-mean feature values where shown. (branch: martin/group-plotting-geneshap)
 
 # shapr 1.1.0
 
