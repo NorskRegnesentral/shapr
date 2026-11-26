@@ -12,8 +12,7 @@
 #'  `"scatter"` plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 #'  (optionally) a background scatter_hist showing the distribution of the feature data.
 #'  `"beeswarm"` summarizes the distribution of the Shapley values along the x-axis for all the features.
-#'  Each point gives the Shapley value of a given instance, where the points are colored by the feature value
-#'  of that instance.
+#'  Each point gives the Shapley value of a given instance, colored by its feature value by default.
 #'  For SAGE values (`scope = "global"` in [explain()]), only `"bar"` and `"waterfall"` are supported, as SAGE
 #'  produces a single global loss-based explanation rather than per-observation prediction explanations.
 #' @param digits Integer.
@@ -37,8 +36,9 @@
 #' and to all observations for `plot_type = "scatter"` and `"beeswarm"`.
 #' @param top_k_features Integer.
 #' How many features to include in the plot.
+#' For group-wise explanations this counts groups rather than individual features.
 #' E.g. if you have 15 features in your model you can plot the 5 most important features,
-#' for each explanation, by setting `top_k_features = 1:5`.
+#' for each explanation, by setting `top_k_features = 5`.
 #' Applicable for `plot_type` `"bar"` and `"waterfall"`
 #' @param col Character vector (where length depends on plot type).
 #' The color codes (hex codes or other names understood by [ggplot2::ggplot()]) for positive and negative
@@ -58,6 +58,7 @@
 #' and the third colors low feature values.
 #' For instance, `col = c("red", "yellow", "blue")` will make high values red, mid-range values yellow,
 #' and low values blue.
+#' If `beeswarm_color_by_feature = FALSE`, a single color can be given instead.
 #' For `plot_type = "scatter"`, a single color is to be given, which determines the color of the points on the
 #' scatter plot.
 #' @param bar_plot_order Character.
@@ -80,6 +81,9 @@
 #' features in each group.
 #' @param beeswarm_cex Numeric.
 #' The cex argument of [ggbeeswarm::geom_beeswarm()], controlling the spacing in the beeswarm plots.
+#' @param beeswarm_color_by_feature Logical.
+#' Whether to color beeswarm points by feature value. Set to `FALSE` to plot group-wise Shapley values
+#' without requiring a single feature value per group.
 #' @param ... Other arguments passed to underlying functions,
 #' like [ggbeeswarm::geom_beeswarm()] for `plot_type = "beeswarm"`.
 #'
@@ -207,6 +211,7 @@ plot.shapr <- function(x,
                        scatter_hist = TRUE,
                        include_group_feature_means = FALSE,
                        beeswarm_cex = 1 / length(index_x_explain)^(1 / 4),
+                       beeswarm_color_by_feature = TRUE,
                        ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     cli::cli_abort("ggplot2 is not installed. Please run {.run install.packages('ggplot2')}")
@@ -258,12 +263,18 @@ plot.shapr <- function(x,
       index_x_explain <- seq_len(n_explain)
     }
   }
-  if (is.null(top_k_features)) top_k_features <- x$internal$parameters$n_features + 1
+  is_groupwise <- x$internal$parameters$is_groupwise
+  n_plot_features <- if (is_groupwise) x$internal$parameters$n_shapley_values else x$internal$parameters$n_features
+  if (is.null(top_k_features)) top_k_features <- n_plot_features + 1
   if (length(beeswarm_cex) == 0 || is.infinite(beeswarm_cex)) {
     beeswarm_cex <- 1 / length(index_x_explain)^(1 / 4)
   }
 
-  is_groupwise <- x$internal$parameters$is_groupwise
+  if (plot_type == "beeswarm" &&
+    (!is.logical(beeswarm_color_by_feature) || length(beeswarm_color_by_feature) != 1 ||
+      is.na(beeswarm_color_by_feature))) {
+    cli::cli_abort("`beeswarm_color_by_feature` must be a single logical value.")
+  }
 
   # For group-wise Shapley values, we check if we are to take the mean over grouped features
   if (is_groupwise) {
@@ -272,31 +283,35 @@ plot.shapr <- function(x,
       length(include_group_feature_means) > 1) {
       cli::cli_abort("`include_group_feature_means` must be single logical.")
     }
-    if (!include_group_feature_means && plot_type %in% c("scatter", "beeswarm")) {
+    if (!include_group_feature_means &&
+      (plot_type == "scatter" || (plot_type == "beeswarm" && beeswarm_color_by_feature))) {
       cli::cli_abort(paste0(
         "`shapr` cannot make a `", plot_type, "` plot for group-wise Shapley values, as the plot needs a ",
         "single feature value for the whole group.\n",
         "For numerical data, the user can set `include_group_feature_means = TRUE` to use the mean of all ",
-        "grouped features. The user should use this option cautiously to not misinterpret the explanations."
+        "grouped features. The user should use this option cautiously to not misinterpret the explanations.",
+        if (plot_type == "beeswarm") " Alternatively, set `beeswarm_color_by_feature = FALSE`."
       ))
     }
 
-    if (any(x$internal$objects$feature_specs$classes != "numeric")) {
-      cli::cli_abort("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+    if (include_group_feature_means) {
+      if (any(x$internal$objects$feature_specs$classes != "numeric")) {
+        cli::cli_abort("`include_group_feature_means` cannot be `TRUE` for datasets with non-numerical features.")
+      }
+
+      # Take the mean over the grouped features and update the feature name to the group name
+      x$internal$data$x_explain <-
+        x$internal$data$x_explain[, lapply(
+          x$internal$parameters$group,
+          function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
+        )]
+
+      x$internal$data$x_train <-
+        x$internal$data$x_train[, lapply(
+          x$internal$parameters$group,
+          function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
+        )]
     }
-
-    # Take the mean over the grouped features and update the feature name to the group name
-    x$internal$data$x_explain <-
-      x$internal$data$x_explain[, lapply(
-        x$internal$parameters$group,
-        function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
-      )]
-
-    x$internal$data$x_train <-
-      x$internal$data$x_train[, lapply(
-        x$internal$parameters$group,
-        function(cols) rowMeans(.SD[, .SD, .SDcols = cols], na.rm = TRUE)
-      )]
   }
 
   # melting Kshap
@@ -339,7 +354,8 @@ plot.shapr <- function(x,
     bar_plot_phi0 <- FALSE
   }
 
-  if (plot_type == "scatter" || plot_type == "beeswarm") {
+  factor_features <- NULL
+  if (plot_type == "scatter" || (plot_type == "beeswarm" && beeswarm_color_by_feature)) {
     # Add feature values to data table
     dt_feature_vals <- data.table::copy(x$internal$data$x_explain)
     dt_feature_vals <- as.data.table(cbind(none = NA, dt_feature_vals))
@@ -368,6 +384,7 @@ plot.shapr <- function(x,
       x,
       factor_features,
       beeswarm_cex = beeswarm_cex,
+      color_by_feature = beeswarm_color_by_feature,
       ...
     )
   } else { # if bar or waterfall plot
@@ -384,7 +401,7 @@ plot.shapr <- function(x,
       )
     }
 
-    dt_plot <- order_for_plot(dt_plot, x$internal$parameters$n_features, bar_plot_order, top_k_features)
+    dt_plot <- order_for_plot(dt_plot, n_plot_features, bar_plot_order, top_k_features)
 
     # compute start and end values for waterfall rectangles
     data.table::setorder(dt_plot, rank_waterfall)
@@ -401,9 +418,9 @@ plot.shapr <- function(x,
     } else if (bar_plot_order == "original") {
       desc_labels <- dt_plot[variable != "none" & variable != "rest", description[order(unique_label)]]
     }
-    if (top_k_features < x$internal$parameters$n_features) { # if there is a "rest" of collapsed lower-rank features
+    if (top_k_features < n_plot_features) { # if there is a "rest" of collapsed lower-rank features
       desc_labels <- c(
-        paste(x$internal$parameters$n_features - top_k_features, "other features"),
+        paste(n_plot_features - top_k_features, "other features"),
         desc_labels
       )
     }
@@ -656,9 +673,26 @@ make_beeswarm_plot <- function(dt_plot,
                                x,
                                factor_cols,
                                beeswarm_cex,
+                               color_by_feature,
                                ...) {
   if (!requireNamespace("ggbeeswarm", quietly = TRUE)) {
     cli::cli_abort("ggbeeswarm is not installed. Please run {.run install.packages('ggbeeswarm')}.")
+  }
+
+  if (!color_by_feature) {
+    if (is.null(col)) col <- "grey30"
+    if (length(col) != 1) {
+      cli::cli_abort("'col' must be of length 1 when coloring beeswarm points uniformly.")
+    }
+    dt_plot <- dt_plot[variable != "none" & id %in% index_x_explain]
+    gg <- ggplot2::ggplot(dt_plot, ggplot2::aes(x = variable, y = phi)) +
+      ggplot2::geom_hline(yintercept = 0, color = "grey70", linewidth = 0.5) +
+      ggbeeswarm::geom_beeswarm(priority = "random", cex = beeswarm_cex, color = col, ...) +
+      ggplot2::coord_flip() +
+      ggplot2::theme_classic() +
+      ggplot2::theme(panel.grid.major.y = ggplot2::element_line(colour = "grey90", linetype = "dashed")) +
+      ggplot2::labs(x = "", y = "Shapley value")
+    return(gg)
   }
 
   if (is.null(col)) {

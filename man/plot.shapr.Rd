@@ -18,6 +18,7 @@
   scatter_hist = TRUE,
   include_group_feature_means = FALSE,
   beeswarm_cex = 1/length(index_x_explain)^(1/4),
+  beeswarm_color_by_feature = TRUE,
   ...
 )
 }
@@ -33,8 +34,7 @@ contribution (their Shapley values).
 \code{"scatter"} plots the feature values on the x-axis and Shapley values on the y-axis, as well as
 (optionally) a background scatter_hist showing the distribution of the feature data.
 \code{"beeswarm"} summarizes the distribution of the Shapley values along the x-axis for all the features.
-Each point gives the Shapley value of a given instance, where the points are colored by the feature value
-of that instance.
+Each point gives the Shapley value of a given instance, colored by its feature value by default.
 For SAGE values (\code{scope = "global"} in \code{\link[=explain]{explain()}}), only \code{"bar"} and \code{"waterfall"} are supported, as SAGE
 produces a single global loss-based explanation rather than per-observation prediction explanations.}
 
@@ -60,8 +60,9 @@ and to all observations for \code{plot_type = "scatter"} and \code{"beeswarm"}.}
 
 \item{top_k_features}{Integer.
 How many features to include in the plot.
+For group-wise explanations this counts groups rather than individual features.
 E.g. if you have 15 features in your model you can plot the 5 most important features,
-for each explanation, by setting \code{top_k_features = 1:5}.
+for each explanation, by setting \code{top_k_features = 5}.
 Applicable for \code{plot_type} \code{"bar"} and \code{"waterfall"}}
 
 \item{col}{Character vector (where length depends on plot type).
@@ -82,6 +83,7 @@ If three colors are given, then the first colors high feature values, the second
 and the third colors low feature values.
 For instance, \code{col = c("red", "yellow", "blue")} will make high values red, mid-range values yellow,
 and low values blue.
+If \code{beeswarm_color_by_feature = FALSE}, a single color can be given instead.
 For \code{plot_type = "scatter"}, a single color is to be given, which determines the color of the points on the
 scatter plot.}
 
@@ -112,6 +114,10 @@ features in each group.}
 
 \item{beeswarm_cex}{Numeric.
 The cex argument of \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}}, controlling the spacing in the beeswarm plots.}
+
+\item{beeswarm_color_by_feature}{Logical.
+Whether to color beeswarm points by feature value. Set to \code{FALSE} to plot group-wise Shapley values
+without requiring a single feature value per group.}
 
 \item{...}{Other arguments passed to underlying functions,
 like \code{\link[ggbeeswarm:geom_beeswarm]{ggbeeswarm::geom_beeswarm()}} for \code{plot_type = "beeswarm"}.}
