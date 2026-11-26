@@ -1604,7 +1604,7 @@ chain_graph_to_shapr(unordered_graph)
 ```
 
 To use such a graph, we have to add causal knowledge that orders the
-components, either by adding directed edges, e.g., $X_1 \to X_3$, or by merging
+components, either by adding directed edges, e.g., $X_2 \to X_3$, or by merging
 components without an order into one chain component, e.g., an unconfounded
 component $\{X_1, X_3\}$ followed by $\{X_2, X_4\}$.
 
