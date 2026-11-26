@@ -2292,4 +2292,344 @@ support modeling the marginal distributions using the `copula` and
 `vaeac` approaches as both of these methods support unconditional sampling.
 
 
+# Specifying the causal chain graph with graph packages {#Graph}
+
+The `causal_ordering` and `confounding` arguments are a compact description of
+a causal chain graph. For larger problems, it can be easier to write down the
+graph itself in a graph package, where it can be plotted and checked, and then
+extract the two arguments from the graph. In this section, we show how to do
+this with the general-purpose graph package `igraph` and the causal graph
+package `dagitty`. Neither package is needed by `shapr`; they are only used in
+this section.
+
+## Encoding the chain graph
+A causal chain graph has three kinds of edges, which we store in an edge
+attribute called `type`:
+
+- `"directed"`: a causal arrow from a feature in an earlier chain component to
+  a feature in a later chain component.
+- `"bidirected"`: a dependence within a chain component that is caused by an
+  unobserved common confounder, such as $Z_1$ in the causal chain graph figure
+  above. This is the standard notation for a hidden common cause.
+- `"undirected"`: a dependence within a chain component that is caused by
+  mutual interactions.
+
+The features linked by bidirected or undirected edges form the chain
+components. A component with bidirected edges is confounded, and a component
+with undirected edges is not. Note that `shapr` treats all features in the
+earlier components as parents of the features in a later component (see the
+sampling steps in the causal Shapley values code example above). Thus, one
+directed edge between two components is enough to determine their order, but we
+include all arrows below to represent the full chain graph.
+
+We create the chain graph in the figure above with `igraph`, where each row
+in the edge list is one edge:
+
+
+``` r
+season <- c("cosyear", "sinyear")
+weather <- c("temp", "atemp", "windspeed", "hum")
+weather_pairs <- combn(weather, 2)
+
+edge_list <- rbind(
+  data.frame(from = "trend", to = c(season, weather), type = "directed"),
+  data.frame(from = rep(season, each = 4), to = weather, type = "directed"),
+  data.frame(from = "cosyear", to = "sinyear", type = "bidirected"),
+  data.frame(from = weather_pairs[1, ], to = weather_pairs[2, ], type = "undirected")
+)
+
+chain_graph <- igraph::graph_from_data_frame(
+  edge_list,
+  directed = TRUE,
+  vertices = data.frame(name = x_var)
+)
+```
+
+Plotting the graph is a good way to check that it is correct. We place the
+three components in separate rows, draw the causal arrows in grey, the
+confounded edge as a dashed red arrow with two heads, and the mutual
+interactions as blue lines without arrowheads.
+
+
+``` r
+graph_layout <- rbind(
+  trend = c(0, 2),
+  cosyear = c(-1.2, 0.95), sinyear = c(1.2, 0.95),
+  temp = c(-3.6, 0), atemp = c(-1.2, 0), windspeed = c(1.2, 0), hum = c(3.6, 0)
+)
+edge_type <- igraph::E(chain_graph)$type
+edge_ends <- igraph::ends(chain_graph, igraph::E(chain_graph))
+# Curve the mutual-interaction edges between non-neighbors below the bottom row
+curve_edge <- edge_type == "undirected" & abs(match(edge_ends[, 1], weather) - match(edge_ends[, 2], weather)) > 1
+
+par(mar = c(0, 0, 0, 0))
+plot(
+  chain_graph,
+  layout = graph_layout[igraph::V(chain_graph)$name, ],
+  rescale = FALSE, xlim = c(-4, 4), ylim = c(-1.1, 2.2), asp = 0,
+  vertex.shape = "rectangle", vertex.size = 84, vertex.size2 = 22,
+  vertex.color = "white", vertex.frame.color = "grey40",
+  vertex.label.color = "black", vertex.label.family = "sans", vertex.label.cex = 0.75,
+  edge.arrow.mode = c(directed = 2, bidirected = 3, undirected = 0)[edge_type],
+  edge.lty = c(directed = 1, bidirected = 2, undirected = 1)[edge_type],
+  edge.color = c(directed = "grey55", bidirected = "red", undirected = "blue")[edge_type],
+  edge.width = c(directed = 1, bidirected = 2, undirected = 2)[edge_type],
+  edge.arrow.size = 0.5,
+  edge.curved = ifelse(curve_edge, -0.45, 0)
+)
+legend(
+  "bottomleft",
+  legend = c("Causal (directed)", "Confounding (bidirected)", "Mutual interaction (undirected)"),
+  col = c("grey55", "red", "blue"), lty = c(1, 2, 1), lwd = c(1, 2, 2), bty = "n", cex = 0.8
+)
+```
+
+![](figure_asymmetric_causal/graph_igraph_plot-1.webp)
+
+## Extracting `causal_ordering` and `confounding`
+The function below converts a chain graph to the arguments used by `shapr`. It
+works in three steps:
+
+1. The chain components are the connected components of the graph when we only
+   keep the bidirected and undirected edges.
+2. We merge each component into a single node and sort the components
+   topologically along the directed edges. This gives `causal_ordering`.
+3. A component is confounded if its edges are bidirected. This gives
+   `confounding`.
+
+The function stops with an error if
+
+- the input is not a directed `igraph` graph with vertex names and a `type`
+  edge attribute,
+- a directed edge lies within a component,
+- the directed edges form a cycle between components,
+- a component has both bidirected and undirected edges, as the graph then does
+  not say whether the component is confounded, or
+- the graph only gives a partial order of the components (see
+  [partial causal orderings](#partial-causal-orderings) below).
+
+> **Note:** `chain_graph_to_shapr()` is a short helper written for this
+> vignette and is not part of `shapr`. We have tested it on many randomly
+> generated chain graphs, but it is not tested as thoroughly as the package
+> itself and may fail or return the wrong arguments for graphs we did not
+> consider. Always check the output against your graph, as we do below with
+> `identical()`, or by plotting the graph and comparing its components with
+> `causal_ordering`.
+
+
+``` r
+# Helper written for this vignette; not part of shapr and not as thoroughly
+# tested. Check the output against the graph before using it.
+chain_graph_to_shapr <- function(graph, feature_names = igraph::V(graph)$name) {
+  has_type <- igraph::ecount(graph) == 0 || "type" %in% igraph::edge_attr_names(graph)
+  if (!igraph::is_directed(graph) || is.null(igraph::V(graph)$name) || !has_type) {
+    stop("`graph` must be a directed igraph graph with vertex names and an edge attribute `type`.", call. = FALSE)
+  }
+  if (anyDuplicated(feature_names) > 0 || !setequal(feature_names, igraph::V(graph)$name)) {
+    stop("`feature_names` must contain each vertex name of `graph` exactly once.", call. = FALSE)
+  }
+  edges <- igraph::as_data_frame(graph, what = "edges")
+  if (!all(edges$type %in% c("directed", "bidirected", "undirected"))) {
+    stop("The edge attribute `type` must be 'directed', 'bidirected', or 'undirected'.", call. = FALSE)
+  }
+  is_directed <- edges$type == "directed"
+
+  # Step 1: the chain components
+  within_graph <- igraph::graph_from_data_frame(
+    edges[!is_directed, ],
+    directed = FALSE,
+    vertices = data.frame(name = feature_names)
+  )
+  component <- igraph::components(within_graph)$membership
+  n_components <- max(component)
+
+  # Step 2: order the components along the directed edges
+  component_edges <- unique(data.frame(
+    from = component[edges$from[is_directed]],
+    to = component[edges$to[is_directed]]
+  ))
+  if (any(component_edges$from == component_edges$to)) {
+    stop("A directed edge connects two features in the same chain component.", call. = FALSE)
+  }
+  component_graph <- igraph::graph_from_data_frame(
+    component_edges,
+    directed = TRUE,
+    vertices = data.frame(name = seq_len(n_components))
+  )
+  if (!igraph::is_dag(component_graph)) {
+    stop("The directed edges form a cycle between the chain components.", call. = FALSE)
+  }
+
+  # shapr needs a total order: every pair of components must be linked by a directed path
+  is_reachable <- is.finite(igraph::distances(component_graph, mode = "out"))
+  unordered <- which(!is_reachable & !t(is_reachable) & upper.tri(is_reachable), arr.ind = TRUE)
+  if (nrow(unordered) > 0) {
+    unordered <- unordered[order(unordered[, 1], unordered[, 2]), , drop = FALSE]
+    component_label <- function(k) {
+      return(vapply(k, function(i) {
+        return(paste0("{", paste(feature_names[component[feature_names] == i], collapse = ", "), "}"))
+      }, character(1)))
+    }
+    stop(
+      "The graph only gives a partial order of the chain components, but `causal_ordering` must ",
+      "order all components. No directed path links ",
+      paste(component_label(unordered[, 1]), "and", component_label(unordered[, 2]), collapse = "; "),
+      ". Add directed edges that order these components, or merge them into one chain component.",
+      call. = FALSE
+    )
+  }
+  component_order <- as.integer(igraph::topo_sort(component_graph, mode = "out"))
+  causal_ordering <- lapply(component_order, function(k) feature_names[component[feature_names] == k])
+
+  # Step 3: a component is confounded if its edges are bidirected
+  confounding <- vapply(component_order, function(k) {
+    types <- unique(edges$type[!is_directed & component[edges$from] == k])
+    if (length(types) > 1) {
+      stop("A chain component has both bidirected and undirected edges.", call. = FALSE)
+    }
+    return(identical(types, "bidirected"))
+  }, logical(1))
+
+  return(list(causal_ordering = causal_ordering, confounding = confounding))
+}
+```
+
+Applying the function to our chain graph gives the same `causal_ordering` and
+`confounding` as we specified manually earlier in this vignette:
+
+
+``` r
+graph_arguments <- chain_graph_to_shapr(chain_graph, feature_names = x_var)
+graph_arguments
+#> $causal_ordering
+#> $causal_ordering[[1]]
+#> [1] "trend"
+#> 
+#> $causal_ordering[[2]]
+#> [1] "cosyear" "sinyear"
+#> 
+#> $causal_ordering[[3]]
+#> [1] "temp"      "atemp"     "windspeed" "hum"      
+#> 
+#> 
+#> $confounding
+#> [1] FALSE  TRUE FALSE
+
+identical(graph_arguments$causal_ordering, causal_ordering)
+#> [1] TRUE
+identical(graph_arguments$confounding, confounding)
+#> [1] TRUE
+
+# The causal ordering with feature indices instead of names
+lapply(graph_arguments$causal_ordering, match, table = x_var)
+#> [[1]]
+#> [1] 1
+#> 
+#> [[2]]
+#> [1] 2 3
+#> 
+#> [[3]]
+#> [1] 4 5 6 7
+```
+
+We can pass the extracted arguments directly to `explain()`. Below, we compute
+the asymmetric causal Shapley values with the `gaussian` approach and get the
+same Shapley values as in the asymmetric causal Shapley values example above.
+
+
+``` r
+explanation_graph <- explain(
+  model = model,
+  x_train = x_train,
+  x_explain = x_explain,
+  phi0 = phi0,
+  seed = 1,
+  n_MC_samples = 1000,
+  approach = "gaussian",
+  asymmetric = TRUE,
+  causal_ordering = graph_arguments$causal_ordering,
+  confounding = graph_arguments$confounding
+)
+
+all.equal(explanation_graph$shapley_values_est, explanation_asym_cau$gaussian$shapley_values_est)
+#> [1] TRUE
+```
+
+For asymmetric conditional Shapley values, only the causal ordering is needed,
+so we use `causal_ordering = graph_arguments$causal_ordering` and
+`confounding = NULL`. For group Shapley values, the vertices of the graph are
+the group names instead of the feature names, and the function then returns
+`causal_ordering_group` from the [groups of features](#groups-of-features) section.
+
+## Partial causal orderings
+A graph may only give a partial order of the chain components. For example, if
+$X_1 \to X_2$ and $X_3 \to X_4$, then nothing says whether $X_1$ comes before or
+after $X_3$. The `causal_ordering` argument in `shapr` is a total order: it
+places every component either before or after every other component. Such a
+graph can therefore not be represented by `causal_ordering`, and the function
+stops with an error that lists the components without an order:
+
+
+``` r
+partial_graph <- igraph::graph_from_data_frame(
+  data.frame(from = c("X1", "X3"), to = c("X2", "X4"), type = "directed")
+)
+chain_graph_to_shapr(partial_graph)
+#> Error:
+#> ! The graph only gives a partial order of the chain components, but `causal_ordering` must order all components. No directed path links {X1} and {X3}; {X1} and {X4}; {X3} and {X2}; {X2} and {X4}. Add directed edges that order these components, or merge them into one chain component.
+```
+
+To use such a graph, we have to add causal knowledge that orders the
+components, either by adding directed edges, e.g., $X_1 \to X_3$, or by merging
+components without an order into one chain component, e.g., an unconfounded
+component $\{X_1, X_3\}$ followed by $\{X_2, X_4\}$.
+
+## Using `dagitty`
+The `dagitty` package has a compact syntax for causal graphs, where `->`, `<->`,
+and `--` denote directed, bidirected, and undirected edges, respectively, and
+`{ }` groups several features. The package has no graph type for chain graphs,
+so we use the `mag` type, which allows all three kinds of edges. We only use
+`dagitty` to write down the graph. In a maximal ancestral graph (MAG), an
+undirected edge has a different meaning than a mutual interaction, so the causal
+analyses in `dagitty`, such as `adjustmentSets()`, do not apply to this graph.
+
+
+``` r
+dagitty_graph <- dagitty::dagitty("mag {
+  trend -> {cosyear sinyear temp atemp windspeed hum}
+  {cosyear sinyear} -> {temp atemp windspeed hum}
+  cosyear <-> sinyear
+  temp -- {atemp windspeed hum}
+  atemp -- {windspeed hum}
+  windspeed -- hum
+}")
+```
+
+To extract `causal_ordering` and `confounding`, we convert the edges to an
+`igraph` object with the `type` attribute and use the function above:
+
+
+``` r
+dagitty_edges <- dagitty::edges(dagitty_graph)
+dagitty_type <- c("->" = "directed", "<->" = "bidirected", "--" = "undirected")
+
+chain_graph_dagitty <- igraph::graph_from_data_frame(
+  data.frame(
+    from = dagitty_edges$v,
+    to = dagitty_edges$w,
+    type = unname(dagitty_type[as.character(dagitty_edges$e)])
+  ),
+  directed = TRUE,
+  vertices = data.frame(name = names(dagitty_graph))
+)
+
+identical(chain_graph_to_shapr(chain_graph_dagitty, feature_names = x_var), graph_arguments)
+#> [1] TRUE
+```
+
+The same approach works for any package that can export the graph as an edge
+list with the type of each edge. Since the result is an `igraph` object, the
+graph can also be plotted with, e.g., `ggraph`.
+
+
 # References

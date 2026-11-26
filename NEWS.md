@@ -34,6 +34,7 @@
 * Simplified roxygen2 (following package update) inheritance for approach-specific arguments and refreshed affected documentation ([#493](https://github.com/NorskRegnesentral/shapr/pull/493)).
 * Updated computational benchmark reporting to use wall time measured directly around `explain()` rather than fresh-process runtime, while retaining harness timings as diagnostics, and refreshed the retained results so all published peak RAM values use cgroup-v2 `memory.peak`. ([#511](https://github.com/NorskRegnesentral/shapr/pull/511))
 * Added practical guidance in README and general usage vignette for choosing conditional approaches, covering computational cost, the MSEv evaluation criterion, and recommendations from Olsen et al. (2024). ([#513](https://github.com/NorskRegnesentral/shapr/pull/513))
+* Added a section to the asymmetric and causal Shapley values vignette that shows how to specify the causal chain graph with the `igraph` and `dagitty` packages and extract the `causal_ordering` and `confounding` arguments from the graph. (branch: vignette-causal-chain-graph)
 
 ### Python
 * Renamed the Python wrapper from `shaprpy` to `pyshapr`. R console output from `summary()`/`print()` on Python-initiated explanations now references `pyshapr.explain()`/`pyshapr.explain_forecast()`. A thin `shaprpy` compatibility package remains available on PyPI for a transition period. ([#500](https://github.com/NorskRegnesentral/shapr/pull/500))
