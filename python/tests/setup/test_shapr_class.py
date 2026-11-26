@@ -5,10 +5,12 @@ These tests verify that the Shapr class methods work correctly and
 produce consistent output.
 """
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from pyshapr import explain
+from pyshapr.explanation import Shapr
 
 
 @pytest.fixture(scope="class")
@@ -26,6 +28,26 @@ def explanation_object(california_housing_data, trained_rf_regressor):
         seed=1,
     )
     return explanation
+
+
+@pytest.fixture(scope="class")
+def grouped_explanation(california_housing_data, trained_rf_regressor):
+    dfx_train, dfx_explain, dfy_train, _ = california_housing_data
+    group = {
+        "MedInc": ["MedInc", "HouseAge", "AveRooms"],
+        "B": ["AveBedrms", "Population", "AveOccup"],
+        "C": ["Latitude", "Longitude"],
+    }
+    explanation = explain(
+        model=trained_rf_regressor,
+        x_train=dfx_train,
+        x_explain=dfx_explain.iloc[:3],
+        approach="independence",
+        phi0=dfy_train.mean().item(),
+        group=group,
+        seed=1,
+    )
+    return explanation, group, dfx_explain.iloc[:3]
 
 
 class TestShaprClassMethods:
@@ -158,6 +180,9 @@ class TestShaprClassMethods:
         assert shap_exp.data is not None
         assert len(shap_exp.values) == 3  # We used 3 observations
         assert shap_exp.values.shape[1] == 8  # 8 features
+        np.testing.assert_array_equal(
+            explanation_object.to_shap(include_group_feature_means=True).data, shap_exp.data
+        )
 
     def test_to_shap_single_observation(self, explanation_object):
         """Test to_shap() conversion for single observation."""
@@ -184,3 +209,81 @@ class TestShaprClassMethods:
         # Check it's a SHAP Explanation object
         assert isinstance(shap_exp, shap.Explanation)
         assert shap_exp.values.shape == (2, 8)  # 2 observations, 8 features
+
+    def test_to_shap_grouped(self, grouped_explanation):
+        import matplotlib.pyplot as plt
+        import shap
+
+        explanation, group, x_explain = grouped_explanation
+        result = explanation.get_explanation_dict()["shapley_values_est"]
+        shap_exp = explanation.to_shap()
+        assert shap_exp.data is None
+        assert shap_exp.feature_names == list(group)
+        np.testing.assert_allclose(shap_exp.values, result[list(group)].to_numpy())
+        np.testing.assert_allclose(shap_exp.base_values, result["none"].to_numpy())
+
+        shap.plots.waterfall(shap_exp[0], show=False)
+        plt.close()
+        shap.plots.waterfall(explanation.to_shap(idx=1)[0], show=False)
+        plt.close()
+        shap.plots.beeswarm(shap_exp, show=False)
+        plt.close()
+        shap.plots.beeswarm(explanation.to_shap(include_group_feature_means=True), show=False)
+        plt.close()
+
+        expected_means = np.column_stack(
+            [x_explain[columns].mean(axis=1).to_numpy() for columns in group.values()]
+        )
+        for idx, expected_rows in [
+            (None, slice(None)),
+            (1, slice(1, 2)),
+            (slice(1, 3), slice(1, 3)),
+        ]:
+            with_means = explanation.to_shap(idx=idx, include_group_feature_means=True)
+            np.testing.assert_allclose(with_means.data, expected_means[expected_rows])
+            np.testing.assert_allclose(
+                with_means.values, result[list(group)].to_numpy()[expected_rows]
+            )
+            np.testing.assert_allclose(
+                with_means.base_values, result["none"].to_numpy()[expected_rows]
+            )
+            assert explanation.to_shap(idx=idx).data is None
+
+        internal = explanation.get_explanation_dict()["internal"]
+        missing_data = internal["data"]["x_explain"].copy()
+        missing_data.loc[missing_data.index[0], group["MedInc"][0]] = np.nan
+        missing_data.loc[missing_data.index[1], group["MedInc"]] = np.nan
+        missing = Shapr(
+            {
+                "shapley_values_est": result,
+                "internal": {**internal, "data": {**internal["data"], "x_explain": missing_data}},
+            },
+            None,
+        )
+        means = missing.to_shap(include_group_feature_means=True).data
+        np.testing.assert_allclose(
+            means[:, 0], missing_data[group["MedInc"]].mean(axis=1), equal_nan=True
+        )
+
+    def test_to_shap_group_means_reject_non_numeric(self, grouped_explanation):
+        explanation, _, _ = grouped_explanation
+        result = explanation.get_explanation_dict()
+        internal = result["internal"]
+        mixed_data = internal["data"]["x_explain"].copy()
+        mixed_data["MedInc"] = pd.Categorical(mixed_data["MedInc"])
+        mixed = Shapr(
+            {
+                "shapley_values_est": result["shapley_values_est"],
+                "internal": {
+                    "parameters": internal["parameters"],
+                    "data": {"x_explain": mixed_data},
+                    "objects": {"feature_specs": {"classes": ["numeric", "factor"]}},
+                },
+            },
+            None,
+        )
+        assert mixed.to_shap().data is None
+        with pytest.raises(ValueError, match="non-numeric"):
+            mixed.to_shap(include_group_feature_means=True)
+        with pytest.raises(TypeError, match="must be a bool"):
+            mixed.to_shap(include_group_feature_means="yes")

@@ -154,6 +154,11 @@ import shap
 shap.plots.waterfall(shap_exp[0])  # Plot the first observation
 ```
 
+For group-wise explanations (`group=...`), `to_shap()` returns group Shapley values without
+feature data, so plots do not show or color by feature values. For entirely numeric data,
+`explanation.to_shap(include_group_feature_means=True)` attaches each group's mean feature value
+for plotting. Interpret these means cautiously, especially when features have different units or scales.
+
 ---
 
 ## Supported Models

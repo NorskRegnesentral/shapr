@@ -286,7 +286,9 @@ class Shapr:
 
         return ShaprSummary(summary_str, summary_data)
 
-    def to_shap(self, idx: int | slice | None = None) -> Any:
+    def to_shap(
+        self, idx: int | slice | None = None, include_group_feature_means: bool = False
+    ) -> Any:
         """Convert the Shapr explanation to a SHAP Explanation object.
 
         This method transforms the Shapley values and associated data into
@@ -299,12 +301,24 @@ class Shapr:
             Indices of observations to include. If None, includes all observations.
             If int, includes only that observation. If slice, includes the range.
             Ignored when the explanation holds SAGE values, since SAGE produces a single global explanation.
+        include_group_feature_means : bool, optional
+            For group-wise explanations, attach the mean of the features in each group as its value.
+            Defaults to False, in which case group-wise explanations have no feature data. Means require
+            all features to be numeric and should be interpreted cautiously, especially when features have
+            different units or scales. Ignored for feature-wise explanations and SAGE values.
 
         Returns
         -------
         shap.Explanation
             A SHAP Explanation object containing the Shapley values and
             base values, ready for use with SHAP plotting functions.
+
+        Raises
+        ------
+        TypeError
+            If include_group_feature_means is not a bool.
+        ValueError
+            If group means are requested for data with non-numeric features.
 
         Examples
         --------
@@ -315,6 +329,9 @@ class Shapr:
         """
 
         from shap import Explanation
+
+        if not isinstance(include_group_feature_means, bool):
+            raise TypeError("'include_group_feature_means' must be a bool.")
 
         shap_values_df = self._explanation_dict["shapley_values_est"]
         feature_names = shap_values_df.columns.drop(["explain_id", "none"])
@@ -332,7 +349,7 @@ class Shapr:
         if isinstance(idx, int):
             shap_values_df = shap_values_df.iloc[[idx]]
             data = data.iloc[[idx]]
-            base_values = shap_values_df["none"]
+            base_values = shap_values_df["none"].values
         elif isinstance(idx, slice):
             shap_values_df = shap_values_df.iloc[idx]
             data = data.iloc[idx]
@@ -343,7 +360,21 @@ class Shapr:
             raise TypeError("'idx' must be an int or slice.")
 
         shap_vals = shap_values_df[feature_names].values
-        data = data[feature_names].values
+        internal = self._explanation_dict["internal"]
+        is_groupwise = bool(np.ravel(internal["parameters"]["is_groupwise"])[0])
+        if is_groupwise and include_group_feature_means:
+            if any(cls != "numeric" for cls in internal["objects"]["feature_specs"]["classes"]):
+                raise ValueError(
+                    "'include_group_feature_means' cannot be True for data with non-numeric features."
+                )
+            group = internal["parameters"]["group"]
+            data = np.column_stack(
+                [data[group[name]].mean(axis=1).to_numpy() for name in feature_names]
+            )
+        elif is_groupwise:
+            data = None
+        else:
+            data = data[feature_names].values
 
         explanation = Explanation(
             values=shap_vals,
