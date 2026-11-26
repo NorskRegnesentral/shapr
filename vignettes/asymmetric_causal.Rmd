@@ -2407,8 +2407,9 @@ The function stops with an error if
 - the directed edges form a cycle between components,
 - a component has both bidirected and undirected edges, as the graph then does
   not say whether the component is confounded, or
-- the graph only gives a partial order of the components (see
-  [partial causal orderings](#partial-causal-orderings) below).
+- some chain components are not ordered relative to each other (see
+  [graphs that cannot be represented by `causal_ordering`](#graph-not-layered)
+  below).
 
 > **Note:** `chain_graph_to_shapr()` is a short helper written for this
 > vignette and is not part of `shapr`. We have tested it on many randomly
@@ -2462,7 +2463,7 @@ chain_graph_to_shapr <- function(graph, feature_names = igraph::V(graph)$name) {
     stop("The directed edges form a cycle between the chain components.", call. = FALSE)
   }
 
-  # shapr needs a total order: every pair of components must be linked by a directed path
+  # causal_ordering is layered: every pair of components must be linked by a directed path
   is_reachable <- is.finite(igraph::distances(component_graph, mode = "out"))
   unordered <- which(!is_reachable & !t(is_reachable) & upper.tri(is_reachable), arr.ind = TRUE)
   if (nrow(unordered) > 0) {
@@ -2473,8 +2474,8 @@ chain_graph_to_shapr <- function(graph, feature_names = igraph::V(graph)$name) {
       }, character(1)))
     }
     stop(
-      "The graph only gives a partial order of the chain components, but `causal_ordering` must ",
-      "order all components. No directed path links ",
+      "The directed edges do not order all chain components, so the graph cannot be represented ",
+      "by the layered `causal_ordering`. No directed path links ",
       paste(component_label(unordered[, 1]), "and", component_label(unordered[, 2]), collapse = "; "),
       ". Add directed edges that order these components, or merge them into one chain component.",
       call. = FALSE
@@ -2563,22 +2564,24 @@ so we use `causal_ordering = graph_arguments$causal_ordering` and
 the group names instead of the feature names, and the function then returns
 `causal_ordering_group` from the [groups of features](#groups-of-features) section.
 
-## Partial causal orderings
-A graph may only give a partial order of the chain components. For example, if
-$X_1 \to X_2$ and $X_3 \to X_4$, then nothing says whether $X_1$ comes before or
-after $X_3$. The `causal_ordering` argument in `shapr` is a total order: it
-places every component either before or after every other component. Such a
-graph can therefore not be represented by `causal_ordering`, and the function
-stops with an error that lists the components without an order:
+## Graphs that cannot be represented by `causal_ordering` {#graph-not-layered}
+The `causal_ordering` argument is a layered representation of the causal
+ordering: an ordered list of chain components, where all features in an earlier
+component are treated as ancestors of all features in later components. Thus,
+every chain component must come before or after every other component, and not
+all causal graphs can be represented in this way. For example, the two
+disconnected paths $X_1 \to X_2$ and $X_3 \to X_4$ do not say whether $X_1$
+comes before or after $X_3$. For such graphs, the function stops with an error
+that lists the components that are not ordered relative to each other:
 
 
 ``` r
-partial_graph <- igraph::graph_from_data_frame(
+unordered_graph <- igraph::graph_from_data_frame(
   data.frame(from = c("X1", "X3"), to = c("X2", "X4"), type = "directed")
 )
-chain_graph_to_shapr(partial_graph)
+chain_graph_to_shapr(unordered_graph)
 #> Error:
-#> ! The graph only gives a partial order of the chain components, but `causal_ordering` must order all components. No directed path links {X1} and {X3}; {X1} and {X4}; {X3} and {X2}; {X2} and {X4}. Add directed edges that order these components, or merge them into one chain component.
+#> ! The directed edges do not order all chain components, so the graph cannot be represented by the layered `causal_ordering`. No directed path links {X1} and {X3}; {X1} and {X4}; {X3} and {X2}; {X2} and {X4}. Add directed edges that order these components, or merge them into one chain component.
 ```
 
 To use such a graph, we have to add causal knowledge that orders the
